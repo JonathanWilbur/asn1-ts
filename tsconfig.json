@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "es6",
+        "target": "es6",
+        "outDir": "./dist",
+        "declaration": true,
+        "declarationDir": "types",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false
+    },
+    "include": [
+        "./source/*.ts",
+        "./source/types/*.ts"
+    ]
+}
