@@ -1,3 +1,4 @@
+// TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
 import { ASN1Element,ASN1TagClass,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
 
@@ -171,56 +172,50 @@ class BERElement extends ASN1Element {
             throw new ASN1Error
             ("Encoded value was too short to be an OBJECT IDENTIFIER!");
 
-        if (this.value.length >= 2)
-        {
-            // Skip the first, because it is fine if it is 0x80
-            // Skip the last because it will be checked next
-            (this.value.slice(1)).forEach(octet => {
-                if (octet == 0x80)
-                    throw new ASN1Error("Padding bytes on encoded OID nodes not permitted!");
-            });
-
-            if ((this.value[this.value.length - 1] & 0x80) == 0x80)
-                throw new ASN1Error("Truncated OID!");
+        let numbers : number[] = [ 0, 0 ];
+        if (this.value[0] >= 0x50) {
+            numbers[0] = 2;
+            numbers[1] = (this.value[0] - 0x50);
+        } else if (this.value[0] >= 0x28) {
+            numbers[0] = 1;
+            numbers[1] = (this.value[0] - 0x28);
+        } else {
+            numbers[0] = 0;
+            numbers[1] = this.value[0];
         }
 
-        let numbers : number[] = [];
-        if (this.value[0] >= 0x50)
-        {
-            numbers = [ 2, (this.value[0] - 0x50) ];
-        }
-        else if (this.value[0] >= 0x28)
-        {
-            numbers = [ 1, (this.value[0] - 0x28) ];
-        }
-        else
-        {
-            numbers = [ 0, this.value[0] ];
-        }
+        if (this.value.length == 1)
+            return new ObjectIdentifier(numbers);
 
-        // Breaks bytes into groups, where each group encodes one OID component.
-        let byteGroups : number[][] = [];
-        let lastTerminator : number = 1;
-        for (let i : number = 1; i < this.value.length; i++)
-        {
-            if (!(this.value[i] & 0x80))
-            {
-                byteGroups.push(Array.from(this.value).slice(lastTerminator, (i + 1)));
-                lastTerminator = (i + 1);
-            }
-        }
+        if ((this.value[(this.value.length - 1)] & 0x80) == 0x80)
+            throw new ASN1Error("OID truncated");
 
-        // Converts each group of bytes to a number.
-        // foreach (const byteGroup; byteGroups)
-        byteGroups.forEach(byteGroup => {
-            if (byteGroup.length > 4)
-                throw new ASN1Error("Encoded OID node number was too big!");
+        let components : number = 2;
+        const allButTheFirstByte : Uint8Array = this.value.slice(1);
+        allButTheFirstByte.forEach(b => {
+            if (!(b & 0x80)) components++;
+        });
+        numbers.length = components;
 
-            numbers.push(0);
-            for (let i : number = 0; i < byteGroup.length; i++)
-            {
-                numbers[numbers.length - 1] <<= 7;
-                numbers[numbers.length - 1] |= (byteGroup[i] & 0x7F);
+        let currentNumber : number = 2;
+        let bytesUsedInCurrentNumber : number = 0;
+        allButTheFirstByte.forEach(b => {
+            if (bytesUsedInCurrentNumber == 0 && b == 0x80)
+                throw new ASN1Error("OID had invalid padding byte.");
+
+            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new ASN1Error("OID node too big");
+
+            numbers[currentNumber] <<= 7;
+            // numbers[currentNumber] |= cast(size_t) (b & 0x7F);
+            numbers[currentNumber] |= (b & 0x7F);
+
+            if (!(b & 0x80)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            } else {
+                bytesUsedInCurrentNumber++;
             }
         });
 
