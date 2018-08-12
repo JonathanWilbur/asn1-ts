@@ -60,7 +60,6 @@ class BERElement extends ASN1Element {
         let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
             ret <<= 8;
-            // ret += (byte << 24 >> 24);
             ret += byte;
         });
         return ret;
@@ -208,7 +207,6 @@ class BERElement extends ASN1Element {
                 throw new ASN1Error("OID node too big");
 
             numbers[currentNumber] <<= 7;
-            // numbers[currentNumber] |= cast(size_t) (b & 0x7F);
             numbers[currentNumber] |= (b & 0x7F);
 
             if (!(b & 0x80)) {
@@ -286,6 +284,55 @@ class BERElement extends ASN1Element {
                 throw new ASN1NotImplementedError();
             }
         }
+    }
+
+    set enumerated (value : number) {
+        if (value < -2147483647)
+            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
+        if (value > 2147483647)
+            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+
+        if (value <= 127 && value >= -128) {
+            this.value = new Uint8Array([
+                (value & 255)
+            ]);
+            return;
+        } else if (value <= 32767 && value >= -32768) {
+            this.value = new Uint8Array([
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        } else if (value <= 8388607 && value >= -8388608) {
+            this.value = new Uint8Array([
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        } else {
+            this.value = new Uint8Array([
+                ((value >> 24) & 255),
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+    }
+
+    get enumerated () : number {
+        if (this.value.length == 0)
+            throw new ASN1Error("Number encoded on zero bytes!");
+        if (this.value.length > 4)
+            throw new ASN1Error("Number too long to decode.");
+
+        let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
+        this.value.forEach(byte => {
+            ret <<= 8;
+            ret += byte;
+        });
+        return ret;
     }
 
     constructor (data? : Uint8Array) {

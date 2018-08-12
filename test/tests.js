@@ -104,4 +104,119 @@ describe("Basic Encoding Rules", function() {
             });
         }
     });
+
+    // it("encodes and decodes a REAL correctly", function () {
+    //     for (let i = -100; i < 100; i++) {
+    //         // Alternating negative and positive floating point numbers exploring extreme values
+    //         let num = Math.pow((i % 2 ? -1 : 1) * 1.23, i);
+    //         el.real = num;
+    //         expect(Math.abs(el.real - num)).toBeLessThan(1e-05);
+    //     }
+
+    //     let edgeCaseTests = [
+    //         0.0,
+    //         -0.0,
+    //         (10.0 / 3.0), // Non-terminating decimal
+    //         (-10.0 / 3.0), // Negative non-terminating decimal
+    //         1.0,
+    //         -1.0
+    //     ];
+
+    //     edgeCaseTests.forEach(test => {
+    //         el.real = test;
+    //         expect(Math.abs(el.real - test)).toBeLessThan(1e-05);
+    //     });
+
+    //     el.real = Infinity;
+    //     expect(el.real).toBe(Infinity);
+
+    //     el.real = -Infinity;
+    //     expect(el.real).toBe(-Infinity);
+
+    //     el.real = NaN;
+    //     expect(el.real).toBeNaN();
+
+    //     // These tests might fail due to overflow
+    //     el.real = Number.MAX_VALUE;
+    //     expect(Math.abs(el.real - Number.MAX_VALUE)).toBeLessThan(1e-05);
+    //     el.real = Number.MIN_VALUE;
+    //     expect(Math.abs(el.real - Number.MIN_VALUE)).toBeLessThan(1e-05);
+
+    //     el.real = (Number.MAX_SAFE_INTEGER + 1.0);
+    //     expect(Math.abs(el.real - (Number.MAX_SAFE_INTEGER + 1.0))).toBeLessThan(1e-05);
+    //     el.real = (Number.MIN_SAFE_INTEGER - 1.0);
+    //     expect(Math.abs(el.real - (Number.MIN_SAFE_INTEGER - 1.0))).toBeLessThan(1e-05);
+
+    //     let evenMoreEdgeCases = [
+    //         Math.E,
+    //         Math.LN10,
+    //         Math.LN2,
+    //         Math.LOG10E,
+    //         Math.LOG2E,
+    //         Math.PI,
+    //         Math.SQRT1_2,
+    //         Math.SQRT2,
+    //         (Math.SQRT2 / 2.0), // SQRT_2_OVER_2
+    //         ((1.0 + sqrt(5.0)) / 2.0), // GOLDEN_RATIO
+    //         0.57721,      // EULER_MASCHERONI_CONSTANT
+    //         0.2614972128, // MEISSEL_MERTENS_CONSTANT
+    //         0.2801694990, // BERNSTEINS_CONSTANT
+    //         0.3036630028, // GAUSS_KUZMIN_WIRSING_CONSTANT
+    //         0.3532363718, // HAFNER_SARNAK_MCCURLEY_CONSTANT
+    //         0.5671432904, // OMEGA_CONSTANT
+    //         0.6243299885, // GOLOMB_DICKMAN_CONSTANT
+    //         0.6434105462, // CAHENS_CONSTANT
+    //         0.6601618158, // TWIN_PRIME_CONSTANT
+    //         0.6627434193, // LAPLACE_LIMIT
+    //         0.70258,      // LANDAU_RAMANUJAN_CONSTANT
+    //         0.8093940205, // ALLADI_GRINSTEAD_CONSTANT
+    //         0.87058838,   // BRUNS_CONSTANT_FOR_PRIME_QUADRUPLETS
+    //         0.9159655941, // CATALANS_CONSTANT
+    //         1.0986858055, // LENGYELS_CONSTANT
+    //         1.13198824,   // VISWANATHS_CONSTANT
+    //         1.2020569,    // APERYS_CONSTANT
+    //         1.30357,      // CONWAYS_CONSTANT
+    //         1.3063778838, // MILLS_CONSTANT
+    //         1.3247179572, // PLASTIC_CONSTANT
+    //         1.4513692348, // RAMANUJAN_SOLDNER_CONSTANT
+    //         1.4560749485, // BACKHOUSES_CONSTANT
+    //         1.4670780794, // PORTERS_CONSTANT
+    //         1.5396007178, // LIEBS_SQUARE_ICE_CONSTANT
+    //         1.6066951524, // ERDOS_BORWEIN_CONSTANT
+    //         1.7052111401, // NIVENS_CONSTANT
+    //         1.9021605831, // BRUNS_CONSTANT_FOR_TWIN_PRIMES
+    //         2.2955871493, // UNIVERSAL_PARABOLIC_CONSTANT
+    //         2.5029078750, // FEIGENBAUM_CONSTANT_ALPHA
+    //         2.5849817595, // SIERPINSKIS_CONSTANT
+    //         2.6854520010, // KHINCHINS_CONSTANT
+    //         2.8077702420, // FRANSEN_ROBINSON_CONSTANT
+    //         3.2758229187, // LEVYS_CONSTANT
+    //         3.3598856662, // RECIPROCAL_FIBONACCI_CONSTANT
+    //         4.6692016091, // FEIGENBAUM_CONSTANT_DELTA
+    //         1.2824271291  // GLAISHER_KINKELIN_CONSTANT
+    //     ];
+
+    //     evenMoreEdgeCases.forEach(test => {
+    //         el.real = test;
+    //         expect(Math.abs(el.real - test)).toBeLessThan(1e-05);
+    //     });
+    // });
+
+    it("encodes and decodes and ENUMERATED correctly", function () {
+        for (let i = 0; i < 128; i++) {
+            el.enumerated = i;
+            expect(el.value).toEqual(new Uint8Array([ i ]));
+            expect(el.enumerated).toBe(i);
+        }
+
+        for (let i = -32768; i < 32767; i++) {
+            el.integer = i;
+            expect(el.enumerated).toBe(i);
+        }
+
+        for (let i = -2147483647; i < 2147483647; i += 15485863) {
+            el.integer = i;
+            expect(el.enumerated).toBe(i);
+        }
+    });
 });
