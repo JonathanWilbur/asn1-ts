@@ -20,7 +20,41 @@ export declare enum ASN1SpecialRealValue {
     notANumber = 66,
     minusZero = 67
 }
+export declare enum ASN1UniversalType {
+    endOfContent = 0,
+    boolean = 1,
+    integer = 2,
+    bitString = 3,
+    octetString = 4,
+    nill = 5,
+    objectIdentifier = 6,
+    objectDescriptor = 7,
+    external = 8,
+    realNumber = 9,
+    enumerated = 10,
+    embeddedPDV = 11,
+    utf8String = 12,
+    relativeOID = 13,
+    reserved14 = 14,
+    reserved15 = 15,
+    sequence = 16,
+    set = 17,
+    numericString = 18,
+    printableString = 19,
+    teletexString = 20,
+    videotexString = 21,
+    ia5String = 22,
+    utcTime = 23,
+    generalizedTime = 24,
+    graphicString = 25,
+    visibleString = 26,
+    generalString = 27,
+    universalString = 28,
+    characterString = 29,
+    bmpString = 30
+}
 export declare abstract class ASN1Element {
+    protected static lengthRecursionCount: number;
     protected static valueRecursionCount: number;
     protected static readonly nestingRecursionLimit: number;
     tagClass: ASN1TagClass;

@@ -38,8 +38,45 @@ enum ASN1SpecialRealValue
 }
 
 export
+enum ASN1UniversalType
+{
+    endOfContent = 0x00,
+    boolean = 0x01,
+    integer = 0x02,
+    bitString = 0x03,
+    octetString = 0x04,
+    nill = 0x05,
+    objectIdentifier = 0x06,
+    objectDescriptor = 0x07,
+    external = 0x08,
+    realNumber = 0x09,
+    enumerated = 0x0A,
+    embeddedPDV = 0x0B,
+    utf8String = 0x0C,
+    relativeOID = 0x0D,
+    reserved14 = 0x0E,
+    reserved15 = 0x0F,
+    sequence = 0x10,
+    set = 0x11,
+    numericString = 0x12,
+    printableString = 0x13,
+    teletexString = 0x14,
+    videotexString = 0x15,
+    ia5String = 0x16,
+    utcTime = 0x17,
+    generalizedTime = 0x18,
+    graphicString = 0x19,
+    visibleString = 0x1A,
+    generalString = 0x1B,
+    universalString = 0x1C,
+    characterString = 0x1D,
+    bmpString = 0x1E
+}
+
+export
 abstract class ASN1Element
 {
+    protected static lengthRecursionCount : number = 0;
     protected static valueRecursionCount : number = 0;
     protected static readonly nestingRecursionLimit : number = 5;
 

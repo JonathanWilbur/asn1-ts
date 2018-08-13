@@ -1,0 +1,3 @@
+- Make `let`s `const` where possible
+- Use `===` where possible
+- Use unsigned shifts where possible

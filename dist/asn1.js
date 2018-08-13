@@ -109,6 +109,40 @@ var ASN1SpecialRealValue;
     ASN1SpecialRealValue[ASN1SpecialRealValue["notANumber"] = 66] = "notANumber";
     ASN1SpecialRealValue[ASN1SpecialRealValue["minusZero"] = 67] = "minusZero";
 })(ASN1SpecialRealValue || (ASN1SpecialRealValue = {}));
+var ASN1UniversalType;
+(function (ASN1UniversalType) {
+    ASN1UniversalType[ASN1UniversalType["endOfContent"] = 0] = "endOfContent";
+    ASN1UniversalType[ASN1UniversalType["boolean"] = 1] = "boolean";
+    ASN1UniversalType[ASN1UniversalType["integer"] = 2] = "integer";
+    ASN1UniversalType[ASN1UniversalType["bitString"] = 3] = "bitString";
+    ASN1UniversalType[ASN1UniversalType["octetString"] = 4] = "octetString";
+    ASN1UniversalType[ASN1UniversalType["nill"] = 5] = "nill";
+    ASN1UniversalType[ASN1UniversalType["objectIdentifier"] = 6] = "objectIdentifier";
+    ASN1UniversalType[ASN1UniversalType["objectDescriptor"] = 7] = "objectDescriptor";
+    ASN1UniversalType[ASN1UniversalType["external"] = 8] = "external";
+    ASN1UniversalType[ASN1UniversalType["realNumber"] = 9] = "realNumber";
+    ASN1UniversalType[ASN1UniversalType["enumerated"] = 10] = "enumerated";
+    ASN1UniversalType[ASN1UniversalType["embeddedPDV"] = 11] = "embeddedPDV";
+    ASN1UniversalType[ASN1UniversalType["utf8String"] = 12] = "utf8String";
+    ASN1UniversalType[ASN1UniversalType["relativeOID"] = 13] = "relativeOID";
+    ASN1UniversalType[ASN1UniversalType["reserved14"] = 14] = "reserved14";
+    ASN1UniversalType[ASN1UniversalType["reserved15"] = 15] = "reserved15";
+    ASN1UniversalType[ASN1UniversalType["sequence"] = 16] = "sequence";
+    ASN1UniversalType[ASN1UniversalType["set"] = 17] = "set";
+    ASN1UniversalType[ASN1UniversalType["numericString"] = 18] = "numericString";
+    ASN1UniversalType[ASN1UniversalType["printableString"] = 19] = "printableString";
+    ASN1UniversalType[ASN1UniversalType["teletexString"] = 20] = "teletexString";
+    ASN1UniversalType[ASN1UniversalType["videotexString"] = 21] = "videotexString";
+    ASN1UniversalType[ASN1UniversalType["ia5String"] = 22] = "ia5String";
+    ASN1UniversalType[ASN1UniversalType["utcTime"] = 23] = "utcTime";
+    ASN1UniversalType[ASN1UniversalType["generalizedTime"] = 24] = "generalizedTime";
+    ASN1UniversalType[ASN1UniversalType["graphicString"] = 25] = "graphicString";
+    ASN1UniversalType[ASN1UniversalType["visibleString"] = 26] = "visibleString";
+    ASN1UniversalType[ASN1UniversalType["generalString"] = 27] = "generalString";
+    ASN1UniversalType[ASN1UniversalType["universalString"] = 28] = "universalString";
+    ASN1UniversalType[ASN1UniversalType["characterString"] = 29] = "characterString";
+    ASN1UniversalType[ASN1UniversalType["bmpString"] = 30] = "bmpString";
+})(ASN1UniversalType || (ASN1UniversalType = {}));
 class ASN1Element {
     constructor() {
         this.tagClass = ASN1TagClass.universal;
@@ -120,6 +154,7 @@ class ASN1Element {
         return this.value.length;
     }
 }
+ASN1Element.lengthRecursionCount = 0;
 ASN1Element.valueRecursionCount = 0;
 ASN1Element.nestingRecursionLimit = 5;
 
@@ -398,35 +433,163 @@ class ber_BERElement extends ASN1Element {
             }
         }
     }
-    constructor(data) {
-        super();
-        if (data == undefined)
+    set enumerated(value) {
+        if (value < -2147483647)
+            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
+        if (value > 2147483647)
+            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+        if (value <= 127 && value >= -128) {
+            this.value = new Uint8Array([
+                (value & 255)
+            ]);
             return;
-        if (data.length > 2)
-            throw new ASN1Error("BER-encoded data too short");
-        this.tagClass = (data[0] >>> 6);
-        this.construction = ((data[0] & 64) >>> 5);
-        this.tagNumber = (data[0] & 31);
-        if (this.tagNumber == 31) {
-            throw new ASN1NotImplementedError();
         }
-        let lengthOctet0 = (data[1] & 127);
-        if (data[1] & 128) {
-            if (lengthOctet0 == 0) {
-                throw new ASN1NotImplementedError();
+        else if (value <= 32767 && value >= -32768) {
+            this.value = new Uint8Array([
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+        else if (value <= 8388607 && value >= -8388608) {
+            this.value = new Uint8Array([
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+        else {
+            this.value = new Uint8Array([
+                ((value >> 24) & 255),
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+    }
+    get enumerated() {
+        if (this.value.length == 0)
+            throw new ASN1Error("Number encoded on zero bytes!");
+        if (this.value.length > 4)
+            throw new ASN1Error("Number too long to decode.");
+        let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
+        this.value.forEach(byte => {
+            ret <<= 8;
+            ret += byte;
+        });
+        return ret;
+    }
+    constructor(tagClass = ASN1TagClass.universal, construction = ASN1Construction.primitive, tagNumber = 0) {
+        super();
+        this.tagClass = tagClass;
+        this.construction = construction;
+        this.tagNumber = tagNumber;
+        this.value = new Uint8Array(0);
+    }
+    fromBytes(bytes) {
+        if (bytes.length < 2)
+            throw new ASN1Error("Tried to decode a BER element that is less than two bytes.");
+        let cursor = 0;
+        switch (bytes[cursor] & 0b11000000) {
+            case (0b00000000):
+                this.tagClass = ASN1TagClass.universal;
+                break;
+            case (0b01000000):
+                this.tagClass = ASN1TagClass.application;
+                break;
+            case (0b10000000):
+                this.tagClass = ASN1TagClass.context;
+                break;
+            case (0b11000000):
+                this.tagClass = ASN1TagClass.private;
+                break;
+            default: this.tagClass = ASN1TagClass.universal;
+        }
+        this.construction = ((bytes[cursor] & 0b00100000) ?
+            ASN1Construction.constructed : ASN1Construction.primitive);
+        this.tagNumber = (bytes[cursor] & 0b00011111);
+        cursor++;
+        if (this.tagNumber >= 31) {
+            if (bytes[cursor] == 0b10000000)
+                throw new ASN1Error("Leading padding byte on long tag number encoding.");
+            this.tagNumber = 0;
+            const limit = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
+            while (cursor < limit) {
+                if (!(bytes[cursor++] & 0x80))
+                    break;
             }
-            else if (lengthOctet0 == 127) {
-                throw new ASN1Error("BER-encoding Reserved length");
+            if (bytes[cursor - 1] & 0x80) {
+                if (limit == bytes.length - 1) {
+                    throw new ASN1Error("ASN.1 tag number appears to have been truncated.");
+                }
+                else
+                    throw new ASN1Error("ASN.1 tag number too large.");
+            }
+            for (let i = 1; i < cursor; i++) {
+                this.tagNumber <<= 7;
+                this.tagNumber |= (bytes[i] & 0x7F);
+            }
+        }
+        if ((bytes[cursor] & 0x80) == 0x80) {
+            const numberOfLengthOctets = (bytes[cursor] & 0x7F);
+            if (numberOfLengthOctets) {
+                if (numberOfLengthOctets == 0b01111111)
+                    throw new ASN1Error("Length byte with undefined meaning encountered.");
+                if (numberOfLengthOctets > 4)
+                    throw new ASN1Error("Element length too long to decode to an integer.");
+                if (cursor + numberOfLengthOctets >= bytes.length)
+                    throw new ASN1Error("Element length bytes appear to have been truncated.");
+                cursor++;
+                let lengthNumberOctets = new Uint8Array(4);
+                for (let i = numberOfLengthOctets; i > 0; i--) {
+                    lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
+                }
+                let length = 0;
+                lengthNumberOctets.forEach(octet => {
+                    length <<= 8;
+                    length += octet;
+                });
+                if ((cursor + length) < cursor)
+                    throw new ASN1Error("ASN.1 element too large.");
+                cursor += (numberOfLengthOctets);
+                if ((cursor + length) > bytes.length)
+                    throw new ASN1Error("ASN.1 element truncated.");
+                this.value = bytes.slice(cursor, (cursor + length));
+                return (cursor + length);
             }
             else {
-                throw new ASN1NotImplementedError();
+                if (this.construction != ASN1Construction.constructed)
+                    throw new ASN1Error("Indefinite length ASN.1 element was not of constructed construction.");
+                if (++(ber_BERElement.lengthRecursionCount) > ber_BERElement.nestingRecursionLimit) {
+                    ber_BERElement.lengthRecursionCount = 0;
+                    throw new ASN1Error("ASN.1 indefinite length encoded element recursed too deeply.");
+                }
+                const startOfValue = ++cursor;
+                let sentinel = cursor;
+                while (sentinel < bytes.length) {
+                    const child = new ber_BERElement();
+                    sentinel += child.fromBytes(bytes.slice(sentinel));
+                    if (child.tagClass == ASN1TagClass.universal &&
+                        child.construction == ASN1Construction.primitive &&
+                        child.tagNumber == ASN1UniversalType.endOfContent &&
+                        child.value.length == 0)
+                        break;
+                }
+                if (sentinel == bytes.length && (bytes[sentinel - 1] != 0x00 || bytes[sentinel - 2] != 0x00))
+                    throw new ASN1Error("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
+                ber_BERElement.lengthRecursionCount--;
+                this.value = bytes.slice(startOfValue, (sentinel - 2));
+                return sentinel;
             }
         }
         else {
-            if (data.length < (lengthOctet0 + 2))
-                throw new ASN1Error("BER-encoded data terminated prematurely");
-            this.value = data.slice(2, (lengthOctet0 + 2));
-            data = data.slice(lengthOctet0 + 2);
+            let length = (bytes[cursor++] & 0x7F);
+            if ((cursor + length) > bytes.length)
+                throw new ASN1Error("ASN.1 element was truncated.");
+            this.value = bytes.slice(cursor, (cursor + length));
+            return (cursor + length);
         }
     }
 }
@@ -437,6 +600,7 @@ class ber_BERElement extends ASN1Element {
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return ASN1Error; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return ASN1NotImplementedError; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return ASN1SpecialRealValue; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return ASN1UniversalType; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return ASN1Element; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "BERElement", function() { return ber_BERElement; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return ObjectIdentifier; });

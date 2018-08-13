@@ -1,5 +1,5 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
-import { ASN1Element,ASN1TagClass,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError } from "./asn1";
+import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
 
 export
@@ -335,32 +335,168 @@ class BERElement extends ASN1Element {
         return ret;
     }
 
-    constructor (data? : Uint8Array) {
+    constructor
+    (
+        tagClass : ASN1TagClass = ASN1TagClass.universal,
+        construction : ASN1Construction = ASN1Construction.primitive,
+        tagNumber : number = 0
+    )
+    {
         super();
-        if (data == undefined) return;
-        // let i : number = 0;
-        if (data.length > 2)
-            throw new ASN1Error("BER-encoded data too short");
-        this.tagClass = <ASN1TagClass> (data[0] >>> 6);
-        this.construction = <ASN1Construction> ((data[0] & 64) >>> 5);
-        this.tagNumber = (data[0] & 31);
-        if (this.tagNumber == 31) {
-            throw new ASN1NotImplementedError();
+        this.tagClass = tagClass;
+        this.construction = construction;
+        this.tagNumber = tagNumber;
+        this.value = new Uint8Array(0);
+    }
+
+    // Returns the number of bytes read
+    public fromBytes (bytes : Uint8Array) : number {
+        if (bytes.length < 2)
+            throw new ASN1Error("Tried to decode a BER element that is less than two bytes.");
+
+        let cursor : number = 0;
+        switch (bytes[cursor] & 0b11000000) {
+            case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
+            case (0b01000000): this.tagClass = ASN1TagClass.application; break;
+            case (0b10000000): this.tagClass = ASN1TagClass.context; break;
+            case (0b11000000): this.tagClass = ASN1TagClass.private; break;
+            default: this.tagClass = ASN1TagClass.universal;
         }
-        let lengthOctet0 : number = (data[1] & 127);
-        if (data[1] & 128) {
-            if (lengthOctet0 == 0) { // Indefinite
-                throw new ASN1NotImplementedError();
-            } else if (lengthOctet0 == 127) { // Reserved
-                throw new ASN1Error("BER-encoding Reserved length");
-            } else { // Definite Long
-                throw new ASN1NotImplementedError();
+
+        this.construction = ((bytes[cursor] & 0b00100000) ?
+            ASN1Construction.constructed : ASN1Construction.primitive);
+
+        this.tagNumber = (bytes[cursor] & 0b00011111);
+        cursor++;
+        if (this.tagNumber >= 31) {
+            /* NOTE:
+                Section 8.1.2.4.2, point C of the International
+                Telecommunications Union's X.690 specification says:
+                "bits 7 to 1 of the first subsequent octet shall not all be zero."
+                in reference to the bytes used to encode the tag number in long
+                form, which happens when the least significant five bits of the
+                first byte are all set.
+                This essentially means that the long-form tag number must be
+                encoded on the fewest possible octets. If the first byte is
+                0x80, then it is not encoded on the fewest possible octets.
+            */
+            if (bytes[cursor] == 0b10000000)
+                throw new ASN1Error("Leading padding byte on long tag number encoding.");
+
+            this.tagNumber = 0;
+
+            // This loop looks for the end of the encoded tag number.
+            const limit : number = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
+            while (cursor < limit) {
+                if (!(bytes[cursor++] & 0x80)) break;
+            }
+
+            if (bytes[cursor-1] & 0x80) {
+                if (limit == bytes.length-1) {
+                    throw new ASN1Error("ASN.1 tag number appears to have been truncated.");
+                } else throw new ASN1Error("ASN.1 tag number too large.");
+            }
+
+            for (let i : number = 1; i < cursor; i++) {
+                this.tagNumber <<= 7;
+                this.tagNumber |= (bytes[i] & 0x7F);
+            }
+        }
+
+        // Length
+        if ((bytes[cursor] & 0x80) == 0x80) {
+            const numberOfLengthOctets : number = (bytes[cursor] & 0x7F);
+            if (numberOfLengthOctets) { // Definite Long or Reserved
+                if (numberOfLengthOctets == 0b01111111) // Reserved
+                    throw new ASN1Error("Length byte with undefined meaning encountered.");
+
+                // Definite Long, if it has made it this far
+
+                if (numberOfLengthOctets > 4)
+                    throw new ASN1Error("Element length too long to decode to an integer.");
+
+                if (cursor + numberOfLengthOctets >= bytes.length)
+                    throw new ASN1Error("Element length bytes appear to have been truncated.");
+
+                cursor++;
+                let lengthNumberOctets : Uint8Array = new Uint8Array(4);
+                for (let i : number = numberOfLengthOctets; i > 0; i--) {
+                    lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
+                }
+
+                let length : number = 0;
+                lengthNumberOctets.forEach(octet => {
+                    length <<= 8;
+                    length += octet;
+                });
+
+                if ((cursor + length) < cursor) // This catches an overflow.
+                    throw new ASN1Error("ASN.1 element too large.");
+
+                cursor += (numberOfLengthOctets);
+
+                if ((cursor + length) > bytes.length)
+                    throw new ASN1Error("ASN.1 element truncated.");
+
+                this.value = bytes.slice(cursor, (cursor + length));
+                return (cursor + length);
+            } else { // Indefinite
+                if (this.construction != ASN1Construction.constructed)
+                    throw new ASN1Error("Indefinite length ASN.1 element was not of constructed construction.");
+
+                if (++(BERElement.lengthRecursionCount) > BERElement.nestingRecursionLimit) {
+                    BERElement.lengthRecursionCount = 0;
+                    throw new ASN1Error("ASN.1 indefinite length encoded element recursed too deeply.");
+                }
+
+                const startOfValue : number = ++cursor;
+                let sentinel : number = cursor; // Used to track the length of the nested elements.
+                while (sentinel < bytes.length) {
+                    const child : BERElement = new BERElement();
+                    sentinel += child.fromBytes(bytes.slice(sentinel));
+                    if (
+                        child.tagClass == ASN1TagClass.universal &&
+                        child.construction == ASN1Construction.primitive &&
+                        child.tagNumber == ASN1UniversalType.endOfContent &&
+                        child.value.length == 0
+                    ) break;
+                }
+
+                if (sentinel == bytes.length && (bytes[sentinel - 1] != 0x00 || bytes[sentinel - 2] != 0x00))
+                    throw new ASN1Error("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
+
+                BERElement.lengthRecursionCount--;
+                this.value = bytes.slice(startOfValue, (sentinel - 2));
+                return sentinel;
             }
         } else { // Definite Short
-            if (data.length < (lengthOctet0 + 2))
-                throw new ASN1Error("BER-encoded data terminated prematurely");
-            this.value = data.slice(2, (lengthOctet0 + 2));
-            data = data.slice(lengthOctet0 + 2);
+            let length : number = (bytes[cursor++] & 0x7F);
+
+            if ((cursor + length) > bytes.length)
+                throw new ASN1Error("ASN.1 element was truncated.");
+
+            this.value = bytes.slice(cursor, (cursor + length));
+            return (cursor + length);
         }
     }
+
+    // private decodeBase128UnsignedInteger (bytes : Uint8Array, paddingBytesAllowed : boolean = false) : number {
+
+    //     if (paddingBytesAllowed && bytes.length > 0 && bytes[0] == 0x80)
+    //         throw new ASN1Error("Base-128 encoded unsigned integer started with a leading zero byte of 0x80.");
+
+    //     if ((bytes[bytes.length - 1] & 0b10000000) == 0b10000000)
+    //         throw new ASN1Error("Base-128 encoded unsigned integer was truncated.");
+
+    //     let ret : number = 0;
+    //     bytes.forEach(byte => {
+    //         ret <<= 7; // REVIEW: Would it be better to use the unsigned shift?
+    //         ret |= (byte & 0x7F);
+    //     });
+
+    //     if (ret > Number.MAX_SAFE_INTEGER)
+    //         throw new ASN1Error("Base-128 encoded unsigned integer encoded too large a number to decode to native integral type.");
+
+    //     return ret;
+    // }
 }
