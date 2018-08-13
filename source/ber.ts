@@ -479,24 +479,4 @@ class BERElement extends ASN1Element {
             return (cursor + length);
         }
     }
-
-    // private decodeBase128UnsignedInteger (bytes : Uint8Array, paddingBytesAllowed : boolean = false) : number {
-
-    //     if (paddingBytesAllowed && bytes.length > 0 && bytes[0] == 0x80)
-    //         throw new ASN1Error("Base-128 encoded unsigned integer started with a leading zero byte of 0x80.");
-
-    //     if ((bytes[bytes.length - 1] & 0b10000000) == 0b10000000)
-    //         throw new ASN1Error("Base-128 encoded unsigned integer was truncated.");
-
-    //     let ret : number = 0;
-    //     bytes.forEach(byte => {
-    //         ret <<= 7; // REVIEW: Would it be better to use the unsigned shift?
-    //         ret |= (byte & 0x7F);
-    //     });
-
-    //     if (ret > Number.MAX_SAFE_INTEGER)
-    //         throw new ASN1Error("Base-128 encoded unsigned integer encoded too large a number to decode to native integral type.");
-
-    //     return ret;
-    // }
 }
