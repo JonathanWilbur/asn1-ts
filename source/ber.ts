@@ -260,7 +260,7 @@ class BERElement extends ASN1Element {
         } else if (value == -Infinity) {
             this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]);
         }
-        let valueString : string = value.toFixed(2);
+        let valueString : string = value.toFixed(7);
         valueString = (String.fromCharCode(0b00000011) + valueString);
         this.value = (new TextEncoder()).encode(valueString);
     }
