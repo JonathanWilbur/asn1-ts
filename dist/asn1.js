@@ -692,16 +692,15 @@ class ber_BERElement extends ASN1Element {
                     let length = this.value.length;
                     lengthOctets = [0, 0, 0, 0];
                     for (let i = 0; i < 4; i++) {
-                        lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 255);
+                        lengthOctets[i] = ((length >> ((3 - i) << 3)) & 0xFF);
                     }
                     let startOfNonPadding = 0;
                     for (let i = 0; i < (lengthOctets.length - 1); i++) {
-                        if (lengthOctets[i] != 0x00)
-                            break;
-                        if (!(lengthOctets[i + 1] & 0x80))
+                        if (lengthOctets[i] == 0x00)
                             startOfNonPadding++;
                     }
                     lengthOctets = lengthOctets.slice(startOfNonPadding);
+                    lengthOctets.unshift(0b10000000 | lengthOctets.length);
                 }
                 break;
             }
@@ -718,7 +717,7 @@ class ber_BERElement extends ASN1Element {
             (ber_BERElement.lengthEncodingPreference == LengthEncodingPreference.indefinite ? 2 : 0));
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
-        ret.set(this.value, lengthOctets.length);
+        ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
     }
 }

@@ -1,15 +1,31 @@
 let BERElement = asn1.BERElement;
 let ObjectIdentifier = asn1.ObjectIdentifier;
 
+
 describe("Basic Encoding Rules", function() {
 
     const floatingPointErrorTolerance = 1e-06;
 
     let el = new BERElement();
 
-    // it("encodes a long-form definite length element correctly", function () {
+    // it("encodes a long tag number correctly", function () {
     //     let bob = new BERElement();
     //     bob.tagNumber = 129;
+    //     console.info(bob.toBytes());
+    // });
+
+    // it("encodes a long-form definite length element correctly", function () {
+    //     let bob = new BERElement();
+    //     bob.value = new Uint8Array(129);
+    //     console.info(bob.toBytes());
+    // });
+
+    // it("encodes an indefinite-length element correctly", function () {
+    //     let bob = new BERElement();
+    //     BERElement.lengthEncodingPreference = asn1.LengthEncodingPreference.indefinite;
+    //     bob.value = new Uint8Array(4);
+    //     bob.value[1] = 2;
+    //     bob.value[2] = 7;
     //     console.info(bob.toBytes());
     // });
 

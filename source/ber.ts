@@ -1,4 +1,5 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
+// TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32 } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
@@ -632,16 +633,14 @@ class BERElement extends ASN1Element {
                     let length : number = this.value.length;
                     lengthOctets = [ 0, 0, 0, 0 ];
                     for (let i : number = 0; i < 4; i++) {
-                        lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 255);
+                        lengthOctets[i] = ((length >> ((3 - i) << 3)) & 0xFF);
                     }
-
                     let startOfNonPadding : number = 0;
                     for (let i : number = 0; i < (lengthOctets.length - 1); i++) {
-                        if (lengthOctets[i] != 0x00) break;
-                        if (!(lengthOctets[i + 1] & 0x80)) startOfNonPadding++;
+                        if (lengthOctets[i] == 0x00) startOfNonPadding++;
                     }
-                    // REVIEW: I don't know if this will inadvertently overwrite the slice too.
                     lengthOctets = lengthOctets.slice(startOfNonPadding);
+                    lengthOctets.unshift(0b10000000 | lengthOctets.length);
                 }
                 break;
             }
@@ -661,13 +660,7 @@ class BERElement extends ASN1Element {
         );
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
-        ret.set(this.value, lengthOctets.length);
+        ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
-        // return (
-        //     tagBytes ~
-        //     lengthOctets ~
-        //     this.value ~
-        //     (this.lengthEncodingPreference == LengthEncodingPreference.indefinite ? [ 0x00, 0x00 ] : [])
-        // );
     }
 }
