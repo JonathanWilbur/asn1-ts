@@ -221,4 +221,41 @@ describe("Basic Encoding Rules", function() {
             expect(el.enumerated).toBe(i);
         }
     });
+
+    // TODO: EmbeddedPDV
+    // TODO: UTF8String
+
+    it("encodes and decodes a RELATIVE OID correctly", function () {
+        let sensitiveValues = [
+            0,
+            1,
+            2,
+            3,
+            7,
+            8,
+            126,
+            127,
+            128,
+            254,
+            255,
+            256,
+            32766,
+            32767,
+            32768,
+            65534,
+            65535,
+            65536,
+            2147483646,
+            2147483647
+        ];
+
+        sensitiveValues.forEach(z => {
+            el.relativeObjectIdentifier = [ z, 2, 3 ];
+            expect(el.relativeObjectIdentifier).toEqual([ z, 2, 3 ]);
+            el.relativeObjectIdentifier = [ 1, z, 3 ];
+            expect(el.relativeObjectIdentifier).toEqual([ 1, z, 3 ]);
+            el.relativeObjectIdentifier = [ 1, 2, z ];
+            expect(el.relativeObjectIdentifier).toEqual([ 1, 2, z ]);
+        });
+    });
 });

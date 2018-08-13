@@ -129,22 +129,17 @@ class BERElement extends ASN1Element {
     set objectIdentifier (value : OID) {
         let numbers : number[] = value.nodes;
         let pre : number[] = [ ((numbers[0] * 40) + numbers[1]) ];
-        if (numbers.length > 2)
-        {
-            for (let i : number = 2; i < numbers.length; i++)
-            {
+        if (numbers.length > 2) {
+            for (let i : number = 2; i < numbers.length; i++) {
                 let number : number = numbers[i];
-                if (number < 128)
-                {
+                if (number < 128) {
                     pre.push(number);
                     continue;
                 }
 
                 let encodedOIDNode : number[] = [];
-                while (number != 0)
-                {
-                    let numberBytes : number[] =
-                    [
+                while (number != 0) {
+                    let numberBytes : number[] = [
                         (number & 255),
                         (number >> 8 & 255),
                         ((number >> 16) & 255),
@@ -333,6 +328,84 @@ class BERElement extends ASN1Element {
             ret += byte;
         });
         return ret;
+    }
+
+    // TODO: EmbeddedPDV
+    // TODO: UTF8String
+
+    set relativeObjectIdentifier (value : number[]) {
+        let numbers : number[] = value;
+        let pre : number[] = [];
+        if (numbers.length > 0) {
+            for (let i : number = 0; i < numbers.length; i++) {
+                let number : number = numbers[i];
+                if (number < 128) {
+                    pre.push(number);
+                    continue;
+                }
+
+                let encodedOIDNode : number[] = [];
+                while (number != 0) {
+                    let numberBytes : number[] = [
+                        (number & 255),
+                        (number >> 8 & 255),
+                        ((number >> 16) & 255),
+                        ((number >> 24) & 255),
+                    ];
+                    if ((numberBytes[0] & 0x80) == 0) numberBytes[0] |= 0x80;
+                    encodedOIDNode.unshift(numberBytes[0]);
+                    number >>= 7;
+                }
+
+                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
+                pre = pre.concat(encodedOIDNode);
+            }
+        }
+        this.value = new Uint8Array(pre);
+    }
+
+    get relativeObjectIdentifier () : number[] {
+
+        if (this.construction != ASN1Construction.primitive)
+            throw new ASN1Error
+            ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
+
+        let numbers : number[] = [];
+
+        if (this.value.length == 1)
+            return numbers;
+
+        if ((this.value[(this.value.length - 1)] & 0x80) == 0x80)
+            throw new ASN1Error("OID truncated");
+
+        let components : number = 0;
+        this.value.forEach(b => {
+            if (!(b & 0x80)) components++;
+        });
+        numbers.length = components;
+
+        let currentNumber : number = 0;
+        let bytesUsedInCurrentNumber : number = 0;
+        this.value.forEach(b => {
+            if (bytesUsedInCurrentNumber == 0 && b == 0x80)
+                throw new ASN1Error("OID had invalid padding byte.");
+
+            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new ASN1Error("OID node too big");
+
+            numbers[currentNumber] <<= 7;
+            numbers[currentNumber] |= (b & 0x7F);
+
+            if (!(b & 0x80)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            } else {
+                bytesUsedInCurrentNumber++;
+            }
+        });
+
+        return numbers;
     }
 
     constructor
