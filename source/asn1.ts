@@ -1,3 +1,8 @@
+export const MAX_UINT_32 : number = 0x00FFFFFFFF;
+export const MIN_UINT_32 : number = 0x0000000000;
+export const MAX_SINT_32 : number = 0x7FFFFFFF;
+export const MIN_SINT_32 : number = -0x7FFFFFFF;
+
 export
 enum ASN1TagClass {
     universal = 0,
@@ -10,6 +15,12 @@ export
 enum ASN1Construction {
     primitive = 0,
     constructed = 1
+}
+
+export
+enum LengthEncodingPreference {
+    definite,
+    indefinite
 }
 
 export

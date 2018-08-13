@@ -2,3 +2,7 @@
 - Use `===` where possible
 - Use unsigned shifts where possible
 - Use different numeric literal appropriately
+- Suggest improvements to TypeScript
+  - unsigned integers
+  - Recursive `const`
+  - No-op warnings or failures

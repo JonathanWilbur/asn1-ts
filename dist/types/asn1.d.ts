@@ -1,3 +1,7 @@
+export declare const MAX_UINT_32: number;
+export declare const MIN_UINT_32: number;
+export declare const MAX_SINT_32: number;
+export declare const MIN_SINT_32: number;
 export declare enum ASN1TagClass {
     universal = 0,
     application = 1,
@@ -7,6 +11,10 @@ export declare enum ASN1TagClass {
 export declare enum ASN1Construction {
     primitive = 0,
     constructed = 1
+}
+export declare enum LengthEncodingPreference {
+    definite = 0,
+    indefinite = 1
 }
 export declare class ASN1Error extends Error {
     constructor(m: string);

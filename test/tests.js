@@ -7,6 +7,12 @@ describe("Basic Encoding Rules", function() {
 
     let el = new BERElement();
 
+    // it("encodes a long-form definite length element correctly", function () {
+    //     let bob = new BERElement();
+    //     bob.tagNumber = 129;
+    //     console.info(bob.toBytes());
+    // });
+
     it("encodes and decodes a BOOLEAN correctly", function () {
         el.boolean = true;
         expect(el.value).toEqual(new Uint8Array([ 0xFF ]));
@@ -212,12 +218,12 @@ describe("Basic Encoding Rules", function() {
         }
 
         for (let i = -32768; i < 32767; i++) {
-            el.integer = i;
+            el.enumerated = i;
             expect(el.enumerated).toBe(i);
         }
 
         for (let i = -2147483647; i < 2147483647; i += 15485863) {
-            el.integer = i;
+            el.enumerated = i;
             expect(el.enumerated).toBe(i);
         }
     });

@@ -78,6 +78,10 @@ var asn1 =
 __webpack_require__.r(__webpack_exports__);
 
 // CONCATENATED MODULE: ./source/asn1.ts
+const MAX_UINT_32 = 0x00FFFFFFFF;
+const MIN_UINT_32 = 0x0000000000;
+const MAX_SINT_32 = 0x7FFFFFFF;
+const MIN_SINT_32 = -0x7FFFFFFF;
 var ASN1TagClass;
 (function (ASN1TagClass) {
     ASN1TagClass[ASN1TagClass["universal"] = 0] = "universal";
@@ -90,6 +94,11 @@ var ASN1Construction;
     ASN1Construction[ASN1Construction["primitive"] = 0] = "primitive";
     ASN1Construction[ASN1Construction["constructed"] = 1] = "constructed";
 })(ASN1Construction || (ASN1Construction = {}));
+var LengthEncodingPreference;
+(function (LengthEncodingPreference) {
+    LengthEncodingPreference[LengthEncodingPreference["definite"] = 0] = "definite";
+    LengthEncodingPreference[LengthEncodingPreference["indefinite"] = 1] = "indefinite";
+})(LengthEncodingPreference || (LengthEncodingPreference = {}));
 class ASN1Error extends Error {
     constructor(m) {
         super(m);
@@ -191,6 +200,13 @@ class ObjectIdentifier {
 
 
 class ber_BERElement extends ASN1Element {
+    constructor(tagClass = ASN1TagClass.universal, construction = ASN1Construction.primitive, tagNumber = 0) {
+        super();
+        this.tagClass = tagClass;
+        this.construction = construction;
+        this.tagNumber = tagNumber;
+        this.value = new Uint8Array(0);
+    }
     set boolean(value) {
         this.value = new Uint8Array(1);
         this.value[0] = (value ? 255 : 0);
@@ -201,10 +217,10 @@ class ber_BERElement extends ASN1Element {
         return (this.value[0] != 0);
     }
     set integer(value) {
-        if (value < -2147483647)
-            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
-        if (value > 2147483647)
-            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+        if (value < MIN_SINT_32)
+            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
+        if (value > MAX_SINT_32)
+            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
                 (value & 255)
@@ -435,9 +451,9 @@ class ber_BERElement extends ASN1Element {
     }
     set enumerated(value) {
         if (value < -2147483647)
-            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
+            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
         if (value > 2147483647)
-            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
                 (value & 255)
@@ -481,12 +497,67 @@ class ber_BERElement extends ASN1Element {
         });
         return ret;
     }
-    constructor(tagClass = ASN1TagClass.universal, construction = ASN1Construction.primitive, tagNumber = 0) {
-        super();
-        this.tagClass = tagClass;
-        this.construction = construction;
-        this.tagNumber = tagNumber;
-        this.value = new Uint8Array(0);
+    set relativeObjectIdentifier(value) {
+        let numbers = value;
+        let pre = [];
+        if (numbers.length > 0) {
+            for (let i = 0; i < numbers.length; i++) {
+                let number = numbers[i];
+                if (number < 128) {
+                    pre.push(number);
+                    continue;
+                }
+                let encodedOIDNode = [];
+                while (number != 0) {
+                    let numberBytes = [
+                        (number & 255),
+                        (number >> 8 & 255),
+                        ((number >> 16) & 255),
+                        ((number >> 24) & 255),
+                    ];
+                    if ((numberBytes[0] & 0x80) == 0)
+                        numberBytes[0] |= 0x80;
+                    encodedOIDNode.unshift(numberBytes[0]);
+                    number >>= 7;
+                }
+                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
+                pre = pre.concat(encodedOIDNode);
+            }
+        }
+        this.value = new Uint8Array(pre);
+    }
+    get relativeObjectIdentifier() {
+        if (this.construction != ASN1Construction.primitive)
+            throw new ASN1Error("Construction cannot be constructed for an OBJECT IDENTIFIER!");
+        let numbers = [];
+        if (this.value.length == 1)
+            return numbers;
+        if ((this.value[(this.value.length - 1)] & 0x80) == 0x80)
+            throw new ASN1Error("OID truncated");
+        let components = 0;
+        this.value.forEach(b => {
+            if (!(b & 0x80))
+                components++;
+        });
+        numbers.length = components;
+        let currentNumber = 0;
+        let bytesUsedInCurrentNumber = 0;
+        this.value.forEach(b => {
+            if (bytesUsedInCurrentNumber == 0 && b == 0x80)
+                throw new ASN1Error("OID had invalid padding byte.");
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new ASN1Error("OID node too big");
+            numbers[currentNumber] <<= 7;
+            numbers[currentNumber] |= (b & 0x7F);
+            if (!(b & 0x80)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            }
+            else {
+                bytesUsedInCurrentNumber++;
+            }
+        });
+        return numbers;
     }
     fromBytes(bytes) {
         if (bytes.length < 2)
@@ -592,11 +663,75 @@ class ber_BERElement extends ASN1Element {
             return (cursor + length);
         }
     }
+    toBytes() {
+        let tagBytes = [0x00];
+        tagBytes[0] |= this.tagClass;
+        tagBytes[0] |= this.construction;
+        if (this.tagNumber < 31) {
+            tagBytes[0] |= this.tagNumber;
+        }
+        else {
+            tagBytes[0] |= 0b00011111;
+            let number = this.tagNumber;
+            let encodedNumber = [];
+            while (number != 0) {
+                encodedNumber.unshift(number & 0x7F);
+                number >>>= 7;
+                encodedNumber[0] |= 0b10000000;
+            }
+            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
+            tagBytes = tagBytes.concat(encodedNumber);
+        }
+        let lengthOctets = [0x00];
+        switch (ber_BERElement.lengthEncodingPreference) {
+            case (LengthEncodingPreference.definite): {
+                if (this.value.length < 127) {
+                    lengthOctets = [this.value.length];
+                }
+                else {
+                    let length = this.value.length;
+                    lengthOctets = [0, 0, 0, 0];
+                    for (let i = 0; i < 4; i++) {
+                        lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 255);
+                    }
+                    let startOfNonPadding = 0;
+                    for (let i = 0; i < (lengthOctets.length - 1); i++) {
+                        if (lengthOctets[i] != 0x00)
+                            break;
+                        if (!(lengthOctets[i + 1] & 0x80))
+                            startOfNonPadding++;
+                    }
+                    lengthOctets = lengthOctets.slice(startOfNonPadding);
+                }
+                break;
+            }
+            case (LengthEncodingPreference.indefinite): {
+                lengthOctets = [0x80];
+                break;
+            }
+            default:
+                throw new ASN1Error("Invalid LengthEncodingPreference encountered!");
+        }
+        let ret = new Uint8Array(tagBytes.length +
+            lengthOctets.length +
+            this.value.length +
+            (ber_BERElement.lengthEncodingPreference == LengthEncodingPreference.indefinite ? 2 : 0));
+        ret.set(tagBytes, 0);
+        ret.set(lengthOctets, tagBytes.length);
+        ret.set(this.value, lengthOctets.length);
+        return ret;
+    }
 }
+ber_BERElement.lengthEncodingPreference = LengthEncodingPreference.definite;
 
 // CONCATENATED MODULE: ./source/index.ts
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return MAX_UINT_32; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return MIN_UINT_32; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return MAX_SINT_32; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "MIN_SINT_32", function() { return MIN_SINT_32; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1TagClass", function() { return ASN1TagClass; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1Construction", function() { return ASN1Construction; });
+/* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "LengthEncodingPreference", function() { return LengthEncodingPreference; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return ASN1Error; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return ASN1NotImplementedError; });
 /* concated harmony reexport */__webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return ASN1SpecialRealValue; });

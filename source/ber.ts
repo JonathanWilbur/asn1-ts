@@ -1,9 +1,13 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
-import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError } from "./asn1";
+// REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
+import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32 } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
 
 export
 class BERElement extends ASN1Element {
+
+    public static lengthEncodingPreference : LengthEncodingPreference =
+        LengthEncodingPreference.definite;
 
     set boolean (value : boolean) {
         this.value = new Uint8Array(1);
@@ -16,11 +20,20 @@ class BERElement extends ASN1Element {
         return (this.value[0] != 0);
     }
 
+    /**
+     * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
+     * JavaScript's bitshift operators treat all integers as though they were
+     * 32-bit integers, even though they are stored in the 53 mantissa bits of
+     * an IEEE double-precision floating point number. Accepting larger or
+     * smaller numbers would rule out the use of a critical arithmetic operator
+     * when lower-level binary operations are not available, as is the case in
+     * JavaScript.
+     */
     set integer (value : number) {
-        if (value < -2147483647)
-            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
-        if (value > 2147483647)
-            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+        if (value < MIN_SINT_32)
+            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
+        if (value > MAX_SINT_32)
+            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
 
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
@@ -51,6 +64,7 @@ class BERElement extends ASN1Element {
         }
     }
 
+    // FIXME: Make this throw an exception when padding bytes are encountered.
     get integer () : number {
         if (this.value.length == 0)
             throw new ASN1Error("Number encoded on zero bytes!");
@@ -283,9 +297,9 @@ class BERElement extends ASN1Element {
 
     set enumerated (value : number) {
         if (value < -2147483647)
-            throw new ASN1Error("Number " + value.toString + " too small to be converted.");
+            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
         if (value > 2147483647)
-            throw new ASN1Error("Number " + value.toString + " too big to be converted.");
+            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
 
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
@@ -316,6 +330,7 @@ class BERElement extends ASN1Element {
         }
     }
 
+    // FIXME: Make this throw an exception when padding bytes are encountered.
     get enumerated () : number {
         if (this.value.length == 0)
             throw new ASN1Error("Number encoded on zero bytes!");
@@ -407,6 +422,31 @@ class BERElement extends ASN1Element {
 
         return numbers;
     }
+
+    // FIXME: Blocked until you create toBytes
+    // set sequence (value : BERElement[]) {
+    //     // scope(success) this.construction = ASN1Construction.constructed;
+    //     value.forEach(element => {
+    //         result.put(element.toBytes);
+    //     });
+    //     this.value = result.data;
+    // }
+
+    // get sequence () : BERElement[] {
+    //     return [];
+    // }
+
+    // set sequence (value : BERElement[]) {
+    //     // scope(success) this.construction = ASN1Construction.constructed;
+    //     value.forEach(element => {
+    //         result.put(element.toBytes);
+    //     });
+    //     this.value = result.data;
+    // }
+
+    // get sequence () : BERElement[] {
+    //     return [];
+    // }
 
     constructor
     (
@@ -551,5 +591,83 @@ class BERElement extends ASN1Element {
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }
+    }
+
+    // TODO: Convert number[] to Uint8Array
+    public toBytes () : Uint8Array {
+        let tagBytes : number[] = [ 0x00 ];
+        tagBytes[0] |= this.tagClass;
+        tagBytes[0] |= this.construction;
+
+        if (this.tagNumber < 31) {
+            tagBytes[0] |= this.tagNumber;
+        } else {
+            /*
+                Per section 8.1.2.4 of X.690:
+                The last five bits of the first byte being set indicate that
+                the tag number is encoded in base-128 on the subsequent octets,
+                using the first bit of each subsequent octet to indicate if the
+                encoding continues on the next octet, just like how the
+                individual numbers of OBJECT IDENTIFIER and RELATIVE OBJECT
+                IDENTIFIER are encoded.
+            */
+            tagBytes[0] |= 0b00011111;
+            let number : number = this.tagNumber; // We do not want to modify by reference.
+            let encodedNumber : number[] = [];
+            while (number != 0) {
+                encodedNumber.unshift(number & 0x7F);
+                number >>>= 7;
+                encodedNumber[0] |= 0b10000000;
+            }
+            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
+            tagBytes = tagBytes.concat(encodedNumber);
+        }
+
+        let lengthOctets : number[] = [ 0x00 ];
+        switch (BERElement.lengthEncodingPreference) {
+            case (LengthEncodingPreference.definite): {
+                if (this.value.length < 127) {
+                    lengthOctets = [ this.value.length ];
+                } else {
+                    let length : number = this.value.length;
+                    lengthOctets = [ 0, 0, 0, 0 ];
+                    for (let i : number = 0; i < 4; i++) {
+                        lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 255);
+                    }
+
+                    let startOfNonPadding : number = 0;
+                    for (let i : number = 0; i < (lengthOctets.length - 1); i++) {
+                        if (lengthOctets[i] != 0x00) break;
+                        if (!(lengthOctets[i + 1] & 0x80)) startOfNonPadding++;
+                    }
+                    // REVIEW: I don't know if this will inadvertently overwrite the slice too.
+                    lengthOctets = lengthOctets.slice(startOfNonPadding);
+                }
+                break;
+            }
+            case (LengthEncodingPreference.indefinite): {
+                lengthOctets = [ 0x80 ];
+                break;
+            }
+            default:
+                throw new ASN1Error("Invalid LengthEncodingPreference encountered!");
+        }
+
+        let ret : Uint8Array = new Uint8Array(
+            tagBytes.length +
+            lengthOctets.length +
+            this.value.length +
+            (BERElement.lengthEncodingPreference == LengthEncodingPreference.indefinite ? 2 : 0)
+        );
+        ret.set(tagBytes, 0);
+        ret.set(lengthOctets, tagBytes.length);
+        ret.set(this.value, lengthOctets.length);
+        return ret;
+        // return (
+        //     tagBytes ~
+        //     lengthOctets ~
+        //     this.value ~
+        //     (this.lengthEncodingPreference == LengthEncodingPreference.indefinite ? [ 0x00, 0x00 ] : [])
+        // );
     }
 }
