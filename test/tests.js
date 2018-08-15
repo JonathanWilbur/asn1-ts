@@ -1,12 +1,9 @@
 let BERElement = asn1.BERElement;
 let ObjectIdentifier = asn1.ObjectIdentifier;
 
-
 describe("Basic Encoding Rules", function() {
 
     const floatingPointErrorTolerance = 1e-06;
-
-    let el = new BERElement();
 
     // it("encodes a long tag number correctly", function () {
     //     let bob = new BERElement();
@@ -30,6 +27,7 @@ describe("Basic Encoding Rules", function() {
     // });
 
     it("encodes and decodes a BOOLEAN correctly", function () {
+        let el = new BERElement();
         el.boolean = true;
         expect(el.value).toEqual(new Uint8Array([ 0xFF ]));
         expect(el.boolean).toBe(true);
@@ -39,6 +37,7 @@ describe("Basic Encoding Rules", function() {
     });
 
     it("encodes and decodes an INTEGER correctly", function () {
+        let el = new BERElement();
         for (let i = 0; i < 128; i++) {
             el.integer = i;
             expect(el.value).toEqual(new Uint8Array([ i ]));
@@ -57,6 +56,7 @@ describe("Basic Encoding Rules", function() {
     });
 
     it("encodes and decodes a BIT STRING correctly", function () {
+        let el = new BERElement();
         el.bitString = []; // 0 bits
         (el.bitString == []);
         el.bitString = [ true, false, true, true, false, false, true ]; // 7 bits
@@ -72,12 +72,14 @@ describe("Basic Encoding Rules", function() {
     });
 
     it("encodes and decodes an OCTET STRING correctly", function () {
+        let el = new BERElement();
         el.octetString = new Uint8Array([ 255, 127, 36, 0, 1, 254 ]);
         expect(el.value).toEqual(new Uint8Array([ 255, 127, 36, 0, 1, 254 ]));
         expect(el.octetString).toEqual(new Uint8Array([ 255, 127, 36, 0, 1, 254 ]));
     });
 
     it("encodes and decodes an OBJECT IDENTIFIER correctly", function () {
+        let el = new BERElement();
         el.objectIdentifier = new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
         expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
 
@@ -130,6 +132,7 @@ describe("Basic Encoding Rules", function() {
     });
 
     it("encodes and decodes a REAL correctly", function () {
+        let el = new BERElement();
         for (let i = -100; i < 100; i++) {
             // Alternating negative and positive floating point numbers exploring extreme values
             let num = Math.pow((i % 2 ? -1 : 1) * 1.23, i);
@@ -227,6 +230,7 @@ describe("Basic Encoding Rules", function() {
     });
 
     it("encodes and decodes and ENUMERATED correctly", function () {
+        let el = new BERElement();
         for (let i = 0; i < 128; i++) {
             el.enumerated = i;
             expect(el.value).toEqual(new Uint8Array([ i ]));
@@ -248,6 +252,7 @@ describe("Basic Encoding Rules", function() {
     // TODO: UTF8String
 
     it("encodes and decodes a RELATIVE OID correctly", function () {
+        let el = new BERElement();
         let sensitiveValues = [
             0,
             1,
@@ -279,5 +284,47 @@ describe("Basic Encoding Rules", function() {
             el.relativeObjectIdentifier = [ 1, 2, z ];
             expect(el.relativeObjectIdentifier).toEqual([ 1, 2, z ]);
         });
+    });
+
+    it("encodes and decodes a SEQUENCE correctly", function () {
+        let el = new BERElement();
+        let subs = [];
+        subs.push(new BERElement());
+        subs.push(new BERElement());
+        subs.push(new BERElement());
+        subs[0].tagNumber = 1;
+        subs[0].boolean = true;
+        subs[1].tagNumber = 2;
+        subs[1].boolean = false;
+        subs[2].tagNumber = 3;
+        subs[2].boolean = true;
+        el.sequence = subs;
+        expect(el.value).toEqual(new Uint8Array([ 1, 1, 255, 2, 1, 0, 3, 1, 255 ]));
+        let decodedElements = el.sequence;
+        expect(decodedElements.length).toBe(3);
+        expect(decodedElements[0].boolean).toBe(true);
+        expect(decodedElements[1].boolean).toBe(false);
+        expect(decodedElements[2].boolean).toBe(true);
+    });
+
+    it("encodes and decodes a SET correctly", function () {
+        let el = new BERElement();
+        let subs = [];
+        subs.push(new BERElement());
+        subs.push(new BERElement());
+        subs.push(new BERElement());
+        subs[0].tagNumber = 1;
+        subs[0].boolean = true;
+        subs[1].tagNumber = 2;
+        subs[1].boolean = false;
+        subs[2].tagNumber = 3;
+        subs[2].boolean = true;
+        el.set = subs;
+        expect(el.value).toEqual(new Uint8Array([ 1, 1, 255, 2, 1, 0, 3, 1, 255 ]));
+        let decodedElements = el.set;
+        expect(decodedElements.length).toBe(3);
+        expect(decodedElements[0].boolean).toBe(true);
+        expect(decodedElements[1].boolean).toBe(false);
+        expect(decodedElements[2].boolean).toBe(true);
     });
 });

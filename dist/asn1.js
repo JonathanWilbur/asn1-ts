@@ -559,6 +559,66 @@ class ber_BERElement extends ASN1Element {
         });
         return numbers;
     }
+    set sequence(value) {
+        let encodedElements = [];
+        value.forEach(element => {
+            encodedElements.push(element.toBytes());
+        });
+        let totalLength = 0;
+        encodedElements.forEach(element => {
+            totalLength += element.length;
+        });
+        let newValue = new Uint8Array(totalLength);
+        let currentIndex = 0;
+        encodedElements.forEach(element => {
+            newValue.set(element, currentIndex);
+            currentIndex += element.length;
+        });
+        this.value = newValue;
+        this.construction = ASN1Construction.constructed;
+    }
+    get sequence() {
+        let encodedElements = [];
+        if (this.value.length === 0)
+            return [];
+        let i = 0;
+        while (i < this.value.length) {
+            let next = new ber_BERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
+    set set(value) {
+        let encodedElements = [];
+        value.forEach(element => {
+            encodedElements.push(element.toBytes());
+        });
+        let totalLength = 0;
+        encodedElements.forEach(element => {
+            totalLength += element.length;
+        });
+        let newValue = new Uint8Array(totalLength);
+        let currentIndex = 0;
+        encodedElements.forEach(element => {
+            newValue.set(element, currentIndex);
+            currentIndex += element.length;
+        });
+        this.value = newValue;
+        this.construction = ASN1Construction.constructed;
+    }
+    get set() {
+        let encodedElements = [];
+        if (this.value.length === 0)
+            return [];
+        let i = 0;
+        while (i < this.value.length) {
+            let next = new ber_BERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
     fromBytes(bytes) {
         if (bytes.length < 2)
             throw new ASN1Error("Tried to decode a BER element that is less than two bytes.");

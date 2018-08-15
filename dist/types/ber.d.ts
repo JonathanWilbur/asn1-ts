@@ -11,6 +11,8 @@ export declare class BERElement extends ASN1Element {
     real: number;
     enumerated: number;
     relativeObjectIdentifier: number[];
+    sequence: BERElement[];
+    set: BERElement[];
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;

@@ -424,30 +424,67 @@ class BERElement extends ASN1Element {
         return numbers;
     }
 
-    // FIXME: Blocked until you create toBytes
-    // set sequence (value : BERElement[]) {
-    //     // scope(success) this.construction = ASN1Construction.constructed;
-    //     value.forEach(element => {
-    //         result.put(element.toBytes);
-    //     });
-    //     this.value = result.data;
-    // }
+    set sequence (value : BERElement[]) {
+        let encodedElements : Uint8Array[] = [];
+        value.forEach(element => {
+            encodedElements.push(element.toBytes());
+        });
+        let totalLength : number = 0;
+        encodedElements.forEach(element => {
+            totalLength += element.length;
+        });
+        let newValue = new Uint8Array(totalLength);
+        let currentIndex : number = 0;
+        encodedElements.forEach(element => {
+            newValue.set(element, currentIndex);
+            currentIndex += element.length;
+        });
+        this.value = newValue;
+        this.construction = ASN1Construction.constructed;
+    }
 
-    // get sequence () : BERElement[] {
-    //     return [];
-    // }
+    get sequence () : BERElement[] {
+        let encodedElements : BERElement[] = [];
+        if (this.value.length === 0) return [];
+        let i : number = 0;
+        while (i < this.value.length) {
+            let next : BERElement = new BERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
 
-    // set sequence (value : BERElement[]) {
-    //     // scope(success) this.construction = ASN1Construction.constructed;
-    //     value.forEach(element => {
-    //         result.put(element.toBytes);
-    //     });
-    //     this.value = result.data;
-    // }
+    set set (value : BERElement[]) {
+        let encodedElements : Uint8Array[] = [];
+        value.forEach(element => {
+            encodedElements.push(element.toBytes());
+        });
+        let totalLength : number = 0;
+        encodedElements.forEach(element => {
+            totalLength += element.length;
+        });
+        let newValue = new Uint8Array(totalLength);
+        let currentIndex : number = 0;
+        encodedElements.forEach(element => {
+            newValue.set(element, currentIndex);
+            currentIndex += element.length;
+        });
+        this.value = newValue;
+        this.construction = ASN1Construction.constructed;
+    }
 
-    // get sequence () : BERElement[] {
-    //     return [];
-    // }
+    get set () : BERElement[] {
+        let encodedElements : BERElement[] = [];
+        if (this.value.length === 0) return [];
+        let i : number = 0;
+        while (i < this.value.length) {
+            let next : BERElement = new BERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
 
     constructor
     (
