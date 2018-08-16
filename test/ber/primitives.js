@@ -131,6 +131,12 @@ describe("Basic Encoding Rules", function() {
         }
     });
 
+    it("encodes and decodes an ObjectDescriptor correctly", function () {
+        let el = new BERElement();
+        el.objectDescriptor = "HENLO-BORTHERS";
+        expect(el.objectDescriptor).toBe("HENLO-BORTHERS");
+    });
+
     it("encodes and decodes a REAL correctly", function () {
         let el = new BERElement();
         for (let i = -100; i < 100; i++) {

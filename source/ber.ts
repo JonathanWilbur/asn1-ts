@@ -120,12 +120,50 @@ class BERElement extends ASN1Element {
             ret.length -= this.value[0];
             return ret;
         } else {
-            // Blocked on sequence implementation.
-            throw new ASN1NotImplementedError();
-            // if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit)
-            //     throw new ASN1Error("Recursion was too deep!");
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
 
-            // let ret : boolean[] = [];
+            let appendy : boolean[] = [];
+            let substrings : BERElement[] = this.sequence;
+            if (substrings.length == 0) return [];
+            // REVIEW: Why am I skipping the last substring? I don't think it is EOC...
+            substrings.slice(0, (substrings.length - 1)).forEach(substring => {
+                if (
+                    substring.construction == ASN1Construction.primitive &&
+                    substring.value.length > 0 &&
+                    substring.value[0] != 0x00
+                ) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error
+                    (
+                        "This exception was thrown because you attempted to " +
+                        "decode a constructed BIT STRING that contained a " +
+                        "substring whose first byte indicated a non-zero " +
+                        "number of padding bits, despite not being the " +
+                        "last substring of the constructed BIT STRING. " +
+                        "Only the last substring may have padding bits. "
+                    );
+                }
+            });
+
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded BIT STRING.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded BIT STRING.");
+                }
+
+                appendy = appendy.concat(substring.bitString);
+            });
+
+            BERElement.valueRecursionCount--;
+            return appendy;
         }
     }
 
@@ -137,7 +175,39 @@ class BERElement extends ASN1Element {
         if (this.construction == ASN1Construction.primitive) {
             return this.value.subarray(0); // Clones it.
         } else {
-            throw new ASN1NotImplementedError();
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let appendy : Uint8Array[] = [];
+            let substrings : BERElement[] = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded OCTET STRING.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded OCTET STRING.");
+                }
+
+                appendy = appendy.concat(substring.octetString);
+            });
+
+            let totalLength : number = 0;
+            substrings.forEach(substring => {
+                totalLength += substring.octetString.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex : number = 0;
+            substrings.forEach(substring => {
+                whole.set(substring.octetString, currentIndex);
+                currentIndex += substring.octetString.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
         }
     }
 
@@ -238,16 +308,57 @@ class BERElement extends ASN1Element {
             }
         }
 
-        // if (typeof TextEncoder != "undefined") { // Browser JavaScript
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             this.value = (new TextEncoder()).encode(value);
-        // } else if (typeof NodeBuffer != "undefined") { // NodeJS
-        //     this.value = (new NodeBuffer()).from(value, "utf-8");
-        // }
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
     }
 
-    // get objectDescriptor () : string {
+    get objectDescriptor () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
 
-    // }
+            for (let i : number = 0; i < ret.length; i++) {
+                let characterCode : number = ret.charCodeAt(i);
+                if (characterCode < 0x20 || characterCode > 0x7E) {
+                    throw new ASN1Error("ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
+                }
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let appendy : string[] = [];
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded ObjectDescriptor.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded ObjectDescriptor.");
+                }
+
+                whole += substring.objectDescriptor;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
 
     // set external (value : External) {
 
