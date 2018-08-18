@@ -105,6 +105,17 @@ abstract class ASN1Element
     }
 }
 
+/**
+    The acceptable characters for a printableString.
+    The sorting of letters below is a slight optimization:
+    they are sorted in order of decreasing frequency in the English
+    language, so that canFind will usually have to iterate through
+    fewer letters before finding a match.
+*/
+export
+const printableStringCharacters : string =
+    "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
+
 
 // ///
 // public alias ASN1RealEncodingBase = AbstractSyntaxNotation1RealEncodingBase;

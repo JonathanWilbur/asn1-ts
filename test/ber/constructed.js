@@ -43,7 +43,7 @@ describe("Basic Encoding Rules", function() {
 
     });
 
-    it("encodes and decodes an ObjectDescriptor correctly", function () {
+    it("encodes and decodes a constructed ObjectDescriptor correctly", function () {
         let data = new Uint8Array([
             0x27, 0x12,
                 0x07, 0x04, 0x53, 0x68, 0x69, 0x61, // S h i a
@@ -55,6 +55,34 @@ describe("Basic Encoding Rules", function() {
         let element = new BERElement();
         element.fromBytes(data);
         expect(element.objectDescriptor).toBe("ShiaLaBTFO");
+    });
+
+    it("encodes and decodes a constructed NumericString correctly", function () {
+        let data = new Uint8Array([
+            0x32, 0x12,
+                0x12, 0x04, 0x30, 0x31, 0x32, 0x33, // 0 1 2 3
+                0x32, 0x04,
+                    0x12, 0x02, 0x34, 0x35, // 4 5
+                0x12, 0x04, 0x36, 0x37, 0x38, 0x39 // 6 7 8 9
+        ]);
+
+        let element = new BERElement();
+        element.fromBytes(data);
+        expect(element.numericString).toBe("0123456789");
+    });
+
+    it("encodes and decodes a constructed PrintableString correctly", function () {
+        let data = new Uint8Array([
+            0x33, 0x12,
+                0x13, 0x04, 0x30, 0x31, 0x32, 0x33, // 0 1 2 3
+                0x33, 0x04,
+                    0x13, 0x02, 0x34, 0x35, // 4 5
+                0x13, 0x04, 0x36, 0x37, 0x38, 0x39 // 6 7 8 9
+        ]);
+
+        let element = new BERElement();
+        element.fromBytes(data);
+        expect(element.printableString).toBe("0123456789");
     });
 
 });

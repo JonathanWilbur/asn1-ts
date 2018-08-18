@@ -333,4 +333,17 @@ describe("Basic Encoding Rules", function() {
         expect(decodedElements[1].boolean).toBe(false);
         expect(decodedElements[2].boolean).toBe(true);
     });
+
+    it("encodes and decodes a NumericString correctly", function () {
+        let el = new BERElement();
+        el.numericString = "12345 67890";
+        expect(el.numericString).toBe("12345 67890");
+    });
+
+    it("encodes and decodes a PrintableString correctly", function () {
+        let el = new BERElement();
+        el.printableString = "12345abcdef '()+,-./:=?";
+        expect(el.printableString).toBe("12345abcdef '()+,-./:=?");
+    });
+
 });

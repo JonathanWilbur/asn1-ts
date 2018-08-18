@@ -102,6 +102,7 @@ var asn1 =
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return ASN1SpecialRealValue; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return ASN1UniversalType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ASN1Element; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return printableStringCharacters; });
 const MAX_UINT_32 = 0x00FFFFFFFF;
 const MIN_UINT_32 = 0x0000000000;
 const MAX_SINT_32 = 0x7FFFFFFF;
@@ -190,6 +191,7 @@ class ASN1Element {
 ASN1Element.lengthRecursionCount = 0;
 ASN1Element.valueRecursionCount = 0;
 ASN1Element.nestingRecursionLimit = 5;
+const printableStringCharacters = "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
 
 
 /***/ }),
@@ -763,6 +765,110 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
         return encodedElements;
     }
+    set numericString(value) {
+        for (let i = 0; i < value.length; i++) {
+            let characterCode = value.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get numericString() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let ret;
+            if (typeof TextEncoder !== "undefined") {
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+            for (let i = 0; i < ret.length; i++) {
+                let characterCode = ret.charCodeAt(i);
+                if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
+                }
+            }
+            return ret;
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let substrings = this.sequence;
+            let whole = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded NumericString.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded NumericString.");
+                }
+                whole += substring.numericString;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+    set printableString(value) {
+        for (let i = 0; i < value.length; i++) {
+            if (_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"].indexOf(value.charAt(i)) === -1) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`PrintableString can only contain these characters: ${_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"]}`);
+            }
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get printableString() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let ret;
+            if (typeof TextEncoder !== "undefined") {
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+            for (let i = 0; i < ret.length; i++) {
+                if (_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"].indexOf(ret.charAt(i)) === -1) {
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`PrintableString can only contain these characters: ${_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"]}`);
+                }
+            }
+            return ret;
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let substrings = this.sequence;
+            let whole = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded PrintableString.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded PrintableString.");
+                }
+                whole += substring.printableString;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
     fromBytes(bytes) {
         if (bytes.length < 2)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Tried to decode a BER element that is less than two bytes.");
@@ -966,6 +1072,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["g"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["b"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["m"]; });
 
 /* harmony import */ var _ber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BERElement", function() { return _ber__WEBPACK_IMPORTED_MODULE_1__["a"]; });

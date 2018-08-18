@@ -72,3 +72,4 @@ export declare abstract class ASN1Element {
     length(): number;
     constructor();
 }
+export declare const printableStringCharacters: string;

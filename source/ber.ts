@@ -1,7 +1,8 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
+// TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
-import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32 } from "./asn1";
+import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
 
 export
@@ -360,6 +361,7 @@ class BERElement extends ASN1Element {
         }
     }
 
+    // TODO:
     // set external (value : External) {
 
     // }
@@ -596,6 +598,134 @@ class BERElement extends ASN1Element {
         }
         return encodedElements;
     }
+
+    set numericString (value : string) {
+        for (let i : number = 0; i < value.length; i++) {
+            let characterCode : number = value.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get numericString () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            for (let i : number = 0; i < ret.length; i++) {
+                let characterCode : number = ret.charCodeAt(i);
+                if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                    throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
+                }
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded NumericString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded NumericString.");
+                }
+
+                whole += substring.numericString;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
+    set printableString (value : string) {
+        for (let i : number = 0; i < value.length; i++) {
+            if (printableStringCharacters.indexOf(value.charAt(i)) === -1) {
+                throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
+            }
+        }
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get printableString () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            for (let i : number = 0; i < ret.length; i++) {
+                if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
+                    throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
+                }
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded PrintableString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded PrintableString.");
+                }
+
+                whole += substring.printableString;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
+    // TODO: T61String
+    // TODO: VideotexString
+    // TODO: IA5String
+    // TODO: UTCTime
+    // TODO: GeneralizedTime
+    // TODO: GraphicString
+    // TODO: VisibleString
+    // TODO: GeneralString
+    // TODO: UniversalString
+    // TODO: CHARACTER STRING
+    // TODO: BMPString
 
     constructor
     (
