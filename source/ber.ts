@@ -198,14 +198,14 @@ class BERElement extends ASN1Element {
             });
 
             let totalLength : number = 0;
-            substrings.forEach(substring => {
-                totalLength += substring.octetString.length;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
             });
             let whole = new Uint8Array(totalLength);
             let currentIndex : number = 0;
-            substrings.forEach(substring => {
-                whole.set(substring.octetString, currentIndex);
-                currentIndex += substring.octetString.length;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
             });
             BERElement.valueRecursionCount--;
             return whole;
@@ -715,8 +715,94 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // TODO: T61String
-    // TODO: VideotexString
+    set teletexString (value : Uint8Array) {
+        this.value = value.subarray(0); // Clones it.
+    }
+
+    get teletexString () : Uint8Array {
+        if (this.construction == ASN1Construction.primitive) {
+            return this.value.subarray(0); // Clones it.
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let appendy : Uint8Array[] = [];
+            let substrings : BERElement[] = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded TeletexString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded TeletexString.");
+                }
+
+                appendy = appendy.concat(substring.teletexString);
+            });
+
+            let totalLength : number = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex : number = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
+    set videotexString (value : Uint8Array) {
+        this.value = value.subarray(0); // Clones it.
+    }
+
+    get videotexString () : Uint8Array {
+        if (this.construction == ASN1Construction.primitive) {
+            return this.value.subarray(0); // Clones it.
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let appendy : Uint8Array[] = [];
+            let substrings : BERElement[] = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded VideotexString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded VideotexString.");
+                }
+
+                appendy = appendy.concat(substring.videotexString);
+            });
+
+            let totalLength : number = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex : number = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
     // TODO: IA5String
     // TODO: UTCTime
     // TODO: GeneralizedTime

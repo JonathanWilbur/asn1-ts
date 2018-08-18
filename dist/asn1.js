@@ -406,14 +406,14 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 appendy = appendy.concat(substring.octetString);
             });
             let totalLength = 0;
-            substrings.forEach(substring => {
-                totalLength += substring.octetString.length;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
             });
             let whole = new Uint8Array(totalLength);
             let currentIndex = 0;
-            substrings.forEach(substring => {
-                whole.set(substring.octetString, currentIndex);
-                currentIndex += substring.octetString.length;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
             });
             BERElement.valueRecursionCount--;
             return whole;
@@ -864,6 +864,84 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded PrintableString.");
                 }
                 whole += substring.printableString;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+    set teletexString(value) {
+        this.value = value.subarray(0);
+    }
+    get teletexString() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            return this.value.subarray(0);
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let appendy = [];
+            let substrings = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded TeletexString.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded TeletexString.");
+                }
+                appendy = appendy.concat(substring.teletexString);
+            });
+            let totalLength = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+    set videotexString(value) {
+        this.value = value.subarray(0);
+    }
+    get videotexString() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            return this.value.subarray(0);
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let appendy = [];
+            let substrings = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded VideotexString.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded VideotexString.");
+                }
+                appendy = appendy.concat(substring.videotexString);
+            });
+            let totalLength = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
             });
             BERElement.valueRecursionCount--;
             return whole;

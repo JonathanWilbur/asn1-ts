@@ -15,6 +15,8 @@ export declare class BERElement extends ASN1Element {
     set: BERElement[];
     numericString: string;
     printableString: string;
+    teletexString: Uint8Array;
+    videotexString: Uint8Array;
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
