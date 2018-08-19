@@ -947,6 +947,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     }
     get universalString() {
         let valueBytes = this.deconstruct("UniversalString");
+        if (valueBytes.length % 4)
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
         let ret = "";
         for (let i = 0; i < valueBytes.length; i += 4) {
             ret += String.fromCharCode((valueBytes[i + 0] << 24) +
@@ -966,6 +968,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     }
     get bmpString() {
         let valueBytes = this.deconstruct("BMPString");
+        if (valueBytes.length % 2)
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);

@@ -778,8 +778,6 @@ class BERElement extends ASN1Element {
 
     set universalString (value : string) {
         let buf : Uint8Array = new Uint8Array(value.length << 2);
-        if (buf.length % 4)
-            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
         for (let i : number = 0, strLen : number = value.length; i < strLen; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
             buf[(i << 2) + 1]  = value.charCodeAt(i) >>> 16;
@@ -796,6 +794,8 @@ class BERElement extends ASN1Element {
      */
     get universalString () : string {
         let valueBytes : Uint8Array = this.deconstruct("UniversalString");
+        if (valueBytes.length % 4)
+            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
         let ret : string = "";
         for (let i : number = 0; i < valueBytes.length; i += 4) {
             ret += String.fromCharCode(
@@ -821,8 +821,8 @@ class BERElement extends ASN1Element {
 
     get bmpString () : string {
         let valueBytes : Uint8Array = this.deconstruct("BMPString");
-        if (valueBytes.length % 4)
-            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
+        if (valueBytes.length % 2)
+            throw new ASN1Error("BMPString encoded on non-mulitple of two bytes.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
