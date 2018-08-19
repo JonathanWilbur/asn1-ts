@@ -67,14 +67,22 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // FIXME: Make this throw an exception when padding bytes are encountered.
     get integer () : number {
         if (this.value.length == 0)
             throw new ASN1Error("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new ASN1Error("Number too long to decode.");
+        if (
+            this.value.length > 2 &&
+            (
+                (this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] == 0x00 && this.value[1] < 0b10000000)
+            )
+        )
+            throw new ASN1Error("Unnecessary padding bytes on INTEGER.");
 
         let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
+
         this.value.forEach(byte => {
             ret <<= 8;
             ret += byte;
@@ -274,15 +282,6 @@ class BERElement extends ASN1Element {
         return this.graphicString;
     }
 
-    // TODO:
-    // set external (value : External) {
-
-    // }
-
-    // get external () : External {
-
-    // }
-
     // Only encodes with two digits of precision.
     set real (value : number) {
         if (value == 0.0) {
@@ -357,12 +356,19 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // FIXME: Make this throw an exception when padding bytes are encountered.
     get enumerated () : number {
         if (this.value.length == 0)
             throw new ASN1Error("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new ASN1Error("Number too long to decode.");
+        if (
+                this.value.length > 2 &&
+                (
+                    (this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
+                    (this.value[0] == 0x00 && this.value[1] < 0b10000000)
+                )
+            )
+                throw new ASN1Error("Unnecessary padding bytes on ENUMERATED.");
 
         let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
@@ -371,8 +377,6 @@ class BERElement extends ASN1Element {
         });
         return ret;
     }
-
-    // TODO: EmbeddedPDV
 
     set utf8String (value : string) {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
@@ -807,8 +811,6 @@ class BERElement extends ASN1Element {
         }
         return ret;
     }
-
-    // TODO: CHARACTER STRING
 
     set bmpString (value : string) {
         let buf : Uint8Array = new Uint8Array(value.length << 1);

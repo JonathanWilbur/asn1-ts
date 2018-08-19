@@ -297,6 +297,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number too long to decode.");
+        if (this.value.length > 2 &&
+            ((this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] == 0x00 && this.value[1] < 0b10000000)))
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Unnecessary padding bytes on INTEGER.");
         let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
             ret <<= 8;
@@ -555,6 +559,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number too long to decode.");
+        if (this.value.length > 2 &&
+            ((this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] == 0x00 && this.value[1] < 0b10000000)))
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Unnecessary padding bytes on ENUMERATED.");
         let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
             ret <<= 8;
