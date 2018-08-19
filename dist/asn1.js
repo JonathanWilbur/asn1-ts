@@ -905,6 +905,30 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     get visibleString() {
         return this.graphicString;
     }
+    set bmpString(value) {
+        let buf = new Uint8Array(value.length << 1);
+        for (let i = 0, strLen = value.length; i < strLen; i++) {
+            buf[(i << 1)] = value.charCodeAt(i) >>> 8;
+            buf[(i << 1) + 1] = value.charCodeAt(i);
+        }
+        this.value = buf;
+    }
+    get bmpString() {
+        let valueBytes = this.deconstruct("BMPString");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            let swappedEndianness = new Uint8Array(valueBytes.length);
+            for (let i = 0; i < valueBytes.length; i += 2) {
+                swappedEndianness[i] = valueBytes[i + 1];
+                swappedEndianness[i + 1] = valueBytes[i];
+            }
+            ret = (new Buffer(swappedEndianness)).toString("utf-16le");
+        }
+        return ret;
+    }
     fromBytes(bytes) {
         if (bytes.length < 2)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Tried to decode a BER element that is less than two bytes.");

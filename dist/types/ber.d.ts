@@ -23,6 +23,7 @@ export declare class BERElement extends ASN1Element {
     generalizedTime: Date;
     graphicString: string;
     visibleString: string;
+    bmpString: string;
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;

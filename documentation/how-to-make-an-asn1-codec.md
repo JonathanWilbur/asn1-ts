@@ -19,6 +19,10 @@
 - `NULL`
 - `BIT STRING`
 - `REAL`
+- Create a `deconstruct()` method
+  - This assembles the fragments of a string as an octet stream if it is
+    constructed, or just returns the primitively-encoded octet stream if
+    it is primitively-encoded.
 - `OCTET STRING`
   - Do not mention `OCTET STRING` in any exception messages. This code should
     be kept generic enough to be reused by all other string types.

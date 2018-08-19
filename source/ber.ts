@@ -785,7 +785,36 @@ class BERElement extends ASN1Element {
     // TODO: GeneralString
     // TODO: UniversalString
     // TODO: CHARACTER STRING
-    // TODO: BMPString
+
+    set bmpString (value : string) {
+        let buf : Uint8Array = new Uint8Array(value.length << 1);
+        for (let i : number = 0, strLen = value.length; i < strLen; i++) {
+            buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
+            buf[(i << 1) + 1]  = value.charCodeAt(i);
+        }
+        this.value = buf;
+    }
+
+    get bmpString () : string {
+        let valueBytes : Uint8Array = this.deconstruct("BMPString");
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            let swappedEndianness : Uint8Array = new Uint8Array(valueBytes.length);
+            for (let i : number = 0; i < valueBytes.length; i += 2) {
+                swappedEndianness[i] = valueBytes[i + 1];
+                swappedEndianness[i + 1] = valueBytes[i];
+            }
+            /** REVIEW:
+             * Since NodeJS does not have a UTF-16-BE decoder, can we swap
+             * every pair of bytes to make it little-endian, then decode
+             * using NodeJS's utf-16-le decoder?
+             */
+            ret = (new Buffer(swappedEndianness)).toString("utf-16le");
+        }
+        return ret;
+    }
 
     constructor
     (

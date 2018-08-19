@@ -383,4 +383,10 @@ describe("Basic Encoding Rules", function() {
         expect(ret.getUTCSeconds()).toBe(test.getUTCSeconds());
     });
 
+    it("encodes and decodes a BMPString correctly", function () {
+        let el = new BERElement();
+        el.bmpString = "HENLOBORTHERS";
+        expect(el.bmpString).toBe("HENLOBORTHERS");
+    });
+
 });
