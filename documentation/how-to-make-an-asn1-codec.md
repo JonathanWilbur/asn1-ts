@@ -1,5 +1,11 @@
 # How to make an ASN.1 codec
 
+## Notes
+
+- I do not know how `VisibleString` differs from `GraphicString`
+
+## Procedure
+
 - Make the constructor first
 - `BOOLEAN`
   - Implement this before `SEQUENCE` or `SET` so you have one data type to

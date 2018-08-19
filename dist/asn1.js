@@ -497,58 +497,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_1__[/* ObjectIdentifier */ "a"](numbers);
     }
     set objectDescriptor(value) {
-        for (let i = 0; i < value.length; i++) {
-            let characterCode = value.charCodeAt(i);
-            if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
-            }
-        }
-        if (typeof TextEncoder !== "undefined") {
-            this.value = (new TextEncoder()).encode(value);
-        }
-        else if (typeof Buffer !== "undefined") {
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.graphicString = value;
     }
     get objectDescriptor() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            for (let i = 0; i < ret.length; i++) {
-                let characterCode = ret.charCodeAt(i);
-                if (characterCode < 0x20 || characterCode > 0x7E) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
-                }
-            }
-            return ret;
-        }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let appendy = [];
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded ObjectDescriptor.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded ObjectDescriptor.");
-                }
-                whole += substring.objectDescriptor;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.graphicString;
     }
     set real(value) {
         if (value == 0.0) {
@@ -1115,7 +1067,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         for (let i = 0; i < value.length; i++) {
             let characterCode = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString can only contain characters between 0x20 and 0x7E.");
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -1137,7 +1089,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             for (let i = 0; i < ret.length; i++) {
                 let characterCode = ret.charCodeAt(i);
                 if (characterCode < 0x20 || characterCode > 0x7E) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString can only contain characters between 0x20 and 0x7E.");
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
                 }
             }
             return ret;
@@ -1152,11 +1104,11 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             substrings.forEach(substring => {
                 if (substring.tagClass != this.tagClass) {
                     BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded GraphicString.");
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
                 }
                 if (substring.tagNumber != this.tagNumber) {
                     BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded GraphicString.");
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
                 }
                 whole += substring.objectDescriptor;
             });
@@ -1165,57 +1117,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     set visibleString(value) {
-        for (let i = 0; i < value.length; i++) {
-            let characterCode = value.charCodeAt(i);
-            if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("VisibleString can only contain characters between 0x20 and 0x7E.");
-            }
-        }
-        if (typeof TextEncoder !== "undefined") {
-            this.value = (new TextEncoder()).encode(value);
-        }
-        else if (typeof Buffer !== "undefined") {
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.graphicString = value;
     }
     get visibleString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            for (let i = 0; i < ret.length; i++) {
-                let characterCode = ret.charCodeAt(i);
-                if (characterCode < 0x20 || characterCode > 0x7E) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("VisibleString can only contain characters between 0x20 and 0x7E.");
-                }
-            }
-            return ret;
-        }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded VisibleString.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded VisibleString.");
-                }
-                whole += substring.objectDescriptor;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.graphicString;
     }
     fromBytes(bytes) {
         if (bytes.length < 2)
