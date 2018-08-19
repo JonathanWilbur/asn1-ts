@@ -26,4 +26,5 @@ export declare class BERElement extends ASN1Element {
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
+    private deconstruct;
 }

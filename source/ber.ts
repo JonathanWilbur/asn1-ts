@@ -2,10 +2,6 @@
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
 // TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
-// TODO: Reduce repetition by using the octetString accessor to decode constructed strings
-// TODO: Remove unused 'appendy'
-// TODO: Dedup graphicString / visibleString / objectDescriptor code.
-// TODO: Dedup byte decoding
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
@@ -178,43 +174,44 @@ class BERElement extends ASN1Element {
     }
 
     get octetString () : Uint8Array {
-        if (this.construction == ASN1Construction.primitive) {
-            return this.value.subarray(0); // Clones it.
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
+        return this.deconstruct("OCTET STRING");
+        // if (this.construction == ASN1Construction.primitive) {
+        //     return this.value.subarray(0); // Clones it.
+        // } else {
+        //     if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+        //         BERElement.valueRecursionCount--;
+        //         throw new ASN1Error("Recursion was too deep!");
+        //     }
 
-            let appendy : Uint8Array[] = [];
-            let substrings : BERElement[] = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded OCTET STRING.");
-                }
+        //     let appendy : Uint8Array[] = [];
+        //     let substrings : BERElement[] = this.sequence;
+        //     substrings.forEach(substring => {
+        //         if (substring.tagClass != this.tagClass) {
+        //             BERElement.valueRecursionCount--;
+        //             throw new ASN1Error("Invalid tag class in recursively-encoded OCTET STRING.");
+        //         }
 
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded OCTET STRING.");
-                }
+        //         if (substring.tagNumber != this.tagNumber) {
+        //             BERElement.valueRecursionCount--;
+        //             throw new ASN1Error("Invalid tag number in recursively-encoded OCTET STRING.");
+        //         }
 
-                appendy = appendy.concat(substring.octetString);
-            });
+        //         appendy = appendy.concat(substring.octetString);
+        //     });
 
-            let totalLength : number = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex : number = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        //     let totalLength : number = 0;
+        //     appendy.forEach(substring => {
+        //         totalLength += substring.length;
+        //     });
+        //     let whole = new Uint8Array(totalLength);
+        //     let currentIndex : number = 0;
+        //     appendy.forEach(substring => {
+        //         whole.set(substring, currentIndex);
+        //         currentIndex += substring.length;
+        //     });
+        //     BERElement.valueRecursionCount--;
+        //     return whole;
+        // }
     }
 
     set objectIdentifier (value : OID) {
@@ -423,7 +420,7 @@ class BERElement extends ASN1Element {
     }
 
     get utf8String () : string {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("UTF8String");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -586,7 +583,7 @@ class BERElement extends ASN1Element {
     }
 
     get numericString () : string {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("NumericString");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -617,7 +614,7 @@ class BERElement extends ASN1Element {
     }
 
     get printableString () : string {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("PrintableString");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -637,7 +634,7 @@ class BERElement extends ASN1Element {
     }
 
     get teletexString () : Uint8Array {
-        return this.octetString;
+        return this.deconstruct("TeletexString");
     }
 
     set videotexString (value : Uint8Array) {
@@ -645,7 +642,7 @@ class BERElement extends ASN1Element {
     }
 
     get videotexString () : Uint8Array {
-        return this.octetString;
+        return this.deconstruct("VideotexString");
     }
 
     set ia5String (value : string) {
@@ -657,7 +654,7 @@ class BERElement extends ASN1Element {
     }
 
     get ia5String () : string {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("IA5String");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -685,7 +682,7 @@ class BERElement extends ASN1Element {
     }
 
     get utcTime () : Date {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("UTCTime");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -725,7 +722,7 @@ class BERElement extends ASN1Element {
     }
 
     get generalizedTime () : Date {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("GeneralizedTime");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -761,7 +758,7 @@ class BERElement extends ASN1Element {
     }
 
     get graphicString () : string {
-        let valueBytes : Uint8Array = this.octetString;
+        let valueBytes : Uint8Array = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -1003,5 +1000,45 @@ class BERElement extends ASN1Element {
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
+    }
+
+    private deconstruct (dataType : string) : Uint8Array {
+        if (this.construction == ASN1Construction.primitive) {
+            return this.value.subarray(0); // Clones it.
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let appendy : Uint8Array[] = [];
+            let substrings : BERElement[] = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                }
+
+                appendy = appendy.concat(substring.deconstruct(dataType));
+            });
+
+            let totalLength : number = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex : number = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
     }
 }

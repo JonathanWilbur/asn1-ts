@@ -384,40 +384,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.value = value.subarray(0);
     }
     get octetString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            return this.value.subarray(0);
-        }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let appendy = [];
-            let substrings = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded OCTET STRING.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded OCTET STRING.");
-                }
-                appendy = appendy.concat(substring.octetString);
-            });
-            let totalLength = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.deconstruct("OCTET STRING");
     }
     set objectIdentifier(value) {
         let numbers = value.nodes;
@@ -604,7 +571,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utf8String() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("UTF8String");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -751,7 +718,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get numericString() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("NumericString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -781,7 +748,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get printableString() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("PrintableString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -800,13 +767,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.value = value.subarray(0);
     }
     get teletexString() {
-        return this.octetString;
+        return this.deconstruct("TeletexString");
     }
     set videotexString(value) {
         this.value = value.subarray(0);
     }
     get videotexString() {
-        return this.octetString;
+        return this.deconstruct("VideotexString");
     }
     set ia5String(value) {
         if (typeof TextEncoder !== "undefined") {
@@ -817,7 +784,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get ia5String() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("IA5String");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -844,7 +811,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utcTime() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("UTCTime");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -881,7 +848,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get generalizedTime() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("GeneralizedTime");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -916,7 +883,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get graphicString() {
-        let valueBytes = this.octetString;
+        let valueBytes = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -1098,6 +1065,42 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
+    }
+    deconstruct(dataType) {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            return this.value.subarray(0);
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let appendy = [];
+            let substrings = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                }
+                appendy = appendy.concat(substring.deconstruct(dataType));
+            });
+            let totalLength = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            let whole = new Uint8Array(totalLength);
+            let currentIndex = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
     }
 }
 BERElement.lengthEncodingPreference = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* LengthEncodingPreference */ "h"].definite;
