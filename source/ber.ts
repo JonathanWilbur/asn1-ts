@@ -5,6 +5,7 @@
 // TODO: Reduce repetition by using the octetString accessor to decode constructed strings
 // TODO: Remove unused 'appendy'
 // TODO: Dedup graphicString / visibleString / objectDescriptor code.
+// TODO: Dedup byte decoding
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
@@ -422,40 +423,14 @@ class BERElement extends ASN1Element {
     }
 
     get utf8String () : string {
-        if (this.construction == ASN1Construction.primitive) {
-            let ret : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            return ret;
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let substrings : BERElement[] = this.sequence;
-            let whole : string = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded UTF8String.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded UTF8String.");
-                }
-
-                whole += substring.objectDescriptor;
-            });
-
-            BERElement.valueRecursionCount--;
-            return whole;
+        let valueBytes : Uint8Array = this.octetString;
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        return ret;
     }
 
     set relativeObjectIdentifier (value : number[]) {
@@ -611,47 +586,20 @@ class BERElement extends ASN1Element {
     }
 
     get numericString () : string {
-        if (this.construction == ASN1Construction.primitive) {
-            let ret : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            for (let i : number = 0; i < ret.length; i++) {
-                let characterCode : number = ret.charCodeAt(i);
-                if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                    throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
-                }
-            }
-
-            return ret;
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let substrings : BERElement[] = this.sequence;
-            let whole : string = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded NumericString.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded NumericString.");
-                }
-
-                whole += substring.numericString;
-            });
-
-            BERElement.valueRecursionCount--;
-            return whole;
+        let valueBytes : Uint8Array = this.octetString;
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i : number = 0; i < ret.length; i++) {
+            let characterCode : number = ret.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+        return ret;
     }
 
     set printableString (value : string) {
@@ -669,46 +617,19 @@ class BERElement extends ASN1Element {
     }
 
     get printableString () : string {
-        if (this.construction == ASN1Construction.primitive) {
-            let ret : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            for (let i : number = 0; i < ret.length; i++) {
-                if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
-                    throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
-                }
-            }
-
-            return ret;
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let substrings : BERElement[] = this.sequence;
-            let whole : string = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded PrintableString.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded PrintableString.");
-                }
-
-                whole += substring.printableString;
-            });
-
-            BERElement.valueRecursionCount--;
-            return whole;
+        let valueBytes : Uint8Array = this.octetString;
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i : number = 0; i < ret.length; i++) {
+            if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
+                throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
+            }
+        }
+        return ret;
     }
 
     set teletexString (value : Uint8Array) {
@@ -716,43 +637,7 @@ class BERElement extends ASN1Element {
     }
 
     get teletexString () : Uint8Array {
-        if (this.construction == ASN1Construction.primitive) {
-            return this.value.subarray(0); // Clones it.
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let appendy : Uint8Array[] = [];
-            let substrings : BERElement[] = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded TeletexString.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded TeletexString.");
-                }
-
-                appendy = appendy.concat(substring.teletexString);
-            });
-
-            let totalLength : number = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex : number = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.octetString;
     }
 
     set videotexString (value : Uint8Array) {
@@ -760,43 +645,7 @@ class BERElement extends ASN1Element {
     }
 
     get videotexString () : Uint8Array {
-        if (this.construction == ASN1Construction.primitive) {
-            return this.value.subarray(0); // Clones it.
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let appendy : Uint8Array[] = [];
-            let substrings : BERElement[] = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded VideotexString.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded VideotexString.");
-                }
-
-                appendy = appendy.concat(substring.videotexString);
-            });
-
-            let totalLength : number = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex : number = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.octetString;
     }
 
     set ia5String (value : string) {
@@ -808,40 +657,14 @@ class BERElement extends ASN1Element {
     }
 
     get ia5String () : string {
-        if (this.construction == ASN1Construction.primitive) {
-            let ret : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            return ret;
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let substrings : BERElement[] = this.sequence;
-            let whole : string = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded IA5String.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded IA5String.");
-                }
-
-                whole += substring.objectDescriptor;
-            });
-
-            BERElement.valueRecursionCount--;
-            return whole;
+        let valueBytes : Uint8Array = this.octetString;
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        return ret;
     }
 
     set utcTime (value : Date) {
@@ -861,38 +684,27 @@ class BERElement extends ASN1Element {
         }
     }
 
-    /** FIXME:
-     * Constructed decoding not supported, because it would require complicated
-     * logic to construct the date object from the assembled strings. However,
-     * it might be possible to call another string accessor, then convert the
-     * output to a Date.
-     */
     get utcTime () : Date {
-        if (this.construction == ASN1Construction.primitive) {
-            let utcString : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                utcString = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                utcString = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            if (utcString.length !== 13) {
-                throw new ASN1Error("Malformed UTCTime string.");
-            }
-
-            let ret : Date = new Date();
-            let year : number = Number(utcString.substring(0, 2));
-            ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
-            ret.setUTCMonth(Number(utcString.substring(2, 4)));
-            ret.setUTCDate(Number(utcString.substring(4, 6)));
-            ret.setUTCHours(Number(utcString.substring(6, 8)));
-            ret.setUTCMinutes(Number(utcString.substring(8, 10)));
-            ret.setUTCSeconds(Number(utcString.substring(10, 12)));
-
-            return ret;
-        } else {
-            throw new ASN1NotImplementedError();
+        let valueBytes : Uint8Array = this.octetString;
+        let dateString : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            dateString = (new Buffer(this.value)).toString("utf-8");
         }
+        if (dateString.length !== 13) {
+            throw new ASN1Error("Malformed UTCTime string.");
+        }
+
+        let ret : Date = new Date();
+        let year : number = Number(dateString.substring(0, 2));
+        ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
+        ret.setUTCMonth(Number(dateString.substring(2, 4)));
+        ret.setUTCDate(Number(dateString.substring(4, 6)));
+        ret.setUTCHours(Number(dateString.substring(6, 8)));
+        ret.setUTCMinutes(Number(dateString.substring(8, 10)));
+        ret.setUTCSeconds(Number(dateString.substring(10, 12)));
+        return ret;
     }
 
     // TODO: Support milliseconds
@@ -912,37 +724,25 @@ class BERElement extends ASN1Element {
         }
     }
 
-    /** FIXME:
-     * Constructed decoding not supported, because it would require complicated
-     * logic to construct the date object from the assembled strings. However,
-     * it might be possible to call another string accessor, then convert the
-     * output to a Date.
-     */
     get generalizedTime () : Date {
-        if (this.construction == ASN1Construction.primitive) {
-            let timeString : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                timeString = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                timeString = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            if (timeString.length < 13) {
-                throw new ASN1Error("Malformed GeneralizedTime string.");
-            }
-
-            let ret : Date = new Date();
-            ret.setUTCFullYear(Number(timeString.substring(0, 4)));
-            ret.setUTCMonth(Number(timeString.substring(4, 6)));
-            ret.setUTCDate(Number(timeString.substring(6, 8)));
-            ret.setUTCHours(Number(timeString.substring(8, 10)));
-            ret.setUTCMinutes(Number(timeString.substring(10, 12)));
-            ret.setUTCSeconds(Number(timeString.substring(12, 14)));
-
-            return ret;
-        } else {
-            throw new ASN1NotImplementedError();
+        let valueBytes : Uint8Array = this.octetString;
+        let dateString : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            dateString = (new Buffer(this.value)).toString("utf-8");
         }
+        if (dateString.length < 13) {
+            throw new ASN1Error("Malformed GeneralizedTime string.");
+        }
+        let ret : Date = new Date();
+        ret.setUTCFullYear(Number(dateString.substring(0, 4)));
+        ret.setUTCMonth(Number(dateString.substring(4, 6)));
+        ret.setUTCDate(Number(dateString.substring(6, 8)));
+        ret.setUTCHours(Number(dateString.substring(8, 10)));
+        ret.setUTCMinutes(Number(dateString.substring(10, 12)));
+        ret.setUTCSeconds(Number(dateString.substring(12, 14)));
+        return ret;
     }
 
     set graphicString (value : string) {
@@ -961,47 +761,20 @@ class BERElement extends ASN1Element {
     }
 
     get graphicString () : string {
-        if (this.construction == ASN1Construction.primitive) {
-            let ret : string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-
-            for (let i : number = 0; i < ret.length; i++) {
-                let characterCode : number = ret.charCodeAt(i);
-                if (characterCode < 0x20 || characterCode > 0x7E) {
-                    throw new ASN1Error("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
-                }
-            }
-
-            return ret;
-        } else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
-            }
-
-            let substrings : BERElement[] = this.sequence;
-            let whole : string = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
-                }
-
-                whole += substring.objectDescriptor;
-            });
-
-            BERElement.valueRecursionCount--;
-            return whole;
+        let valueBytes : Uint8Array = this.octetString;
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i : number = 0; i < ret.length; i++) {
+            let characterCode : number = ret.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E) {
+                throw new ASN1Error("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
+            }
+        }
+        return ret;
     }
 
     set visibleString (value : string) {

@@ -604,37 +604,15 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utf8String() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            return ret;
+        let valueBytes = this.octetString;
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded UTF8String.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded UTF8String.");
-                }
-                whole += substring.objectDescriptor;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        return ret;
     }
     set relativeObjectIdentifier(value) {
         let numbers = value;
@@ -773,43 +751,21 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get numericString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            for (let i = 0; i < ret.length; i++) {
-                let characterCode = ret.charCodeAt(i);
-                if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
-                }
-            }
-            return ret;
+        let valueBytes = this.octetString;
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded NumericString.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded NumericString.");
-                }
-                whole += substring.numericString;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i = 0; i < ret.length; i++) {
+            let characterCode = ret.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+        return ret;
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
@@ -825,120 +781,32 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get printableString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            for (let i = 0; i < ret.length; i++) {
-                if (_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"].indexOf(ret.charAt(i)) === -1) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`PrintableString can only contain these characters: ${_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"]}`);
-                }
-            }
-            return ret;
+        let valueBytes = this.octetString;
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded PrintableString.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded PrintableString.");
-                }
-                whole += substring.printableString;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i = 0; i < ret.length; i++) {
+            if (_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"].indexOf(ret.charAt(i)) === -1) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`PrintableString can only contain these characters: ${_asn1__WEBPACK_IMPORTED_MODULE_0__[/* printableStringCharacters */ "m"]}`);
+            }
+        }
+        return ret;
     }
     set teletexString(value) {
         this.value = value.subarray(0);
     }
     get teletexString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            return this.value.subarray(0);
-        }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let appendy = [];
-            let substrings = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded TeletexString.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded TeletexString.");
-                }
-                appendy = appendy.concat(substring.teletexString);
-            });
-            let totalLength = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.octetString;
     }
     set videotexString(value) {
         this.value = value.subarray(0);
     }
     get videotexString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            return this.value.subarray(0);
-        }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let appendy = [];
-            let substrings = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded VideotexString.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded VideotexString.");
-                }
-                appendy = appendy.concat(substring.videotexString);
-            });
-            let totalLength = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            let whole = new Uint8Array(totalLength);
-            let currentIndex = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
-        }
+        return this.octetString;
     }
     set ia5String(value) {
         if (typeof TextEncoder !== "undefined") {
@@ -949,37 +817,15 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get ia5String() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            return ret;
+        let valueBytes = this.octetString;
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded IA5String.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded IA5String.");
-                }
-                whole += substring.objectDescriptor;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        return ret;
     }
     set utcTime(value) {
         let year = value.getUTCFullYear().toString();
@@ -998,30 +844,26 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utcTime() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let utcString;
-            if (typeof TextEncoder !== "undefined") {
-                utcString = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                utcString = (new Buffer(this.value)).toString("utf-8");
-            }
-            if (utcString.length !== 13) {
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
-            }
-            let ret = new Date();
-            let year = Number(utcString.substring(0, 2));
-            ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
-            ret.setUTCMonth(Number(utcString.substring(2, 4)));
-            ret.setUTCDate(Number(utcString.substring(4, 6)));
-            ret.setUTCHours(Number(utcString.substring(6, 8)));
-            ret.setUTCMinutes(Number(utcString.substring(8, 10)));
-            ret.setUTCSeconds(Number(utcString.substring(10, 12)));
-            return ret;
+        let valueBytes = this.octetString;
+        let dateString = "";
+        if (typeof TextEncoder !== "undefined") {
+            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+        else if (typeof Buffer !== "undefined") {
+            dateString = (new Buffer(this.value)).toString("utf-8");
         }
+        if (dateString.length !== 13) {
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
+        }
+        let ret = new Date();
+        let year = Number(dateString.substring(0, 2));
+        ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
+        ret.setUTCMonth(Number(dateString.substring(2, 4)));
+        ret.setUTCDate(Number(dateString.substring(4, 6)));
+        ret.setUTCHours(Number(dateString.substring(6, 8)));
+        ret.setUTCMinutes(Number(dateString.substring(8, 10)));
+        ret.setUTCSeconds(Number(dateString.substring(10, 12)));
+        return ret;
     }
     set generalizedTime(value) {
         let year = value.getUTCFullYear().toString();
@@ -1039,29 +881,25 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get generalizedTime() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let timeString;
-            if (typeof TextEncoder !== "undefined") {
-                timeString = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                timeString = (new Buffer(this.value)).toString("utf-8");
-            }
-            if (timeString.length < 13) {
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
-            }
-            let ret = new Date();
-            ret.setUTCFullYear(Number(timeString.substring(0, 4)));
-            ret.setUTCMonth(Number(timeString.substring(4, 6)));
-            ret.setUTCDate(Number(timeString.substring(6, 8)));
-            ret.setUTCHours(Number(timeString.substring(8, 10)));
-            ret.setUTCMinutes(Number(timeString.substring(10, 12)));
-            ret.setUTCSeconds(Number(timeString.substring(12, 14)));
-            return ret;
+        let valueBytes = this.octetString;
+        let dateString = "";
+        if (typeof TextEncoder !== "undefined") {
+            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+        else if (typeof Buffer !== "undefined") {
+            dateString = (new Buffer(this.value)).toString("utf-8");
         }
+        if (dateString.length < 13) {
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
+        }
+        let ret = new Date();
+        ret.setUTCFullYear(Number(dateString.substring(0, 4)));
+        ret.setUTCMonth(Number(dateString.substring(4, 6)));
+        ret.setUTCDate(Number(dateString.substring(6, 8)));
+        ret.setUTCHours(Number(dateString.substring(8, 10)));
+        ret.setUTCMinutes(Number(dateString.substring(10, 12)));
+        ret.setUTCSeconds(Number(dateString.substring(12, 14)));
+        return ret;
     }
     set graphicString(value) {
         for (let i = 0; i < value.length; i++) {
@@ -1078,43 +916,21 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get graphicString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            let ret;
-            if (typeof TextEncoder !== "undefined") {
-                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
-            }
-            else if (typeof Buffer !== "undefined") {
-                ret = (new Buffer(this.value)).toString("utf-8");
-            }
-            for (let i = 0; i < ret.length; i++) {
-                let characterCode = ret.charCodeAt(i);
-                if (characterCode < 0x20 || characterCode > 0x7E) {
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
-                }
-            }
-            return ret;
+        let valueBytes = this.octetString;
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
-        else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-                BERElement.valueRecursionCount--;
-                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
-            }
-            let substrings = this.sequence;
-            let whole = "";
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
-                }
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded GraphicString, VisibleString, or ObjectDescriptor.");
-                }
-                whole += substring.objectDescriptor;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
         }
+        for (let i = 0; i < ret.length; i++) {
+            let characterCode = ret.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
+            }
+        }
+        return ret;
     }
     set visibleString(value) {
         this.graphicString = value;
