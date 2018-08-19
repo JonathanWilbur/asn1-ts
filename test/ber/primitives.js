@@ -1,3 +1,4 @@
+// TODO: Submit bug to jasmine about how date comparison fails on Safari
 let BERElement = asn1.BERElement;
 let ObjectIdentifier = asn1.ObjectIdentifier;
 
@@ -344,6 +345,42 @@ describe("Basic Encoding Rules", function() {
         let el = new BERElement();
         el.printableString = "12345abcdef '()+,-./:=?";
         expect(el.printableString).toBe("12345abcdef '()+,-./:=?");
+    });
+
+    it("encodes and decodes a UTCTime correctly", function () {
+        let el = new BERElement();
+        let test = new Date();
+        el.utcTime = test;
+        let ret = el.utcTime;
+
+        /** NOTE:
+         * You have to compare each member of the Date object individually,
+         * because the methods do not read or write milliseconds.
+         */
+        expect(ret.getUTCFullYear()).toBe(test.getUTCFullYear());
+        expect(ret.getUTCMonth()).toBe(test.getUTCMonth());
+        expect(ret.getUTCDate()).toBe(test.getUTCDate());
+        expect(ret.getUTCHours()).toBe(test.getUTCHours());
+        expect(ret.getUTCMinutes()).toBe(test.getUTCMinutes());
+        expect(ret.getUTCSeconds()).toBe(test.getUTCSeconds());
+    });
+
+    it("encodes and decodes a GeneralizedTime correctly", function () {
+        let el = new BERElement();
+        let test = new Date();
+        el.generalizedTime = test;
+        let ret = el.generalizedTime;
+
+        /** NOTE:
+         * You have to compare each member of the Date object individually,
+         * because the methods do not read or write milliseconds.
+         */
+        expect(ret.getUTCFullYear()).toBe(test.getUTCFullYear());
+        expect(ret.getUTCMonth()).toBe(test.getUTCMonth());
+        expect(ret.getUTCDate()).toBe(test.getUTCDate());
+        expect(ret.getUTCHours()).toBe(test.getUTCHours());
+        expect(ret.getUTCMinutes()).toBe(test.getUTCMinutes());
+        expect(ret.getUTCSeconds()).toBe(test.getUTCSeconds());
     });
 
 });

@@ -1,6 +1,7 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
 // TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
+// TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
@@ -892,8 +893,107 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // TODO: UTCTime
-    // TODO: GeneralizedTime
+    set utcTime (value : Date) {
+        let year : string = value.getUTCFullYear().toString();
+        year = (year.substring(year.length - 2, year.length)); // Will fail if you supply a <2 digit date.
+        let month : string = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        let day : string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        let hour : string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        let minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        let second : string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        let utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(utcString);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(utcString, "utf-8");
+        }
+    }
+
+    /** FIXME:
+     * Constructed decoding not supported, because it would require complicated
+     * logic to construct the date object from the assembled strings. However,
+     * it might be possible to call another string accessor, then convert the
+     * output to a Date.
+     */
+    get utcTime () : Date {
+        if (this.construction == ASN1Construction.primitive) {
+            let utcString : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                utcString = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                utcString = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            if (utcString.length !== 13) {
+                throw new ASN1Error("Malformed UTCTime string.");
+            }
+
+            let ret : Date = new Date();
+            let year : number = Number(utcString.substring(0, 2));
+            ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
+            ret.setUTCMonth(Number(utcString.substring(2, 4)));
+            ret.setUTCDate(Number(utcString.substring(4, 6)));
+            ret.setUTCHours(Number(utcString.substring(6, 8)));
+            ret.setUTCMinutes(Number(utcString.substring(8, 10)));
+            ret.setUTCSeconds(Number(utcString.substring(10, 12)));
+
+            return ret;
+        } else {
+            throw new ASN1NotImplementedError();
+        }
+    }
+
+    // TODO: Support milliseconds
+    set generalizedTime (value : Date) {
+        let year : string = value.getUTCFullYear().toString();
+        let month : string = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        let day : string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        let hour : string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        let minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        let second : string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        let timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(timeString);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(timeString, "utf-8");
+        }
+    }
+
+    /** FIXME:
+     * Constructed decoding not supported, because it would require complicated
+     * logic to construct the date object from the assembled strings. However,
+     * it might be possible to call another string accessor, then convert the
+     * output to a Date.
+     */
+    get generalizedTime () : Date {
+        if (this.construction == ASN1Construction.primitive) {
+            let timeString : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                timeString = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                timeString = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            if (timeString.length < 13) {
+                throw new ASN1Error("Malformed GeneralizedTime string.");
+            }
+
+            let ret : Date = new Date();
+            ret.setUTCFullYear(Number(timeString.substring(0, 4)));
+            ret.setUTCMonth(Number(timeString.substring(4, 6)));
+            ret.setUTCDate(Number(timeString.substring(6, 8)));
+            ret.setUTCHours(Number(timeString.substring(8, 10)));
+            ret.setUTCMinutes(Number(timeString.substring(10, 12)));
+            ret.setUTCSeconds(Number(timeString.substring(12, 14)));
+
+            return ret;
+        } else {
+            throw new ASN1NotImplementedError();
+        }
+    }
+
     // TODO: GraphicString
     // TODO: VisibleString
     // TODO: GeneralString

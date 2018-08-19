@@ -643,6 +643,47 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         });
         return ret;
     }
+    set utf8String(value) {
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get utf8String() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let ret;
+            if (typeof TextEncoder !== "undefined") {
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+            return ret;
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let substrings = this.sequence;
+            let whole = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded UTF8String.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded UTF8String.");
+                }
+                whole += substring.objectDescriptor;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
     set relativeObjectIdentifier(value) {
         let numbers = value;
         let pre = [];
@@ -945,6 +986,129 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             });
             BERElement.valueRecursionCount--;
             return whole;
+        }
+    }
+    set ia5String(value) {
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get ia5String() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let ret;
+            if (typeof TextEncoder !== "undefined") {
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+            return ret;
+        }
+        else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
+            }
+            let substrings = this.sequence;
+            let whole = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag class in recursively-encoded IA5String.");
+                }
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid tag number in recursively-encoded IA5String.");
+                }
+                whole += substring.objectDescriptor;
+            });
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+    set utcTime(value) {
+        let year = value.getUTCFullYear().toString();
+        year = (year.substring(year.length - 2, year.length));
+        let month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        let day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        let hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        let minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        let second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        let utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(utcString);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(utcString, "utf-8");
+        }
+    }
+    get utcTime() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let utcString;
+            if (typeof TextEncoder !== "undefined") {
+                utcString = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                utcString = (new Buffer(this.value)).toString("utf-8");
+            }
+            if (utcString.length !== 13) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
+            }
+            let ret = new Date();
+            let year = Number(utcString.substring(0, 2));
+            ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
+            ret.setUTCMonth(Number(utcString.substring(2, 4)));
+            ret.setUTCDate(Number(utcString.substring(4, 6)));
+            ret.setUTCHours(Number(utcString.substring(6, 8)));
+            ret.setUTCMinutes(Number(utcString.substring(8, 10)));
+            ret.setUTCSeconds(Number(utcString.substring(10, 12)));
+            return ret;
+        }
+        else {
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+        }
+    }
+    set generalizedTime(value) {
+        let year = value.getUTCFullYear().toString();
+        let month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        let day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        let hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        let minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        let second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        let timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(timeString);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(timeString, "utf-8");
+        }
+    }
+    get generalizedTime() {
+        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            let timeString;
+            if (typeof TextEncoder !== "undefined") {
+                timeString = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            }
+            else if (typeof Buffer !== "undefined") {
+                timeString = (new Buffer(this.value)).toString("utf-8");
+            }
+            if (timeString.length < 13) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
+            }
+            let ret = new Date();
+            ret.setUTCFullYear(Number(timeString.substring(0, 4)));
+            ret.setUTCMonth(Number(timeString.substring(4, 6)));
+            ret.setUTCDate(Number(timeString.substring(6, 8)));
+            ret.setUTCHours(Number(timeString.substring(8, 10)));
+            ret.setUTCMinutes(Number(timeString.substring(10, 12)));
+            ret.setUTCSeconds(Number(timeString.substring(12, 14)));
+            return ret;
+        }
+        else {
+            throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
         }
     }
     fromBytes(bytes) {
