@@ -2,6 +2,9 @@
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
 // TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
+// TODO: Reduce repetition by using the octetString accessor to decode constructed strings
+// TODO: Remove unused 'appendy'
+// TODO: Dedup graphicString / visibleString / objectDescriptor code.
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros?
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
 import { OID, ObjectIdentifier } from "./types/objectidentifier";
@@ -302,6 +305,7 @@ class BERElement extends ASN1Element {
         return new ObjectIdentifier(numbers);
     }
 
+    // TODO: Make this use the graphicString mutator, since ObjectDescriptor ::= GraphicString
     set objectDescriptor (value : string) {
         for (let i : number = 0; i < value.length; i++) {
             let characterCode : number = value.charCodeAt(i);
@@ -317,6 +321,7 @@ class BERElement extends ASN1Element {
         }
     }
 
+    // TODO: Make this use the graphicString accessor, since ObjectDescriptor ::= GraphicString
     get objectDescriptor () : string {
         if (this.construction == ASN1Construction.primitive) {
             let ret : string;
@@ -994,8 +999,124 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // TODO: GraphicString
-    // TODO: VisibleString
+    set graphicString (value : string) {
+        for (let i : number = 0; i < value.length; i++) {
+            let characterCode : number = value.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E) {
+                throw new ASN1Error("GraphicString can only contain characters between 0x20 and 0x7E.");
+            }
+        }
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get graphicString () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            for (let i : number = 0; i < ret.length; i++) {
+                let characterCode : number = ret.charCodeAt(i);
+                if (characterCode < 0x20 || characterCode > 0x7E) {
+                    throw new ASN1Error("GraphicString can only contain characters between 0x20 and 0x7E.");
+                }
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded GraphicString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded GraphicString.");
+                }
+
+                whole += substring.objectDescriptor;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
+    set visibleString (value : string) {
+        for (let i : number = 0; i < value.length; i++) {
+            let characterCode : number = value.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E) {
+                throw new ASN1Error("VisibleString can only contain characters between 0x20 and 0x7E.");
+            }
+        }
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get visibleString () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            for (let i : number = 0; i < ret.length; i++) {
+                let characterCode : number = ret.charCodeAt(i);
+                if (characterCode < 0x20 || characterCode > 0x7E) {
+                    throw new ASN1Error("VisibleString can only contain characters between 0x20 and 0x7E.");
+                }
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded VisibleString.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded VisibleString.");
+                }
+
+                whole += substring.objectDescriptor;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
     // TODO: GeneralString
     // TODO: UniversalString
     // TODO: CHARACTER STRING
