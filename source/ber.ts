@@ -783,12 +783,42 @@ class BERElement extends ASN1Element {
     }
 
     // TODO: GeneralString
-    // TODO: UniversalString
+
+    set universalString (value : string) {
+        let buf : Uint8Array = new Uint8Array(value.length << 2);
+        for (let i : number = 0, strLen : number = value.length; i < strLen; i++) {
+            buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
+            buf[(i << 2) + 1]  = value.charCodeAt(i) >>> 16;
+            buf[(i << 2) + 2]  = value.charCodeAt(i) >>> 8;
+            buf[(i << 2) + 3]  = value.charCodeAt(i);
+        }
+        this.value = buf;
+    }
+
+    /** NOTE:
+     * This might not decode anything above 0xFFFF, because JavaScript
+     * natively uses either UCS-2 or UTF-16. If it uses UTF-16 (which
+     * most do), it might work, but UCS-2 will definitely not work.
+     */
+    get universalString () : string {
+        let valueBytes : Uint8Array = this.deconstruct("UniversalString");
+        let ret : string = "";
+        for (let i : number = 0; i < valueBytes.length; i += 4) {
+            ret += String.fromCharCode(
+                (valueBytes[i + 0] << 24) +
+                (valueBytes[i + 1] << 16) +
+                (valueBytes[i + 2] << 8)  +
+                (valueBytes[i + 3] << 0)
+            );
+        }
+        return ret;
+    }
+
     // TODO: CHARACTER STRING
 
     set bmpString (value : string) {
         let buf : Uint8Array = new Uint8Array(value.length << 1);
-        for (let i : number = 0, strLen = value.length; i < strLen; i++) {
+        for (let i : number = 0, strLen : number = value.length; i < strLen; i++) {
             buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
             buf[(i << 1) + 1]  = value.charCodeAt(i);
         }

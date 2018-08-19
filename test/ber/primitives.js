@@ -389,4 +389,10 @@ describe("Basic Encoding Rules", function() {
         expect(el.bmpString).toBe("HENLOBORTHERS");
     });
 
+    it("encodes and decodes a UniversalString correctly", function () {
+        let el = new BERElement();
+        el.universalString = "HENLOBORTHERS";
+        expect(el.universalString).toBe("HENLOBORTHERS");
+    });
+
 });
