@@ -460,7 +460,51 @@ class BERElement extends ASN1Element {
     }
 
     // TODO: EmbeddedPDV
-    // TODO: UTF8String
+
+    set utf8String (value : string) {
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get utf8String () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded UTF8String.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded UTF8String.");
+                }
+
+                whole += substring.objectDescriptor;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
 
     set relativeObjectIdentifier (value : number[]) {
         let numbers : number[] = value;
@@ -803,7 +847,51 @@ class BERElement extends ASN1Element {
         }
     }
 
-    // TODO: IA5String
+    set ia5String (value : string) {
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+
+    get ia5String () : string {
+        if (this.construction == ASN1Construction.primitive) {
+            let ret : string;
+            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                ret = (new TextDecoder("utf-8")).decode(this.value.buffer);
+            } else if (typeof Buffer !== "undefined") { // NodeJS
+                ret = (new Buffer(this.value)).toString("utf-8");
+            }
+
+            return ret;
+        } else {
+            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+                BERElement.valueRecursionCount--;
+                throw new ASN1Error("Recursion was too deep!");
+            }
+
+            let substrings : BERElement[] = this.sequence;
+            let whole : string = "";
+            substrings.forEach(substring => {
+                if (substring.tagClass != this.tagClass) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag class in recursively-encoded IA5String.");
+                }
+
+                if (substring.tagNumber != this.tagNumber) {
+                    BERElement.valueRecursionCount--;
+                    throw new ASN1Error("Invalid tag number in recursively-encoded IA5String.");
+                }
+
+                whole += substring.objectDescriptor;
+            });
+
+            BERElement.valueRecursionCount--;
+            return whole;
+        }
+    }
+
     // TODO: UTCTime
     // TODO: GeneralizedTime
     // TODO: GraphicString
