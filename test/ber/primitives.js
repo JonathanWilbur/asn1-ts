@@ -256,7 +256,6 @@ describe("Basic Encoding Rules", function() {
     });
 
     // TODO: EmbeddedPDV
-    // TODO: UTF8String
 
     it("encodes and decodes a RELATIVE OID correctly", function () {
         let el = new BERElement();
@@ -387,6 +386,12 @@ describe("Basic Encoding Rules", function() {
         let el = new BERElement();
         el.bmpString = "HENLOBORTHERS";
         expect(el.bmpString).toBe("HENLOBORTHERS");
+    });
+
+    it("encodes and decodes a GeneralString correctly", function () {
+        let el = new BERElement();
+        el.generalString = "Testeroni";
+        expect(el.generalString).toBe("Testeroni");
     });
 
     it("encodes and decodes a UniversalString correctly", function () {

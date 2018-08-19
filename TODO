@@ -3,6 +3,7 @@
 - Use unsigned shifts where possible
 - Use different numeric literal appropriately
 - Fix infinite recursion vulnerabilities
+- Better string characters validation
 - Suggest improvements to TypeScript
   - unsigned integers
   - Recursive `const`

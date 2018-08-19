@@ -175,43 +175,6 @@ class BERElement extends ASN1Element {
 
     get octetString () : Uint8Array {
         return this.deconstruct("OCTET STRING");
-        // if (this.construction == ASN1Construction.primitive) {
-        //     return this.value.subarray(0); // Clones it.
-        // } else {
-        //     if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
-        //         BERElement.valueRecursionCount--;
-        //         throw new ASN1Error("Recursion was too deep!");
-        //     }
-
-        //     let appendy : Uint8Array[] = [];
-        //     let substrings : BERElement[] = this.sequence;
-        //     substrings.forEach(substring => {
-        //         if (substring.tagClass != this.tagClass) {
-        //             BERElement.valueRecursionCount--;
-        //             throw new ASN1Error("Invalid tag class in recursively-encoded OCTET STRING.");
-        //         }
-
-        //         if (substring.tagNumber != this.tagNumber) {
-        //             BERElement.valueRecursionCount--;
-        //             throw new ASN1Error("Invalid tag number in recursively-encoded OCTET STRING.");
-        //         }
-
-        //         appendy = appendy.concat(substring.octetString);
-        //     });
-
-        //     let totalLength : number = 0;
-        //     appendy.forEach(substring => {
-        //         totalLength += substring.length;
-        //     });
-        //     let whole = new Uint8Array(totalLength);
-        //     let currentIndex : number = 0;
-        //     appendy.forEach(substring => {
-        //         whole.set(substring, currentIndex);
-        //         currentIndex += substring.length;
-        //     });
-        //     BERElement.valueRecursionCount--;
-        //     return whole;
-        // }
     }
 
     set objectIdentifier (value : OID) {
@@ -782,10 +745,41 @@ class BERElement extends ASN1Element {
         return this.graphicString;
     }
 
-    // TODO: GeneralString
+    set generalString (value : string) {
+        for (let i : number = 0; i < value.length; i++) {
+            if (value.charCodeAt(i) > 0x7F) {
+                throw new ASN1Error("GeneralString can only contain ASCII characters.");
+            }
+        }
+
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            this.value = (new TextEncoder()).encode(value);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            this.value = Buffer.from(value, "ascii");
+        }
+    }
+
+    get generalString () : string {
+        let valueBytes : Uint8Array = this.deconstruct("GeneralString");
+        let ret : string = "";
+        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+            ret = (new TextDecoder("windows-1252")).decode(valueBytes.buffer);
+        } else if (typeof Buffer !== "undefined") { // NodeJS
+            ret = (new Buffer(this.value)).toString("ascii");
+        }
+        for (let i : number = 0; i < ret.length; i++) {
+            let characterCode : number = ret.charCodeAt(i);
+            if (characterCode > 0x7F) {
+                throw new ASN1Error("GeneralString can only contain ASCII characters.");
+            }
+        }
+        return ret;
+    }
 
     set universalString (value : string) {
         let buf : Uint8Array = new Uint8Array(value.length << 2);
+        if (buf.length % 4)
+            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
         for (let i : number = 0, strLen : number = value.length; i < strLen; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
             buf[(i << 2) + 1]  = value.charCodeAt(i) >>> 16;
@@ -827,6 +821,8 @@ class BERElement extends ASN1Element {
 
     get bmpString () : string {
         let valueBytes : Uint8Array = this.deconstruct("BMPString");
+        if (valueBytes.length % 4)
+            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);

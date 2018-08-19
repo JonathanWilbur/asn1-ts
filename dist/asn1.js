@@ -905,6 +905,36 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     get visibleString() {
         return this.graphicString;
     }
+    set generalString(value) {
+        for (let i = 0; i < value.length; i++) {
+            if (value.charCodeAt(i) > 0x7F) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GeneralString can only contain ASCII characters.");
+            }
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "ascii");
+        }
+    }
+    get generalString() {
+        let valueBytes = this.deconstruct("GeneralString");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("windows-1252")).decode(valueBytes.buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("ascii");
+        }
+        for (let i = 0; i < ret.length; i++) {
+            let characterCode = ret.charCodeAt(i);
+            if (characterCode > 0x7F) {
+                throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GeneralString can only contain ASCII characters.");
+            }
+        }
+        return ret;
+    }
     set universalString(value) {
         let buf = new Uint8Array(value.length << 2);
         for (let i = 0, strLen = value.length; i < strLen; i++) {
@@ -919,12 +949,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         let valueBytes = this.deconstruct("UniversalString");
         let ret = "";
         for (let i = 0; i < valueBytes.length; i += 4) {
-            let char = String.fromCharCode((valueBytes[i + 0] << 24) +
+            ret += String.fromCharCode((valueBytes[i + 0] << 24) +
                 (valueBytes[i + 1] << 16) +
                 (valueBytes[i + 2] << 8) +
                 (valueBytes[i + 3] << 0));
-            console.info(char.charCodeAt(0));
-            ret += char;
         }
         return ret;
     }
