@@ -293,13 +293,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get integer() {
-        if (this.value.length == 0)
+        if (this.value.length === 0)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number too long to decode.");
         if (this.value.length > 2 &&
-            ((this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
-                (this.value[0] == 0x00 && this.value[1] < 0b10000000)))
+            ((this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] === 0x00 && this.value[1] < 0b10000000)))
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Unnecessary padding bytes on INTEGER.");
         let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
@@ -309,25 +309,25 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return ret;
     }
     set bitString(value) {
-        if (value.length == 0)
+        if (value.length === 0)
             this.value = new Uint8Array(0);
         let pre = [];
         pre.length = ((Math.trunc(value.length / 8)) + ((value.length % 8) ? 1 : 0)) + 1;
         for (let i = 0; i < value.length; i++) {
-            if (value[i] == false)
+            if (value[i] === false)
                 continue;
-            pre[((Math.trunc(i / 8)) + 1)] |= (0b10000000 >> (i % 8));
+            pre[((Math.trunc(i / 8)) + 1)] |= (0b10000000 >>> (i % 8));
         }
         pre[0] = (8 - (value.length % 8));
-        if (pre[0] == 8)
+        if (pre[0] === 8)
             pre[0] = 0;
         this.value = new Uint8Array(pre);
     }
     get bitString() {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
-            if (this.value.length == 0)
+        if (this.construction === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+            if (this.value.length === 0)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
-            if (this.value.length == 1 && this.value[0] != 0)
+            if (this.value.length === 1 && this.value[0] != 0)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
             if (this.value[0] > 7)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
@@ -348,16 +348,16 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             return ret;
         }
         else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+            if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit) {
                 BERElement.valueRecursionCount--;
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
             }
             let appendy = [];
-            let substrings = this.sequence;
-            if (substrings.length == 0)
+            const substrings = this.sequence;
+            if (substrings.length === 0)
                 return [];
             substrings.slice(0, (substrings.length - 1)).forEach(substring => {
-                if (substring.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive &&
+                if (substring.construction === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive &&
                     substring.value.length > 0 &&
                     substring.value[0] != 0x00) {
                     BERElement.valueRecursionCount--;
@@ -391,7 +391,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return this.deconstruct("OCTET STRING");
     }
     set objectIdentifier(value) {
-        let numbers = value.nodes;
+        const numbers = value.nodes;
         let pre = [((numbers[0] * 40) + numbers[1])];
         if (numbers.length > 2) {
             for (let i = 2; i < numbers.length; i++) {
@@ -404,11 +404,11 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 while (number != 0) {
                     let numberBytes = [
                         (number & 255),
-                        (number >> 8 & 255),
-                        ((number >> 16) & 255),
-                        ((number >> 24) & 255),
+                        (number >>> 8 & 255),
+                        ((number >>> 16) & 255),
+                        ((number >>> 24) & 255),
                     ];
-                    if ((numberBytes[0] & 0x80) == 0)
+                    if ((numberBytes[0] & 0x80) === 0)
                         numberBytes[0] |= 0x80;
                     encodedOIDNode.unshift(numberBytes[0]);
                     number >>= 7;
@@ -422,7 +422,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     get objectIdentifier() {
         if (this.construction != _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Construction cannot be constructed for an OBJECT IDENTIFIER!");
-        if (this.value.length == 0)
+        if (this.value.length === 0)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Encoded value was too short to be an OBJECT IDENTIFIER!");
         let numbers = [0, 0];
         if (this.value[0] >= 0x50) {
@@ -437,9 +437,9 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             numbers[0] = 0;
             numbers[1] = this.value[0];
         }
-        if (this.value.length == 1)
+        if (this.value.length === 1)
             return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_1__[/* ObjectIdentifier */ "a"](numbers);
-        if ((this.value[(this.value.length - 1)] & 0x80) == 0x80)
+        if ((this.value[(this.value.length - 1)] & 0x80) === 0x80)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID truncated");
         let components = 2;
         const allButTheFirstByte = this.value.slice(1);
@@ -451,7 +451,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         let currentNumber = 2;
         let bytesUsedInCurrentNumber = 0;
         allButTheFirstByte.forEach(b => {
-            if (bytesUsedInCurrentNumber == 0 && b == 0x80)
+            if (bytesUsedInCurrentNumber === 0 && b === 0x80)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID had invalid padding byte.");
             if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID node too big");
@@ -474,19 +474,19 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return this.graphicString;
     }
     set real(value) {
-        if (value == 0.0) {
+        if (value === 0.0) {
             this.value = new Uint8Array(0);
         }
         else if (isNaN(value)) {
             this.value = new Uint8Array([_asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].notANumber]);
         }
-        else if (value == -0.0) {
+        else if (value === -0.0) {
             this.value = new Uint8Array([_asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusZero]);
         }
-        else if (value == Infinity) {
+        else if (value === Infinity) {
             this.value = new Uint8Array([_asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].plusInfinity]);
         }
-        else if (value == -Infinity) {
+        else if (value === -Infinity) {
             this.value = new Uint8Array([_asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusInfinity]);
         }
         let valueString = value.toFixed(7);
@@ -494,23 +494,22 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.value = (new TextEncoder()).encode(valueString);
     }
     get real() {
-        if (this.value.length == 0)
+        if (this.value.length === 0)
             return 0.0;
         switch (this.value[0] & 0b11000000) {
             case (0b01000000): {
-                if (this.value[0] == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].notANumber)
+                if (this.value[0] === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].notANumber)
                     return NaN;
-                if (this.value[0] == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusZero)
+                if (this.value[0] === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusZero)
                     return -0.0;
-                if (this.value[0] == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].plusInfinity)
+                if (this.value[0] === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].plusInfinity)
                     return Infinity;
-                if (this.value[0] == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusInfinity)
+                if (this.value[0] === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SpecialRealValue */ "e"].minusInfinity)
                     return -Infinity;
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Unrecognized special REAL value!");
             }
             case (0b00000000): {
-                let encodedString = (new TextDecoder()).decode(this.value.slice(1));
-                return parseFloat(encodedString);
+                return parseFloat((new TextDecoder()).decode(this.value.slice(1)));
             }
             case (0b10000000):
             case (0b11000000): {
@@ -555,13 +554,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get enumerated() {
-        if (this.value.length == 0)
+        if (this.value.length === 0)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number encoded on zero bytes!");
         if (this.value.length > 4)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Number too long to decode.");
         if (this.value.length > 2 &&
-            ((this.value[0] == 0xFF && this.value[1] >= 0b10000000) ||
-                (this.value[0] == 0x00 && this.value[1] < 0b10000000)))
+            ((this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] === 0x00 && this.value[1] < 0b10000000)))
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Unnecessary padding bytes on ENUMERATED.");
         let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
         this.value.forEach(byte => {
@@ -579,7 +578,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utf8String() {
-        let valueBytes = this.deconstruct("UTF8String");
+        const valueBytes = this.deconstruct("UTF8String");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -603,12 +602,12 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 while (number != 0) {
                     let numberBytes = [
                         (number & 255),
-                        (number >> 8 & 255),
-                        ((number >> 16) & 255),
-                        ((number >> 24) & 255),
+                        (number >>> 8 & 255),
+                        ((number >>> 16) & 255),
+                        ((number >>> 24) & 255),
                     ];
-                    if ((numberBytes[0] & 0x80) == 0)
-                        numberBytes[0] |= 0x80;
+                    if ((numberBytes[0] & 0b10000000) === 0)
+                        numberBytes[0] |= 0b10000000;
                     encodedOIDNode.unshift(numberBytes[0]);
                     number >>= 7;
                 }
@@ -622,26 +621,26 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         if (this.construction != _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Construction cannot be constructed for an OBJECT IDENTIFIER!");
         let numbers = [];
-        if (this.value.length == 1)
+        if (this.value.length === 1)
             return numbers;
-        if ((this.value[(this.value.length - 1)] & 0x80) == 0x80)
+        if ((this.value[(this.value.length - 1)] & 0b10000000) === 0b10000000)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID truncated");
         let components = 0;
         this.value.forEach(b => {
-            if (!(b & 0x80))
+            if (!(b & 0b10000000))
                 components++;
         });
         numbers.length = components;
         let currentNumber = 0;
         let bytesUsedInCurrentNumber = 0;
         this.value.forEach(b => {
-            if (bytesUsedInCurrentNumber == 0 && b == 0x80)
+            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID had invalid padding byte.");
             if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("OID node too big");
             numbers[currentNumber] <<= 7;
             numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0x80)) {
+            if (!(b & 0b10000000)) {
                 currentNumber++;
                 bytesUsedInCurrentNumber = 0;
             }
@@ -660,7 +659,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         encodedElements.forEach(element => {
             totalLength += element.length;
         });
-        let newValue = new Uint8Array(totalLength);
+        const newValue = new Uint8Array(totalLength);
         let currentIndex = 0;
         encodedElements.forEach(element => {
             newValue.set(element, currentIndex);
@@ -675,7 +674,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             return [];
         let i = 0;
         while (i < this.value.length) {
-            let next = new BERElement();
+            const next = new BERElement();
             i += next.fromBytes(this.value.slice(i));
             encodedElements.push(next);
         }
@@ -690,7 +689,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         encodedElements.forEach(element => {
             totalLength += element.length;
         });
-        let newValue = new Uint8Array(totalLength);
+        const newValue = new Uint8Array(totalLength);
         let currentIndex = 0;
         encodedElements.forEach(element => {
             newValue.set(element, currentIndex);
@@ -705,7 +704,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             return [];
         let i = 0;
         while (i < this.value.length) {
-            let next = new BERElement();
+            const next = new BERElement();
             i += next.fromBytes(this.value.slice(i));
             encodedElements.push(next);
         }
@@ -713,7 +712,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     }
     set numericString(value) {
         for (let i = 0; i < value.length; i++) {
-            let characterCode = value.charCodeAt(i);
+            const characterCode = value.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
             }
@@ -726,7 +725,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get numericString() {
-        let valueBytes = this.deconstruct("NumericString");
+        const valueBytes = this.deconstruct("NumericString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -735,7 +734,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            let characterCode = ret.charCodeAt(i);
+            const characterCode = ret.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("NumericString can only contain characters 0 - 9 and space.");
             }
@@ -756,7 +755,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get printableString() {
-        let valueBytes = this.deconstruct("PrintableString");
+        const valueBytes = this.deconstruct("PrintableString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -792,7 +791,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get ia5String() {
-        let valueBytes = this.deconstruct("IA5String");
+        const valueBytes = this.deconstruct("IA5String");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -805,12 +804,12 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     set utcTime(value) {
         let year = value.getUTCFullYear().toString();
         year = (year.substring(year.length - 2, year.length));
-        let month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
-        let day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
-        let hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
-        let minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
-        let second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
-        let utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        const month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        const second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        const utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
         if (typeof TextEncoder !== "undefined") {
             this.value = (new TextEncoder()).encode(utcString);
         }
@@ -819,7 +818,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get utcTime() {
-        let valueBytes = this.deconstruct("UTCTime");
+        const valueBytes = this.deconstruct("UTCTime");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -830,8 +829,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         if (dateString.length !== 13) {
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         }
-        let ret = new Date();
-        let year = Number(dateString.substring(0, 2));
+        const ret = new Date();
+        const year = Number(dateString.substring(0, 2));
         ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
         ret.setUTCMonth(Number(dateString.substring(2, 4)));
         ret.setUTCDate(Number(dateString.substring(4, 6)));
@@ -841,13 +840,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return ret;
     }
     set generalizedTime(value) {
-        let year = value.getUTCFullYear().toString();
-        let month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
-        let day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
-        let hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
-        let minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
-        let second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
-        let timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        const year = value.getUTCFullYear().toString();
+        const month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        const second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        const timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
         if (typeof TextEncoder !== "undefined") {
             this.value = (new TextEncoder()).encode(timeString);
         }
@@ -856,7 +855,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get generalizedTime() {
-        let valueBytes = this.deconstruct("GeneralizedTime");
+        const valueBytes = this.deconstruct("GeneralizedTime");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -867,7 +866,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         if (dateString.length < 13) {
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         }
-        let ret = new Date();
+        const ret = new Date();
         ret.setUTCFullYear(Number(dateString.substring(0, 4)));
         ret.setUTCMonth(Number(dateString.substring(4, 6)));
         ret.setUTCDate(Number(dateString.substring(6, 8)));
@@ -878,7 +877,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
     }
     set graphicString(value) {
         for (let i = 0; i < value.length; i++) {
-            let characterCode = value.charCodeAt(i);
+            const characterCode = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
             }
@@ -891,7 +890,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get graphicString() {
-        let valueBytes = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
+        const valueBytes = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
@@ -900,7 +899,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            let characterCode = ret.charCodeAt(i);
+            const characterCode = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
             }
@@ -927,7 +926,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         }
     }
     get generalString() {
-        let valueBytes = this.deconstruct("GeneralString");
+        const valueBytes = this.deconstruct("GeneralString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("windows-1252")).decode(valueBytes.buffer);
@@ -936,16 +935,15 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             ret = (new Buffer(this.value)).toString("ascii");
         }
         for (let i = 0; i < ret.length; i++) {
-            let characterCode = ret.charCodeAt(i);
-            if (characterCode > 0x7F) {
+            if (ret.charCodeAt(i) > 0x7F) {
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("GeneralString can only contain ASCII characters.");
             }
         }
         return ret;
     }
     set universalString(value) {
-        let buf = new Uint8Array(value.length << 2);
-        for (let i = 0, strLen = value.length; i < strLen; i++) {
+        const buf = new Uint8Array(value.length << 2);
+        for (let i = 0; i < value.length; i++) {
             buf[(i << 2)] = value.charCodeAt(i) >>> 24;
             buf[(i << 2) + 1] = value.charCodeAt(i) >>> 16;
             buf[(i << 2) + 2] = value.charCodeAt(i) >>> 8;
@@ -954,7 +952,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.value = buf;
     }
     get universalString() {
-        let valueBytes = this.deconstruct("UniversalString");
+        const valueBytes = this.deconstruct("UniversalString");
         if (valueBytes.length % 4)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
         let ret = "";
@@ -967,7 +965,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         return ret;
     }
     set bmpString(value) {
-        let buf = new Uint8Array(value.length << 1);
+        const buf = new Uint8Array(value.length << 1);
         for (let i = 0, strLen = value.length; i < strLen; i++) {
             buf[(i << 1)] = value.charCodeAt(i) >>> 8;
             buf[(i << 1) + 1] = value.charCodeAt(i);
@@ -975,7 +973,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.value = buf;
     }
     get bmpString() {
-        let valueBytes = this.deconstruct("BMPString");
+        const valueBytes = this.deconstruct("BMPString");
         if (valueBytes.length % 2)
             throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
@@ -983,7 +981,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            let swappedEndianness = new Uint8Array(valueBytes.length);
+            const swappedEndianness = new Uint8Array(valueBytes.length);
             for (let i = 0; i < valueBytes.length; i += 2) {
                 swappedEndianness[i] = valueBytes[i + 1];
                 swappedEndianness[i + 1] = valueBytes[i];
@@ -1016,16 +1014,16 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
         this.tagNumber = (bytes[cursor] & 0b00011111);
         cursor++;
         if (this.tagNumber >= 31) {
-            if (bytes[cursor] == 0b10000000)
+            if (bytes[cursor] === 0b10000000)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Leading padding byte on long tag number encoding.");
             this.tagNumber = 0;
             const limit = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
             while (cursor < limit) {
-                if (!(bytes[cursor++] & 0x80))
+                if (!(bytes[cursor++] & 0b10000000))
                     break;
             }
-            if (bytes[cursor - 1] & 0x80) {
-                if (limit == bytes.length - 1) {
+            if (bytes[cursor - 1] & 0b10000000) {
+                if (limit === bytes.length - 1) {
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 tag number appears to have been truncated.");
                 }
                 else
@@ -1036,17 +1034,17 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
         }
-        if ((bytes[cursor] & 0x80) == 0x80) {
+        if ((bytes[cursor] & 0b10000000) === 0b10000000) {
             const numberOfLengthOctets = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets) {
-                if (numberOfLengthOctets == 0b01111111)
+                if (numberOfLengthOctets === 0b01111111)
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Length byte with undefined meaning encountered.");
                 if (numberOfLengthOctets > 4)
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Element length too long to decode to an integer.");
                 if (cursor + numberOfLengthOctets >= bytes.length)
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Element length bytes appear to have been truncated.");
                 cursor++;
-                let lengthNumberOctets = new Uint8Array(4);
+                const lengthNumberOctets = new Uint8Array(4);
                 for (let i = numberOfLengthOctets; i > 0; i--) {
                     lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
                 }
@@ -1075,13 +1073,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 while (sentinel < bytes.length) {
                     const child = new BERElement();
                     sentinel += child.fromBytes(bytes.slice(sentinel));
-                    if (child.tagClass == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TagClass */ "f"].universal &&
-                        child.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive &&
-                        child.tagNumber == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UniversalType */ "g"].endOfContent &&
-                        child.value.length == 0)
+                    if (child.tagClass === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TagClass */ "f"].universal &&
+                        child.construction === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive &&
+                        child.tagNumber === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UniversalType */ "g"].endOfContent &&
+                        child.value.length === 0)
                         break;
                 }
-                if (sentinel == bytes.length && (bytes[sentinel - 1] != 0x00 || bytes[sentinel - 2] != 0x00))
+                if (sentinel === bytes.length && (bytes[sentinel - 1] != 0x00 || bytes[sentinel - 2] != 0x00))
                     throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
                 BERElement.lengthRecursionCount--;
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
@@ -1089,7 +1087,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             }
         }
         else {
-            let length = (bytes[cursor++] & 0x7F);
+            const length = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length)
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 element was truncated.");
             this.value = bytes.slice(cursor, (cursor + length));
@@ -1125,11 +1123,11 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                     let length = this.value.length;
                     lengthOctets = [0, 0, 0, 0];
                     for (let i = 0; i < 4; i++) {
-                        lengthOctets[i] = ((length >> ((3 - i) << 3)) & 0xFF);
+                        lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 0xFF);
                     }
                     let startOfNonPadding = 0;
                     for (let i = 0; i < (lengthOctets.length - 1); i++) {
-                        if (lengthOctets[i] == 0x00)
+                        if (lengthOctets[i] === 0x00)
                             startOfNonPadding++;
                     }
                     lengthOctets = lengthOctets.slice(startOfNonPadding);
@@ -1138,32 +1136,32 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
                 break;
             }
             case (_asn1__WEBPACK_IMPORTED_MODULE_0__[/* LengthEncodingPreference */ "h"].indefinite): {
-                lengthOctets = [0x80];
+                lengthOctets = [0b10000000];
                 break;
             }
             default:
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Invalid LengthEncodingPreference encountered!");
         }
-        let ret = new Uint8Array(tagBytes.length +
+        const ret = new Uint8Array(tagBytes.length +
             lengthOctets.length +
             this.value.length +
-            (BERElement.lengthEncodingPreference == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* LengthEncodingPreference */ "h"].indefinite ? 2 : 0));
+            (BERElement.lengthEncodingPreference === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* LengthEncodingPreference */ "h"].indefinite ? 2 : 0));
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
     }
     deconstruct(dataType) {
-        if (this.construction == _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
+        if (this.construction === _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive) {
             return this.value.subarray(0);
         }
         else {
-            if (BERElement.valueRecursionCount++ == BERElement.nestingRecursionLimit) {
+            if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit) {
                 BERElement.valueRecursionCount--;
                 throw new _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Recursion was too deep!");
             }
             let appendy = [];
-            let substrings = this.sequence;
+            const substrings = this.sequence;
             substrings.forEach(substring => {
                 if (substring.tagClass != this.tagClass) {
                     BERElement.valueRecursionCount--;
@@ -1179,7 +1177,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "b
             appendy.forEach(substring => {
                 totalLength += substring.length;
             });
-            let whole = new Uint8Array(totalLength);
+            const whole = new Uint8Array(totalLength);
             let currentIndex = 0;
             appendy.forEach(substring => {
                 whole.set(substring, currentIndex);
