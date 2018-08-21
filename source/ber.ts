@@ -4,7 +4,7 @@
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
 import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
-import { OID, ObjectIdentifier } from "./types/objectidentifier";
+import { ObjectIdentifier as OID } from "./types/objectidentifier";
 
 export
 class BERElement extends ASN1Element {
@@ -18,9 +18,9 @@ class BERElement extends ASN1Element {
     }
 
     get boolean () : boolean {
-        if (this.value.length != 1)
+        if (this.value.length !== 1)
             throw new ASN1Error("BER-encoded BOOLEAN not one byte");
-        return (this.value[0] != 0);
+        return (this.value[0] !== 0);
     }
 
     /**
@@ -109,7 +109,7 @@ class BERElement extends ASN1Element {
         if (this.construction === ASN1Construction.primitive) {
             if (this.value.length === 0)
                 throw new ASN1Error("ASN.1 BIT STRING cannot be encoded on zero bytes!");
-            if (this.value.length === 1 && this.value[0] != 0)
+            if (this.value.length === 1 && this.value[0] !== 0)
                 throw new ASN1Error("ASN.1 BIT STRING encoded with deceptive first byte!");
             if (this.value[0] > 7)
                 throw new ASN1Error("First byte of an ASN.1 BIT STRING must be <= 7!");
@@ -130,50 +130,40 @@ class BERElement extends ASN1Element {
             ret.length -= this.value[0];
             return ret;
         } else {
-            if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit) {
+            try {
+                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
+                    throw new ASN1Error("Recursion was too deep!");
+                let appendy : boolean[] = [];
+                const substrings : BERElement[] = this.sequence;
+                if (substrings.length === 0) return [];
+                // REVIEW: Why am I skipping the last substring? I don't think it is EOC...
+                substrings.slice(0, (substrings.length - 1)).forEach(substring => {
+                    if (
+                        substring.construction === ASN1Construction.primitive &&
+                        substring.value.length > 0 &&
+                        substring.value[0] !== 0x00
+                    )
+                        throw new ASN1Error
+                        (
+                            "This exception was thrown because you attempted to " +
+                            "decode a constructed BIT STRING that contained a " +
+                            "substring whose first byte indicated a non-zero " +
+                            "number of padding bits, despite not being the " +
+                            "last substring of the constructed BIT STRING. " +
+                            "Only the last substring may have padding bits. "
+                        );
+                });
+                substrings.forEach(substring => {
+                    if (substring.tagClass !== this.tagClass)
+                        throw new ASN1Error("Invalid tag class in recursively-encoded BIT STRING.");
+                    if (substring.tagNumber !== this.tagNumber)
+                        throw new ASN1Error("Invalid tag number in recursively-encoded BIT STRING.");
+                    appendy = appendy.concat(substring.bitString);
+                });
+                return appendy;
+            } finally {
                 BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
             }
-
-            let appendy : boolean[] = [];
-            const substrings : BERElement[] = this.sequence;
-            if (substrings.length === 0) return [];
-            // REVIEW: Why am I skipping the last substring? I don't think it is EOC...
-            substrings.slice(0, (substrings.length - 1)).forEach(substring => {
-                if (
-                    substring.construction === ASN1Construction.primitive &&
-                    substring.value.length > 0 &&
-                    substring.value[0] != 0x00
-                ) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error
-                    (
-                        "This exception was thrown because you attempted to " +
-                        "decode a constructed BIT STRING that contained a " +
-                        "substring whose first byte indicated a non-zero " +
-                        "number of padding bits, despite not being the " +
-                        "last substring of the constructed BIT STRING. " +
-                        "Only the last substring may have padding bits. "
-                    );
-                }
-            });
-
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag class in recursively-encoded BIT STRING.");
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error("Invalid tag number in recursively-encoded BIT STRING.");
-                }
-
-                appendy = appendy.concat(substring.bitString);
-            });
-
-            BERElement.valueRecursionCount--;
-            return appendy;
         }
     }
 
@@ -197,7 +187,7 @@ class BERElement extends ASN1Element {
                 }
 
                 let encodedOIDNode : number[] = [];
-                while (number != 0) {
+                while (number !== 0) {
                     let numberBytes : number[] = [
                         (number & 255),
                         (number >>> 8 & 255),
@@ -217,7 +207,7 @@ class BERElement extends ASN1Element {
     }
 
     get objectIdentifier () : OID {
-        if (this.construction != ASN1Construction.primitive)
+        if (this.construction !== ASN1Construction.primitive)
             throw new ASN1Error
             ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
 
@@ -238,7 +228,7 @@ class BERElement extends ASN1Element {
         }
 
         if (this.value.length === 1)
-            return new ObjectIdentifier(numbers);
+            return new OID(numbers);
 
         if ((this.value[(this.value.length - 1)] & 0x80) === 0x80)
             throw new ASN1Error("OID truncated");
@@ -271,7 +261,7 @@ class BERElement extends ASN1Element {
             }
         });
 
-        return new ObjectIdentifier(numbers);
+        return new OID(numbers);
     }
 
     set objectDescriptor (value : string) {
@@ -408,7 +398,7 @@ class BERElement extends ASN1Element {
                 }
 
                 let encodedOIDNode : number[] = [];
-                while (number != 0) {
+                while (number !== 0) {
                     let numberBytes : number[] = [
                         (number & 255),
                         (number >>> 8 & 255),
@@ -429,7 +419,7 @@ class BERElement extends ASN1Element {
 
     get relativeObjectIdentifier () : number[] {
 
-        if (this.construction != ASN1Construction.primitive)
+        if (this.construction !== ASN1Construction.primitive)
             throw new ASN1Error
             ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
 
@@ -948,7 +938,7 @@ class BERElement extends ASN1Element {
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
             } else { // Indefinite
-                if (this.construction != ASN1Construction.constructed)
+                if (this.construction !== ASN1Construction.constructed)
                     throw new ASN1Error("Indefinite length ASN.1 element was not of constructed construction.");
 
                 if (++(BERElement.lengthRecursionCount) > BERElement.nestingRecursionLimit) {
@@ -969,7 +959,7 @@ class BERElement extends ASN1Element {
                     ) break;
                 }
 
-                if (sentinel === bytes.length && (bytes[sentinel - 1] != 0x00 || bytes[sentinel - 2] != 0x00))
+                if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00))
                     throw new ASN1Error("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
 
                 BERElement.lengthRecursionCount--;
@@ -1008,7 +998,7 @@ class BERElement extends ASN1Element {
             tagBytes[0] |= 0b00011111;
             let number : number = this.tagNumber; // We do not want to modify by reference.
             let encodedNumber : number[] = [];
-            while (number != 0) {
+            while (number !== 0) {
                 encodedNumber.unshift(number & 0x7F);
                 number >>>= 7;
                 encodedNumber[0] |= 0b10000000;
@@ -1061,39 +1051,33 @@ class BERElement extends ASN1Element {
         if (this.construction === ASN1Construction.primitive) {
             return this.value.subarray(0); // Clones it.
         } else {
-            if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit) {
+            try {
+                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
+                    throw new ASN1Error("Recursion was too deep!");
+                let appendy : Uint8Array[] = [];
+                const substrings : BERElement[] = this.sequence;
+                substrings.forEach(substring => {
+                    if (substring.tagClass !== this.tagClass)
+                        throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    if (substring.tagNumber !== this.tagNumber)
+                        throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    appendy = appendy.concat(substring.deconstruct(dataType));
+                });
+
+                let totalLength : number = 0;
+                appendy.forEach(substring => {
+                    totalLength += substring.length;
+                });
+                const whole = new Uint8Array(totalLength);
+                let currentIndex : number = 0;
+                appendy.forEach(substring => {
+                    whole.set(substring, currentIndex);
+                    currentIndex += substring.length;
+                });
+                return whole;
+            } finally {
                 BERElement.valueRecursionCount--;
-                throw new ASN1Error("Recursion was too deep!");
             }
-
-            let appendy : Uint8Array[] = [];
-            const substrings : BERElement[] = this.sequence;
-            substrings.forEach(substring => {
-                if (substring.tagClass != this.tagClass) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
-                }
-
-                if (substring.tagNumber != this.tagNumber) {
-                    BERElement.valueRecursionCount--;
-                    throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
-                }
-
-                appendy = appendy.concat(substring.deconstruct(dataType));
-            });
-
-            let totalLength : number = 0;
-            appendy.forEach(substring => {
-                totalLength += substring.length;
-            });
-            const whole = new Uint8Array(totalLength);
-            let currentIndex : number = 0;
-            appendy.forEach(substring => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            BERElement.valueRecursionCount--;
-            return whole;
         }
     }
 }

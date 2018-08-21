@@ -1,15 +1,5 @@
 // TODO: Fix typo in D ASN.1 library: "At least two nodes must be provided to ObjectIdenifier constructor."
 // TODO: Fix error in D ASN.1 library, line 1934 of ber.d: should be "else if"
-
-export
-type ROID = RelativeObjectIdentifier;
-
-export
-type RelativeObjectIdentifier = number[];
-
-export
-type OID = ObjectIdentifier;
-
 export
 class ObjectIdentifier
 {

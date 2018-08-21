@@ -121,15 +121,16 @@ more detail. -->
 
 ## Development Roadmap
 
-- [ ] Fix infinite recursion vulnerabilities
+- [x] Fix infinite recursion vulnerabilities
 - [ ] Create `bigInteger` properties
 - [ ] Implement a Distinguished Encoding Rules Codec
 - [ ] Implement a Canonical Encoding Rules Codec
 - [ ] Build all codecs separately
 - [ ] Implement binary `REAL` decoding
-- [ ] Make each codec inherit from `ASN1Element`
-- [ ] Use longer names with aliases
+- [x] Make each codec inherit from `ASN1Element`
+- [x] Use longer names with aliases
 - [ ] Improve the system of exceptions
+- [ ] Make `fromBytes` return negative numbers to signal issues.
 - [ ] Add more tests
   - [ ] Exception tests
   - [ ] Constructed tests

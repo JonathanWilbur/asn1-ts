@@ -1,3 +1,4 @@
+import { ObjectIdentifier as OID } from "./types/objectidentifier";
 export declare const MAX_UINT_32: number;
 export declare const MIN_UINT_32: number;
 export declare const MAX_SINT_32: number;
@@ -70,6 +71,30 @@ export declare abstract class ASN1Element {
     tagNumber: number;
     value: Uint8Array;
     length(): number;
+    abstract boolean: boolean;
+    abstract integer: number;
+    abstract bitString: boolean[];
+    abstract octetString: Uint8Array;
+    abstract objectIdentifier: OID;
+    abstract objectDescriptor: string;
+    abstract real: number;
+    abstract enumerated: number;
+    abstract utf8String: string;
+    abstract relativeObjectIdentifier: number[];
+    abstract sequence: ASN1Element[];
+    abstract set: ASN1Element[];
+    abstract numericString: string;
+    abstract printableString: string;
+    abstract teletexString: Uint8Array;
+    abstract videotexString: Uint8Array;
+    abstract ia5String: string;
+    abstract utcTime: Date;
+    abstract generalizedTime: Date;
+    abstract graphicString: string;
+    abstract visibleString: string;
+    abstract generalString: string;
+    abstract universalString: string;
+    abstract bmpString: string;
     constructor();
 }
 export declare const printableStringCharacters: string;
