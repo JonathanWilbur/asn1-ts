@@ -3,8 +3,10 @@
 // TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
-import { ASN1Element,ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,ASN1Error,ASN1NotImplementedError,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "./asn1";
-import { ObjectIdentifier as OID } from "./types/objectidentifier";
+import { ASN1Element } from "../asn1";
+import { ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "../values";
+import { ObjectIdentifier as OID } from "../types/objectidentifier";
+import * as errors from "../errors";
 
 export
 class BERElement extends ASN1Element {
@@ -19,7 +21,7 @@ class BERElement extends ASN1Element {
 
     get boolean () : boolean {
         if (this.value.length !== 1)
-            throw new ASN1Error("BER-encoded BOOLEAN not one byte");
+            throw new errors.ASN1Error("BER-encoded BOOLEAN not one byte");
         return (this.value[0] !== 0);
     }
 
@@ -34,9 +36,9 @@ class BERElement extends ASN1Element {
      */
     set integer (value : number) {
         if (value < MIN_SINT_32)
-            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
+            throw new errors.ASN1OverflowError(`Number ${value} too small to be converted.`);
         if (value > MAX_SINT_32)
-            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
+            throw new errors.ASN1OverflowError(`Number ${value} too big to be converted.`);
 
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
@@ -69,9 +71,9 @@ class BERElement extends ASN1Element {
 
     get integer () : number {
         if (this.value.length === 0)
-            throw new ASN1Error("Number encoded on zero bytes!");
+            throw new errors.ASN1SizeError("Number encoded on zero bytes!");
         if (this.value.length > 4)
-            throw new ASN1Error("Number too long to decode.");
+            throw new errors.ASN1OverflowError("Number too long to decode.");
         if (
             this.value.length > 2 &&
             (
@@ -79,10 +81,8 @@ class BERElement extends ASN1Element {
                 (this.value[0] === 0x00 && this.value[1] < 0b10000000)
             )
         )
-            throw new ASN1Error("Unnecessary padding bytes on INTEGER.");
-
+            throw new errors.ASN1PaddingError("Unnecessary padding bytes on INTEGER or ENUMERATED.");
         let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
-
         this.value.forEach(byte => {
             ret <<= 8;
             ret += byte;
@@ -108,11 +108,11 @@ class BERElement extends ASN1Element {
     get bitString () : boolean[] {
         if (this.construction === ASN1Construction.primitive) {
             if (this.value.length === 0)
-                throw new ASN1Error("ASN.1 BIT STRING cannot be encoded on zero bytes!");
+                throw new errors.ASN1Error("ASN.1 BIT STRING cannot be encoded on zero bytes!");
             if (this.value.length === 1 && this.value[0] !== 0)
-                throw new ASN1Error("ASN.1 BIT STRING encoded with deceptive first byte!");
+                throw new errors.ASN1Error("ASN.1 BIT STRING encoded with deceptive first byte!");
             if (this.value[0] > 7)
-                throw new ASN1Error("First byte of an ASN.1 BIT STRING must be <= 7!");
+                throw new errors.ASN1Error("First byte of an ASN.1 BIT STRING must be <= 7!");
 
             let ret : boolean[] = [];
             for (let i = 1; i < this.value.length; i++) {
@@ -132,7 +132,7 @@ class BERElement extends ASN1Element {
         } else {
             try {
                 if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new ASN1Error("Recursion was too deep!");
+                    throw new errors.ASN1RecursionError();
                 let appendy : boolean[] = [];
                 const substrings : BERElement[] = this.sequence;
                 if (substrings.length === 0) return [];
@@ -143,7 +143,7 @@ class BERElement extends ASN1Element {
                         substring.value.length > 0 &&
                         substring.value[0] !== 0x00
                     )
-                        throw new ASN1Error
+                        throw new errors.ASN1Error
                         (
                             "This exception was thrown because you attempted to " +
                             "decode a constructed BIT STRING that contained a " +
@@ -155,9 +155,9 @@ class BERElement extends ASN1Element {
                 });
                 substrings.forEach(substring => {
                     if (substring.tagClass !== this.tagClass)
-                        throw new ASN1Error("Invalid tag class in recursively-encoded BIT STRING.");
+                        throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
                     if (substring.tagNumber !== this.tagNumber)
-                        throw new ASN1Error("Invalid tag number in recursively-encoded BIT STRING.");
+                        throw new errors.ASN1ConstructionError("Invalid tag number in recursively-encoded BIT STRING.");
                     appendy = appendy.concat(substring.bitString);
                 });
                 return appendy;
@@ -208,11 +208,11 @@ class BERElement extends ASN1Element {
 
     get objectIdentifier () : OID {
         if (this.construction !== ASN1Construction.primitive)
-            throw new ASN1Error
+            throw new errors.ASN1ConstructionError
             ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
 
         if (this.value.length === 0)
-            throw new ASN1Error
+            throw new errors.ASN1TruncationError
             ("Encoded value was too short to be an OBJECT IDENTIFIER!");
 
         let numbers : number[] = [ 0, 0 ];
@@ -231,7 +231,7 @@ class BERElement extends ASN1Element {
             return new OID(numbers);
 
         if ((this.value[(this.value.length - 1)] & 0x80) === 0x80)
-            throw new ASN1Error("OID truncated");
+            throw new errors.ASN1TruncationError("OID truncated");
 
         let components : number = 2;
         const allButTheFirstByte : Uint8Array = this.value.slice(1);
@@ -244,11 +244,11 @@ class BERElement extends ASN1Element {
         let bytesUsedInCurrentNumber : number = 0;
         allButTheFirstByte.forEach(b => {
             if (bytesUsedInCurrentNumber === 0 && b === 0x80)
-                throw new ASN1Error("OID had invalid padding byte.");
+                throw new errors.ASN1PaddingError("OID had invalid padding byte.");
 
             // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
             if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new ASN1Error("OID node too big");
+                throw new errors.ASN1OverflowError("OID node too big");
 
             numbers[currentNumber] <<= 7;
             numbers[currentNumber] |= (b & 0x7F);
@@ -298,73 +298,24 @@ class BERElement extends ASN1Element {
                 if (this.value[0] === ASN1SpecialRealValue.minusZero) return -0.0;
                 if (this.value[0] === ASN1SpecialRealValue.plusInfinity) return Infinity;
                 if (this.value[0] === ASN1SpecialRealValue.minusInfinity) return -Infinity;
-                throw new ASN1Error("Unrecognized special REAL value!");
+                throw new errors.ASN1UndefinedError("Unrecognized special REAL value!");
             }
             case (0b00000000): {
                 return parseFloat((new TextDecoder()).decode(this.value.slice(1)));
             }
             case (0b10000000):
             case (0b11000000): {
-                throw new ASN1NotImplementedError();
+                throw new errors.ASN1NotImplementedError();
             }
         }
     }
 
     set enumerated (value : number) {
-        if (value < -2147483647)
-            throw new ASN1Error("Number " + value.toString() + " too small to be converted.");
-        if (value > 2147483647)
-            throw new ASN1Error("Number " + value.toString() + " too big to be converted.");
-
-        if (value <= 127 && value >= -128) {
-            this.value = new Uint8Array([
-                (value & 255)
-            ]);
-            return;
-        } else if (value <= 32767 && value >= -32768) {
-            this.value = new Uint8Array([
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        } else if (value <= 8388607 && value >= -8388608) {
-            this.value = new Uint8Array([
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        } else {
-            this.value = new Uint8Array([
-                ((value >> 24) & 255),
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        }
+        this.integer = value;
     }
 
     get enumerated () : number {
-        if (this.value.length === 0)
-            throw new ASN1Error("Number encoded on zero bytes!");
-        if (this.value.length > 4)
-            throw new ASN1Error("Number too long to decode.");
-        if (
-                this.value.length > 2 &&
-                (
-                    (this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
-                    (this.value[0] === 0x00 && this.value[1] < 0b10000000)
-                )
-            )
-                throw new ASN1Error("Unnecessary padding bytes on ENUMERATED.");
-
-        let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
-        this.value.forEach(byte => {
-            ret <<= 8;
-            ret += byte;
-        });
-        return ret;
+        return this.integer;
     }
 
     set utf8String (value : string) {
@@ -396,7 +347,6 @@ class BERElement extends ASN1Element {
                     pre.push(number);
                     continue;
                 }
-
                 let encodedOIDNode : number[] = [];
                 while (number !== 0) {
                     let numberBytes : number[] = [
@@ -409,7 +359,6 @@ class BERElement extends ASN1Element {
                     encodedOIDNode.unshift(numberBytes[0]);
                     number >>= 7;
                 }
-
                 encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
                 pre = pre.concat(encodedOIDNode);
             }
@@ -418,38 +367,28 @@ class BERElement extends ASN1Element {
     }
 
     get relativeObjectIdentifier () : number[] {
-
         if (this.construction !== ASN1Construction.primitive)
-            throw new ASN1Error
-            ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
-
+            throw new errors.ASN1ConstructionError
+            ("Construction cannot be constructed for an Relative OID!");
         let numbers : number[] = [];
-
-        if (this.value.length === 1)
-            return numbers;
-
+        if (this.value.length === 1) return numbers;
         if ((this.value[(this.value.length - 1)] & 0b10000000) === 0b10000000)
-            throw new ASN1Error("OID truncated");
-
+            throw new errors.ASN1TruncationError("Relative OID truncated");
         let components : number = 0;
         this.value.forEach(b => {
             if (!(b & 0b10000000)) components++;
         });
         numbers.length = components;
-
         let currentNumber : number = 0;
         let bytesUsedInCurrentNumber : number = 0;
         this.value.forEach(b => {
             if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
-                throw new ASN1Error("OID had invalid padding byte.");
-
+                throw new errors.ASN1PaddingError("Relative OID had invalid padding byte.");
             // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
             if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new ASN1Error("OID node too big");
-
+                throw new errors.ASN1OverflowError("Relative OID node too big");
             numbers[currentNumber] <<= 7;
             numbers[currentNumber] |= (b & 0x7F);
-
             if (!(b & 0b10000000)) {
                 currentNumber++;
                 bytesUsedInCurrentNumber = 0;
@@ -457,7 +396,6 @@ class BERElement extends ASN1Element {
                 bytesUsedInCurrentNumber++;
             }
         });
-
         return numbers;
     }
 
@@ -527,7 +465,8 @@ class BERElement extends ASN1Element {
         for (let i : number = 0; i < value.length; i++) {
             const characterCode : number = value.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
+                throw new errors.ASN1CharactersError
+                ("NumericString can only contain characters 0 - 9 and space.");
             }
         }
 
@@ -549,7 +488,8 @@ class BERElement extends ASN1Element {
         for (let i : number = 0; i < ret.length; i++) {
             const characterCode : number = ret.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new ASN1Error("NumericString can only contain characters 0 - 9 and space.");
+                throw new errors.ASN1CharactersError
+                ("NumericString can only contain characters 0 - 9 and space.");
             }
         }
         return ret;
@@ -558,7 +498,8 @@ class BERElement extends ASN1Element {
     set printableString (value : string) {
         for (let i : number = 0; i < value.length; i++) {
             if (printableStringCharacters.indexOf(value.charAt(i)) === -1) {
-                throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
+                throw new errors.ASN1CharactersError
+                (`PrintableString can only contain these characters: ${printableStringCharacters}`);
             }
         }
 
@@ -579,7 +520,8 @@ class BERElement extends ASN1Element {
         }
         for (let i : number = 0; i < ret.length; i++) {
             if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
-                throw new ASN1Error(`PrintableString can only contain these characters: ${printableStringCharacters}`);
+                throw new errors.ASN1CharactersError
+                (`PrintableString can only contain these characters: ${printableStringCharacters}`);
             }
         }
         return ret;
@@ -629,7 +571,6 @@ class BERElement extends ASN1Element {
         const minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
         const second : string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
         const utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
-
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             this.value = (new TextEncoder()).encode(utcString);
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -645,10 +586,8 @@ class BERElement extends ASN1Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length !== 13) {
-            throw new ASN1Error("Malformed UTCTime string.");
-        }
-
+        if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
+            throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret : Date = new Date();
         const year : number = Number(dateString.substring(0, 2));
         ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
@@ -660,7 +599,6 @@ class BERElement extends ASN1Element {
         return ret;
     }
 
-    // TODO: Support milliseconds
     set generalizedTime (value : Date) {
         const year : string = value.getUTCFullYear().toString();
         const month : string = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
@@ -669,7 +607,6 @@ class BERElement extends ASN1Element {
         const minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
         const second : string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
         const timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
-
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             this.value = (new TextEncoder()).encode(timeString);
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -685,9 +622,8 @@ class BERElement extends ASN1Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length < 13) {
-            throw new ASN1Error("Malformed GeneralizedTime string.");
-        }
+        if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
+            throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret : Date = new Date();
         ret.setUTCFullYear(Number(dateString.substring(0, 4)));
         ret.setUTCMonth(Number(dateString.substring(4, 6)));
@@ -701,9 +637,12 @@ class BERElement extends ASN1Element {
     set graphicString (value : string) {
         for (let i : number = 0; i < value.length; i++) {
             const characterCode : number = value.charCodeAt(i);
-            if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new ASN1Error("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
-            }
+            if (characterCode < 0x20 || characterCode > 0x7E)
+                throw new errors.ASN1CharactersError
+                (
+                    "GraphicString, VisibleString, or ObjectDescriptor " +
+                    "can only contain characters between 0x20 and 0x7E."
+                );
         }
 
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
@@ -724,7 +663,11 @@ class BERElement extends ASN1Element {
         for (let i : number = 0; i < ret.length; i++) {
             const characterCode : number = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new ASN1Error("GraphicString, VisibleString, or ObjectDescriptor can only contain characters between 0x20 and 0x7E.");
+                throw new errors.ASN1CharactersError
+                (
+                    "GraphicString, VisibleString, or ObjectDescriptor " +
+                    "can only contain characters between 0x20 and 0x7E."
+                );
             }
         }
         return ret;
@@ -740,11 +683,10 @@ class BERElement extends ASN1Element {
 
     set generalString (value : string) {
         for (let i : number = 0; i < value.length; i++) {
-            if (value.charCodeAt(i) > 0x7F) {
-                throw new ASN1Error("GeneralString can only contain ASCII characters.");
-            }
+            if (value.charCodeAt(i) > 0x7F)
+                throw new errors.ASN1CharactersError
+                ("GeneralString can only contain ASCII characters.");
         }
-
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             this.value = (new TextEncoder()).encode(value);
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -761,9 +703,9 @@ class BERElement extends ASN1Element {
             ret = (new Buffer(this.value)).toString("ascii");
         }
         for (let i : number = 0; i < ret.length; i++) {
-            if (ret.charCodeAt(i) > 0x7F) {
-                throw new ASN1Error("GeneralString can only contain ASCII characters.");
-            }
+            if (ret.charCodeAt(i) > 0x7F)
+                throw new errors.ASN1CharactersError
+                ("GeneralString can only contain ASCII characters.");
         }
         return ret;
     }
@@ -787,7 +729,8 @@ class BERElement extends ASN1Element {
     get universalString () : string {
         const valueBytes : Uint8Array = this.deconstruct("UniversalString");
         if (valueBytes.length % 4)
-            throw new ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
+            throw new errors.ASN1Error
+            ("UniversalString encoded on non-mulitple of four bytes.");
         let ret : string = "";
         for (let i : number = 0; i < valueBytes.length; i += 4) {
             ret += String.fromCharCode(
@@ -812,7 +755,8 @@ class BERElement extends ASN1Element {
     get bmpString () : string {
         const valueBytes : Uint8Array = this.deconstruct("BMPString");
         if (valueBytes.length % 2)
-            throw new ASN1Error("BMPString encoded on non-mulitple of two bytes.");
+            throw new errors.ASN1Error
+            ("BMPString encoded on non-mulitple of two bytes.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
@@ -849,8 +793,8 @@ class BERElement extends ASN1Element {
     // Returns the number of bytes read
     public fromBytes (bytes : Uint8Array) : number {
         if (bytes.length < 2)
-            throw new ASN1Error("Tried to decode a BER element that is less than two bytes.");
-
+            throw new errors.ASN1TruncationError
+            ("Tried to decode a BER element that is less than two bytes.");
         let cursor : number = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
@@ -859,10 +803,8 @@ class BERElement extends ASN1Element {
             case (0b11000000): this.tagClass = ASN1TagClass.private; break;
             default: this.tagClass = ASN1TagClass.universal;
         }
-
         this.construction = ((bytes[cursor] & 0b00100000) ?
             ASN1Construction.constructed : ASN1Construction.primitive);
-
         this.tagNumber = (bytes[cursor] & 0b00011111);
         cursor++;
         if (this.tagNumber >= 31) {
@@ -878,22 +820,21 @@ class BERElement extends ASN1Element {
                 0b10000000, then it is not encoded on the fewest possible octets.
             */
             if (bytes[cursor] === 0b10000000)
-                throw new ASN1Error("Leading padding byte on long tag number encoding.");
-
+                throw new errors.ASN1PaddingError
+                ("Leading padding byte on long tag number encoding.");
             this.tagNumber = 0;
-
             // This loop looks for the end of the encoded tag number.
             const limit : number = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
             while (cursor < limit) {
                 if (!(bytes[cursor++] & 0b10000000)) break;
             }
-
             if (bytes[cursor-1] & 0b10000000) {
                 if (limit === bytes.length-1) {
-                    throw new ASN1Error("ASN.1 tag number appears to have been truncated.");
-                } else throw new ASN1Error("ASN.1 tag number too large.");
+                    throw new errors.ASN1TruncationError
+                    ("ASN.1 tag number appears to have been truncated.");
+                } else
+                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.");
             }
-
             for (let i : number = 1; i < cursor; i++) {
                 this.tagNumber <<= 7;
                 this.tagNumber |= (bytes[i] & 0x7F);
@@ -905,47 +846,40 @@ class BERElement extends ASN1Element {
             const numberOfLengthOctets : number = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets) { // Definite Long or Reserved
                 if (numberOfLengthOctets === 0b01111111) // Reserved
-                    throw new ASN1Error("Length byte with undefined meaning encountered.");
-
+                    throw new errors.ASN1UndefinedError
+                    ("Length byte with undefined meaning encountered.");
                 // Definite Long, if it has made it this far
-
                 if (numberOfLengthOctets > 4)
-                    throw new ASN1Error("Element length too long to decode to an integer.");
-
+                    throw new errors.ASN1OverflowError
+                    ("Element length too long to decode to an integer.");
                 if (cursor + numberOfLengthOctets >= bytes.length)
-                    throw new ASN1Error("Element length bytes appear to have been truncated.");
-
+                    throw new errors.ASN1TruncationError
+                    ("Element length bytes appear to have been truncated.");
                 cursor++;
                 const lengthNumberOctets : Uint8Array = new Uint8Array(4);
                 for (let i : number = numberOfLengthOctets; i > 0; i--) {
                     lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
                 }
-
                 let length : number = 0;
                 lengthNumberOctets.forEach(octet => {
                     length <<= 8;
                     length += octet;
                 });
-
                 if ((cursor + length) < cursor) // This catches an overflow.
-                    throw new ASN1Error("ASN.1 element too large.");
-
+                    throw new errors.ASN1OverflowError("ASN.1 element too large.");
                 cursor += (numberOfLengthOctets);
-
                 if ((cursor + length) > bytes.length)
-                    throw new ASN1Error("ASN.1 element truncated.");
-
+                    throw new errors.ASN1TruncationError("ASN.1 element truncated.");
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
             } else { // Indefinite
                 if (this.construction !== ASN1Construction.constructed)
-                    throw new ASN1Error("Indefinite length ASN.1 element was not of constructed construction.");
-
+                    throw new errors.ASN1ConstructionError
+                    ("Indefinite length ASN.1 element was not of constructed construction.");
                 if (++(BERElement.lengthRecursionCount) > BERElement.nestingRecursionLimit) {
                     BERElement.lengthRecursionCount = 0;
-                    throw new ASN1Error("ASN.1 indefinite length encoded element recursed too deeply.");
+                    throw new errors.ASN1RecursionError();
                 }
-
                 const startOfValue : number = ++cursor;
                 let sentinel : number = cursor; // Used to track the length of the nested elements.
                 while (sentinel < bytes.length) {
@@ -958,31 +892,26 @@ class BERElement extends ASN1Element {
                         child.value.length === 0
                     ) break;
                 }
-
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00))
-                    throw new ASN1Error("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
-
+                    throw new errors.ASN1TruncationError
+                    ("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
                 BERElement.lengthRecursionCount--;
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
                 return sentinel;
             }
         } else { // Definite Short
             const length : number = (bytes[cursor++] & 0x7F);
-
             if ((cursor + length) > bytes.length)
-                throw new ASN1Error("ASN.1 element was truncated.");
-
+                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }
     }
 
-    // TODO: Convert number[] to Uint8Array
     public toBytes () : Uint8Array {
         let tagBytes : number[] = [ 0x00 ];
         tagBytes[0] |= this.tagClass;
         tagBytes[0] |= this.construction;
-
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         } else {
@@ -1032,7 +961,7 @@ class BERElement extends ASN1Element {
                 break;
             }
             default:
-                throw new ASN1Error("Invalid LengthEncodingPreference encountered!");
+                throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!");
         }
 
         const ret : Uint8Array = new Uint8Array(
@@ -1053,14 +982,16 @@ class BERElement extends ASN1Element {
         } else {
             try {
                 if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new ASN1Error("Recursion was too deep!");
+                    throw new errors.ASN1RecursionError();
                 let appendy : Uint8Array[] = [];
                 const substrings : BERElement[] = this.sequence;
                 substrings.forEach(substring => {
                     if (substring.tagClass !== this.tagClass)
-                        throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                        throw new errors.ASN1ConstructionError
+                        (`Invalid tag class in recursively-encoded ${dataType}.`);
                     if (substring.tagNumber !== this.tagNumber)
-                        throw new ASN1Error(`Invalid tag class in recursively-encoded ${dataType}.`);
+                        throw new errors.ASN1ConstructionError
+                        (`Invalid tag class in recursively-encoded ${dataType}.`);
                     appendy = appendy.concat(substring.deconstruct(dataType));
                 });
 

@@ -6,8 +6,7 @@
 * Version: _See `version` file or git tags._
 
 **Version 1.0.0 has not been released yet, meaning that I, as the maker of this
-library, strongly advise against using this in anything production-facing. I
-know that there are currently vulnerabilities in this library. Do not use it yet.**
+library, strongly advise against using this in anything production-facing.**
 
 This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d),
 so please forgive me if there are mistakes in the documentation that refer to
@@ -126,10 +125,9 @@ more detail. -->
 - [ ] Implement a Distinguished Encoding Rules Codec
 - [ ] Implement a Canonical Encoding Rules Codec
 - [ ] Build all codecs separately
-- [ ] Implement binary `REAL` decoding
 - [x] Make each codec inherit from `ASN1Element`
 - [x] Use longer names with aliases
-- [ ] Improve the system of exceptions
+- [x] Improve the system of exceptions
 - [ ] Make `fromBytes` return negative numbers to signal issues.
 - [ ] Add more tests
   - [ ] Exception tests
