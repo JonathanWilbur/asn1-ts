@@ -21,7 +21,7 @@ class BERElement extends ASN1Element {
 
     get boolean () : boolean {
         if (this.value.length !== 1)
-            throw new errors.ASN1Error("BER-encoded BOOLEAN not one byte");
+            throw new errors.ASN1SizeError("BER-encoded BOOLEAN not one byte");
         return (this.value[0] !== 0);
     }
 
@@ -94,10 +94,10 @@ class BERElement extends ASN1Element {
         if (value.length === 0)
             this.value = new Uint8Array(0);
         let pre : number[] = [];
-        pre.length = ((Math.trunc(value.length / 8)) + ((value.length % 8) ? 1 : 0)) + 1;
+        pre.length = ((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1;
         for (let i = 0; i < value.length; i++) {
             if (value[i] === false) continue;
-            pre[((Math.trunc(i / 8)) + 1)] |= (0b10000000 >>> (i % 8));
+            pre[((i >>> 3) + 1)] |= (0b10000000 >>> (i % 8));
         }
         pre[0] = (8 - (value.length % 8));
         if (pre[0] === 8) pre[0] = 0;

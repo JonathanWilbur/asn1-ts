@@ -1,4 +1,3 @@
-// TODO: Submit bug to jasmine about how date comparison fails on Safari
 let BERElement = asn1.BERElement;
 let ObjectIdentifier = asn1.ObjectIdentifier;
 
@@ -254,8 +253,6 @@ describe("Basic Encoding Rules", function() {
             expect(el.enumerated).toBe(i);
         }
     });
-
-    // TODO: EmbeddedPDV
 
     it("encodes and decodes a RELATIVE OID correctly", function () {
         let el = new BERElement();

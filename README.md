@@ -121,7 +121,6 @@ more detail. -->
 ## Development Roadmap
 
 - [x] Fix infinite recursion vulnerabilities
-- [ ] Create `bigInteger` properties
 - [ ] Implement a Distinguished Encoding Rules Codec
 - [ ] Implement a Canonical Encoding Rules Codec
 - [ ] Build all codecs separately
@@ -129,9 +128,8 @@ more detail. -->
 - [x] Use longer names with aliases
 - [x] Improve the system of exceptions
 - [ ] Make `fromBytes` return negative numbers to signal issues.
-- [ ] Add more tests
-  - [ ] Exception tests
-  - [ ] Constructed tests
+- [ ] Make concurrency possible by making the `recursionCount`s non-static.
+- [ ] More time type testing
 
 ## See Also
 
