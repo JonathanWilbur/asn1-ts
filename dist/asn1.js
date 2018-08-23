@@ -287,6 +287,7 @@ class ObjectIdentifier {
 
 class ASN1Element {
     constructor() {
+        this.recursionCount = 0;
         this.tagClass = _values__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TagClass */ "c"].universal;
         this.construction = _values__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Construction */ "a"].primitive;
         this.tagNumber = 0;
@@ -296,8 +297,6 @@ class ASN1Element {
         return this.value.length;
     }
 }
-ASN1Element.lengthRecursionCount = 0;
-ASN1Element.valueRecursionCount = 0;
 ASN1Element.nestingRecursionLimit = 5;
 
 
@@ -425,7 +424,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         }
         else {
             try {
-                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
+                if (this.recursionCount++ === BERElement.nestingRecursionLimit)
                     throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
                 let appendy = [];
                 const substrings = this.sequence;
@@ -452,7 +451,6 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
                 return appendy;
             }
             finally {
-                BERElement.valueRecursionCount--;
             }
         }
     }
@@ -1016,6 +1014,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     fromBytes(bytes) {
         if (bytes.length < 2)
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("Tried to decode a BER element that is less than two bytes.");
+        if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
         let cursor = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000):
@@ -1087,14 +1087,11 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             else {
                 if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
                     throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Indefinite length ASN.1 element was not of constructed construction.");
-                if (++(BERElement.lengthRecursionCount) > BERElement.nestingRecursionLimit) {
-                    BERElement.lengthRecursionCount = 0;
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
-                }
                 const startOfValue = ++cursor;
                 let sentinel = cursor;
                 while (sentinel < bytes.length) {
                     const child = new BERElement();
+                    child.recursionCount = (this.recursionCount + 1);
                     sentinel += child.fromBytes(bytes.slice(sentinel));
                     if (child.tagClass === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal &&
                         child.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
@@ -1104,7 +1101,6 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
                 }
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00))
                     throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
-                BERElement.lengthRecursionCount--;
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
                 return sentinel;
             }
@@ -1179,33 +1175,29 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             return this.value.subarray(0);
         }
         else {
-            try {
-                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
-                let appendy = [];
-                const substrings = this.sequence;
-                substrings.forEach(substring => {
-                    if (substring.tagClass !== this.tagClass)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
-                    if (substring.tagNumber !== this.tagNumber)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
-                    appendy = appendy.concat(substring.deconstruct(dataType));
-                });
-                let totalLength = 0;
-                appendy.forEach(substring => {
-                    totalLength += substring.length;
-                });
-                const whole = new Uint8Array(totalLength);
-                let currentIndex = 0;
-                appendy.forEach(substring => {
-                    whole.set(substring, currentIndex);
-                    currentIndex += substring.length;
-                });
-                return whole;
-            }
-            finally {
-                BERElement.valueRecursionCount--;
-            }
+            if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
+            let appendy = [];
+            const substrings = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass !== this.tagClass)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                if (substring.tagNumber !== this.tagNumber)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                substring.recursionCount = (this.recursionCount + 1);
+                appendy = appendy.concat(substring.deconstruct(dataType));
+            });
+            let totalLength = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            const whole = new Uint8Array(totalLength);
+            let currentIndex = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            return whole;
         }
     }
 }

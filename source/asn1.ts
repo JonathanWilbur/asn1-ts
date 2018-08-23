@@ -4,8 +4,7 @@ import { ASN1TagClass,ASN1Construction } from "./values";
 export
 abstract class ASN1Element
 {
-    protected static lengthRecursionCount : number = 0;
-    protected static valueRecursionCount : number = 0;
+    protected recursionCount : number = 0;
     protected static readonly nestingRecursionLimit : number = 5;
 
     public tagClass : ASN1TagClass = ASN1TagClass.universal;

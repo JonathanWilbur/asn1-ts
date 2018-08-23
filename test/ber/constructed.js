@@ -6,6 +6,83 @@
 
 describe("Basic Encoding Rules", function() {
 
+    /**
+     * This test exists because, when decoding indefinite-length elements,
+     * the length of each subelement must be known, and each subelement
+     * itself may be indefinite-length encoded. This test is not necessary
+     * for definite-length encoded elements.
+     */
+    it("throws an exception when decoding excessively nested indefinite-length elements", function () {
+        let data = [];
+        for (let i = 0; i < BERElement.nestingRecursionLimit + 1; i++) {
+            data = data.concat([ 0x2C, 0x80 ]);
+        }
+        for (let i = 0; i < BERElement.nestingRecursionLimit + 1; i++) {
+            data = data.concat([ 0x00, 0x00 ]);
+        }
+        let el = new BERElement();
+        expect(() => el.fromBytes(new Uint8Array(data))).toThrowError();
+    });
+
+    /**
+     * This test uses utf8String, but just about any string type can be used.
+     * The real purpose for using a string type is to pick a type that calls
+     * deconstruct(), which recurses automatically, whether the subelements
+     * are of definite-length or indefinite-length encoding.
+     */
+    it("throws an exception when decoding excessively nested definite-length elements", function () {
+        let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
+        for (let i = 0; i < (BERElement.nestingRecursionLimit + 2); i++) {
+            data = ([ 0x2C, data.length ]).concat(data);
+        }
+        let el = new BERElement();
+        el.fromBytes(new Uint8Array(data));
+        expect(() => el.utf8String).toThrow();
+    });
+
+    /**
+     * This should not throw, because the decoding of definite-length encoded
+     * elements does not recurse automatically, unless you decode type that calls
+     * deconstruct() or BIT STRING.
+     */
+    it("does not throw an exception when manually decoding highly nested definite-length elements", function () {
+        let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
+        for (let i = 0; i < (BERElement.nestingRecursionLimit + 2); i++) {
+            data = ([ 0x2C, data.length ]).concat(data);
+        }
+        let el = new BERElement();
+        el.fromBytes(new Uint8Array(data));
+        for (let i = 0; i < (BERElement.nestingRecursionLimit + 1); i++) {
+            el.fromBytes(el.value);
+        }
+        expect(el.fromBytes(el.value)).toBe(4);
+    });
+
+    /**
+     * This tests deconstruct(), which will automatically recurse whether the
+     * element is indefinite-length or definite-length.
+     */
+    it("does not infinitely recurse when DL encodings are nested within IL encodings and vice versa", function () {
+        let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
+        for (let i = 0; i < (BERElement.nestingRecursionLimit - 1); i++) {
+            data = ([ 0x2C, 0x80 ]).concat(data);
+        }
+        for (let i = 0; i < (BERElement.nestingRecursionLimit - 1); i++) {
+            data = data.concat([ 0x00, 0x00 ]);
+        }
+        data = ([ 0x2C, data.length ]).concat(data);
+        for (let i = 0; i < (BERElement.nestingRecursionLimit - 1); i++) {
+            data = ([ 0x2C, 0x80 ]).concat(data);
+        }
+        for (let i = 0; i < (BERElement.nestingRecursionLimit - 1); i++) {
+            data = data.concat([ 0x00, 0x00 ]);
+        }
+
+        let el = new BERElement();
+        el.fromBytes(new Uint8Array(data));
+        expect(() => { return el.utf8String; }).toThrow();
+    });
+
     it("encodes and decodes a constructed BIT STRING correctly", function () {
 
         let data = [

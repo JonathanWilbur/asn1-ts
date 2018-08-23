@@ -1,6 +1,6 @@
 // TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
-// TODO: Would it be possible to underflow valueRecursionCount by triggering an exception when no recursion was performed?
+// TODO: Would it be possible to underflow recursionCount by triggering an exception when no recursion was performed?
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
 import { ASN1Element } from "../asn1";
@@ -131,7 +131,7 @@ class BERElement extends ASN1Element {
             return ret;
         } else {
             try {
-                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
+                if (this.recursionCount++ === BERElement.nestingRecursionLimit)
                     throw new errors.ASN1RecursionError();
                 let appendy : boolean[] = [];
                 const substrings : BERElement[] = this.sequence;
@@ -162,7 +162,7 @@ class BERElement extends ASN1Element {
                 });
                 return appendy;
             } finally {
-                BERElement.valueRecursionCount--;
+                // this.recursionCount--;
             }
         }
     }
@@ -795,6 +795,8 @@ class BERElement extends ASN1Element {
         if (bytes.length < 2)
             throw new errors.ASN1TruncationError
             ("Tried to decode a BER element that is less than two bytes.");
+        if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+            throw new errors.ASN1RecursionError();
         let cursor : number = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
@@ -876,14 +878,11 @@ class BERElement extends ASN1Element {
                 if (this.construction !== ASN1Construction.constructed)
                     throw new errors.ASN1ConstructionError
                     ("Indefinite length ASN.1 element was not of constructed construction.");
-                if (++(BERElement.lengthRecursionCount) > BERElement.nestingRecursionLimit) {
-                    BERElement.lengthRecursionCount = 0;
-                    throw new errors.ASN1RecursionError();
-                }
                 const startOfValue : number = ++cursor;
                 let sentinel : number = cursor; // Used to track the length of the nested elements.
                 while (sentinel < bytes.length) {
                     const child : BERElement = new BERElement();
+                    child.recursionCount = (this.recursionCount + 1);
                     sentinel += child.fromBytes(bytes.slice(sentinel));
                     if (
                         child.tagClass === ASN1TagClass.universal &&
@@ -895,7 +894,6 @@ class BERElement extends ASN1Element {
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00))
                     throw new errors.ASN1TruncationError
                     ("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
-                BERElement.lengthRecursionCount--;
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
                 return sentinel;
             }
@@ -980,35 +978,31 @@ class BERElement extends ASN1Element {
         if (this.construction === ASN1Construction.primitive) {
             return this.value.subarray(0); // Clones it.
         } else {
-            try {
-                if (BERElement.valueRecursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new errors.ASN1RecursionError();
-                let appendy : Uint8Array[] = [];
-                const substrings : BERElement[] = this.sequence;
-                substrings.forEach(substring => {
-                    if (substring.tagClass !== this.tagClass)
-                        throw new errors.ASN1ConstructionError
-                        (`Invalid tag class in recursively-encoded ${dataType}.`);
-                    if (substring.tagNumber !== this.tagNumber)
-                        throw new errors.ASN1ConstructionError
-                        (`Invalid tag class in recursively-encoded ${dataType}.`);
-                    appendy = appendy.concat(substring.deconstruct(dataType));
-                });
-
-                let totalLength : number = 0;
-                appendy.forEach(substring => {
-                    totalLength += substring.length;
-                });
-                const whole = new Uint8Array(totalLength);
-                let currentIndex : number = 0;
-                appendy.forEach(substring => {
-                    whole.set(substring, currentIndex);
-                    currentIndex += substring.length;
-                });
-                return whole;
-            } finally {
-                BERElement.valueRecursionCount--;
-            }
+            if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+                throw new errors.ASN1RecursionError();
+            let appendy : Uint8Array[] = [];
+            const substrings : BERElement[] = this.sequence;
+            substrings.forEach(substring => {
+                if (substring.tagClass !== this.tagClass)
+                    throw new errors.ASN1ConstructionError
+                    (`Invalid tag class in recursively-encoded ${dataType}.`);
+                if (substring.tagNumber !== this.tagNumber)
+                    throw new errors.ASN1ConstructionError
+                    (`Invalid tag class in recursively-encoded ${dataType}.`);
+                substring.recursionCount = (this.recursionCount + 1);
+                appendy = appendy.concat(substring.deconstruct(dataType));
+            });
+            let totalLength : number = 0;
+            appendy.forEach(substring => {
+                totalLength += substring.length;
+            });
+            const whole = new Uint8Array(totalLength);
+            let currentIndex : number = 0;
+            appendy.forEach(substring => {
+                whole.set(substring, currentIndex);
+                currentIndex += substring.length;
+            });
+            return whole;
         }
     }
 }

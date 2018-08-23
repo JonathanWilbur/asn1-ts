@@ -1,8 +1,7 @@
 import { ObjectIdentifier as OID } from "./types/objectidentifier";
 import { ASN1TagClass, ASN1Construction } from "./values";
 export declare abstract class ASN1Element {
-    protected static lengthRecursionCount: number;
-    protected static valueRecursionCount: number;
+    protected recursionCount: number;
     protected static readonly nestingRecursionLimit: number;
     tagClass: ASN1TagClass;
     construction: ASN1Construction;
