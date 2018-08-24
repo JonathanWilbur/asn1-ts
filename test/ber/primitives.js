@@ -381,6 +381,15 @@ describe("Basic Encoding Rules", function() {
 
         el.generalizedTime = new Date(Date.UTC(2018, 11, 31, 22, 33, 44));
         expect(el.utf8String).toBe("20181231223344Z");
+
+        el.utf8String = "20181211223344.06Z";
+        ret = el.generalizedTime;
+        expect(ret.getUTCFullYear()).toBe(2018);
+        expect(ret.getUTCMonth()).toBe(11); // Month is 0-indexed.
+        expect(ret.getUTCDate()).toBe(11);
+        expect(ret.getUTCHours()).toBe(22);
+        expect(ret.getUTCMinutes()).toBe(33);
+        expect(ret.getUTCSeconds()).toBe(44);
     });
 
     it("encodes and decodes a BMPString correctly", function () {

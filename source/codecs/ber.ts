@@ -503,7 +503,7 @@ class BERElement extends ASN1Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
+        if (dateString.length < 13 || !(/\d{14}(?:\.\d*[1-9])?Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret : Date = new Date();
         const year : number = Number(dateString.substring(0, 4));

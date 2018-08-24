@@ -767,7 +767,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
+        if (dateString.length < 13 || !(/\d{14}(?:\.\d*[1-9])?Z/.test(dateString)))
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         const ret = new Date();
         const year = Number(dateString.substring(0, 4));

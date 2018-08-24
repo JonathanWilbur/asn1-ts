@@ -37,6 +37,9 @@
   - Also, `UTCTime` and `GeneralizedTime` support constructed encoding, but
     validation cannot typically be done until the entire string is assembled,
     thereby necessitating this pattern.
+    - It is also typically useful to create a string type, so you can seed
+      test values by using `BERElement.utf8String = "20181231223344Z"`, for
+      example, rather than manually writing out bytes.
 - `BMPString`
 - Reuse the code from `BMPString` to implement the similar `UniversalString`
 - Implement `EXTERNAL`
