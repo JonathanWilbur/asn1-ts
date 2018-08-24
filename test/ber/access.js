@@ -1,3 +1,5 @@
+let ASN1Construction = asn1.ASN1Construction;
+
 let ASN1SpecialRealValue = asn1.ASN1SpecialRealValue;
 
 describe('A Basic Encoding Rules Element', () => {
@@ -63,12 +65,14 @@ describe('A Basic Encoding Rules Element', () => {
 
     it('does not change in value when the SEQUENCE accessor is called', () => {
         let el = new BERElement();
+        el.construction = ASN1Construction.constructed;
         el.value = new Uint8Array([ 1, 1, 0xFF, 2, 1, 0x00 ]);
         expect(el.sequence).toEqual(el.sequence);
     });
 
     it('does not change in value when the SET accessor is called', () => {
         let el = new BERElement();
+        el.construction = ASN1Construction.constructed;
         el.value = new Uint8Array([ 1, 1, 0xFF, 2, 1, 0x00 ]);
         expect(el.sequence).toEqual(el.sequence);
     });

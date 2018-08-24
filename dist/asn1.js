@@ -324,11 +324,13 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     }
     set boolean(value) {
         this.value = new Uint8Array(1);
-        this.value[0] = (value ? 255 : 0);
+        this.value[0] = (value ? 0xFF : 0x00);
     }
     get boolean() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
         if (this.value.length !== 1)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SizeError */ "h"]("BER-encoded BOOLEAN not one byte");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
         return (this.value[0] !== 0);
     }
     set integer(value) {
@@ -368,6 +370,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         }
     }
     get integer() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("INTEGER cannot be constructed.");
         if (this.value.length === 0)
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SizeError */ "h"]("Number encoded on zero bytes!");
         if (this.value.length > 4)
@@ -468,7 +472,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     }
     get objectIdentifier() {
         if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Construction cannot be constructed for an OBJECT IDENTIFIER!");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("OBJECT IDENTIFIER cannot be constructed.");
         if (this.value.length === 0)
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("Encoded value was too short to be an OBJECT IDENTIFIER!");
         let numbers = [0, 0];
@@ -516,6 +520,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         this.value = (new TextEncoder()).encode(valueString);
     }
     get real() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
         if (this.value.length === 0)
             return 0.0;
         switch (this.value[0] & 0b11000000) {
@@ -569,7 +575,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     }
     get relativeObjectIdentifier() {
         if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Construction cannot be constructed for an Relative OID!");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Relative OID cannot be constructed.");
         return BERElement.decodeObjectIdentifierNodes(this.value.slice(0));
     }
     set sequence(value) {
@@ -591,6 +597,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed;
     }
     get sequence() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
         let encodedElements = [];
         if (this.value.length === 0)
             return [];

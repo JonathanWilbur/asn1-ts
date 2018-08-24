@@ -18,12 +18,14 @@ class BERElement extends ASN1Element {
 
     set boolean (value : boolean) {
         this.value = new Uint8Array(1);
-        this.value[0] = (value ? 255 : 0);
+        this.value[0] = (value ? 0xFF : 0x00);
     }
 
     get boolean () : boolean {
+        if (this.construction !== ASN1Construction.primitive)
+            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
         if (this.value.length !== 1)
-            throw new errors.ASN1SizeError("BER-encoded BOOLEAN not one byte");
+            throw new errors.ASN1SizeError("BOOLEAN not one byte");
         return (this.value[0] !== 0);
     }
 
@@ -72,6 +74,8 @@ class BERElement extends ASN1Element {
     }
 
     get integer () : number {
+        if (this.construction !== ASN1Construction.primitive)
+            throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.");
         if (this.value.length === 0)
             throw new errors.ASN1SizeError("Number encoded on zero bytes!");
         if (this.value.length > 4)
@@ -106,7 +110,6 @@ class BERElement extends ASN1Element {
         this.value = new Uint8Array(pre);
     }
 
-    // Blocked until you get the constructor fully working.
     get bitString () : boolean[] {
         if (this.construction === ASN1Construction.primitive) {
             if (this.value.length === 0)
@@ -186,8 +189,7 @@ class BERElement extends ASN1Element {
 
     get objectIdentifier () : OID {
         if (this.construction !== ASN1Construction.primitive)
-            throw new errors.ASN1ConstructionError
-            ("Construction cannot be constructed for an OBJECT IDENTIFIER!");
+            throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.");
 
         if (this.value.length === 0)
             throw new errors.ASN1TruncationError
@@ -239,6 +241,8 @@ class BERElement extends ASN1Element {
     }
 
     get real () : number {
+        if (this.construction !== ASN1Construction.primitive)
+            throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
         if (this.value.length === 0) return 0.0;
         switch (this.value[0] & 0b11000000) {
             case (0b01000000): {
@@ -291,8 +295,7 @@ class BERElement extends ASN1Element {
 
     get relativeObjectIdentifier () : number[] {
         if (this.construction !== ASN1Construction.primitive)
-            throw new errors.ASN1ConstructionError
-            ("Construction cannot be constructed for an Relative OID!");
+            throw new errors.ASN1ConstructionError("Relative OID cannot be constructed.");
         return BERElement.decodeObjectIdentifierNodes(this.value.slice(0));
     }
 
@@ -316,6 +319,8 @@ class BERElement extends ASN1Element {
     }
 
     get sequence () : BERElement[] {
+        if (this.construction !== ASN1Construction.constructed)
+            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
         let encodedElements : BERElement[] = [];
         if (this.value.length === 0) return [];
         let i : number = 0;

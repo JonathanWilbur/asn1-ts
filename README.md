@@ -122,6 +122,7 @@ more detail. -->
 
 - [x] Fix infinite recursion vulnerabilities
 - [ ] Implement a Distinguished Encoding Rules Codec
+  - [ ] Ensure length is encoded on minimum number of octets
 - [ ] Implement a Canonical Encoding Rules Codec
 - [ ] Build all codecs separately
 - [x] Make each codec inherit from `ASN1Element`
@@ -134,6 +135,10 @@ more detail. -->
 - [x] More aggressive time type validation
 - [x] Check that accessors do not mutate state
 - [x] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
+- [x] Add more construction restrictions
+- [ ] More `REAL` checks
+- [ ] More `REAL` testing
+- [ ] Fix `BIT STRING` decoding
 
 ## See Also
 
