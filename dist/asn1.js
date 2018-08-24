@@ -944,6 +944,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
                 this.tagNumber <<= 7;
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
+            if (this.tagNumber <= 31)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
         }
         if ((bytes[cursor] & 0b10000000) === 0b10000000) {
             const numberOfLengthOctets = (bytes[cursor] & 0x7F);

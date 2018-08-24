@@ -132,8 +132,8 @@ more detail. -->
 - [x] Deduplicate `OBJECT IDENTIFIER` and `RELATIVE OID` code
 - [x] Deduplicate `SET` and `SEQUENCE` and `deconstruct` code
 - [x] More aggressive time type validation
-- [ ] Check that accessors do not mutate state
-- [ ] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
+- [x] Check that accessors do not mutate state
+- [x] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
 
 ## See Also
 
