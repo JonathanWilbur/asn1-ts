@@ -2,6 +2,7 @@
 // TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
 // TODO: Would it be possible to underflow recursionCount by triggering an exception when no recursion was performed?
 // TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
+// TODO: Unnecessary "if (numbers.length > 2) {" in OID types
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
 import { ASN1Element } from "../asn1";
 import { ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "../values";
@@ -178,32 +179,8 @@ class BERElement extends ASN1Element {
     set objectIdentifier (value : OID) {
         const numbers : number[] = value.nodes;
         let pre : number[] = [ ((numbers[0] * 40) + numbers[1]) ];
-        if (numbers.length > 2) {
-            for (let i : number = 2; i < numbers.length; i++) {
-                let number : number = numbers[i];
-                if (number < 128) {
-                    pre.push(number);
-                    continue;
-                }
-
-                let encodedOIDNode : number[] = [];
-                while (number !== 0) {
-                    let numberBytes : number[] = [
-                        (number & 255),
-                        (number >>> 8 & 255),
-                        ((number >>> 16) & 255),
-                        ((number >>> 24) & 255),
-                    ];
-                    if ((numberBytes[0] & 0x80) === 0) numberBytes[0] |= 0x80;
-                    encodedOIDNode.unshift(numberBytes[0]);
-                    number >>= 7;
-                }
-
-                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-                pre = pre.concat(encodedOIDNode);
-            }
-        }
-        this.value = new Uint8Array(pre);
+        let post : number[] = BERElement.encodeObjectIdentifierNodes(numbers.slice(2));
+        this.value = new Uint8Array(pre.concat(post));
     }
 
     get objectIdentifier () : OID {
@@ -230,37 +207,7 @@ class BERElement extends ASN1Element {
         if (this.value.length === 1)
             return new OID(numbers);
 
-        if ((this.value[(this.value.length - 1)] & 0x80) === 0x80)
-            throw new errors.ASN1TruncationError("OID truncated");
-
-        let components : number = 2;
-        const allButTheFirstByte : Uint8Array = this.value.slice(1);
-        allButTheFirstByte.forEach(b => {
-            if (!(b & 0x80)) components++;
-        });
-        numbers.length = components;
-
-        let currentNumber : number = 2;
-        let bytesUsedInCurrentNumber : number = 0;
-        allButTheFirstByte.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0x80)
-                throw new errors.ASN1PaddingError("OID had invalid padding byte.");
-
-            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new errors.ASN1OverflowError("OID node too big");
-
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-
-            if (!(b & 0x80)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            } else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
-
+        numbers = numbers.concat(BERElement.decodeObjectIdentifierNodes(this.value.slice(1)));
         return new OID(numbers);
     }
 
@@ -338,65 +285,14 @@ class BERElement extends ASN1Element {
     }
 
     set relativeObjectIdentifier (value : number[]) {
-        let numbers : number[] = value;
-        let pre : number[] = [];
-        if (numbers.length > 0) {
-            for (let i : number = 0; i < numbers.length; i++) {
-                let number : number = numbers[i];
-                if (number < 128) {
-                    pre.push(number);
-                    continue;
-                }
-                let encodedOIDNode : number[] = [];
-                while (number !== 0) {
-                    let numberBytes : number[] = [
-                        (number & 255),
-                        (number >>> 8 & 255),
-                        ((number >>> 16) & 255),
-                        ((number >>> 24) & 255),
-                    ];
-                    if ((numberBytes[0] & 0b10000000) === 0) numberBytes[0] |= 0b10000000;
-                    encodedOIDNode.unshift(numberBytes[0]);
-                    number >>= 7;
-                }
-                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-                pre = pre.concat(encodedOIDNode);
-            }
-        }
-        this.value = new Uint8Array(pre);
+        this.value = new Uint8Array(BERElement.encodeObjectIdentifierNodes(value));
     }
 
     get relativeObjectIdentifier () : number[] {
         if (this.construction !== ASN1Construction.primitive)
             throw new errors.ASN1ConstructionError
             ("Construction cannot be constructed for an Relative OID!");
-        let numbers : number[] = [];
-        if (this.value.length === 1) return numbers;
-        if ((this.value[(this.value.length - 1)] & 0b10000000) === 0b10000000)
-            throw new errors.ASN1TruncationError("Relative OID truncated");
-        let components : number = 0;
-        this.value.forEach(b => {
-            if (!(b & 0b10000000)) components++;
-        });
-        numbers.length = components;
-        let currentNumber : number = 0;
-        let bytesUsedInCurrentNumber : number = 0;
-        this.value.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
-                throw new errors.ASN1PaddingError("Relative OID had invalid padding byte.");
-            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new errors.ASN1OverflowError("Relative OID node too big");
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0b10000000)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            } else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
-        return numbers;
+        return BERElement.decodeObjectIdentifierNodes(this.value.slice(0));
     }
 
     set sequence (value : BERElement[]) {
@@ -431,34 +327,11 @@ class BERElement extends ASN1Element {
     }
 
     set set (value : BERElement[]) {
-        let encodedElements : Uint8Array[] = [];
-        value.forEach(element => {
-            encodedElements.push(element.toBytes());
-        });
-        let totalLength : number = 0;
-        encodedElements.forEach(element => {
-            totalLength += element.length;
-        });
-        const newValue = new Uint8Array(totalLength);
-        let currentIndex : number = 0;
-        encodedElements.forEach(element => {
-            newValue.set(element, currentIndex);
-            currentIndex += element.length;
-        });
-        this.value = newValue;
-        this.construction = ASN1Construction.constructed;
+        this.sequence = value;
     }
 
     get set () : BERElement[] {
-        let encodedElements : BERElement[] = [];
-        if (this.value.length === 0) return [];
-        let i : number = 0;
-        while (i < this.value.length) {
-            const next : BERElement = new BERElement();
-            i += next.fromBytes(this.value.slice(i));
-            encodedElements.push(next);
-        }
-        return encodedElements;
+        return this.sequence;
     }
 
     set numericString (value : string) {
@@ -588,7 +461,6 @@ class BERElement extends ASN1Element {
         }
         if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed UTCTime string.");
-
         const ret : Date = new Date();
         let year : number = Number(dateString.substring(0, 2));
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -597,59 +469,7 @@ class BERElement extends ASN1Element {
         const hours : number = Number(dateString.substring(6, 8));
         const minutes : number = Number(dateString.substring(8, 10));
         const seconds : number = Number(dateString.substring(10, 12));
-
-        switch (month) {
-
-            // 31-day months
-            case 0  : // January
-            case 2  : // March
-            case 4  : // May
-            case 6  : // July
-            case 7  : // August
-            case 9  : // October
-            case 11 : // December
-                if (date > 31)
-                    throw new errors.ASN1Error
-                    ("Day greater than 31 encountered in UTCTime with 31-day month.");
-                break;
-
-            // 30-day months
-            case 3  : // April
-            case 5  : // June
-            case 8  : // September
-            case 10 : // November
-                if (date > 30)
-                    throw new errors.ASN1Error
-                    ("Day greater than 31 encountered in UTCTime with 30-day month.");
-                break;
-
-            // 28/29-day month
-            case 1  : // Feburary
-                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
-                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (isLeapYear) {
-                    if (date > 29)
-                        throw new errors.ASN1Error
-                        ("Day greater than 29 encountered in UTCTime with month of February in leap year.");
-                } else {
-                    if (date > 28)
-                        throw new errors.ASN1Error
-                        ("Day greater than 28 encountered in UTCTime with month of February and non leap year.");
-                }
-                break;
-
-            default:
-                throw new errors.ASN1Error("Month greater than 12 encountered in UTCTime.");
-
-        }
-
-        if (hours > 23)
-            throw new errors.ASN1Error("Hours greater than 23 encountered in UTCTime.");
-        if (minutes > 59)
-            throw new errors.ASN1Error("Minutes greater than 60 encountered in UTCTime.");
-        if (seconds > 59)
-            throw new errors.ASN1Error("Seconds greater than 60 encountered in UTCTime.");
-
+        BERElement.validateDateTime("UTCTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
         ret.setUTCDate(date);
@@ -684,7 +504,6 @@ class BERElement extends ASN1Element {
         }
         if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed GeneralizedTime string.");
-
         const ret : Date = new Date();
         const year : number = Number(dateString.substring(0, 4));
         const month : number = (Number(dateString.substring(4, 6)) - 1);
@@ -692,59 +511,7 @@ class BERElement extends ASN1Element {
         const hours : number = Number(dateString.substring(8, 10));
         const minutes : number = Number(dateString.substring(10, 12));
         const seconds : number = Number(dateString.substring(12, 14));
-
-        switch (month) {
-
-            // 31-day months
-            case 0  : // January
-            case 2  : // March
-            case 4  : // May
-            case 6  : // July
-            case 7  : // August
-            case 9  : // October
-            case 11 : // December
-                if (date > 31)
-                    throw new errors.ASN1Error
-                    ("Day greater than 31 encountered in GeneralizedTime with 31-day month.");
-                break;
-
-            // 30-day months
-            case 3  : // April
-            case 5  : // June
-            case 8  : // September
-            case 10 : // November
-                if (date > 30)
-                    throw new errors.ASN1Error
-                    ("Day greater than 31 encountered in GeneralizedTime with 30-day month.");
-                break;
-
-            // 28/29-day month
-            case 1  : // Feburary
-                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
-                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (isLeapYear) {
-                    if (date > 29)
-                        throw new errors.ASN1Error
-                        ("Day greater than 29 encountered in GeneralizedTime with month of February in leap year.");
-                } else {
-                    if (date > 28)
-                        throw new errors.ASN1Error
-                        ("Day greater than 28 encountered in GeneralizedTime with month of February and non leap year.");
-                }
-                break;
-
-            default:
-                throw new errors.ASN1Error("Month greater than 12 encountered in GeneralizedTime.");
-
-        }
-
-        if (hours > 23)
-            throw new errors.ASN1Error("Hours greater than 23 encountered in GeneralizedTime.");
-        if (minutes > 59)
-            throw new errors.ASN1Error("Minutes greater than 60 encountered in GeneralizedTime.");
-        if (seconds > 59)
-            throw new errors.ASN1Error("Seconds greater than 60 encountered in GeneralizedTime.");
-
+        BERElement.validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
         ret.setUTCDate(date);
@@ -1124,5 +891,121 @@ class BERElement extends ASN1Element {
             });
             return whole;
         }
+    }
+
+    private static validateDateTime (
+        dataType : string,
+        year : number,
+        month : number,
+        date : number,
+        hours : number,
+        minutes : number,
+        seconds : number
+    ) : void {
+        switch (month) {
+
+            // 31-day months
+            case 0  : // January
+            case 2  : // March
+            case 4  : // May
+            case 6  : // July
+            case 7  : // August
+            case 9  : // October
+            case 11 : // December
+                if (date > 31)
+                    throw new errors.ASN1Error
+                    (`Day > 31 encountered in ${dataType} with 31-day month.`);
+                break;
+
+            // 30-day months
+            case 3  : // April
+            case 5  : // June
+            case 8  : // September
+            case 10 : // November
+                if (date > 30)
+                    throw new errors.ASN1Error
+                    (`Day > 31 encountered in ${dataType} with 30-day month.`);
+                break;
+
+            // 28/29-day month
+            case 1  : // Feburary
+                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
+                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new errors.ASN1Error
+                        (`Day > 29 encountered in ${dataType} with month of February in leap year.`);
+                } else {
+                    if (date > 28)
+                        throw new errors.ASN1Error
+                        (`Day > 28 encountered in ${dataType} with month of February and non leap year.`);
+                }
+                break;
+
+            default:
+                throw new errors.ASN1Error(`Month greater than 12 encountered in ${dataType}.`);
+
+        }
+
+        if (hours > 23)
+            throw new errors.ASN1Error(`Hours > 23 encountered in ${dataType}.`);
+        if (minutes > 59)
+            throw new errors.ASN1Error(`Minutes > 60 encountered in ${dataType}.`);
+        if (seconds > 59)
+            throw new errors.ASN1Error(`Seconds > 60 encountered in ${dataType}.`);
+    }
+
+    private static decodeObjectIdentifierNodes (value : Uint8Array) : number[] {
+        if (value.length === 0) return [];
+        let numbers : number[] = [];
+        if (value.length > 0 && (value[(value.length - 1)] & 0b10000000) === 0b10000000)
+            throw new errors.ASN1TruncationError("OID truncated");
+        let components : number = 0;
+        value.forEach(b => { if (!(b & 0b10000000)) components++; });
+        numbers.length = components;
+        let currentNumber : number = 0;
+        let bytesUsedInCurrentNumber : number = 0;
+        value.forEach(b => {
+            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
+                throw new errors.ASN1PaddingError("OID had invalid padding byte.");
+            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new errors.ASN1OverflowError("OID node too big");
+            numbers[currentNumber] <<= 7;
+            numbers[currentNumber] |= (b & 0x7F);
+            if (!(b & 0b10000000)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            } else {
+                bytesUsedInCurrentNumber++;
+            }
+        });
+        return numbers;
+    }
+
+    private static encodeObjectIdentifierNodes (value : number[]) : number[] {
+        let ret : number[] = [];
+        for (let i : number = 0; i < value.length; i++) {
+            let number : number = value[i];
+            if (number < 128) {
+                ret.push(number);
+                continue;
+            }
+            let encodedOIDNode : number[] = [];
+            while (number !== 0) {
+                let numberBytes : number[] = [
+                    (number & 255),
+                    (number >>> 8 & 255),
+                    ((number >>> 16) & 255),
+                    ((number >>> 24) & 255),
+                ];
+                if ((numberBytes[0] & 0x80) === 0) numberBytes[0] |= 0x80;
+                encodedOIDNode.unshift(numberBytes[0]);
+                number >>= 7;
+            }
+            encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
+            ret = ret.concat(encodedOIDNode);
+        }
+        return ret;
     }
 }

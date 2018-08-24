@@ -463,31 +463,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     set objectIdentifier(value) {
         const numbers = value.nodes;
         let pre = [((numbers[0] * 40) + numbers[1])];
-        if (numbers.length > 2) {
-            for (let i = 2; i < numbers.length; i++) {
-                let number = numbers[i];
-                if (number < 128) {
-                    pre.push(number);
-                    continue;
-                }
-                let encodedOIDNode = [];
-                while (number !== 0) {
-                    let numberBytes = [
-                        (number & 255),
-                        (number >>> 8 & 255),
-                        ((number >>> 16) & 255),
-                        ((number >>> 24) & 255),
-                    ];
-                    if ((numberBytes[0] & 0x80) === 0)
-                        numberBytes[0] |= 0x80;
-                    encodedOIDNode.unshift(numberBytes[0]);
-                    number >>= 7;
-                }
-                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-                pre = pre.concat(encodedOIDNode);
-            }
-        }
-        this.value = new Uint8Array(pre);
+        let post = BERElement.encodeObjectIdentifierNodes(numbers.slice(2));
+        this.value = new Uint8Array(pre.concat(post));
     }
     get objectIdentifier() {
         if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
@@ -509,32 +486,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         }
         if (this.value.length === 1)
             return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
-        if ((this.value[(this.value.length - 1)] & 0x80) === 0x80)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("OID truncated");
-        let components = 2;
-        const allButTheFirstByte = this.value.slice(1);
-        allButTheFirstByte.forEach(b => {
-            if (!(b & 0x80))
-                components++;
-        });
-        numbers.length = components;
-        let currentNumber = 2;
-        let bytesUsedInCurrentNumber = 0;
-        allButTheFirstByte.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0x80)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1PaddingError */ "f"]("OID had invalid padding byte.");
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1OverflowError */ "e"]("OID node too big");
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0x80)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            }
-            else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
+        numbers = numbers.concat(BERElement.decodeObjectIdentifierNodes(this.value.slice(1)));
         return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
     }
     set objectDescriptor(value) {
@@ -613,66 +565,12 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         return ret;
     }
     set relativeObjectIdentifier(value) {
-        let numbers = value;
-        let pre = [];
-        if (numbers.length > 0) {
-            for (let i = 0; i < numbers.length; i++) {
-                let number = numbers[i];
-                if (number < 128) {
-                    pre.push(number);
-                    continue;
-                }
-                let encodedOIDNode = [];
-                while (number !== 0) {
-                    let numberBytes = [
-                        (number & 255),
-                        (number >>> 8 & 255),
-                        ((number >>> 16) & 255),
-                        ((number >>> 24) & 255),
-                    ];
-                    if ((numberBytes[0] & 0b10000000) === 0)
-                        numberBytes[0] |= 0b10000000;
-                    encodedOIDNode.unshift(numberBytes[0]);
-                    number >>= 7;
-                }
-                encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-                pre = pre.concat(encodedOIDNode);
-            }
-        }
-        this.value = new Uint8Array(pre);
+        this.value = new Uint8Array(BERElement.encodeObjectIdentifierNodes(value));
     }
     get relativeObjectIdentifier() {
         if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Construction cannot be constructed for an Relative OID!");
-        let numbers = [];
-        if (this.value.length === 1)
-            return numbers;
-        if ((this.value[(this.value.length - 1)] & 0b10000000) === 0b10000000)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("Relative OID truncated");
-        let components = 0;
-        this.value.forEach(b => {
-            if (!(b & 0b10000000))
-                components++;
-        });
-        numbers.length = components;
-        let currentNumber = 0;
-        let bytesUsedInCurrentNumber = 0;
-        this.value.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1PaddingError */ "f"]("Relative OID had invalid padding byte.");
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1OverflowError */ "e"]("Relative OID node too big");
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0b10000000)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            }
-            else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
-        return numbers;
+        return BERElement.decodeObjectIdentifierNodes(this.value.slice(0));
     }
     set sequence(value) {
         let encodedElements = [];
@@ -705,34 +603,10 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         return encodedElements;
     }
     set set(value) {
-        let encodedElements = [];
-        value.forEach(element => {
-            encodedElements.push(element.toBytes());
-        });
-        let totalLength = 0;
-        encodedElements.forEach(element => {
-            totalLength += element.length;
-        });
-        const newValue = new Uint8Array(totalLength);
-        let currentIndex = 0;
-        encodedElements.forEach(element => {
-            newValue.set(element, currentIndex);
-            currentIndex += element.length;
-        });
-        this.value = newValue;
-        this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed;
+        this.sequence = value;
     }
     get set() {
-        let encodedElements = [];
-        if (this.value.length === 0)
-            return [];
-        let i = 0;
-        while (i < this.value.length) {
-            const next = new BERElement();
-            i += next.fromBytes(this.value.slice(i));
-            encodedElements.push(next);
-        }
-        return encodedElements;
+        return this.sequence;
     }
     set numericString(value) {
         for (let i = 0; i < value.length; i++) {
@@ -860,44 +734,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         const hours = Number(dateString.substring(6, 8));
         const minutes = Number(dateString.substring(8, 10));
         const seconds = Number(dateString.substring(10, 12));
-        switch (month) {
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 7:
-            case 9:
-            case 11:
-                if (date > 31)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in UTCTime with 31-day month.");
-                break;
-            case 3:
-            case 5:
-            case 8:
-            case 10:
-                if (date > 30)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in UTCTime with 30-day month.");
-                break;
-            case 1:
-                let isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (isLeapYear) {
-                    if (date > 29)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 29 encountered in UTCTime with month of February in leap year.");
-                }
-                else {
-                    if (date > 28)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 28 encountered in UTCTime with month of February and non leap year.");
-                }
-                break;
-            default:
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Month greater than 12 encountered in UTCTime.");
-        }
-        if (hours > 23)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Hours greater than 23 encountered in UTCTime.");
-        if (minutes > 59)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Minutes greater than 60 encountered in UTCTime.");
-        if (seconds > 59)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Seconds greater than 60 encountered in UTCTime.");
+        BERElement.validateDateTime("UTCTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
         ret.setUTCDate(date);
@@ -939,44 +776,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         const hours = Number(dateString.substring(8, 10));
         const minutes = Number(dateString.substring(10, 12));
         const seconds = Number(dateString.substring(12, 14));
-        switch (month) {
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 7:
-            case 9:
-            case 11:
-                if (date > 31)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in GeneralizedTime with 31-day month.");
-                break;
-            case 3:
-            case 5:
-            case 8:
-            case 10:
-                if (date > 30)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in GeneralizedTime with 30-day month.");
-                break;
-            case 1:
-                let isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (isLeapYear) {
-                    if (date > 29)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 29 encountered in GeneralizedTime with month of February in leap year.");
-                }
-                else {
-                    if (date > 28)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 28 encountered in GeneralizedTime with month of February and non leap year.");
-                }
-                break;
-            default:
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Month greater than 12 encountered in GeneralizedTime.");
-        }
-        if (hours > 23)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Hours greater than 23 encountered in GeneralizedTime.");
-        if (minutes > 59)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Minutes greater than 60 encountered in GeneralizedTime.");
-        if (seconds > 59)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Seconds greater than 60 encountered in GeneralizedTime.");
+        BERElement.validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
         ret.setUTCDate(date);
@@ -1287,6 +1087,101 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             });
             return whole;
         }
+    }
+    static validateDateTime(dataType, year, month, date, hours, minutes, seconds) {
+        switch (month) {
+            case 0:
+            case 2:
+            case 4:
+            case 6:
+            case 7:
+            case 9:
+            case 11:
+                if (date > 31)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Day > 31 encountered in ${dataType} with 31-day month.`);
+                break;
+            case 3:
+            case 5:
+            case 8:
+            case 10:
+                if (date > 30)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Day > 31 encountered in ${dataType} with 30-day month.`);
+                break;
+            case 1:
+                let isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Day > 29 encountered in ${dataType} with month of February in leap year.`);
+                }
+                else {
+                    if (date > 28)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Day > 28 encountered in ${dataType} with month of February and non leap year.`);
+                }
+                break;
+            default:
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Month greater than 12 encountered in ${dataType}.`);
+        }
+        if (hours > 23)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Hours > 23 encountered in ${dataType}.`);
+        if (minutes > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Minutes > 60 encountered in ${dataType}.`);
+        if (seconds > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Seconds > 60 encountered in ${dataType}.`);
+    }
+    static decodeObjectIdentifierNodes(value) {
+        if (value.length === 0)
+            return [];
+        let numbers = [];
+        if (value.length > 0 && (value[(value.length - 1)] & 0b10000000) === 0b10000000)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1TruncationError */ "i"]("OID truncated");
+        let components = 0;
+        value.forEach(b => { if (!(b & 0b10000000))
+            components++; });
+        numbers.length = components;
+        let currentNumber = 0;
+        let bytesUsedInCurrentNumber = 0;
+        value.forEach(b => {
+            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1PaddingError */ "f"]("OID had invalid padding byte.");
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1OverflowError */ "e"]("OID node too big");
+            numbers[currentNumber] <<= 7;
+            numbers[currentNumber] |= (b & 0x7F);
+            if (!(b & 0b10000000)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            }
+            else {
+                bytesUsedInCurrentNumber++;
+            }
+        });
+        return numbers;
+    }
+    static encodeObjectIdentifierNodes(value) {
+        let ret = [];
+        for (let i = 0; i < value.length; i++) {
+            let number = value[i];
+            if (number < 128) {
+                ret.push(number);
+                continue;
+            }
+            let encodedOIDNode = [];
+            while (number !== 0) {
+                let numberBytes = [
+                    (number & 255),
+                    (number >>> 8 & 255),
+                    ((number >>> 16) & 255),
+                    ((number >>> 24) & 255),
+                ];
+                if ((numberBytes[0] & 0x80) === 0)
+                    numberBytes[0] |= 0x80;
+                encodedOIDNode.unshift(numberBytes[0]);
+                number >>= 7;
+            }
+            encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
+            ret = ret.concat(encodedOIDNode);
+        }
+        return ret;
     }
 }
 BERElement.lengthEncodingPreference = _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "e"].definite;

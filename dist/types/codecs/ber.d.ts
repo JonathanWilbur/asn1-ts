@@ -31,4 +31,7 @@ export declare class BERElement extends ASN1Element {
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
     private deconstruct;
+    private static validateDateTime;
+    private static decodeObjectIdentifierNodes;
+    private static encodeObjectIdentifierNodes;
 }

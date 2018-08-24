@@ -127,11 +127,12 @@ more detail. -->
 - [x] Make each codec inherit from `ASN1Element`
 - [x] Use longer names with aliases
 - [x] Improve the system of exceptions
-- [ ] Make `fromBytes` return negative numbers to signal issues.
-- [ ] Make concurrency possible by making the `recursionCount`s non-static.
-- [ ] More time type testing
-- [ ] Deduplicate `SET` and `SEQUENCE` and `deconstruct` code
+- [x] Make concurrency possible by making the `recursionCount`s non-static.
+- [x] More time type testing
+- [x] Deduplicate `OBJECT IDENTIFIER` and `RELATIVE OID` code
+- [x] Deduplicate `SET` and `SEQUENCE` and `deconstruct` code
 - [x] More aggressive time type validation
+- [ ] Check that accessors do not mutate state
 - [ ] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
 
 ## See Also
