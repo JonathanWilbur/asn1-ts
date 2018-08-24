@@ -828,7 +828,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     set utcTime(value) {
         let year = value.getUTCFullYear().toString();
         year = (year.substring(year.length - 2, year.length));
-        const month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const month = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
         const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
         const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
         const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
@@ -853,18 +853,62 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         const ret = new Date();
-        const year = Number(dateString.substring(0, 2));
-        ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
-        ret.setUTCMonth(Number(dateString.substring(2, 4)));
-        ret.setUTCDate(Number(dateString.substring(4, 6)));
-        ret.setUTCHours(Number(dateString.substring(6, 8)));
-        ret.setUTCMinutes(Number(dateString.substring(8, 10)));
-        ret.setUTCSeconds(Number(dateString.substring(10, 12)));
+        let year = Number(dateString.substring(0, 2));
+        year = (year < 70 ? (2000 + year) : (1900 + year));
+        const month = (Number(dateString.substring(2, 4)) - 1);
+        const date = Number(dateString.substring(4, 6));
+        const hours = Number(dateString.substring(6, 8));
+        const minutes = Number(dateString.substring(8, 10));
+        const seconds = Number(dateString.substring(10, 12));
+        switch (month) {
+            case 0:
+            case 2:
+            case 4:
+            case 6:
+            case 7:
+            case 9:
+            case 11:
+                if (date > 31)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in UTCTime with 31-day month.");
+                break;
+            case 3:
+            case 5:
+            case 8:
+            case 10:
+                if (date > 30)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in UTCTime with 30-day month.");
+                break;
+            case 1:
+                let isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 29 encountered in UTCTime with month of February in leap year.");
+                }
+                else {
+                    if (date > 28)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 28 encountered in UTCTime with month of February and non leap year.");
+                }
+                break;
+            default:
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Month greater than 12 encountered in UTCTime.");
+        }
+        if (hours > 23)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Hours greater than 23 encountered in UTCTime.");
+        if (minutes > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Minutes greater than 60 encountered in UTCTime.");
+        if (seconds > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Seconds greater than 60 encountered in UTCTime.");
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
         return ret;
     }
     set generalizedTime(value) {
         const year = value.getUTCFullYear().toString();
-        const month = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const month = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
         const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
         const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
         const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
@@ -889,12 +933,56 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         const ret = new Date();
-        ret.setUTCFullYear(Number(dateString.substring(0, 4)));
-        ret.setUTCMonth(Number(dateString.substring(4, 6)));
-        ret.setUTCDate(Number(dateString.substring(6, 8)));
-        ret.setUTCHours(Number(dateString.substring(8, 10)));
-        ret.setUTCMinutes(Number(dateString.substring(10, 12)));
-        ret.setUTCSeconds(Number(dateString.substring(12, 14)));
+        const year = Number(dateString.substring(0, 4));
+        const month = (Number(dateString.substring(4, 6)) - 1);
+        const date = Number(dateString.substring(6, 8));
+        const hours = Number(dateString.substring(8, 10));
+        const minutes = Number(dateString.substring(10, 12));
+        const seconds = Number(dateString.substring(12, 14));
+        switch (month) {
+            case 0:
+            case 2:
+            case 4:
+            case 6:
+            case 7:
+            case 9:
+            case 11:
+                if (date > 31)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in GeneralizedTime with 31-day month.");
+                break;
+            case 3:
+            case 5:
+            case 8:
+            case 10:
+                if (date > 30)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 31 encountered in GeneralizedTime with 30-day month.");
+                break;
+            case 1:
+                let isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 29 encountered in GeneralizedTime with month of February in leap year.");
+                }
+                else {
+                    if (date > 28)
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Day greater than 28 encountered in GeneralizedTime with month of February and non leap year.");
+                }
+                break;
+            default:
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Month greater than 12 encountered in GeneralizedTime.");
+        }
+        if (hours > 23)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Hours greater than 23 encountered in GeneralizedTime.");
+        if (minutes > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Minutes greater than 60 encountered in GeneralizedTime.");
+        if (seconds > 59)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Seconds greater than 60 encountered in GeneralizedTime.");
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
         return ret;
     }
     set graphicString(value) {

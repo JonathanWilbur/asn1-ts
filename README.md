@@ -131,11 +131,7 @@ more detail. -->
 - [ ] Make concurrency possible by making the `recursionCount`s non-static.
 - [ ] More time type testing
 - [ ] Deduplicate `SET` and `SEQUENCE` and `deconstruct` code
-- [ ] More aggressive time type validation
-  - [ ] Make sure minutes or seconds cannot exceed 59
-  - [ ] Make sure hours cannot exceed 23
-  - [ ] Make sure days cannot exceed 31
-  - [ ] Make sure months cannot exceed 12
+- [x] More aggressive time type validation
 - [ ] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
 
 ## See Also

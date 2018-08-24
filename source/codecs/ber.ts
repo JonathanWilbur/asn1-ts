@@ -565,7 +565,7 @@ class BERElement extends ASN1Element {
     set utcTime (value : Date) {
         let year : string = value.getUTCFullYear().toString();
         year = (year.substring(year.length - 2, year.length)); // Will fail if you supply a <2 digit date.
-        const month : string = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const month : string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
         const day : string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
         const hour : string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
         const minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
@@ -588,20 +588,80 @@ class BERElement extends ASN1Element {
         }
         if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed UTCTime string.");
+
         const ret : Date = new Date();
-        const year : number = Number(dateString.substring(0, 2));
-        ret.setUTCFullYear(year < 70 ? (2000 + year) : (1900 + year));
-        ret.setUTCMonth(Number(dateString.substring(2, 4)));
-        ret.setUTCDate(Number(dateString.substring(4, 6)));
-        ret.setUTCHours(Number(dateString.substring(6, 8)));
-        ret.setUTCMinutes(Number(dateString.substring(8, 10)));
-        ret.setUTCSeconds(Number(dateString.substring(10, 12)));
+        let year : number = Number(dateString.substring(0, 2));
+        year = (year < 70 ? (2000 + year) : (1900 + year));
+        const month : number = (Number(dateString.substring(2, 4)) - 1);
+        const date : number = Number(dateString.substring(4, 6));
+        const hours : number = Number(dateString.substring(6, 8));
+        const minutes : number = Number(dateString.substring(8, 10));
+        const seconds : number = Number(dateString.substring(10, 12));
+
+        switch (month) {
+
+            // 31-day months
+            case 0  : // January
+            case 2  : // March
+            case 4  : // May
+            case 6  : // July
+            case 7  : // August
+            case 9  : // October
+            case 11 : // December
+                if (date > 31)
+                    throw new errors.ASN1Error
+                    ("Day greater than 31 encountered in UTCTime with 31-day month.");
+                break;
+
+            // 30-day months
+            case 3  : // April
+            case 5  : // June
+            case 8  : // September
+            case 10 : // November
+                if (date > 30)
+                    throw new errors.ASN1Error
+                    ("Day greater than 31 encountered in UTCTime with 30-day month.");
+                break;
+
+            // 28/29-day month
+            case 1  : // Feburary
+                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
+                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new errors.ASN1Error
+                        ("Day greater than 29 encountered in UTCTime with month of February in leap year.");
+                } else {
+                    if (date > 28)
+                        throw new errors.ASN1Error
+                        ("Day greater than 28 encountered in UTCTime with month of February and non leap year.");
+                }
+                break;
+
+            default:
+                throw new errors.ASN1Error("Month greater than 12 encountered in UTCTime.");
+
+        }
+
+        if (hours > 23)
+            throw new errors.ASN1Error("Hours greater than 23 encountered in UTCTime.");
+        if (minutes > 59)
+            throw new errors.ASN1Error("Minutes greater than 60 encountered in UTCTime.");
+        if (seconds > 59)
+            throw new errors.ASN1Error("Seconds greater than 60 encountered in UTCTime.");
+
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
         return ret;
     }
 
     set generalizedTime (value : Date) {
         const year : string = value.getUTCFullYear().toString();
-        const month : string = (value.getUTCMonth() < 10 ? `0${value.getUTCMonth()}` : `${value.getUTCMonth()}`);
+        const month : string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
         const day : string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
         const hour : string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
         const minute : string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
@@ -624,13 +684,73 @@ class BERElement extends ASN1Element {
         }
         if (dateString.length < 13 || !(/\d{14}(?:\.\d+)?Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed GeneralizedTime string.");
+
         const ret : Date = new Date();
-        ret.setUTCFullYear(Number(dateString.substring(0, 4)));
-        ret.setUTCMonth(Number(dateString.substring(4, 6)));
-        ret.setUTCDate(Number(dateString.substring(6, 8)));
-        ret.setUTCHours(Number(dateString.substring(8, 10)));
-        ret.setUTCMinutes(Number(dateString.substring(10, 12)));
-        ret.setUTCSeconds(Number(dateString.substring(12, 14)));
+        const year : number = Number(dateString.substring(0, 4));
+        const month : number = (Number(dateString.substring(4, 6)) - 1);
+        const date : number = Number(dateString.substring(6, 8));
+        const hours : number = Number(dateString.substring(8, 10));
+        const minutes : number = Number(dateString.substring(10, 12));
+        const seconds : number = Number(dateString.substring(12, 14));
+
+        switch (month) {
+
+            // 31-day months
+            case 0  : // January
+            case 2  : // March
+            case 4  : // May
+            case 6  : // July
+            case 7  : // August
+            case 9  : // October
+            case 11 : // December
+                if (date > 31)
+                    throw new errors.ASN1Error
+                    ("Day greater than 31 encountered in GeneralizedTime with 31-day month.");
+                break;
+
+            // 30-day months
+            case 3  : // April
+            case 5  : // June
+            case 8  : // September
+            case 10 : // November
+                if (date > 30)
+                    throw new errors.ASN1Error
+                    ("Day greater than 31 encountered in GeneralizedTime with 30-day month.");
+                break;
+
+            // 28/29-day month
+            case 1  : // Feburary
+                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
+                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear) {
+                    if (date > 29)
+                        throw new errors.ASN1Error
+                        ("Day greater than 29 encountered in GeneralizedTime with month of February in leap year.");
+                } else {
+                    if (date > 28)
+                        throw new errors.ASN1Error
+                        ("Day greater than 28 encountered in GeneralizedTime with month of February and non leap year.");
+                }
+                break;
+
+            default:
+                throw new errors.ASN1Error("Month greater than 12 encountered in GeneralizedTime.");
+
+        }
+
+        if (hours > 23)
+            throw new errors.ASN1Error("Hours greater than 23 encountered in GeneralizedTime.");
+        if (minutes > 59)
+            throw new errors.ASN1Error("Minutes greater than 60 encountered in GeneralizedTime.");
+        if (seconds > 59)
+            throw new errors.ASN1Error("Seconds greater than 60 encountered in GeneralizedTime.");
+
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
         return ret;
     }
 

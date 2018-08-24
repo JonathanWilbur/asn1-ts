@@ -348,7 +348,6 @@ describe("Basic Encoding Rules", function() {
         let test = new Date();
         el.utcTime = test;
         let ret = el.utcTime;
-
         /** NOTE:
          * You have to compare each member of the Date object individually,
          * because the methods do not read or write milliseconds.
@@ -359,6 +358,9 @@ describe("Basic Encoding Rules", function() {
         expect(ret.getUTCHours()).toBe(test.getUTCHours());
         expect(ret.getUTCMinutes()).toBe(test.getUTCMinutes());
         expect(ret.getUTCSeconds()).toBe(test.getUTCSeconds());
+
+        el.utcTime = new Date(Date.UTC(2018, 11, 31, 22, 33, 44));
+        expect(el.utf8String).toBe("181231223344Z");
     });
 
     it("encodes and decodes a GeneralizedTime correctly", function () {
@@ -366,7 +368,6 @@ describe("Basic Encoding Rules", function() {
         let test = new Date();
         el.generalizedTime = test;
         let ret = el.generalizedTime;
-
         /** NOTE:
          * You have to compare each member of the Date object individually,
          * because the methods do not read or write milliseconds.
@@ -377,6 +378,9 @@ describe("Basic Encoding Rules", function() {
         expect(ret.getUTCHours()).toBe(test.getUTCHours());
         expect(ret.getUTCMinutes()).toBe(test.getUTCMinutes());
         expect(ret.getUTCSeconds()).toBe(test.getUTCSeconds());
+
+        el.generalizedTime = new Date(Date.UTC(2018, 11, 31, 22, 33, 44));
+        expect(el.utf8String).toBe("20181231223344Z");
     });
 
     it("encodes and decodes a BMPString correctly", function () {
