@@ -60,33 +60,6 @@ you'll see all of the protocols that use ASN.1.
 
 This list can also be found in `documentation/asn1.d`.
 
-## Why *This* Library?
-
-You should use *this* library, because ASN.1 is _really_ difficult to implement,
-and ASN.1 is _really_ _really_ difficult to implement **to specification**, and
-ASN.1 is _really_ _really_ _really_ difficult to implement **securely**. I spent
-at least over 1000 hours in 2017 working on this library to make sure it is
-implemented to specification and implemented securely. This library has been
-subjected to about 4.3 billion random inputs on Windows, Mac OS X, and Linux,
-as well as over 100,000 unit tests. I have also reviewed _all_ CVE's from the
-[National Institute of Standards and Technology](https://www.nist.gov/)'s
-[National Vulnerability Database](https://nvd.nist.gov/) that are related to
-ASN.1 and related codecs. Further, I documented this library so well that,
-unlike so many other libraries out there, you should not need to look at the
-source code--the included documentation and the generated HTML documentation
-should be sufficient. This library is **unambiguously** the best ASN.1 library
-in any programming language **ever**.
-
-I will repeat myself: **I do not recommend that you implement your own ASN.1 library**,
-but if you are still considering it, please first:
-
-1. Let me know why. If you have good ideas, I will be more than happy to implement
-them in this library.
-1. Let me know where I can find your library. I will constructively criticize it
-with such ferocity that, if your ancestors live to tell the tale, they will do so
-for millenia to come. **I guarantee you** that you will screw up and leave a
-security vulnerability in your code if you aren't just copying and pasting from my code.
-
 ## Library Usage
 
 For each codec in the library, usage entails instantiating the class,
