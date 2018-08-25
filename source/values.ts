@@ -81,5 +81,17 @@ export const printableStringCharacters : string =
 export const utcTimeRegex : RegExp =
     /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?(?<offset>(?:(\+|\-)\d{4})|Z)$/;
 
+export const distinguishedUTCTimeRegex : RegExp =
+    /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?Z$/;
+
 export const generalizedTimeRegex : RegExp =
     /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})?(?<second>\d{2})?(?:\.(?<millisecond>\d+))?(?<offset>(?:(\+|\-)\d{4})|Z)?$/;
+
+export const distinguishedGeneralizedTimeRegex : RegExp =
+    /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?:\.(?<millisecond>\d*[1-9]))?Z$/;
+
+export const nr1Regex : RegExp = /^\ *(\+|\-)?\d+$/;
+export const nr2Regex : RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
+export const nr3Regex : RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
+export const canonicalNR3Regex : RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+export const distinguishedNR3Regex : RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;

@@ -1,5 +1,5 @@
 describe('The UTCTime regular expression', () => {
-    let regex = asn1.utcTimeRegex;
+    const regex = asn1.utcTimeRegex;
     it('decodes all valid UTCTime formats correctly', () => {
         let result;
 

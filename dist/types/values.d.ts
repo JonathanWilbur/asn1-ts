@@ -57,4 +57,11 @@ export declare enum ASN1UniversalType {
 }
 export declare const printableStringCharacters: string;
 export declare const utcTimeRegex: RegExp;
+export declare const distinguishedUTCTimeRegex: RegExp;
 export declare const generalizedTimeRegex: RegExp;
+export declare const distinguishedGeneralizedTimeRegex: RegExp;
+export declare const nr1Regex: RegExp;
+export declare const nr2Regex: RegExp;
+export declare const nr3Regex: RegExp;
+export declare const canonicalNR3Regex: RegExp;
+export declare const distinguishedNR3Regex: RegExp;

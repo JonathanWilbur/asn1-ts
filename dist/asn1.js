@@ -176,9 +176,16 @@ class ASN1ConstructionError extends ASN1Error {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return LengthEncodingPreference; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ASN1SpecialRealValue; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return ASN1UniversalType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return printableStringCharacters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return utcTimeRegex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return generalizedTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return printableStringCharacters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return utcTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return distinguishedUTCTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return generalizedTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return distinguishedGeneralizedTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return nr1Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return nr2Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return nr3Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return canonicalNR3Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return distinguishedNR3Regex; });
 const MAX_UINT_32 = 0x00FFFFFFFF;
 const MIN_UINT_32 = 0x0000000000;
 const MAX_SINT_32 = 0x7FFFFFFF;
@@ -243,7 +250,14 @@ var ASN1UniversalType;
 })(ASN1UniversalType || (ASN1UniversalType = {}));
 const printableStringCharacters = "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
 const utcTimeRegex = /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?(?<offset>(?:(\+|\-)\d{4})|Z)$/;
+const distinguishedUTCTimeRegex = /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?Z$/;
 const generalizedTimeRegex = /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})?(?<second>\d{2})?(?:\.(?<millisecond>\d+))?(?<offset>(?:(\+|\-)\d{4})|Z)?$/;
+const distinguishedGeneralizedTimeRegex = /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?:\.(?<millisecond>\d*[1-9]))?Z$/;
+const nr1Regex = /^\ *(\+|\-)?\d+$/;
+const nr2Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
+const nr3Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
+const canonicalNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+const distinguishedNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
 
 
 /***/ }),
@@ -643,8 +657,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"].indexOf(value.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"]}`);
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -664,8 +678,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"].indexOf(ret.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"]}`);
             }
         }
         return ret;
@@ -1254,11 +1268,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["d"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["k"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["r"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["l"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["s"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["j"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedUTCTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["m"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["n"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedGeneralizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["k"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr1Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["o"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr2Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["p"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["q"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["j"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["l"]; });
 
 
 
