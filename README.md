@@ -138,7 +138,9 @@ more detail. -->
 - [x] Add more construction restrictions
 - [ ] More `REAL` checks
 - [ ] More `REAL` testing
-- [ ] Fix `BIT STRING` decoding
+- [x] Fix `BIT STRING` decoding
+- [x] Test `BIT STRING` `0x00`
+- [ ] Refactor shared functionality into an `X690Element` class
 
 ## See Also
 

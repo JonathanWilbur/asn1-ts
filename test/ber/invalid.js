@@ -25,6 +25,19 @@ describe("Basic Encoding Rules", function() {
         expect(() => el.bitString).toThrow();
     });
 
+    it('throws an exception when decoding a constructed BIT STRING whose non-terminal subcomponents start with non-zero value bytes', () => {
+        let data = [
+            0x23, 0x0E,
+                0x03, 0x02, 0x03, 0x0F, // The 0x03 is what should cause this to throw.
+                0x23, 0x04,
+                    0x03, 0x02, 0x00, 0x0F,
+                0x03, 0x02, 0x05, 0xF0
+        ];
+        let element = new BERElement();
+        element.fromBytes(data);
+        expect(() => element.bitString).toThrow();
+    });
+
     it('throws an exception when decoding a GeneralizedTime with trailing zeroes', () => {
         let el = new BERElement();
         el.utf8String = "20181211223344.060Z";

@@ -135,40 +135,30 @@ class BERElement extends ASN1Element {
             ret.length -= this.value[0];
             return ret;
         } else {
-            try {
-                if (this.recursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new errors.ASN1RecursionError();
-                let appendy : boolean[] = [];
-                const substrings : BERElement[] = this.sequence;
-                if (substrings.length === 0) return [];
-                // REVIEW: Why am I skipping the last substring? I don't think it is EOC...
-                substrings.slice(0, (substrings.length - 1)).forEach(substring => {
-                    if (
-                        substring.construction === ASN1Construction.primitive &&
-                        substring.value.length > 0 &&
-                        substring.value[0] !== 0x00
-                    )
-                        throw new errors.ASN1Error
-                        (
-                            "This exception was thrown because you attempted to " +
-                            "decode a constructed BIT STRING that contained a " +
-                            "substring whose first byte indicated a non-zero " +
-                            "number of padding bits, despite not being the " +
-                            "last substring of the constructed BIT STRING. " +
-                            "Only the last substring may have padding bits. "
-                        );
-                });
-                substrings.forEach(substring => {
-                    if (substring.tagClass !== this.tagClass)
-                        throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
-                    if (substring.tagNumber !== this.tagNumber)
-                        throw new errors.ASN1ConstructionError("Invalid tag number in recursively-encoded BIT STRING.");
-                    appendy = appendy.concat(substring.bitString);
-                });
-                return appendy;
-            } finally {
-                // this.recursionCount--;
-            }
+            if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+                throw new errors.ASN1RecursionError();
+            let appendy : boolean[] = [];
+            const substrings : BERElement[] = this.sequence;
+            substrings.slice(0, (substrings.length - 1)).forEach(substring => {
+                if (
+                    substring.construction === ASN1Construction.primitive &&
+                    substring.value.length > 0 &&
+                    substring.value[0] !== 0x00
+                )
+                    throw new errors.ASN1Error
+                    (`Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.`);
+            });
+            substrings.forEach(substring => {
+                if (substring.tagClass !== this.tagClass)
+                    throw new errors.ASN1ConstructionError
+                    (`Invalid tag class in recursively-encoded BIT STRING.`);
+                if (substring.tagNumber !== this.tagNumber)
+                    throw new errors.ASN1ConstructionError
+                    (`Invalid tag class in recursively-encoded BIT STRING.`);
+                substring.recursionCount = (this.recursionCount + 1);
+                appendy = appendy.concat(substring.bitString);
+            });
+            return appendy;
         }
     }
 

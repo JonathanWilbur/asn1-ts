@@ -59,6 +59,7 @@ describe("Basic Encoding Rules", function() {
         let el = new BERElement();
         el.bitString = []; // 0 bits
         (el.bitString == []);
+        expect(el.value).toEqual(new Uint8Array([ 0x00 ]));
         el.bitString = [ true, false, true, true, false, false, true ]; // 7 bits
         expect(el.bitString).toEqual([ true, false, true, true, false, false, true ]);
         el.bitString = [ true, false, true, true, false, false, true, false ]; // 8 bits

@@ -427,35 +427,25 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             return ret;
         }
         else {
-            try {
-                if (this.recursionCount++ === BERElement.nestingRecursionLimit)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
-                let appendy = [];
-                const substrings = this.sequence;
-                if (substrings.length === 0)
-                    return [];
-                substrings.slice(0, (substrings.length - 1)).forEach(substring => {
-                    if (substring.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
-                        substring.value.length > 0 &&
-                        substring.value[0] !== 0x00)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("This exception was thrown because you attempted to " +
-                            "decode a constructed BIT STRING that contained a " +
-                            "substring whose first byte indicated a non-zero " +
-                            "number of padding bits, despite not being the " +
-                            "last substring of the constructed BIT STRING. " +
-                            "Only the last substring may have padding bits. ");
-                });
-                substrings.forEach(substring => {
-                    if (substring.tagClass !== this.tagClass)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Invalid tag class in recursively-encoded BIT STRING.");
-                    if (substring.tagNumber !== this.tagNumber)
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"]("Invalid tag number in recursively-encoded BIT STRING.");
-                    appendy = appendy.concat(substring.bitString);
-                });
-                return appendy;
-            }
-            finally {
-            }
+            if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1RecursionError */ "g"]();
+            let appendy = [];
+            const substrings = this.sequence;
+            substrings.slice(0, (substrings.length - 1)).forEach(substring => {
+                if (substring.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
+                    substring.value.length > 0 &&
+                    substring.value[0] !== 0x00)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"](`Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.`);
+            });
+            substrings.forEach(substring => {
+                if (substring.tagClass !== this.tagClass)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
+                if (substring.tagNumber !== this.tagNumber)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
+                substring.recursionCount = (this.recursionCount + 1);
+                appendy = appendy.concat(substring.bitString);
+            });
+            return appendy;
         }
     }
     set octetString(value) {
