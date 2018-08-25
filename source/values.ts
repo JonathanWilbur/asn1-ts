@@ -75,6 +75,11 @@ enum ASN1UniversalType
     language, so that canFind will usually have to iterate through
     fewer letters before finding a match.
 */
-export
-const printableStringCharacters : string =
+export const printableStringCharacters : string =
     "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
+
+export const utcTimeRegex : RegExp =
+    /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?(?<offset>(?:(\+|\-)\d{4})|Z)$/;
+
+export const generalizedTimeRegex : RegExp =
+    /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})?(?<second>\d{2})?(?:\.(?<millisecond>\d+))?(?<offset>(?:(\+|\-)\d{4})|Z)?$/;

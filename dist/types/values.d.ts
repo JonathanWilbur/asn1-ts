@@ -56,3 +56,5 @@ export declare enum ASN1UniversalType {
     bmpString = 30
 }
 export declare const printableStringCharacters: string;
+export declare const utcTimeRegex: RegExp;
+export declare const generalizedTimeRegex: RegExp;

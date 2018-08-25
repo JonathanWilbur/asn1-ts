@@ -455,7 +455,7 @@ class BERElement extends ASN1Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
+        if (dateString.length !== 13 || !(/\d{10,12}Z/.test(dateString)))
             throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret : Date = new Date();
         let year : number = Number(dateString.substring(0, 2));

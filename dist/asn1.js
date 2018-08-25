@@ -176,7 +176,9 @@ class ASN1ConstructionError extends ASN1Error {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return LengthEncodingPreference; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ASN1SpecialRealValue; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return ASN1UniversalType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return printableStringCharacters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return printableStringCharacters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return utcTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return generalizedTimeRegex; });
 const MAX_UINT_32 = 0x00FFFFFFFF;
 const MIN_UINT_32 = 0x0000000000;
 const MAX_SINT_32 = 0x7FFFFFFF;
@@ -240,6 +242,8 @@ var ASN1UniversalType;
     ASN1UniversalType[ASN1UniversalType["bmpString"] = 30] = "bmpString";
 })(ASN1UniversalType || (ASN1UniversalType = {}));
 const printableStringCharacters = "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
+const utcTimeRegex = /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?(?<offset>(?:(\+|\-)\d{4})|Z)$/;
+const generalizedTimeRegex = /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})?(?<second>\d{2})?(?:\.(?<millisecond>\d+))?(?<offset>(?:(\+|\-)\d{4})|Z)?$/;
 
 
 /***/ }),
@@ -639,8 +643,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "j"].indexOf(value.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "j"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"]}`);
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -660,8 +664,8 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "j"].indexOf(ret.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "j"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "k"]}`);
             }
         }
         return ret;
@@ -722,7 +726,7 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length !== 13 || !(/\d{12}Z/.test(dateString)))
+        if (dateString.length !== 13 || !(/\d{10,12}Z/.test(dateString)))
             throw new _errors__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         const ret = new Date();
         let year = Number(dateString.substring(0, 2));
@@ -1250,7 +1254,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["d"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["j"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["k"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["l"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["j"]; });
 
 
 
