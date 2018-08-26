@@ -8,8 +8,9 @@
 // TODO: ITU X.680 S 46.3: "GeneralizedTime ::= [UNIVERSAL 24] IMPLICIT VisibleString"
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
 import * as errors from "../errors";
-import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
+import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex, ASN1RealEncodingBase, ASN1RealEncodingScale } from "../values";
 import { X690Element } from "../x690";
+import { ASN1Element } from "../asn1";
 
 export
 class BERElement extends X690Element {
@@ -171,7 +172,52 @@ class BERElement extends X690Element {
             }
             case (0b10000000):
             case (0b11000000): {
-                throw new errors.ASN1NotImplementedError();
+                const sign : number = ((this.value[0] & 0b01000000) ? -1 : 1);
+
+                const base : number = ((flag : number) => {
+                    switch (flag) {
+                        case (ASN1RealEncodingBase.base2):  return 2;
+                        case (ASN1RealEncodingBase.base8):  return 8;
+                        case (ASN1RealEncodingBase.base16): return 16;
+                        default:
+                            throw new errors.ASN1Error("Impossible REAL encoding base encountered.");
+                    }
+                })(this.value[0] & 0b00110000);
+
+                const scale : number = ((flag : number) => {
+                    switch (flag) {
+                        case (ASN1RealEncodingScale.scale0): return 0;
+                        case (ASN1RealEncodingScale.scale1): return 1;
+                        case (ASN1RealEncodingScale.scale2): return 2;
+                        case (ASN1RealEncodingScale.scale3): return 3;
+                        default:
+                            throw new errors.ASN1Error("Impossible REAL encoding scale encountered.");
+                    }
+                })(this.value[0] & 0b00001100);
+
+                let exponent : number;
+                let mantissa : number;
+                switch (this.value[0] & 0b00000011) { // Exponent encoding
+                    case (0b00000000): { // On the following octet
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 2));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                    }
+                    case (0b00000001): { // On the following two octets
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 3));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                    }
+                    case (0b00000010): { // On the following three octets
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 4));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(4));
+                    }
+                    case (0b00000011): { // Complicated.
+                        let exponentLength : number = this.value[1];
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
+                    }
+                }
+
+                return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
         }
     }

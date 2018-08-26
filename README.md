@@ -98,6 +98,7 @@ more detail. -->
   - [ ] Ensure length is encoded on minimum number of octets
   - [ ] Add tests
 - [ ] Build all codecs separately
+- [x] Support binary `REAL` decoding
 - [x] Make each codec inherit from `ASN1Element`
 - [x] Use longer names with aliases
 - [x] Improve the system of exceptions
@@ -116,6 +117,8 @@ more detail. -->
 - [x] Refactor shared functionality into an `X690Element` class
 - [x] Update build to `esnext`
 - [x] Organize imports
+- [ ] Generic big-endian unsigned integer decoder
+- [ ] Generic big-endian signed integer decoder
 
 ## See Also
 

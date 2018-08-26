@@ -22,6 +22,17 @@ export declare enum ASN1SpecialRealValue {
     notANumber = 66,
     minusZero = 67
 }
+export declare enum ASN1RealEncodingBase {
+    base2 = 0,
+    base8 = 16,
+    base16 = 32
+}
+export declare enum ASN1RealEncodingScale {
+    scale0 = 0,
+    scale1 = 4,
+    scale2 = 8,
+    scale3 = 12
+}
 export declare enum ASN1UniversalType {
     endOfContent = 0,
     boolean = 1,

@@ -38,7 +38,28 @@ describe("Basic Encoding Rules", function() {
 
     it("encodes and decodes an INTEGER correctly", function () {
         let el = new BERElement();
-        for (let i = 0; i < 128; i++) {
+
+        // Examples taken from here: http://luca.ntop.org/Teaching/Appunti/asn1.html
+        el.integer = 0;
+        expect(el.value).toEqual(new Uint8Array([ 0x00 ]));
+        expect(el.integer).toBe(0);
+        el.integer = 127;
+        expect(el.value).toEqual(new Uint8Array([ 0x7F ]));
+        expect(el.integer).toBe(127);
+        el.integer = 128;
+        expect(el.value).toEqual(new Uint8Array([ 0x00, 0x80 ]));
+        expect(el.integer).toBe(128);
+        el.integer = 256;
+        expect(el.value).toEqual(new Uint8Array([ 0x01, 0x00 ]));
+        expect(el.integer).toBe(256);
+        el.integer = -128;
+        expect(el.value).toEqual(new Uint8Array([ 0x80 ]));
+        expect(el.integer).toBe(-128);
+        el.integer = -129;
+        expect(el.value).toEqual(new Uint8Array([ 0xFF, 0x7F ]));
+        expect(el.integer).toBe(-129);
+
+        for (let i = 0; i < 127; i++) {
             el.integer = i;
             expect(el.value).toEqual(new Uint8Array([ i ]));
             expect(el.integer).toBe(i);
@@ -238,7 +259,7 @@ describe("Basic Encoding Rules", function() {
 
     it("encodes and decodes and ENUMERATED correctly", function () {
         let el = new BERElement();
-        for (let i = 0; i < 128; i++) {
+        for (let i = 0; i < 127; i++) {
             el.enumerated = i;
             expect(el.value).toEqual(new Uint8Array([ i ]));
             expect(el.enumerated).toBe(i);

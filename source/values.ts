@@ -1,7 +1,7 @@
 export const MAX_UINT_32 : number = 0x00FFFFFFFF;
 export const MIN_UINT_32 : number = 0x0000000000;
 export const MAX_SINT_32 : number = 0x7FFFFFFF;
-export const MIN_SINT_32 : number = -0x7FFFFFFF;
+export const MIN_SINT_32 : number = -0x80000000;
 
 export
 enum ASN1TagClass {
@@ -30,6 +30,23 @@ enum ASN1SpecialRealValue
     minusInfinity = 0b01000001,
     notANumber = 0b01000010,
     minusZero = 0b01000011
+}
+
+export
+enum ASN1RealEncodingBase
+{
+    base2 =  0b00000000,
+    base8 =  0b00010000,
+    base16 = 0b00100000
+}
+
+export
+enum ASN1RealEncodingScale
+{
+    scale0 = 0b00000000,
+    scale1 = 0b00000100,
+    scale2 = 0b00001000,
+    scale3 = 0b00001100
 }
 
 export

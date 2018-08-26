@@ -1,6 +1,6 @@
 {
   "name": "asn1-ts",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "ASN.1 encoding and decoding",
   "main": "index.js",
   "directories": {

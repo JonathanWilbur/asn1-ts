@@ -82,7 +82,7 @@ var asn1 =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -167,29 +167,31 @@ class ASN1ConstructionError extends ASN1Error {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return MAX_UINT_32; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return MIN_UINT_32; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return MAX_SINT_32; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return MIN_SINT_32; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return ASN1TagClass; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return MAX_UINT_32; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return MIN_UINT_32; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return MAX_SINT_32; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return MIN_SINT_32; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return ASN1TagClass; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ASN1Construction; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return LengthEncodingPreference; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ASN1SpecialRealValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return ASN1UniversalType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return printableStringCharacters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return utcTimeRegex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return distinguishedUTCTimeRegex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return generalizedTimeRegex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return distinguishedGeneralizedTimeRegex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return nr1Regex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return nr2Regex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return nr3Regex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return canonicalNR3Regex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return distinguishedNR3Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return LengthEncodingPreference; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return ASN1SpecialRealValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ASN1RealEncodingBase; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return ASN1RealEncodingScale; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return ASN1UniversalType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "t", function() { return printableStringCharacters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "u", function() { return utcTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return distinguishedUTCTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return generalizedTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return distinguishedGeneralizedTimeRegex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return nr1Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "r", function() { return nr2Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "s", function() { return nr3Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return canonicalNR3Regex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return distinguishedNR3Regex; });
 const MAX_UINT_32 = 0x00FFFFFFFF;
 const MIN_UINT_32 = 0x0000000000;
 const MAX_SINT_32 = 0x7FFFFFFF;
-const MIN_SINT_32 = -0x7FFFFFFF;
+const MIN_SINT_32 = -0x80000000;
 var ASN1TagClass;
 (function (ASN1TagClass) {
     ASN1TagClass[ASN1TagClass["universal"] = 0] = "universal";
@@ -214,6 +216,19 @@ var ASN1SpecialRealValue;
     ASN1SpecialRealValue[ASN1SpecialRealValue["notANumber"] = 66] = "notANumber";
     ASN1SpecialRealValue[ASN1SpecialRealValue["minusZero"] = 67] = "minusZero";
 })(ASN1SpecialRealValue || (ASN1SpecialRealValue = {}));
+var ASN1RealEncodingBase;
+(function (ASN1RealEncodingBase) {
+    ASN1RealEncodingBase[ASN1RealEncodingBase["base2"] = 0] = "base2";
+    ASN1RealEncodingBase[ASN1RealEncodingBase["base8"] = 16] = "base8";
+    ASN1RealEncodingBase[ASN1RealEncodingBase["base16"] = 32] = "base16";
+})(ASN1RealEncodingBase || (ASN1RealEncodingBase = {}));
+var ASN1RealEncodingScale;
+(function (ASN1RealEncodingScale) {
+    ASN1RealEncodingScale[ASN1RealEncodingScale["scale0"] = 0] = "scale0";
+    ASN1RealEncodingScale[ASN1RealEncodingScale["scale1"] = 4] = "scale1";
+    ASN1RealEncodingScale[ASN1RealEncodingScale["scale2"] = 8] = "scale2";
+    ASN1RealEncodingScale[ASN1RealEncodingScale["scale3"] = 12] = "scale3";
+})(ASN1RealEncodingScale || (ASN1RealEncodingScale = {}));
 var ASN1UniversalType;
 (function (ASN1UniversalType) {
     ASN1UniversalType[ASN1UniversalType["endOfContent"] = 0] = "endOfContent";
@@ -265,41 +280,6 @@ const distinguishedNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ObjectIdentifier; });
-class ObjectIdentifier {
-    constructor(nodes) {
-        if (nodes.length < 2)
-            throw new Error("Cannot construct an OID with less than two nodes!");
-        if (nodes.length >= 1 && !(nodes[0] in [0, 1, 2]))
-            throw new Error("OIDs first node must be 0, 1, or 2!");
-        if (((nodes[0] == 0 || nodes[0] == 1) && nodes[2] > 39) ||
-            (nodes[0] == 2 && nodes[0] > 175))
-            throw new Error("OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 if node #1 is 2!");
-        nodes.forEach(node => {
-            if (node < 0)
-                throw new Error("OID node numbers cannot be negative!");
-            if (node > Number.MAX_SAFE_INTEGER)
-                throw new Error("OID number was too big!");
-        });
-        this._nodes = nodes.slice(0);
-    }
-    get nodes() {
-        return this._nodes.slice(0);
-    }
-    get dotDelimitedNotation() {
-        return this._nodes.join(".");
-    }
-    toString() {
-        return this.dotDelimitedNotation;
-    }
-}
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ASN1Element; });
 /* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
@@ -308,7 +288,7 @@ class ObjectIdentifier {
 class ASN1Element {
     constructor() {
         this.recursionCount = 0;
-        this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal;
+        this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
         this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive;
         this.tagNumber = 0;
         this.value = new Uint8Array(0);
@@ -356,8 +336,63 @@ class ASN1Element {
         if (seconds > 59)
             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`Seconds > 60 encountered in ${dataType}.`);
     }
+    static decodeUnsignedBigEndianInteger(value) {
+        if (value.length === 0)
+            return 0;
+        if (value.length > 4)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("Number too long to decode.");
+        const u8 = new Uint8Array(4);
+        u8.set(value, (4 - value.length));
+        return new Uint32Array(u8.reverse().buffer)[0];
+    }
+    static decodeSignedBigEndianInteger(value) {
+        if (value.length === 0)
+            return 0;
+        if (value.length > 4)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("Number too long to decode.");
+        const u8 = new Uint8Array(4);
+        if (value[0] >= 0b10000000)
+            u8.fill(0xFF);
+        u8.set(value, (4 - value.length));
+        return new Int32Array(u8.reverse().buffer)[0];
+    }
 }
 ASN1Element.nestingRecursionLimit = 5;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ObjectIdentifier; });
+class ObjectIdentifier {
+    constructor(nodes) {
+        if (nodes.length < 2)
+            throw new Error("Cannot construct an OID with less than two nodes!");
+        if (nodes.length >= 1 && !(nodes[0] in [0, 1, 2]))
+            throw new Error("OIDs first node must be 0, 1, or 2!");
+        if (((nodes[0] == 0 || nodes[0] == 1) && nodes[2] > 39) ||
+            (nodes[0] == 2 && nodes[0] > 175))
+            throw new Error("OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 if node #1 is 2!");
+        nodes.forEach(node => {
+            if (node < 0)
+                throw new Error("OID node numbers cannot be negative!");
+            if (node > Number.MAX_SAFE_INTEGER)
+                throw new Error("OID number was too big!");
+        });
+        this._nodes = nodes.slice(0);
+    }
+    get nodes() {
+        return this._nodes.slice(0);
+    }
+    get dotDelimitedNotation() {
+        return this._nodes.join(".");
+    }
+    toString() {
+        return this.dotDelimitedNotation;
+    }
+}
 
 
 /***/ }),
@@ -365,15 +400,182 @@ ASN1Element.nestingRecursionLimit = 5;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return X690Element; });
+/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
+/* harmony import */ var _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1);
+
+
+
+
+class X690Element extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"] {
+    set integer(value) {
+        if (value < _values__WEBPACK_IMPORTED_MODULE_3__[/* MIN_SINT_32 */ "j"])
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"](`Number ${value} too small to be converted.`);
+        if (value > _values__WEBPACK_IMPORTED_MODULE_3__[/* MAX_SINT_32 */ "h"])
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"](`Number ${value} too big to be converted.`);
+        if (value <= 127 && value >= -128) {
+            this.value = new Uint8Array([
+                (value & 255)
+            ]);
+            return;
+        }
+        else if (value <= 32767 && value >= -32768) {
+            this.value = new Uint8Array([
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+        else if (value <= 8388607 && value >= -8388608) {
+            this.value = new Uint8Array([
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+        else {
+            this.value = new Uint8Array([
+                ((value >> 24) & 255),
+                ((value >> 16) & 255),
+                (value >> 8 & 255),
+                (value & 255)
+            ]);
+            return;
+        }
+    }
+    get integer() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("INTEGER cannot be constructed.");
+        if (this.value.length === 0)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SizeError */ "h"]("Number encoded on zero bytes!");
+        if (this.value.length > 4)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("Number too long to decode.");
+        if (this.value.length > 2 &&
+            ((this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
+                (this.value[0] === 0x00 && this.value[1] < 0b10000000)))
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("Unnecessary padding bytes on INTEGER or ENUMERATED.");
+        return _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(0));
+    }
+    set objectIdentifier(value) {
+        const numbers = value.nodes;
+        let pre = [((numbers[0] * 40) + numbers[1])];
+        let post = X690Element.encodeObjectIdentifierNodes(numbers.slice(2));
+        this.value = new Uint8Array(pre.concat(post));
+    }
+    get objectIdentifier() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("OBJECT IDENTIFIER cannot be constructed.");
+        if (this.value.length === 0)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Encoded value was too short to be an OBJECT IDENTIFIER!");
+        let numbers = [0, 0];
+        if (this.value[0] >= 0x50) {
+            numbers[0] = 2;
+            numbers[1] = (this.value[0] - 0x50);
+        }
+        else if (this.value[0] >= 0x28) {
+            numbers[0] = 1;
+            numbers[1] = (this.value[0] - 0x28);
+        }
+        else {
+            numbers[0] = 0;
+            numbers[1] = this.value[0];
+        }
+        if (this.value.length === 1)
+            return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
+        numbers = numbers.concat(X690Element.decodeObjectIdentifierNodes(this.value.slice(1)));
+        return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
+    }
+    set enumerated(value) {
+        this.integer = value;
+    }
+    get enumerated() {
+        return this.integer;
+    }
+    set relativeObjectIdentifier(value) {
+        this.value = new Uint8Array(X690Element.encodeObjectIdentifierNodes(value));
+    }
+    get relativeObjectIdentifier() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("Relative OID cannot be constructed.");
+        return X690Element.decodeObjectIdentifierNodes(this.value.slice(0));
+    }
+    static decodeObjectIdentifierNodes(value) {
+        if (value.length === 0)
+            return [];
+        let numbers = [];
+        if (value.length > 0 && (value[(value.length - 1)] & 0b10000000) === 0b10000000)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("OID truncated");
+        let components = 0;
+        value.forEach(b => { if (!(b & 0b10000000))
+            components++; });
+        numbers.length = components;
+        let currentNumber = 0;
+        let bytesUsedInCurrentNumber = 0;
+        value.forEach(b => {
+            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("OID had invalid padding byte.");
+            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("OID node too big");
+            numbers[currentNumber] <<= 7;
+            numbers[currentNumber] |= (b & 0x7F);
+            if (!(b & 0b10000000)) {
+                currentNumber++;
+                bytesUsedInCurrentNumber = 0;
+            }
+            else {
+                bytesUsedInCurrentNumber++;
+            }
+        });
+        return numbers;
+    }
+    static encodeObjectIdentifierNodes(value) {
+        let ret = [];
+        for (let i = 0; i < value.length; i++) {
+            let number = value[i];
+            if (number < 128) {
+                ret.push(number);
+                continue;
+            }
+            let encodedOIDNode = [];
+            while (number !== 0) {
+                let numberBytes = [
+                    (number & 255),
+                    (number >>> 8 & 255),
+                    ((number >>> 16) & 255),
+                    ((number >>> 24) & 255),
+                ];
+                if ((numberBytes[0] & 0x80) === 0)
+                    numberBytes[0] |= 0x80;
+                encodedOIDNode.unshift(numberBytes[0]);
+                number >>= 7;
+            }
+            encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
+            ret = ret.concat(encodedOIDNode);
+        }
+        return ret;
+    }
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(Buffer) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return BERElement; });
 /* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
+/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
+
 
 
 
 class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a"] {
-    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
+    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
         super();
         this.tagClass = tagClass;
         this.construction = construction;
@@ -470,19 +672,19 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             return;
         }
         else if (isNaN(value)) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].notANumber]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber]);
             return;
         }
         else if (value === -0.0) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].minusZero]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero]);
             return;
         }
         else if (value === Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].plusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
             return;
         }
         else if (value === -Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].minusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
             return;
         }
         let valueString = value.toFixed(7);
@@ -496,13 +698,13 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             return 0.0;
         switch (this.value[0] & 0b11000000) {
             case (0b01000000): {
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].notANumber)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber)
                     return NaN;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].minusZero)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero)
                     return -0.0;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].plusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
                     return Infinity;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "b"].minusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
                     return -Infinity;
                 throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
             }
@@ -516,17 +718,17 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 }
                 switch (this.value[0] & 0b00111111) {
                     case 1: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr1Regex */ "o"].test(realString))
+                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr1Regex */ "q"].test(realString))
                             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR1 Base-10 REAL");
                         return parseFloat(realString);
                     }
                     case 2: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr2Regex */ "p"].test(realString))
+                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr2Regex */ "r"].test(realString))
                             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR2 Base-10 REAL");
                         return parseFloat(realString.replace(",", "."));
                     }
                     case 3: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr3Regex */ "q"].test(realString))
+                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr3Regex */ "s"].test(realString))
                             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
                         return parseFloat(realString.replace(",", "."));
                     }
@@ -536,7 +738,48 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             }
             case (0b10000000):
             case (0b11000000): {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+                const sign = ((this.value[0] & 0b01000000) ? -1 : 1);
+                const base = ((flag) => {
+                    switch (flag) {
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base8): return 8;
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base16): return 16;
+                        default:
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible REAL encoding base encountered.");
+                    }
+                })(this.value[0] & 0b00110000);
+                const scale = ((flag) => {
+                    switch (flag) {
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale0): return 0;
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale1): return 1;
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale3): return 3;
+                        default:
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible REAL encoding scale encountered.");
+                    }
+                })(this.value[0] & 0b00001100);
+                let exponent;
+                let mantissa;
+                switch (this.value[0] & 0b00000011) {
+                    case (0b00000000): {
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 2));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                    }
+                    case (0b00000001): {
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 3));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                    }
+                    case (0b00000010): {
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 4));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(4));
+                    }
+                    case (0b00000011): {
+                        let exponentLength = this.value[1];
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
+                    }
+                }
+                return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
         }
     }
@@ -630,8 +873,8 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"].indexOf(value.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -651,8 +894,8 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"].indexOf(ret.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "r"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
             }
         }
         return ret;
@@ -713,7 +956,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* utcTimeRegex */ "s"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* utcTimeRegex */ "u"].exec(dateString);
         if (match === null)
             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         const ret = new Date();
@@ -757,7 +1000,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* generalizedTimeRegex */ "n"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* generalizedTimeRegex */ "p"].exec(dateString);
         if (match === null)
             throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         const ret = new Date();
@@ -898,18 +1141,18 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         let cursor = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
                 break;
             case (0b01000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].application;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].application;
                 break;
             case (0b10000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].context;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].context;
                 break;
             case (0b11000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].private;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].private;
                 break;
-            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal;
+            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
         }
         this.construction = ((bytes[cursor] & 0b00100000) ?
             _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive);
@@ -974,9 +1217,9 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                     const child = new BERElement();
                     child.recursionCount = (this.recursionCount + 1);
                     sentinel += child.fromBytes(bytes.slice(sentinel));
-                    if (child.tagClass === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "c"].universal &&
+                    if (child.tagClass === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal &&
                         child.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
-                        child.tagNumber === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UniversalType */ "d"].endOfContent &&
+                        child.tagNumber === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UniversalType */ "f"].endOfContent &&
                         child.value.length === 0)
                         break;
                 }
@@ -1015,7 +1258,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         let lengthOctets = [0x00];
         switch (BERElement.lengthEncodingPreference) {
-            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "e"].definite): {
+            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].definite): {
                 if (this.value.length < 127) {
                     lengthOctets = [this.value.length];
                 }
@@ -1035,7 +1278,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 }
                 break;
             }
-            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "e"].indefinite): {
+            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].indefinite): {
                 lengthOctets = [0b10000000];
                 break;
             }
@@ -1045,7 +1288,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         const ret = new Uint8Array(tagBytes.length +
             lengthOctets.length +
             this.value.length +
-            (BERElement.lengthEncodingPreference === _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "e"].indefinite ? 2 : 0));
+            (BERElement.lengthEncodingPreference === _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].indefinite ? 2 : 0));
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
@@ -1082,271 +1325,12 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
 }
-BERElement.lengthEncodingPreference = _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "e"].definite;
+BERElement.lengthEncodingPreference = _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].definite;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8).Buffer))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return X690Element; });
-/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
-/* harmony import */ var _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
-/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1);
-
-
-
-
-class X690Element extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"] {
-    set integer(value) {
-        if (value < _values__WEBPACK_IMPORTED_MODULE_3__[/* MIN_SINT_32 */ "h"])
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"](`Number ${value} too small to be converted.`);
-        if (value > _values__WEBPACK_IMPORTED_MODULE_3__[/* MAX_SINT_32 */ "f"])
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"](`Number ${value} too big to be converted.`);
-        if (value <= 127 && value >= -128) {
-            this.value = new Uint8Array([
-                (value & 255)
-            ]);
-            return;
-        }
-        else if (value <= 32767 && value >= -32768) {
-            this.value = new Uint8Array([
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        }
-        else if (value <= 8388607 && value >= -8388608) {
-            this.value = new Uint8Array([
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        }
-        else {
-            this.value = new Uint8Array([
-                ((value >> 24) & 255),
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        }
-    }
-    get integer() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("INTEGER cannot be constructed.");
-        if (this.value.length === 0)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SizeError */ "h"]("Number encoded on zero bytes!");
-        if (this.value.length > 4)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("Number too long to decode.");
-        if (this.value.length > 2 &&
-            ((this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
-                (this.value[0] === 0x00 && this.value[1] < 0b10000000)))
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("Unnecessary padding bytes on INTEGER or ENUMERATED.");
-        let ret = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
-        this.value.forEach(byte => {
-            ret <<= 8;
-            ret += byte;
-        });
-        return ret;
-    }
-    set objectIdentifier(value) {
-        const numbers = value.nodes;
-        let pre = [((numbers[0] * 40) + numbers[1])];
-        let post = X690Element.encodeObjectIdentifierNodes(numbers.slice(2));
-        this.value = new Uint8Array(pre.concat(post));
-    }
-    get objectIdentifier() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("OBJECT IDENTIFIER cannot be constructed.");
-        if (this.value.length === 0)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Encoded value was too short to be an OBJECT IDENTIFIER!");
-        let numbers = [0, 0];
-        if (this.value[0] >= 0x50) {
-            numbers[0] = 2;
-            numbers[1] = (this.value[0] - 0x50);
-        }
-        else if (this.value[0] >= 0x28) {
-            numbers[0] = 1;
-            numbers[1] = (this.value[0] - 0x28);
-        }
-        else {
-            numbers[0] = 0;
-            numbers[1] = this.value[0];
-        }
-        if (this.value.length === 1)
-            return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
-        numbers = numbers.concat(X690Element.decodeObjectIdentifierNodes(this.value.slice(1)));
-        return new _types_objectidentifier__WEBPACK_IMPORTED_MODULE_2__[/* ObjectIdentifier */ "a"](numbers);
-    }
-    set enumerated(value) {
-        this.integer = value;
-    }
-    get enumerated() {
-        return this.integer;
-    }
-    set relativeObjectIdentifier(value) {
-        this.value = new Uint8Array(X690Element.encodeObjectIdentifierNodes(value));
-    }
-    get relativeObjectIdentifier() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("Relative OID cannot be constructed.");
-        return X690Element.decodeObjectIdentifierNodes(this.value.slice(0));
-    }
-    static decodeObjectIdentifierNodes(value) {
-        if (value.length === 0)
-            return [];
-        let numbers = [];
-        if (value.length > 0 && (value[(value.length - 1)] & 0b10000000) === 0b10000000)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("OID truncated");
-        let components = 0;
-        value.forEach(b => { if (!(b & 0b10000000))
-            components++; });
-        numbers.length = components;
-        let currentNumber = 0;
-        let bytesUsedInCurrentNumber = 0;
-        value.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("OID had invalid padding byte.");
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("OID node too big");
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0b10000000)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            }
-            else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
-        return numbers;
-    }
-    static encodeObjectIdentifierNodes(value) {
-        let ret = [];
-        for (let i = 0; i < value.length; i++) {
-            let number = value[i];
-            if (number < 128) {
-                ret.push(number);
-                continue;
-            }
-            let encodedOIDNode = [];
-            while (number !== 0) {
-                let numberBytes = [
-                    (number & 255),
-                    (number >>> 8 & 255),
-                    ((number >>> 16) & 255),
-                    ((number >>> 24) & 255),
-                ];
-                if ((numberBytes[0] & 0x80) === 0)
-                    numberBytes[0] |= 0x80;
-                encodedOIDNode.unshift(numberBytes[0]);
-                number >>= 7;
-            }
-            encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-            ret = ret.concat(encodedOIDNode);
-        }
-        return ret;
-    }
-}
-
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6).Buffer))
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(7);
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["a"]; });
-
-/* harmony import */ var _codecs_ber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BERElement", function() { return _codecs_ber__WEBPACK_IMPORTED_MODULE_1__["a"]; });
-
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["c"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["d"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RecursionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["g"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TruncationError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["i"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1OverflowError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["e"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SizeError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["h"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1PaddingError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["f"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UndefinedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["j"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1CharactersError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["a"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1ConstructionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_2__["b"]; });
-
-/* harmony import */ var _types_objectidentifier__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return _types_objectidentifier__WEBPACK_IMPORTED_MODULE_3__["a"]; });
-
-/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(1);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["g"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["i"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["f"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["h"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TagClass", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["c"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Construction", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["a"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LengthEncodingPreference", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["e"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["b"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["d"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["r"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["s"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedUTCTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["m"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["n"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedGeneralizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["k"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr1Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["o"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr2Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["p"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["q"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["j"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_4__["l"]; });
-
-
-
-
-
-
-
-
-/***/ }),
-/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1360,9 +1344,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var base64 = __webpack_require__(10)
-var ieee754 = __webpack_require__(11)
-var isArray = __webpack_require__(12)
+var base64 = __webpack_require__(11)
+var ieee754 = __webpack_require__(12)
+var isArray = __webpack_require__(13)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -3140,10 +3124,758 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(10)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Buffer) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DERElement; });
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+
+
+
+class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a"] {
+    set boolean(value) {
+        this.value = new Uint8Array(1);
+        this.value[0] = (value ? 0xFF : 0x00);
+    }
+    get boolean() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
+        if (this.value.length !== 1)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
+        if ((this.value[0] !== 0x00) && (this.value[0] !== 0xFF))
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BOOLEAN must be encoded as 0xFF or 0x00.");
+        return (this.value[0] !== 0);
+    }
+    set bitString(value) {
+        if (value.length === 0)
+            this.value = new Uint8Array(0);
+        let pre = [];
+        pre.length = ((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1;
+        for (let i = 0; i < value.length; i++) {
+            if (value[i] === false)
+                continue;
+            pre[((i >>> 3) + 1)] |= (0b10000000 >>> (i % 8));
+        }
+        pre[0] = (8 - (value.length % 8));
+        if (pre[0] === 8)
+            pre[0] = 0;
+        this.value = new Uint8Array(pre);
+    }
+    get bitString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BIT STRING cannot be constructed.");
+        if (this.value.length === 0)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
+        if (this.value.length === 1 && this.value[0] !== 0)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
+        if (this.value[0] > 7)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
+        let ret = [];
+        for (let i = 1; i < this.value.length; i++) {
+            ret = ret.concat([
+                (this.value[i] & 0b10000000 ? true : false),
+                (this.value[i] & 0b01000000 ? true : false),
+                (this.value[i] & 0b00100000 ? true : false),
+                (this.value[i] & 0b00010000 ? true : false),
+                (this.value[i] & 0b00001000 ? true : false),
+                (this.value[i] & 0b00000100 ? true : false),
+                (this.value[i] & 0b00000010 ? true : false),
+                (this.value[i] & 0b00000001 ? true : false)
+            ]);
+        }
+        ret.slice((ret.length - this.value[0])).forEach(bit => {
+            if (bit)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BIT STRING had a trailing set bit.");
+        });
+        ret.length -= this.value[0];
+        return ret;
+    }
+    set octetString(value) {
+        this.value = value.subarray(0);
+    }
+    get octetString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("OCTET STRING cannot be constructed.");
+        return this.value.subarray(0);
+    }
+    set objectDescriptor(value) {
+        this.graphicString = value;
+    }
+    get objectDescriptor() {
+        return this.graphicString;
+    }
+    set real(value) {
+        if (value === 0.0) {
+            this.value = new Uint8Array(0);
+            return;
+        }
+        else if (isNaN(value)) {
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber]);
+            return;
+        }
+        else if (value === -0.0) {
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero]);
+            return;
+        }
+        else if (value === Infinity) {
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
+            return;
+        }
+        else if (value === -Infinity) {
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
+            return;
+        }
+        let valueString = value.toFixed(7);
+        valueString = (String.fromCharCode(0b00000011) + valueString);
+        this.value = (new TextEncoder()).encode(valueString);
+    }
+    get real() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
+        if (this.value.length === 0)
+            return 0.0;
+        switch (this.value[0] & 0b11000000) {
+            case (0b01000000): {
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber)
+                    return NaN;
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero)
+                    return -0.0;
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
+                    return Infinity;
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
+                    return -Infinity;
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
+            }
+            case (0b00000000): {
+                let realString;
+                if (typeof TextEncoder !== "undefined") {
+                    realString = (new TextDecoder("utf-8")).decode(this.value.slice(1));
+                }
+                else if (typeof Buffer !== "undefined") {
+                    realString = (new Buffer(this.value.slice(1))).toString("utf-8");
+                }
+                switch (this.value[0] & 0b00111111) {
+                    case 1:
+                    case 2:
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("DER prohibits NR1 and NR2 Base-10 REAL");
+                    case 3: {
+                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr3Regex */ "s"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
+                        return parseFloat(realString.replace(",", "."));
+                    }
+                    default:
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
+                }
+            }
+            case (0b10000000):
+            case (0b11000000): {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+            }
+        }
+    }
+    set utf8String(value) {
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get utf8String() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UTF8String cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
+        }
+        return ret;
+    }
+    set sequence(value) {
+        let encodedElements = [];
+        value.forEach(element => {
+            encodedElements.push(element.toBytes());
+        });
+        let totalLength = 0;
+        encodedElements.forEach(element => {
+            totalLength += element.length;
+        });
+        const newValue = new Uint8Array(totalLength);
+        let currentIndex = 0;
+        encodedElements.forEach(element => {
+            newValue.set(element, currentIndex);
+            currentIndex += element.length;
+        });
+        this.value = newValue;
+        this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed;
+    }
+    get sequence() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
+        let encodedElements = [];
+        if (this.value.length === 0)
+            return [];
+        let i = 0;
+        while (i < this.value.length) {
+            const next = new DERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
+    set set(value) {
+        this.sequence = value;
+    }
+    get set() {
+        return this.sequence;
+    }
+    set numericString(value) {
+        for (let i = 0; i < value.length; i++) {
+            const characterCode = value.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get numericString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("NumericString cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
+        }
+        for (let i = 0; i < ret.length; i++) {
+            const characterCode = ret.charCodeAt(i);
+            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+            }
+        }
+        return ret;
+    }
+    set printableString(value) {
+        for (let i = 0; i < value.length; i++) {
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            }
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get printableString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("PrintableString cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
+        }
+        for (let i = 0; i < ret.length; i++) {
+            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            }
+        }
+        return ret;
+    }
+    set teletexString(value) {
+        this.value = value.subarray(0);
+    }
+    get teletexString() {
+        return this.octetString;
+    }
+    set videotexString(value) {
+        this.value = value.subarray(0);
+    }
+    get videotexString() {
+        return this.octetString;
+    }
+    set ia5String(value) {
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get ia5String() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("IA5String cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
+        }
+        return ret;
+    }
+    set utcTime(value) {
+        let year = value.getUTCFullYear().toString();
+        year = (year.substring(year.length - 2, year.length));
+        const month = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
+        const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        const second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        const utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(utcString);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(utcString, "utf-8");
+        }
+    }
+    get utcTime() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UTCTime cannot be constructed.");
+        let dateString = "";
+        if (typeof TextEncoder !== "undefined") {
+            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            dateString = (new Buffer(this.value)).toString("utf-8");
+        }
+        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* utcTimeRegex */ "u"].exec(dateString);
+        if (match === null)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
+        const ret = new Date();
+        let year = Number(match.groups.year);
+        year = (year < 70 ? (2000 + year) : (1900 + year));
+        const month = (Number(match.groups.month) - 1);
+        const date = Number(match.groups.date);
+        const hours = Number(match.groups.hour);
+        const minutes = Number(match.groups.minute);
+        const seconds = Number(match.groups.second);
+        DERElement.validateDateTime("UTCTime", year, month, date, hours, minutes, seconds);
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
+        return ret;
+    }
+    set generalizedTime(value) {
+        const year = value.getUTCFullYear().toString();
+        const month = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
+        const day = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
+        const hour = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
+        const minute = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
+        const second = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
+        const timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(timeString);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(timeString, "utf-8");
+        }
+    }
+    get generalizedTime() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GeneralizedTime cannot be constructed.");
+        let dateString = "";
+        if (typeof TextEncoder !== "undefined") {
+            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            dateString = (new Buffer(this.value)).toString("utf-8");
+        }
+        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* generalizedTimeRegex */ "p"].exec(dateString);
+        if (match === null)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
+        const ret = new Date();
+        const year = Number(match.groups.year);
+        const month = (Number(match.groups.month) - 1);
+        const date = Number(match.groups.date);
+        const hours = Number(match.groups.hour);
+        const minutes = Number(match.groups.minute);
+        const seconds = Number(match.groups.second);
+        DERElement.validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
+        ret.setUTCFullYear(year);
+        ret.setUTCMonth(month);
+        ret.setUTCDate(date);
+        ret.setUTCHours(hours);
+        ret.setUTCMinutes(minutes);
+        ret.setUTCSeconds(seconds);
+        return ret;
+    }
+    set graphicString(value) {
+        for (let i = 0; i < value.length; i++) {
+            const characterCode = value.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                    "can only contain characters between 0x20 and 0x7E.");
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "utf-8");
+        }
+    }
+    get graphicString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GraphicString cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("utf-8");
+        }
+        for (let i = 0; i < ret.length; i++) {
+            const characterCode = ret.charCodeAt(i);
+            if (characterCode < 0x20 || characterCode > 0x7E) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                    "can only contain characters between 0x20 and 0x7E.");
+            }
+        }
+        return ret;
+    }
+    set visibleString(value) {
+        this.graphicString = value;
+    }
+    get visibleString() {
+        return this.graphicString;
+    }
+    set generalString(value) {
+        for (let i = 0; i < value.length; i++) {
+            if (value.charCodeAt(i) > 0x7F)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+        }
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(value);
+        }
+        else if (typeof Buffer !== "undefined") {
+            this.value = Buffer.from(value, "ascii");
+        }
+    }
+    get generalString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GeneralString cannot be constructed.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("windows-1252")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            ret = (new Buffer(this.value)).toString("ascii");
+        }
+        for (let i = 0; i < ret.length; i++) {
+            if (ret.charCodeAt(i) > 0x7F)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+        }
+        return ret;
+    }
+    set universalString(value) {
+        const buf = new Uint8Array(value.length << 2);
+        for (let i = 0; i < value.length; i++) {
+            buf[(i << 2)] = value.charCodeAt(i) >>> 24;
+            buf[(i << 2) + 1] = value.charCodeAt(i) >>> 16;
+            buf[(i << 2) + 2] = value.charCodeAt(i) >>> 8;
+            buf[(i << 2) + 3] = value.charCodeAt(i);
+        }
+        this.value = buf;
+    }
+    get universalString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UniversalString cannot be constructed.");
+        if (this.value.length % 4)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
+        let ret = "";
+        for (let i = 0; i < this.value.length; i += 4) {
+            ret += String.fromCharCode((this.value[i + 0] << 24) +
+                (this.value[i + 1] << 16) +
+                (this.value[i + 2] << 8) +
+                (this.value[i + 3] << 0));
+        }
+        return ret;
+    }
+    set bmpString(value) {
+        const buf = new Uint8Array(value.length << 1);
+        for (let i = 0, strLen = value.length; i < strLen; i++) {
+            buf[(i << 1)] = value.charCodeAt(i) >>> 8;
+            buf[(i << 1) + 1] = value.charCodeAt(i);
+        }
+        this.value = buf;
+    }
+    get bmpString() {
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BMPString cannot be constructed.");
+        if (this.value.length % 2)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
+        let ret = "";
+        if (typeof TextEncoder !== "undefined") {
+            ret = (new TextDecoder("utf-16be")).decode(this.value.subarray(0).buffer);
+        }
+        else if (typeof Buffer !== "undefined") {
+            const swappedEndianness = new Uint8Array(this.value.length);
+            for (let i = 0; i < this.value.length; i += 2) {
+                swappedEndianness[i] = this.value[i + 1];
+                swappedEndianness[i + 1] = this.value[i];
+            }
+            ret = (new Buffer(swappedEndianness)).toString("utf-16le");
+        }
+        return ret;
+    }
+    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
+        super();
+        this.tagClass = tagClass;
+        this.construction = construction;
+        this.tagNumber = tagNumber;
+        this.value = new Uint8Array(0);
+    }
+    fromBytes(bytes) {
+        if (bytes.length < 2)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Tried to decode a DER element that is less than two bytes.");
+        if ((this.recursionCount + 1) > DERElement.nestingRecursionLimit)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1RecursionError */ "g"]();
+        let cursor = 0;
+        switch (bytes[cursor] & 0b11000000) {
+            case (0b00000000):
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+                break;
+            case (0b01000000):
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].application;
+                break;
+            case (0b10000000):
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].context;
+                break;
+            case (0b11000000):
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].private;
+                break;
+            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+        }
+        this.construction = ((bytes[cursor] & 0b00100000) ?
+            _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive);
+        this.tagNumber = (bytes[cursor] & 0b00011111);
+        cursor++;
+        if (this.tagNumber >= 31) {
+            if (bytes[cursor] === 0b10000000)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1PaddingError */ "f"]("Leading padding byte on long tag number encoding.");
+            this.tagNumber = 0;
+            const limit = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
+            while (cursor < limit) {
+                if (!(bytes[cursor++] & 0b10000000))
+                    break;
+            }
+            if (bytes[cursor - 1] & 0b10000000) {
+                if (limit === bytes.length - 1) {
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 tag number appears to have been truncated.");
+                }
+                else
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 tag number too large.");
+            }
+            for (let i = 1; i < cursor; i++) {
+                this.tagNumber <<= 7;
+                this.tagNumber |= (bytes[i] & 0x7F);
+            }
+            if (this.tagNumber <= 31)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
+        }
+        if ((bytes[cursor] & 0b10000000) === 0b10000000) {
+            const numberOfLengthOctets = (bytes[cursor] & 0x7F);
+            if (numberOfLengthOctets === 0b01111111)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Length byte with undefined meaning encountered.");
+            if (numberOfLengthOctets > 4)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("Element length too long to decode to an integer.");
+            if (cursor + numberOfLengthOctets >= bytes.length)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Element length bytes appear to have been truncated.");
+            cursor++;
+            const lengthNumberOctets = new Uint8Array(4);
+            for (let i = numberOfLengthOctets; i > 0; i--) {
+                lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
+            }
+            let length = 0;
+            lengthNumberOctets.forEach(octet => {
+                length <<= 8;
+                length += octet;
+            });
+            if ((cursor + length) < cursor)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 element too large.");
+            cursor += (numberOfLengthOctets);
+            if ((cursor + length) > bytes.length)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
+            this.value = bytes.slice(cursor, (cursor + length));
+            return (cursor + length);
+        }
+        else {
+            const length = (bytes[cursor++] & 0x7F);
+            if ((cursor + length) > bytes.length)
+                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element was truncated.");
+            this.value = bytes.slice(cursor, (cursor + length));
+            return (cursor + length);
+        }
+    }
+    toBytes() {
+        let tagBytes = [0x00];
+        tagBytes[0] |= this.tagClass;
+        tagBytes[0] |= this.construction;
+        if (this.tagNumber < 31) {
+            tagBytes[0] |= this.tagNumber;
+        }
+        else {
+            tagBytes[0] |= 0b00011111;
+            let number = this.tagNumber;
+            let encodedNumber = [];
+            while (number !== 0) {
+                encodedNumber.unshift(number & 0x7F);
+                number >>>= 7;
+                encodedNumber[0] |= 0b10000000;
+            }
+            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
+            tagBytes = tagBytes.concat(encodedNumber);
+        }
+        let lengthOctets = [0x00];
+        if (this.value.length < 127) {
+            lengthOctets = [this.value.length];
+        }
+        else {
+            let length = this.value.length;
+            lengthOctets = [0, 0, 0, 0];
+            for (let i = 0; i < 4; i++) {
+                lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 0xFF);
+            }
+            let startOfNonPadding = 0;
+            for (let i = 0; i < (lengthOctets.length - 1); i++) {
+                if (lengthOctets[i] === 0x00)
+                    startOfNonPadding++;
+            }
+            lengthOctets = lengthOctets.slice(startOfNonPadding);
+            lengthOctets.unshift(0b10000000 | lengthOctets.length);
+        }
+        const ret = new Uint8Array(tagBytes.length +
+            lengthOctets.length +
+            this.value.length);
+        ret.set(tagBytes, 0);
+        ret.set(lengthOctets, tagBytes.length);
+        ret.set(this.value, (tagBytes.length + lengthOctets.length));
+        return ret;
+    }
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6).Buffer))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(9);
+
 
 /***/ }),
 /* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["a"]; });
+
+/* harmony import */ var _codecs_ber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BERElement", function() { return _codecs_ber__WEBPACK_IMPORTED_MODULE_1__["a"]; });
+
+/* harmony import */ var _codecs_der__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DERElement", function() { return _codecs_der__WEBPACK_IMPORTED_MODULE_2__["a"]; });
+
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(0);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["c"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["d"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RecursionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["g"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TruncationError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["i"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1OverflowError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["e"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SizeError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["h"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1PaddingError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["f"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UndefinedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["j"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1CharactersError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["a"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1ConstructionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["b"]; });
+
+/* harmony import */ var _types_objectidentifier__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return _types_objectidentifier__WEBPACK_IMPORTED_MODULE_4__["a"]; });
+
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["i"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["k"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["h"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["j"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TagClass", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["e"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Construction", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["a"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LengthEncodingPreference", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["g"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["d"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RealEncodingBase", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["b"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RealEncodingScale", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["c"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["f"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["t"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["u"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedUTCTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["o"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["p"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedGeneralizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["m"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr1Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["q"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr2Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["r"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["s"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["l"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["n"]; });
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 var g;
@@ -3169,7 +3901,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3327,7 +4059,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -3417,7 +4149,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;

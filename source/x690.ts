@@ -65,12 +65,7 @@ abstract class X690Element extends ASN1Element {
             )
         )
             throw new errors.ASN1PaddingError("Unnecessary padding bytes on INTEGER or ENUMERATED.");
-        let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
-        this.value.forEach(byte => {
-            ret <<= 8;
-            ret += byte;
-        });
-        return ret;
+        return ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(0));
     }
 
     set objectIdentifier (value : OID) {

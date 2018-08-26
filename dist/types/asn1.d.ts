@@ -34,4 +34,6 @@ export declare abstract class ASN1Element {
     abstract bmpString: string;
     constructor();
     protected static validateDateTime(dataType: string, year: number, month: number, date: number, hours: number, minutes: number, seconds: number): void;
+    protected static decodeUnsignedBigEndianInteger(value: Uint8Array): number;
+    protected static decodeSignedBigEndianInteger(value: Uint8Array): number;
 }
