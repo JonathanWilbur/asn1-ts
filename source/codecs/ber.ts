@@ -199,22 +199,38 @@ class BERElement extends X690Element {
                 let mantissa : number;
                 switch (this.value[0] & 0b00000011) { // Exponent encoding
                     case (0b00000000): { // On the following octet
+                        if (this.value.length < 3)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
                         exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 2));
                         mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                        break;
                     }
                     case (0b00000001): { // On the following two octets
+                        if (this.value.length < 4)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
                         exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 3));
                         mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                        break;
                     }
                     case (0b00000010): { // On the following three octets
+                        if (this.value.length < 5)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
                         exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 4));
                         mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(4));
+                        break;
                     }
                     case (0b00000011): { // Complicated.
+                        if (this.value.length < 3)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
                         let exponentLength : number = this.value[1];
+                        if (this.value.length < (3 + exponentLength))
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
                         exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
                         mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
+                        break;
                     }
+                    default:
+                        throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
                 }
 
                 return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));

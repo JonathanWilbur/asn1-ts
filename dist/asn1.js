@@ -762,22 +762,38 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 let mantissa;
                 switch (this.value[0] & 0b00000011) {
                     case (0b00000000): {
+                        if (this.value.length < 3)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 2));
                         mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                        break;
                     }
                     case (0b00000001): {
+                        if (this.value.length < 4)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 3));
                         mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                        break;
                     }
                     case (0b00000010): {
+                        if (this.value.length < 5)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 4));
                         mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(4));
+                        break;
                     }
                     case (0b00000011): {
+                        if (this.value.length < 3)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         let exponentLength = this.value[1];
+                        if (this.value.length < (3 + exponentLength))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
                         mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
+                        break;
                     }
+                    default:
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible binary REAL exponent encoding encountered.");
                 }
                 return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }

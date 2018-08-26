@@ -77,3 +77,12 @@ describe('Basic Encoding Rules Base-10 REAL decoder', () => {
         expect(regex.test("   0.e+0")).toBe(true);
     });
 });
+
+
+describe('Basic Encoding Rules Base-2 REAL decoder', () => {
+    it('decodes all valid Base-2 REALs correctly', () => {
+        let el = new BERElement();
+        el.value = new Uint8Array([ 0x80, 0xFB, 0x05 ]);
+        expect(el.real).toBeCloseTo(0.15625);
+    });
+});
