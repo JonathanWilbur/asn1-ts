@@ -7,14 +7,12 @@
 // TODO: ITU X.680 S 47.3: "UTCTime ::= [UNIVERSAL 23] IMPLICIT VisibleString"
 // TODO: ITU X.680 S 46.3: "GeneralizedTime ::= [UNIVERSAL 24] IMPLICIT VisibleString"
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
-import { isNull } from "util";
-import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
-import { ObjectIdentifier as OID } from "../types/objectidentifier";
-import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, LengthEncodingPreference, MAX_SINT_32, MIN_SINT_32, printableStringCharacters, utcTimeRegex, generalizedTimeRegex, nr1Regex, nr2Regex, nr3Regex } from "../values";
+import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
+import { X690Element } from "../x690";
 
 export
-class BERElement extends ASN1Element {
+class BERElement extends X690Element {
 
     public static lengthEncodingPreference : LengthEncodingPreference =
         LengthEncodingPreference.definite;
@@ -30,73 +28,6 @@ class BERElement extends ASN1Element {
         if (this.value.length !== 1)
             throw new errors.ASN1SizeError("BOOLEAN not one byte");
         return (this.value[0] !== 0);
-    }
-
-    /**
-     * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
-     * JavaScript's bitshift operators treat all integers as though they were
-     * 32-bit integers, even though they are stored in the 53 mantissa bits of
-     * an IEEE double-precision floating point number. Accepting larger or
-     * smaller numbers would rule out the use of a critical arithmetic operator
-     * when lower-level binary operations are not available, as is the case in
-     * JavaScript.
-     */
-    set integer (value : number) {
-        if (value < MIN_SINT_32)
-            throw new errors.ASN1OverflowError(`Number ${value} too small to be converted.`);
-        if (value > MAX_SINT_32)
-            throw new errors.ASN1OverflowError(`Number ${value} too big to be converted.`);
-
-        if (value <= 127 && value >= -128) {
-            this.value = new Uint8Array([
-                (value & 255)
-            ]);
-            return;
-        } else if (value <= 32767 && value >= -32768) {
-            this.value = new Uint8Array([
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        } else if (value <= 8388607 && value >= -8388608) {
-            this.value = new Uint8Array([
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        } else {
-            this.value = new Uint8Array([
-                ((value >> 24) & 255),
-                ((value >> 16) & 255),
-                (value >> 8 & 255),
-                (value & 255)
-            ]);
-            return;
-        }
-    }
-
-    get integer () : number {
-        if (this.construction !== ASN1Construction.primitive)
-            throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.");
-        if (this.value.length === 0)
-            throw new errors.ASN1SizeError("Number encoded on zero bytes!");
-        if (this.value.length > 4)
-            throw new errors.ASN1OverflowError("Number too long to decode.");
-        if (
-            this.value.length > 2 &&
-            (
-                (this.value[0] === 0xFF && this.value[1] >= 0b10000000) ||
-                (this.value[0] === 0x00 && this.value[1] < 0b10000000)
-            )
-        )
-            throw new errors.ASN1PaddingError("Unnecessary padding bytes on INTEGER or ENUMERATED.");
-        let ret : number = (this.value[0] >= 128 ? Number.MAX_SAFE_INTEGER : 0);
-        this.value.forEach(byte => {
-            ret <<= 8;
-            ret += byte;
-        });
-        return ret;
     }
 
     set bitString (value : boolean[]) {
@@ -173,40 +104,6 @@ class BERElement extends ASN1Element {
         return this.deconstruct("OCTET STRING");
     }
 
-    set objectIdentifier (value : OID) {
-        const numbers : number[] = value.nodes;
-        let pre : number[] = [ ((numbers[0] * 40) + numbers[1]) ];
-        let post : number[] = BERElement.encodeObjectIdentifierNodes(numbers.slice(2));
-        this.value = new Uint8Array(pre.concat(post));
-    }
-
-    get objectIdentifier () : OID {
-        if (this.construction !== ASN1Construction.primitive)
-            throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.");
-
-        if (this.value.length === 0)
-            throw new errors.ASN1TruncationError
-            ("Encoded value was too short to be an OBJECT IDENTIFIER!");
-
-        let numbers : number[] = [ 0, 0 ];
-        if (this.value[0] >= 0x50) {
-            numbers[0] = 2;
-            numbers[1] = (this.value[0] - 0x50);
-        } else if (this.value[0] >= 0x28) {
-            numbers[0] = 1;
-            numbers[1] = (this.value[0] - 0x28);
-        } else {
-            numbers[0] = 0;
-            numbers[1] = this.value[0];
-        }
-
-        if (this.value.length === 1)
-            return new OID(numbers);
-
-        numbers = numbers.concat(BERElement.decodeObjectIdentifierNodes(this.value.slice(1)));
-        return new OID(numbers);
-    }
-
     set objectDescriptor (value : string) {
         this.graphicString = value;
     }
@@ -279,14 +176,6 @@ class BERElement extends ASN1Element {
         }
     }
 
-    set enumerated (value : number) {
-        this.integer = value;
-    }
-
-    get enumerated () : number {
-        return this.integer;
-    }
-
     set utf8String (value : string) {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             this.value = (new TextEncoder()).encode(value);
@@ -304,16 +193,6 @@ class BERElement extends ASN1Element {
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         return ret;
-    }
-
-    set relativeObjectIdentifier (value : number[]) {
-        this.value = new Uint8Array(BERElement.encodeObjectIdentifierNodes(value));
-    }
-
-    get relativeObjectIdentifier () : number[] {
-        if (this.construction !== ASN1Construction.primitive)
-            throw new errors.ASN1ConstructionError("Relative OID cannot be constructed.");
-        return BERElement.decodeObjectIdentifierNodes(this.value.slice(0));
     }
 
     set sequence (value : BERElement[]) {
@@ -918,119 +797,5 @@ class BERElement extends ASN1Element {
         }
     }
 
-    private static validateDateTime (
-        dataType : string,
-        year : number,
-        month : number,
-        date : number,
-        hours : number,
-        minutes : number,
-        seconds : number
-    ) : void {
-        switch (month) {
 
-            // 31-day months
-            case 0  : // January
-            case 2  : // March
-            case 4  : // May
-            case 6  : // July
-            case 7  : // August
-            case 9  : // October
-            case 11 : // December
-                if (date > 31)
-                    throw new errors.ASN1Error
-                    (`Day > 31 encountered in ${dataType} with 31-day month.`);
-                break;
-
-            // 30-day months
-            case 3  : // April
-            case 5  : // June
-            case 8  : // September
-            case 10 : // November
-                if (date > 30)
-                    throw new errors.ASN1Error
-                    (`Day > 31 encountered in ${dataType} with 30-day month.`);
-                break;
-
-            // 28/29-day month
-            case 1  : // Feburary
-                // Source: https://stackoverflow.com/questions/16353211/check-if-year-is-leap-year-in-javascript#16353241
-                let isLeapYear : boolean = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (isLeapYear) {
-                    if (date > 29)
-                        throw new errors.ASN1Error
-                        (`Day > 29 encountered in ${dataType} with month of February in leap year.`);
-                } else {
-                    if (date > 28)
-                        throw new errors.ASN1Error
-                        (`Day > 28 encountered in ${dataType} with month of February and non leap year.`);
-                }
-                break;
-
-            default:
-                throw new errors.ASN1Error(`Month greater than 12 encountered in ${dataType}.`);
-
-        }
-
-        if (hours > 23)
-            throw new errors.ASN1Error(`Hours > 23 encountered in ${dataType}.`);
-        if (minutes > 59)
-            throw new errors.ASN1Error(`Minutes > 60 encountered in ${dataType}.`);
-        if (seconds > 59)
-            throw new errors.ASN1Error(`Seconds > 60 encountered in ${dataType}.`);
-    }
-
-    private static decodeObjectIdentifierNodes (value : Uint8Array) : number[] {
-        if (value.length === 0) return [];
-        let numbers : number[] = [];
-        if (value.length > 0 && (value[(value.length - 1)] & 0b10000000) === 0b10000000)
-            throw new errors.ASN1TruncationError("OID truncated");
-        let components : number = 0;
-        value.forEach(b => { if (!(b & 0b10000000)) components++; });
-        numbers.length = components;
-        let currentNumber : number = 0;
-        let bytesUsedInCurrentNumber : number = 0;
-        value.forEach(b => {
-            if (bytesUsedInCurrentNumber === 0 && b === 0b10000000)
-                throw new errors.ASN1PaddingError("OID had invalid padding byte.");
-            // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1.
-            if (numbers[currentNumber] > (Number.MAX_SAFE_INTEGER >>> 7))
-                throw new errors.ASN1OverflowError("OID node too big");
-            numbers[currentNumber] <<= 7;
-            numbers[currentNumber] |= (b & 0x7F);
-            if (!(b & 0b10000000)) {
-                currentNumber++;
-                bytesUsedInCurrentNumber = 0;
-            } else {
-                bytesUsedInCurrentNumber++;
-            }
-        });
-        return numbers;
-    }
-
-    private static encodeObjectIdentifierNodes (value : number[]) : number[] {
-        let ret : number[] = [];
-        for (let i : number = 0; i < value.length; i++) {
-            let number : number = value[i];
-            if (number < 128) {
-                ret.push(number);
-                continue;
-            }
-            let encodedOIDNode : number[] = [];
-            while (number !== 0) {
-                let numberBytes : number[] = [
-                    (number & 255),
-                    (number >>> 8 & 255),
-                    ((number >>> 16) & 255),
-                    ((number >>> 24) & 255),
-                ];
-                if ((numberBytes[0] & 0x80) === 0) numberBytes[0] |= 0x80;
-                encodedOIDNode.unshift(numberBytes[0]);
-                number >>= 7;
-            }
-            encodedOIDNode[encodedOIDNode.length - 1] &= 0x7F;
-            ret = ret.concat(encodedOIDNode);
-        }
-        return ret;
-    }
 }

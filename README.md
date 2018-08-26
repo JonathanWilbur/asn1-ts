@@ -96,7 +96,7 @@ more detail. -->
 - [x] Fix infinite recursion vulnerabilities
 - [ ] Implement a Distinguished Encoding Rules Codec
   - [ ] Ensure length is encoded on minimum number of octets
-- [ ] Implement a Canonical Encoding Rules Codec
+  - [ ] Add tests
 - [ ] Build all codecs separately
 - [x] Make each codec inherit from `ASN1Element`
 - [x] Use longer names with aliases
@@ -113,10 +113,9 @@ more detail. -->
 - [x] Change Time type validation for `BERElement`
 - [x] Fix `BIT STRING` decoding
 - [x] Test `BIT STRING` `0x00`
-- [ ] Refactor shared functionality into an `X690Element` class
+- [x] Refactor shared functionality into an `X690Element` class
 - [x] Update build to `esnext`
-- [ ] Organize imports
-- [ ] Test regex non-matching in `REAL` and time types
+- [x] Organize imports
 
 ## See Also
 

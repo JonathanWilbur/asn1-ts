@@ -1,17 +1,12 @@
-import { ASN1Element } from "../asn1";
-import { ASN1TagClass, ASN1Construction } from "../values";
-import { ObjectIdentifier as OID } from "../types/objectidentifier";
-export declare class DERElement extends ASN1Element {
+import { ASN1Construction, ASN1TagClass } from "../values";
+import { X690Element } from "../x690";
+export declare class DERElement extends X690Element {
     boolean: boolean;
-    integer: number;
     bitString: boolean[];
     octetString: Uint8Array;
-    objectIdentifier: OID;
     objectDescriptor: string;
     real: number;
-    enumerated: number;
     utf8String: string;
-    relativeObjectIdentifier: number[];
     sequence: DERElement[];
     set: DERElement[];
     numericString: string;
@@ -29,7 +24,4 @@ export declare class DERElement extends ASN1Element {
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
-    private static validateDateTime;
-    private static decodeObjectIdentifierNodes;
-    private static encodeObjectIdentifierNodes;
 }

@@ -1,18 +1,13 @@
-import { ASN1Element } from "../asn1";
-import { ObjectIdentifier as OID } from "../types/objectidentifier";
 import { ASN1Construction, ASN1TagClass, LengthEncodingPreference } from "../values";
-export declare class BERElement extends ASN1Element {
+import { X690Element } from "../x690";
+export declare class BERElement extends X690Element {
     static lengthEncodingPreference: LengthEncodingPreference;
     boolean: boolean;
-    integer: number;
     bitString: boolean[];
     octetString: Uint8Array;
-    objectIdentifier: OID;
     objectDescriptor: string;
     real: number;
-    enumerated: number;
     utf8String: string;
-    relativeObjectIdentifier: number[];
     sequence: BERElement[];
     set: BERElement[];
     numericString: string;
@@ -31,7 +26,4 @@ export declare class BERElement extends ASN1Element {
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
     private deconstruct;
-    private static validateDateTime;
-    private static decodeObjectIdentifierNodes;
-    private static encodeObjectIdentifierNodes;
 }

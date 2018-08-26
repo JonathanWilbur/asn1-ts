@@ -1,5 +1,5 @@
 import { ObjectIdentifier as OID } from "./types/objectidentifier";
-import { ASN1TagClass, ASN1Construction } from "./values";
+import { ASN1Construction, ASN1TagClass } from "./values";
 export declare abstract class ASN1Element {
     protected recursionCount: number;
     protected static readonly nestingRecursionLimit: number;
@@ -7,7 +7,7 @@ export declare abstract class ASN1Element {
     construction: ASN1Construction;
     tagNumber: number;
     value: Uint8Array;
-    length(): number;
+    readonly length: number;
     abstract boolean: boolean;
     abstract integer: number;
     abstract bitString: boolean[];
@@ -33,4 +33,5 @@ export declare abstract class ASN1Element {
     abstract universalString: string;
     abstract bmpString: string;
     constructor();
+    protected static validateDateTime(dataType: string, year: number, month: number, date: number, hours: number, minutes: number, seconds: number): void;
 }
