@@ -78,7 +78,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("19751231112233+0500");
@@ -88,7 +88,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("+0500");
 
         result = regex.exec("19751231112233-0500");
@@ -98,7 +98,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("-0500");
 
         result = regex.exec("197512311122Z");
@@ -108,7 +108,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("197512311122-0600");
@@ -118,7 +118,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("-0600");
 
         result = regex.exec("1975123111Z");
@@ -128,7 +128,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBeUndefined();
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("1975123111-0600");
@@ -138,7 +138,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBeUndefined();
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBeUndefined();
+        expect(result.groups.fraction).toBeUndefined();
         expect(result.groups.offset).toBe("-0600");
 
         result = regex.exec("19751231112233.12345Z");
@@ -148,7 +148,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("19751231112233.12345+0500");
@@ -158,7 +158,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("+0500");
 
         result = regex.exec("19751231112233.12345-0500");
@@ -168,7 +168,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBe("33");
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("-0500");
 
         result = regex.exec("197512311122.12345Z");
@@ -178,7 +178,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("197512311122.12345-0600");
@@ -188,7 +188,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBe("22");
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("-0600");
 
         result = regex.exec("1975123111.12345Z");
@@ -198,7 +198,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBeUndefined();
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("Z");
 
         result = regex.exec("1975123111.12345-0600");
@@ -208,7 +208,7 @@ describe('The GeneralizedTime regular expression', () => {
         expect(result.groups.hour).toBe("11");
         expect(result.groups.minute).toBeUndefined();
         expect(result.groups.second).toBeUndefined();
-        expect(result.groups.millisecond).toBe("12345");
+        expect(result.groups.fraction).toBe("12345");
         expect(result.groups.offset).toBe("-0600");
     });
 

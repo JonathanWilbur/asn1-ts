@@ -7,10 +7,11 @@
 // TODO: ITU X.680 S 47.3: "UTCTime ::= [UNIVERSAL 23] IMPLICIT VisibleString"
 // TODO: ITU X.680 S 46.3: "GeneralizedTime ::= [UNIVERSAL 24] IMPLICIT VisibleString"
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
+import { isNull } from "util";
 import { ASN1Element } from "../asn1";
-import { ASN1TagClass,ASN1UniversalType,ASN1Construction,ASN1SpecialRealValue,LengthEncodingPreference,MAX_SINT_32,MIN_SINT_32,printableStringCharacters } from "../values";
-import { ObjectIdentifier as OID } from "../types/objectidentifier";
 import * as errors from "../errors";
+import { ObjectIdentifier as OID } from "../types/objectidentifier";
+import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, LengthEncodingPreference, MAX_SINT_32, MIN_SINT_32, printableStringCharacters, utcTimeRegex, generalizedTimeRegex } from "../values";
 
 export
 class BERElement extends ASN1Element {
@@ -274,7 +275,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("UTF8String");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -352,7 +353,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("NumericString");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -385,7 +386,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("PrintableString");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -426,7 +427,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("IA5String");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -453,20 +454,20 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("UTCTime");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            dateString = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length !== 13 || !(/\d{10,12}Z/.test(dateString)))
-            throw new errors.ASN1Error("Malformed UTCTime string.");
+        const match : RegExpExecArray = utcTimeRegex.exec(dateString);
+        if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret : Date = new Date();
-        let year : number = Number(dateString.substring(0, 2));
+        let year : number = Number(match.groups.year);
         year = (year < 70 ? (2000 + year) : (1900 + year));
-        const month : number = (Number(dateString.substring(2, 4)) - 1);
-        const date : number = Number(dateString.substring(4, 6));
-        const hours : number = Number(dateString.substring(6, 8));
-        const minutes : number = Number(dateString.substring(8, 10));
-        const seconds : number = Number(dateString.substring(10, 12));
+        const month : number = (Number(match.groups.month) - 1);
+        const date : number = Number(match.groups.date);
+        const hours : number = Number(match.groups.hour);
+        const minutes : number = Number(match.groups.minute);
+        const seconds : number = Number(match.groups.second);
         BERElement.validateDateTime("UTCTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
@@ -496,19 +497,19 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("GeneralizedTime");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            dateString = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        if (dateString.length < 13 || !(/\d{14}(?:\.\d*[1-9])?Z/.test(dateString)))
-            throw new errors.ASN1Error("Malformed GeneralizedTime string.");
+        const match : RegExpExecArray = generalizedTimeRegex.exec(dateString);
+        if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret : Date = new Date();
-        const year : number = Number(dateString.substring(0, 4));
-        const month : number = (Number(dateString.substring(4, 6)) - 1);
-        const date : number = Number(dateString.substring(6, 8));
-        const hours : number = Number(dateString.substring(8, 10));
-        const minutes : number = Number(dateString.substring(10, 12));
-        const seconds : number = Number(dateString.substring(12, 14));
+        const year : number = Number(match.groups.year);
+        const month : number = (Number(match.groups.month) - 1);
+        const date : number = Number(match.groups.date);
+        const hours : number = Number(match.groups.hour);
+        const minutes : number = Number(match.groups.minute);
+        const seconds : number = Number(match.groups.second);
         BERElement.validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
         ret.setUTCFullYear(year);
         ret.setUTCMonth(month);
@@ -541,7 +542,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -583,7 +584,7 @@ class BERElement extends ASN1Element {
         const valueBytes : Uint8Array = this.deconstruct("GeneralString");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("windows-1252")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("windows-1252")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("ascii");
         }
@@ -644,7 +645,7 @@ class BERElement extends ASN1Element {
             ("BMPString encoded on non-mulitple of two bytes.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-16be")).decode(<ArrayBuffer>valueBytes.buffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             const swappedEndianness : Uint8Array = new Uint8Array(valueBytes.length);
             for (let i : number = 0; i < valueBytes.length; i += 2) {

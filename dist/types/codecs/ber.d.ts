@@ -1,6 +1,6 @@
 import { ASN1Element } from "../asn1";
-import { ASN1TagClass, ASN1Construction, LengthEncodingPreference } from "../values";
 import { ObjectIdentifier as OID } from "../types/objectidentifier";
+import { ASN1Construction, ASN1TagClass, LengthEncodingPreference } from "../values";
 export declare class BERElement extends ASN1Element {
     static lengthEncodingPreference: LengthEncodingPreference;
     boolean: boolean;

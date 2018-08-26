@@ -38,9 +38,4 @@ describe("Basic Encoding Rules", function() {
         expect(() => element.bitString).toThrow();
     });
 
-    it('throws an exception when decoding a GeneralizedTime with trailing zeroes', () => {
-        let el = new BERElement();
-        el.utf8String = "20181211223344.060Z";
-        expect(() => el.generalizedTime).toThrow();
-    });
 });

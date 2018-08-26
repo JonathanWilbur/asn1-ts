@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "module": "es6",
-        "target": "es6",
+        "module": "ESNext",
+        "target": "ESNext",
         "outDir": "./dist",
         "declaration": true,
         "declarationDir": "types",

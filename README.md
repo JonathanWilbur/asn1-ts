@@ -115,6 +115,9 @@ more detail. -->
 - [x] Fix `BIT STRING` decoding
 - [x] Test `BIT STRING` `0x00`
 - [ ] Refactor shared functionality into an `X690Element` class
+- [x] Update build to `esnext`
+- [ ] Organize imports
+- [ ] Test regex non-matching in `REAL` and time types
 
 ## See Also
 

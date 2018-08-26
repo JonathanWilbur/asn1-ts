@@ -29,6 +29,7 @@ describe('Basic Encoding Rules Base-10 REAL decoder', () => {
         expect(regex.test("      0")).toBe(true);
     });
 
+    // These examples are taken directly from ISO 6093
     it('decodes all valid NR2 expressions correctly', () => {
         const regex = asn1.nr2Regex;
 
@@ -62,6 +63,7 @@ describe('Basic Encoding Rules Base-10 REAL decoder', () => {
         expect(regex.test("      0,")).toBe(true);
     });
 
+    // These examples are taken directly from ISO 6093
     it('decodes all valid NR3 expressions correctly', () => {
         const regex = asn1.nr3Regex;
 

@@ -79,16 +79,16 @@ export const printableStringCharacters : string =
     "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
 
 export const utcTimeRegex : RegExp =
-    /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?(?<offset>(?:(\+|\-)\d{4})|Z)$/;
+    /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?(?<offset>(?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
 
 export const distinguishedUTCTimeRegex : RegExp =
-    /^(?<year>\d{2})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})?Z$/;
+    /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?Z$/;
 
 export const generalizedTimeRegex : RegExp =
-    /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})?(?<second>\d{2})?(?:\.(?<millisecond>\d+))?(?<offset>(?:(\+|\-)\d{4})|Z)?$/;
+    /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)?(?<second>[0-5]\d)?(?:(\.|,)(?<fraction>\d+))?(?<offset>(?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
 
 export const distinguishedGeneralizedTimeRegex : RegExp =
-    /^(?<year>\d{4})(?<month>\d{2})(?<date>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(?:\.(?<millisecond>\d*[1-9]))?Z$/;
+    /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)(?:(\.|,)(?<fraction>\d*[1-9]))?Z$/;
 
 export const nr1Regex : RegExp = /^\ *(\+|\-)?\d+$/;
 export const nr2Regex : RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
