@@ -12,6 +12,7 @@
     },
     "include": [
         "./source/*.ts",
-        "./source/types/*.ts"
+        "./source/types/*.ts",
+        "./source/codecs/*.ts"
     ]
 }

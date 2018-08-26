@@ -510,18 +510,23 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
     set real(value) {
         if (value === 0.0) {
             this.value = new Uint8Array(0);
+            return;
         }
         else if (isNaN(value)) {
             this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SpecialRealValue */ "b"].notANumber]);
+            return;
         }
         else if (value === -0.0) {
             this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SpecialRealValue */ "b"].minusZero]);
+            return;
         }
         else if (value === Infinity) {
             this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SpecialRealValue */ "b"].plusInfinity]);
+            return;
         }
         else if (value === -Infinity) {
             this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_3__[/* ASN1SpecialRealValue */ "b"].minusInfinity]);
+            return;
         }
         let valueString = value.toFixed(7);
         valueString = (String.fromCharCode(0b00000011) + valueString);
@@ -545,7 +550,34 @@ class BERElement extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
             }
             case (0b00000000): {
-                return parseFloat((new TextDecoder()).decode(this.value.slice(1)));
+                let realString;
+                if (typeof TextEncoder !== "undefined") {
+                    realString = (new TextDecoder("utf-8")).decode(this.value.slice(1));
+                }
+                else if (typeof Buffer !== "undefined") {
+                    realString = (new Buffer(this.value.slice(1))).toString("utf-8");
+                }
+                switch (this.value[0] & 0b00111111) {
+                    case 1: {
+                        if (!_values__WEBPACK_IMPORTED_MODULE_3__[/* nr1Regex */ "o"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR1 Base-10 REAL");
+                        return parseFloat(realString);
+                    }
+                    case 2: {
+                        if (!_values__WEBPACK_IMPORTED_MODULE_3__[/* nr2Regex */ "p"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR2 Base-10 REAL");
+                        return parseFloat(realString);
+                    }
+                    case 3: {
+                        if (!_values__WEBPACK_IMPORTED_MODULE_3__[/* nr3Regex */ "q"].test(realString)) {
+                            console.info(realString);
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
+                        }
+                        return parseFloat(realString);
+                    }
+                    default:
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
+                }
             }
             case (0b10000000):
             case (0b11000000): {

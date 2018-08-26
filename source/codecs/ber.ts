@@ -11,7 +11,7 @@ import { isNull } from "util";
 import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
 import { ObjectIdentifier as OID } from "../types/objectidentifier";
-import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, LengthEncodingPreference, MAX_SINT_32, MIN_SINT_32, printableStringCharacters, utcTimeRegex, generalizedTimeRegex } from "../values";
+import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, LengthEncodingPreference, MAX_SINT_32, MIN_SINT_32, printableStringCharacters, utcTimeRegex, generalizedTimeRegex, nr1Regex, nr2Regex, nr3Regex } from "../values";
 
 export
 class BERElement extends ASN1Element {
@@ -215,21 +215,21 @@ class BERElement extends ASN1Element {
         return this.graphicString;
     }
 
-    // Only encodes with two digits of precision.
+    // Only encodes with seven digits of precision.
     set real (value : number) {
         if (value === 0.0) {
-            this.value = new Uint8Array(0);
+            this.value = new Uint8Array(0); return;
         } else if (isNaN(value)) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.notANumber ]);
+            this.value = new Uint8Array([ ASN1SpecialRealValue.notANumber ]); return;
         } else if (value === -0.0) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.minusZero ]);
+            this.value = new Uint8Array([ ASN1SpecialRealValue.minusZero ]); return;
         } else if (value === Infinity) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.plusInfinity ]);
+            this.value = new Uint8Array([ ASN1SpecialRealValue.plusInfinity ]); return;
         } else if (value === -Infinity) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]);
+            this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]); return;
         }
         let valueString : string = value.toFixed(7);
-        valueString = (String.fromCharCode(0b00000011) + valueString);
+        valueString = (String.fromCharCode(0b00000011) + valueString); // Encodes as NR3
         this.value = (new TextEncoder()).encode(valueString);
     }
 
@@ -246,7 +246,31 @@ class BERElement extends ASN1Element {
                 throw new errors.ASN1UndefinedError("Unrecognized special REAL value!");
             }
             case (0b00000000): {
-                return parseFloat((new TextDecoder()).decode(this.value.slice(1)));
+                let realString : string;
+                if (typeof TextEncoder !== "undefined") { // Browser JavaScript
+                    realString = (new TextDecoder("utf-8")).decode(this.value.slice(1));
+                } else if (typeof Buffer !== "undefined") { // NodeJS
+                    realString = (new Buffer(this.value.slice(1))).toString("utf-8");
+                }
+                switch (this.value[0] & 0b00111111) {
+                    case 1: { // NR1
+                        if (!nr1Regex.test(realString))
+                            throw new errors.ASN1Error("Malformed NR1 Base-10 REAL");
+                        return parseFloat(realString);
+                    }
+                    case 2: { // NR2
+                        if (!nr2Regex.test(realString))
+                            throw new errors.ASN1Error("Malformed NR2 Base-10 REAL");
+                        return parseFloat(realString.replace(",", "."));
+                    }
+                    case 3: { // NR3
+                        if (!nr3Regex.test(realString))
+                            throw new errors.ASN1Error("Malformed NR3 Base-10 REAL");
+                        return parseFloat(realString.replace(",", "."));
+                    }
+                    default:
+                        throw new errors.ASN1UndefinedError("Undefined Base-10 REAL encoding.");
+                }
             }
             case (0b10000000):
             case (0b11000000): {

@@ -109,9 +109,8 @@ more detail. -->
 - [x] Check that accessors do not mutate state
 - [x] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
 - [x] Add more construction restrictions
-- [ ] More `REAL` checks
-- [ ] More `REAL` testing
-- [ ] Change Time type validation for `BERElement`
+- [x] More `REAL` checks
+- [x] Change Time type validation for `BERElement`
 - [x] Fix `BIT STRING` decoding
 - [x] Test `BIT STRING` `0x00`
 - [ ] Refactor shared functionality into an `X690Element` class
