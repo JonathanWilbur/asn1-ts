@@ -1,0 +1,3 @@
+test/* linguist-vendored
+documentation/* linguist-documentation
+dist/* linguist-generated=true
