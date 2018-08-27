@@ -1,25 +1,22 @@
-let BERElement = asn1.BERElement;
-let ObjectIdentifier = asn1.ObjectIdentifier;
-
-describe('Basic Encoding Rules', () => {
+describe('Distinguished Encoding Rules', () => {
 
     const floatingPointErrorTolerance = 1e-06;
 
     // it('encodes a long tag number correctly', () => {
-    //     let bob = new BERElement();
+    //     let bob = new DERElement();
     //     bob.tagNumber = 129;
     //     console.info(bob.toBytes());
     // });
 
     // it('encodes a long-form definite length element correctly', () => {
-    //     let bob = new BERElement();
+    //     let bob = new DERElement();
     //     bob.value = new Uint8Array(129);
     //     console.info(bob.toBytes());
     // });
 
     // it('encodes an indefinite-length element correctly', () => {
-    //     let bob = new BERElement();
-    //     BERElement.lengthEncodingPreference = asn1.LengthEncodingPreference.indefinite;
+    //     let bob = new DERElement();
+    //     DERElement.lengthEncodingPreference = asn1.LengthEncodingPreference.indefinite;
     //     bob.value = new Uint8Array(4);
     //     bob.value[1] = 2;
     //     bob.value[2] = 7;
@@ -27,7 +24,7 @@ describe('Basic Encoding Rules', () => {
     // });
 
     it('encodes and decodes a BOOLEAN correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.boolean = true;
         expect(el.value).toEqual(new Uint8Array([ 0xFF ]));
         expect(el.boolean).toBe(true);
@@ -37,7 +34,7 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes an INTEGER correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
 
         // Examples taken from here: http://luca.ntop.org/Teaching/Appunti/asn1.html
         el.integer = 0;
@@ -77,7 +74,7 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a BIT STRING correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.bitString = []; // 0 bits
         (el.bitString == []);
         expect(el.value).toEqual(new Uint8Array([ 0x00 ]));
@@ -94,14 +91,14 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes an OCTET STRING correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.octetString = new Uint8Array([ 255, 127, 36, 0, 1, 254 ]);
         expect(el.value).toEqual(new Uint8Array([ 255, 127, 36, 0, 1, 254 ]));
         expect(el.octetString).toEqual(new Uint8Array([ 255, 127, 36, 0, 1, 254 ]));
     });
 
     it('encodes and decodes an OBJECT IDENTIFIER correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.objectIdentifier = new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
         expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
 
@@ -154,13 +151,13 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes an ObjectDescriptor correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.objectDescriptor = 'HENLO-BORTHERS';
         expect(el.objectDescriptor).toBe('HENLO-BORTHERS');
     });
 
     it('encodes and decodes a REAL correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         for (let i = -100; i < 100; i++) {
             // Alternating negative and positive floating point numbers exploring extreme values
             let num = Math.pow((i % 2 ? -1 : 1) * 1.23, i);
@@ -258,7 +255,7 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes and ENUMERATED correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         for (let i = 0; i < 127; i++) {
             el.enumerated = i;
             expect(el.value).toEqual(new Uint8Array([ i ]));
@@ -277,7 +274,7 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a RELATIVE OID correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         let sensitiveValues = [
             0,
             1,
@@ -312,11 +309,11 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a SEQUENCE correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         let subs = [];
-        subs.push(new BERElement());
-        subs.push(new BERElement());
-        subs.push(new BERElement());
+        subs.push(new DERElement());
+        subs.push(new DERElement());
+        subs.push(new DERElement());
         subs[0].tagNumber = 1;
         subs[0].boolean = true;
         subs[1].tagNumber = 2;
@@ -333,11 +330,11 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a SET correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         let subs = [];
-        subs.push(new BERElement());
-        subs.push(new BERElement());
-        subs.push(new BERElement());
+        subs.push(new DERElement());
+        subs.push(new DERElement());
+        subs.push(new DERElement());
         subs[0].tagNumber = 1;
         subs[0].boolean = true;
         subs[1].tagNumber = 2;
@@ -354,19 +351,19 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a NumericString correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.numericString = '12345 67890';
         expect(el.numericString).toBe('12345 67890');
     });
 
     it('encodes and decodes a PrintableString correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.printableString = "12345abcdef '()+,-./:=?";
         expect(el.printableString).toBe("12345abcdef '()+,-./:=?");
     });
 
     it('encodes and decodes a UTCTime correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         let test = new Date();
         el.utcTime = test;
         let ret = el.utcTime;
@@ -386,7 +383,7 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a GeneralizedTime correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         let test = new Date();
         el.generalizedTime = test;
         let ret = el.generalizedTime;
@@ -415,19 +412,19 @@ describe('Basic Encoding Rules', () => {
     });
 
     it('encodes and decodes a BMPString correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.bmpString = 'HENLOBORTHERS';
         expect(el.bmpString).toBe('HENLOBORTHERS');
     });
 
     it('encodes and decodes a GeneralString correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.generalString = 'Testeroni';
         expect(el.generalString).toBe('Testeroni');
     });
 
     it('encodes and decodes a UniversalString correctly', () => {
-        const el = new BERElement();
+        const el = new DERElement();
         el.universalString = 'HENLOBORTHERS';
         expect(el.universalString).toBe('HENLOBORTHERS');
     });

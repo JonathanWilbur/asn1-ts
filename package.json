@@ -1,13 +1,13 @@
 {
   "name": "asn1-ts",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "ASN.1 encoding and decoding",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "karma run",
     "build": "webpack"
   },
   "keywords": [

@@ -4,7 +4,7 @@
 // NOTE: Conveniently remove the trailing u from unsigned bytes with
 // 0x([0-9A-F]{2})u --> 0x$1
 
-describe("Basic Encoding Rules", function() {
+describe('Basic Encoding Rules', () => {
 
     /**
      * This test exists because, when decoding indefinite-length elements,
@@ -12,7 +12,7 @@ describe("Basic Encoding Rules", function() {
      * itself may be indefinite-length encoded. This test is not necessary
      * for definite-length encoded elements.
      */
-    it("throws an exception when decoding excessively nested indefinite-length elements", function () {
+    it('throws an exception when decoding excessively nested indefinite-length elements', () => {
         let data = [];
         for (let i = 0; i < BERElement.nestingRecursionLimit + 1; i++) {
             data = data.concat([ 0x2C, 0x80 ]);
@@ -20,7 +20,7 @@ describe("Basic Encoding Rules", function() {
         for (let i = 0; i < BERElement.nestingRecursionLimit + 1; i++) {
             data = data.concat([ 0x00, 0x00 ]);
         }
-        let el = new BERElement();
+        const el = new BERElement();
         expect(() => el.fromBytes(new Uint8Array(data))).toThrowError();
     });
 
@@ -30,12 +30,12 @@ describe("Basic Encoding Rules", function() {
      * deconstruct(), which recurses automatically, whether the subelements
      * are of definite-length or indefinite-length encoding.
      */
-    it("throws an exception when decoding excessively nested definite-length elements", function () {
+    it('throws an exception when decoding excessively nested definite-length elements', () => {
         let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
         for (let i = 0; i < (BERElement.nestingRecursionLimit + 2); i++) {
             data = ([ 0x2C, data.length ]).concat(data);
         }
-        let el = new BERElement();
+        const el = new BERElement();
         el.fromBytes(new Uint8Array(data));
         expect(() => el.utf8String).toThrow();
     });
@@ -45,12 +45,12 @@ describe("Basic Encoding Rules", function() {
      * elements does not recurse automatically, unless you decode type that calls
      * deconstruct() or BIT STRING.
      */
-    it("does not throw an exception when manually decoding highly nested definite-length elements", function () {
+    it('does not throw an exception when manually decoding highly nested definite-length elements', () => {
         let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
         for (let i = 0; i < (BERElement.nestingRecursionLimit + 2); i++) {
             data = ([ 0x2C, data.length ]).concat(data);
         }
-        let el = new BERElement();
+        const el = new BERElement();
         el.fromBytes(new Uint8Array(data));
         for (let i = 0; i < (BERElement.nestingRecursionLimit + 1); i++) {
             el.fromBytes(el.value);
@@ -62,7 +62,7 @@ describe("Basic Encoding Rules", function() {
      * This tests deconstruct(), which will automatically recurse whether the
      * element is indefinite-length or definite-length.
      */
-    it("does not infinitely recurse when DL encodings are nested within IL encodings and vice versa", function () {
+    it('does not infinitely recurse when DL encodings are nested within IL encodings and vice versa', () => {
         let data = [ 0x0C, 0x02, 'H'.charCodeAt(0), 'i'.charCodeAt(0) ];
         for (let i = 0; i < (BERElement.nestingRecursionLimit - 1); i++) {
             data = ([ 0x2C, 0x80 ]).concat(data);
@@ -78,12 +78,12 @@ describe("Basic Encoding Rules", function() {
             data = data.concat([ 0x00, 0x00 ]);
         }
 
-        let el = new BERElement();
+        const el = new BERElement();
         el.fromBytes(new Uint8Array(data));
         expect(() => { return el.utf8String; }).toThrow();
     });
 
-    it("encodes and decodes a constructed BIT STRING correctly", function () {
+    it('encodes and decodes a constructed BIT STRING correctly', () => {
 
         let data = [
             0x23, 0x0E,
@@ -103,7 +103,7 @@ describe("Basic Encoding Rules", function() {
 
     });
 
-    it("encodes and decodes a constructed OCTET STRING correctly", function () {
+    it('encodes and decodes a constructed OCTET STRING correctly', () => {
         let data = new Uint8Array([
             0x24, 0x11,
                 0x04, 0x04, 0x01, 0x02, 0x03, 0x04,
@@ -120,7 +120,7 @@ describe("Basic Encoding Rules", function() {
 
     });
 
-    it("encodes and decodes a constructed ObjectDescriptor correctly", function () {
+    it('encodes and decodes a constructed ObjectDescriptor correctly', () => {
         let data = new Uint8Array([
             0x27, 0x12,
                 0x07, 0x04, 0x53, 0x68, 0x69, 0x61, // S h i a
@@ -131,10 +131,10 @@ describe("Basic Encoding Rules", function() {
 
         let element = new BERElement();
         element.fromBytes(data);
-        expect(element.objectDescriptor).toBe("ShiaLaBTFO");
+        expect(element.objectDescriptor).toBe('ShiaLaBTFO');
     });
 
-    it("encodes and decodes a constructed NumericString correctly", function () {
+    it('encodes and decodes a constructed NumericString correctly', () => {
         let data = new Uint8Array([
             0x32, 0x12,
                 0x12, 0x04, 0x30, 0x31, 0x32, 0x33, // 0 1 2 3
@@ -145,10 +145,10 @@ describe("Basic Encoding Rules", function() {
 
         let element = new BERElement();
         element.fromBytes(data);
-        expect(element.numericString).toBe("0123456789");
+        expect(element.numericString).toBe('0123456789');
     });
 
-    it("encodes and decodes a constructed PrintableString correctly", function () {
+    it('encodes and decodes a constructed PrintableString correctly', () => {
         let data = new Uint8Array([
             0x33, 0x12,
                 0x13, 0x04, 0x30, 0x31, 0x32, 0x33, // 0 1 2 3
@@ -159,7 +159,7 @@ describe("Basic Encoding Rules", function() {
 
         let element = new BERElement();
         element.fromBytes(data);
-        expect(element.printableString).toBe("0123456789");
+        expect(element.printableString).toBe('0123456789');
     });
 
 });

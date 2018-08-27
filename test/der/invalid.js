@@ -1,11 +1,9 @@
-const ASN1SizeError = asn1.ASN1SizeError;
-
 /**
  * Until the issue linked below is fixed, all of these tests can only ensure
  * that an error is thrown, but not that a specific type of error is thrown.
  * See https://github.com/jasmine/jasmine/issues/819.
  */
-describe('Basic Encoding Rules', () => {
+describe('Distinguished Encoding Rules', () => {
 
     it('throws an exception when decoding a multi-byte BOOLEAN', () => {
         const el = new DERElement();
@@ -13,9 +11,21 @@ describe('Basic Encoding Rules', () => {
         expect(() => el.boolean).toThrow();
     });
 
+    it('throws an exception when decoding a BOOLEAN that is not 0x00 or 0xFF', () => {
+        const el = new DERElement();
+        el.value = new Uint8Array([ 0x38 ]);
+        expect(() => el.boolean).toThrow();
+    });
+
     it('throws an exception when decoding a BIT STRING with a deceptive first byte', () => {
         const el = new DERElement();
         el.value = new Uint8Array([ 0x05 ]);
+        expect(() => el.bitString).toThrow();
+    });
+
+    it('throws an exception when decoding a BIT STRING with trailing set bits', () => {
+        const el = new DERElement();
+        el.value = new Uint8Array([ 0x03, 0x02 ]);
         expect(() => el.bitString).toThrow();
     });
 
@@ -33,7 +43,7 @@ describe('Basic Encoding Rules', () => {
                     0x03, 0x02, 0x00, 0x0F,
                 0x03, 0x02, 0x05, 0xF0
         ];
-        const element = new BERElement();
+        const element = new DERElement();
         element.fromBytes(data);
         expect(() => element.bitString).toThrow();
     });

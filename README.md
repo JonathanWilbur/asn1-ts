@@ -119,6 +119,12 @@ more detail. -->
 - [x] Organize imports
 - [x] Generic big-endian unsigned integer decoder
 - [x] Generic big-endian signed integer decoder
+- [ ] Test Formatting
+  - [x] Use `value` instead of `fromBytes`
+  - [x] Use `() => {}` syntax
+  - [ ] Use hexadecimal numbers
+  - [x] Use `const`
+  - [x] Use single quotes
 
 ## See Also
 

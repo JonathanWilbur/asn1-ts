@@ -1,4 +1,4 @@
-describe('Basic Encoding Rules Base-10 REAL decoder', () => {
+describe('Distinguished Encoding Rules Base-10 REAL decoder', () => {
 
     // These examples are taken directly from ISO 6093
     it('decodes all valid NR1 expressions correctly', () => {
@@ -79,9 +79,9 @@ describe('Basic Encoding Rules Base-10 REAL decoder', () => {
 });
 
 
-describe('Basic Encoding Rules Base-2 REAL decoder', () => {
+describe('Distinguished Encoding Rules Base-2 REAL decoder', () => {
     it('decodes all valid Base-2 REALs correctly', () => {
-        let el = new BERElement();
+        const el = new DERElement();
         el.value = new Uint8Array([ 0x80, 0xFB, 0x05 ]);
         expect(el.real).toBeCloseTo(0.15625);
     });
