@@ -7,10 +7,10 @@
 // TODO: ITU X.680 S 47.3: "UTCTime ::= [UNIVERSAL 23] IMPLICIT VisibleString"
 // TODO: ITU X.680 S 46.3: "GeneralizedTime ::= [UNIVERSAL 24] IMPLICIT VisibleString"
 // REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
-import * as errors from "../errors";
-import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex, ASN1RealEncodingBase, ASN1RealEncodingScale } from "../values";
-import { X690Element } from "../x690";
 import { ASN1Element } from "../asn1";
+import * as errors from "../errors";
+import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
+import { X690Element } from "../x690";
 
 export
 class BERElement extends X690Element {

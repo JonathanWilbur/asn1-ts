@@ -1,5 +1,6 @@
+import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
-import { ASN1Construction, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
+import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
 import { X690Element } from "../x690";
 
 export
@@ -134,7 +135,60 @@ class DERElement extends X690Element {
             }
             case (0b10000000):
             case (0b11000000): {
-                throw new errors.ASN1NotImplementedError();
+                const sign : number = ((this.value[0] & 0b01000000) ? -1 : 1);
+
+                const base : number = ((flag : number) => {
+                    switch (flag) {
+                        case (ASN1RealEncodingBase.base2):  return 2;
+                        case (ASN1RealEncodingBase.base8):  return 8;
+                        case (ASN1RealEncodingBase.base16): return 16;
+                        default:
+                            throw new errors.ASN1Error("Impossible REAL encoding base encountered.");
+                    }
+                })(this.value[0] & 0b00110000);
+
+                const scale : number = ((flag : number) => {
+                    switch (flag) {
+                        case (ASN1RealEncodingScale.scale0): return 0;
+                        case (ASN1RealEncodingScale.scale1): return 1;
+                        case (ASN1RealEncodingScale.scale2): return 2;
+                        case (ASN1RealEncodingScale.scale3): return 3;
+                        default:
+                            throw new errors.ASN1Error("Impossible REAL encoding scale encountered.");
+                    }
+                })(this.value[0] & 0b00001100);
+
+                let exponent : number;
+                let mantissa : number;
+                switch (this.value[0] & 0b00000011) { // Exponent encoding
+                    case (0b00000000): { // On the following octet
+                        if (this.value.length < 3)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 2));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                        break;
+                    }
+                    case (0b00000001): { // On the following two octets
+                        if (this.value.length < 4)
+                            throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
+                        exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 3));
+                        mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                        if (exponent <= 127 && exponent >= -128)
+                            throw new errors.ASN1Error("DER-encoded binary-encoded REAL could have encoded exponent on fewer octets.");
+                        break;
+                    }
+                    case (0b00000010):   // On the following three octets
+                    case (0b00000011): { // Complicated.
+                        throw new errors.ASN1Error("DER-encoded binary REAL encoded in a way that would either overflow or encode on too many octets.");
+                    }
+                    default:
+                        throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
+                }
+
+                if (mantissa !== 0 && !(mantissa % 2))
+                    throw new errors.ASN1Error("DER-encoded REAL may not have an even non-zero mantissa.");
+
+                return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
         }
     }

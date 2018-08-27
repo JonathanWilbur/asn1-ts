@@ -117,8 +117,8 @@ more detail. -->
 - [x] Refactor shared functionality into an `X690Element` class
 - [x] Update build to `esnext`
 - [x] Organize imports
-- [ ] Generic big-endian unsigned integer decoder
-- [ ] Generic big-endian signed integer decoder
+- [x] Generic big-endian unsigned integer decoder
+- [x] Generic big-endian signed integer decoder
 
 ## See Also
 

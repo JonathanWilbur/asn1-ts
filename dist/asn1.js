@@ -566,16 +566,16 @@ class X690Element extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Buffer) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return BERElement; });
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
-/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
+/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1);
+/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
 
 
 
 
-class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a"] {
-    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
+class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a"] {
+    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
         super();
         this.tagClass = tagClass;
         this.construction = construction;
@@ -587,10 +587,10 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value[0] = (value ? 0xFF : 0x00);
     }
     get boolean() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
         if (this.value.length !== 1)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
         return (this.value[0] !== 0);
     }
     set bitString(value) {
@@ -609,13 +609,13 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = new Uint8Array(pre);
     }
     get bitString() {
-        if (this.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive) {
+        if (this.construction === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive) {
             if (this.value.length === 0)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
             if (this.value.length === 1 && this.value[0] !== 0)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
             if (this.value[0] > 7)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
             let ret = [];
             for (let i = 1; i < this.value.length; i++) {
                 ret = ret.concat([
@@ -634,20 +634,20 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1RecursionError */ "g"]();
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RecursionError */ "g"]();
             let appendy = [];
             const substrings = this.sequence;
             substrings.slice(0, (substrings.length - 1)).forEach(substring => {
-                if (substring.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
+                if (substring.construction === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive &&
                     substring.value.length > 0 &&
                     substring.value[0] !== 0x00)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"](`Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.`);
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"](`Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.`);
             });
             substrings.forEach(substring => {
                 if (substring.tagClass !== this.tagClass)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
                 if (substring.tagNumber !== this.tagNumber)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded BIT STRING.`);
                 substring.recursionCount = (this.recursionCount + 1);
                 appendy = appendy.concat(substring.bitString);
             });
@@ -672,19 +672,19 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             return;
         }
         else if (isNaN(value)) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].notANumber]);
             return;
         }
         else if (value === -0.0) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusZero]);
             return;
         }
         else if (value === Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
             return;
         }
         else if (value === -Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
             return;
         }
         let valueString = value.toFixed(7);
@@ -692,21 +692,21 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = (new TextEncoder()).encode(valueString);
     }
     get real() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
         if (this.value.length === 0)
             return 0.0;
         switch (this.value[0] & 0b11000000) {
             case (0b01000000): {
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].notANumber)
                     return NaN;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusZero)
                     return -0.0;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
                     return Infinity;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
                     return -Infinity;
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
             }
             case (0b00000000): {
                 let realString;
@@ -718,22 +718,22 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 }
                 switch (this.value[0] & 0b00111111) {
                     case 1: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr1Regex */ "q"].test(realString))
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR1 Base-10 REAL");
+                        if (!_values__WEBPACK_IMPORTED_MODULE_2__[/* nr1Regex */ "q"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR1 Base-10 REAL");
                         return parseFloat(realString);
                     }
                     case 2: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr2Regex */ "r"].test(realString))
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR2 Base-10 REAL");
+                        if (!_values__WEBPACK_IMPORTED_MODULE_2__[/* nr2Regex */ "r"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR2 Base-10 REAL");
                         return parseFloat(realString.replace(",", "."));
                     }
                     case 3: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr3Regex */ "s"].test(realString))
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
+                        if (!_values__WEBPACK_IMPORTED_MODULE_2__[/* nr3Regex */ "s"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
                         return parseFloat(realString.replace(",", "."));
                     }
                     default:
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
                 }
             }
             case (0b10000000):
@@ -741,21 +741,21 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 const sign = ((this.value[0] & 0b01000000) ? -1 : 1);
                 const base = ((flag) => {
                     switch (flag) {
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base2): return 2;
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base8): return 8;
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingBase */ "b"].base16): return 16;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base8): return 8;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base16): return 16;
                         default:
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible REAL encoding base encountered.");
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible REAL encoding base encountered.");
                     }
                 })(this.value[0] & 0b00110000);
                 const scale = ((flag) => {
                     switch (flag) {
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale0): return 0;
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale1): return 1;
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale2): return 2;
-                        case (_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RealEncodingScale */ "c"].scale3): return 3;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale0): return 0;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale1): return 1;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale3): return 3;
                         default:
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible REAL encoding scale encountered.");
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible REAL encoding scale encountered.");
                     }
                 })(this.value[0] & 0b00001100);
                 let exponent;
@@ -763,37 +763,37 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 switch (this.value[0] & 0b00000011) {
                     case (0b00000000): {
                         if (this.value.length < 3)
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
-                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 2));
-                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 2));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(2));
                         break;
                     }
                     case (0b00000001): {
                         if (this.value.length < 4)
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
-                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 3));
-                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 3));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(3));
                         break;
                     }
                     case (0b00000010): {
                         if (this.value.length < 5)
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
-                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 4));
-                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(4));
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 4));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(4));
                         break;
                     }
                     case (0b00000011): {
                         if (this.value.length < 3)
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
                         let exponentLength = this.value[1];
                         if (this.value.length < (3 + exponentLength))
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
-                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
-                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_3__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
                         break;
                     }
                     default:
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Impossible binary REAL exponent encoding encountered.");
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible binary REAL exponent encoding encountered.");
                 }
                 return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
@@ -834,11 +834,11 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             currentIndex += element.length;
         });
         this.value = newValue;
-        this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed;
+        this.construction = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed;
     }
     get sequence() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
         let encodedElements = [];
         if (this.value.length === 0)
             return [];
@@ -860,7 +860,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < value.length; i++) {
             const characterCode = value.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -882,15 +882,15 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
             }
         }
         return ret;
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"]}`);
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -910,8 +910,8 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"]}`);
             }
         }
         return ret;
@@ -972,9 +972,9 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* utcTimeRegex */ "u"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_2__[/* utcTimeRegex */ "u"].exec(dateString);
         if (match === null)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         const ret = new Date();
         let year = Number(match.groups.year);
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -1016,9 +1016,9 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* generalizedTimeRegex */ "p"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_2__[/* generalizedTimeRegex */ "p"].exec(dateString);
         if (match === null)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         const ret = new Date();
         const year = Number(match.groups.year);
         const month = (Number(match.groups.month) - 1);
@@ -1039,7 +1039,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < value.length; i++) {
             const characterCode = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
                     "can only contain characters between 0x20 and 0x7E.");
         }
         if (typeof TextEncoder !== "undefined") {
@@ -1061,7 +1061,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
                     "can only contain characters between 0x20 and 0x7E.");
             }
         }
@@ -1076,7 +1076,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     set generalString(value) {
         for (let i = 0; i < value.length; i++) {
             if (value.charCodeAt(i) > 0x7F)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
         }
         if (typeof TextEncoder !== "undefined") {
             this.value = (new TextEncoder()).encode(value);
@@ -1096,7 +1096,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         for (let i = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
         }
         return ret;
     }
@@ -1113,7 +1113,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     get universalString() {
         const valueBytes = this.deconstruct("UniversalString");
         if (valueBytes.length % 4)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
         let ret = "";
         for (let i = 0; i < valueBytes.length; i += 4) {
             ret += String.fromCharCode((valueBytes[i + 0] << 24) +
@@ -1134,7 +1134,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     get bmpString() {
         const valueBytes = this.deconstruct("BMPString");
         if (valueBytes.length % 2)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
@@ -1151,32 +1151,32 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     }
     fromBytes(bytes) {
         if (bytes.length < 2)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Tried to decode a BER element that is less than two bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Tried to decode a BER element that is less than two bytes.");
         if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1RecursionError */ "g"]();
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RecursionError */ "g"]();
         let cursor = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal;
                 break;
             case (0b01000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].application;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].application;
                 break;
             case (0b10000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].context;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].context;
                 break;
             case (0b11000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].private;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].private;
                 break;
-            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal;
         }
         this.construction = ((bytes[cursor] & 0b00100000) ?
-            _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive);
+            _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive);
         this.tagNumber = (bytes[cursor] & 0b00011111);
         cursor++;
         if (this.tagNumber >= 31) {
             if (bytes[cursor] === 0b10000000)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1PaddingError */ "f"]("Leading padding byte on long tag number encoding.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("Leading padding byte on long tag number encoding.");
             this.tagNumber = 0;
             const limit = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
             while (cursor < limit) {
@@ -1185,27 +1185,27 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             }
             if (bytes[cursor - 1] & 0b10000000) {
                 if (limit === bytes.length - 1) {
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 tag number appears to have been truncated.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 tag number appears to have been truncated.");
                 }
                 else
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 tag number too large.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("ASN.1 tag number too large.");
             }
             for (let i = 1; i < cursor; i++) {
                 this.tagNumber <<= 7;
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
             if (this.tagNumber <= 31)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
         }
         if ((bytes[cursor] & 0b10000000) === 0b10000000) {
             const numberOfLengthOctets = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets) {
                 if (numberOfLengthOctets === 0b01111111)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Length byte with undefined meaning encountered.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Length byte with undefined meaning encountered.");
                 if (numberOfLengthOctets > 4)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("Element length too long to decode to an integer.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("Element length too long to decode to an integer.");
                 if (cursor + numberOfLengthOctets >= bytes.length)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Element length bytes appear to have been truncated.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Element length bytes appear to have been truncated.");
                 cursor++;
                 const lengthNumberOctets = new Uint8Array(4);
                 for (let i = numberOfLengthOctets; i > 0; i--) {
@@ -1217,30 +1217,30 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                     length += octet;
                 });
                 if ((cursor + length) < cursor)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 element too large.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("ASN.1 element too large.");
                 cursor += (numberOfLengthOctets);
                 if ((cursor + length) > bytes.length)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
             }
             else {
-                if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("Indefinite length ASN.1 element was not of constructed construction.");
+                if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed)
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("Indefinite length ASN.1 element was not of constructed construction.");
                 const startOfValue = ++cursor;
                 let sentinel = cursor;
                 while (sentinel < bytes.length) {
                     const child = new BERElement();
                     child.recursionCount = (this.recursionCount + 1);
                     sentinel += child.fromBytes(bytes.slice(sentinel));
-                    if (child.tagClass === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal &&
-                        child.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive &&
-                        child.tagNumber === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UniversalType */ "f"].endOfContent &&
+                    if (child.tagClass === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal &&
+                        child.construction === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive &&
+                        child.tagNumber === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1UniversalType */ "f"].endOfContent &&
                         child.value.length === 0)
                         break;
                 }
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00))
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("No END OF CONTENT element found at the end of indefinite length ASN.1 element.");
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
                 return sentinel;
             }
@@ -1248,7 +1248,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else {
             const length = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element was truncated.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 element was truncated.");
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }
@@ -1274,7 +1274,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         let lengthOctets = [0x00];
         switch (BERElement.lengthEncodingPreference) {
-            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].definite): {
+            case (_values__WEBPACK_IMPORTED_MODULE_2__[/* LengthEncodingPreference */ "g"].definite): {
                 if (this.value.length < 127) {
                     lengthOctets = [this.value.length];
                 }
@@ -1294,36 +1294,36 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 }
                 break;
             }
-            case (_values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].indefinite): {
+            case (_values__WEBPACK_IMPORTED_MODULE_2__[/* LengthEncodingPreference */ "g"].indefinite): {
                 lengthOctets = [0b10000000];
                 break;
             }
             default:
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Invalid LengthEncodingPreference encountered!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Invalid LengthEncodingPreference encountered!");
         }
         const ret = new Uint8Array(tagBytes.length +
             lengthOctets.length +
             this.value.length +
-            (BERElement.lengthEncodingPreference === _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].indefinite ? 2 : 0));
+            (BERElement.lengthEncodingPreference === _values__WEBPACK_IMPORTED_MODULE_2__[/* LengthEncodingPreference */ "g"].indefinite ? 2 : 0));
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
     }
     deconstruct(dataType) {
-        if (this.construction === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive) {
+        if (this.construction === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive) {
             return this.value.subarray(0);
         }
         else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1RecursionError */ "g"]();
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RecursionError */ "g"]();
             let appendy = [];
             const substrings = this.sequence;
             substrings.forEach(substring => {
                 if (substring.tagClass !== this.tagClass)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
                 if (substring.tagNumber !== this.tagNumber)
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"](`Invalid tag class in recursively-encoded ${dataType}.`);
                 substring.recursionCount = (this.recursionCount + 1);
                 appendy = appendy.concat(substring.deconstruct(dataType));
             });
@@ -1341,7 +1341,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
 }
-BERElement.lengthEncodingPreference = _values__WEBPACK_IMPORTED_MODULE_1__[/* LengthEncodingPreference */ "g"].definite;
+BERElement.lengthEncodingPreference = _values__WEBPACK_IMPORTED_MODULE_2__[/* LengthEncodingPreference */ "g"].definite;
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6).Buffer))
 
@@ -3148,24 +3148,26 @@ function isnan (val) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Buffer) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DERElement; });
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
+/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1);
+/* harmony import */ var _x690__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
 
 
 
-class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a"] {
+
+class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a"] {
     set boolean(value) {
         this.value = new Uint8Array(1);
         this.value[0] = (value ? 0xFF : 0x00);
     }
     get boolean() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("BOOLEAN cannot be constructed.");
         if (this.value.length !== 1)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SizeError */ "h"]("BOOLEAN not one byte");
         if ((this.value[0] !== 0x00) && (this.value[0] !== 0xFF))
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BOOLEAN must be encoded as 0xFF or 0x00.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("BOOLEAN must be encoded as 0xFF or 0x00.");
         return (this.value[0] !== 0);
     }
     set bitString(value) {
@@ -3184,14 +3186,14 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = new Uint8Array(pre);
     }
     get bitString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BIT STRING cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("BIT STRING cannot be constructed.");
         if (this.value.length === 0)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 BIT STRING cannot be encoded on zero bytes!");
         if (this.value.length === 1 && this.value[0] !== 0)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 BIT STRING encoded with deceptive first byte!");
         if (this.value[0] > 7)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("First byte of an ASN.1 BIT STRING must be <= 7!");
         let ret = [];
         for (let i = 1; i < this.value.length; i++) {
             ret = ret.concat([
@@ -3207,7 +3209,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         ret.slice((ret.length - this.value[0])).forEach(bit => {
             if (bit)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BIT STRING had a trailing set bit.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("BIT STRING had a trailing set bit.");
         });
         ret.length -= this.value[0];
         return ret;
@@ -3216,8 +3218,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = value.subarray(0);
     }
     get octetString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("OCTET STRING cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("OCTET STRING cannot be constructed.");
         return this.value.subarray(0);
     }
     set objectDescriptor(value) {
@@ -3232,19 +3234,19 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             return;
         }
         else if (isNaN(value)) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].notANumber]);
             return;
         }
         else if (value === -0.0) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusZero]);
             return;
         }
         else if (value === Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].plusInfinity]);
             return;
         }
         else if (value === -Infinity) {
-            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
+            this.value = new Uint8Array([_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusInfinity]);
             return;
         }
         let valueString = value.toFixed(7);
@@ -3252,21 +3254,21 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = (new TextEncoder()).encode(valueString);
     }
     get real() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("REAL cannot be constructed.");
         if (this.value.length === 0)
             return 0.0;
         switch (this.value[0] & 0b11000000) {
             case (0b01000000): {
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].notANumber)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].notANumber)
                     return NaN;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusZero)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusZero)
                     return -0.0;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].plusInfinity)
                     return Infinity;
-                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
+                if (this.value[0] === _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1SpecialRealValue */ "d"].minusInfinity)
                     return -Infinity;
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Unrecognized special REAL value!");
             }
             case (0b00000000): {
                 let realString;
@@ -3279,19 +3281,67 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 switch (this.value[0] & 0b00111111) {
                     case 1:
                     case 2:
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("DER prohibits NR1 and NR2 Base-10 REAL");
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("DER prohibits NR1 and NR2 Base-10 REAL");
                     case 3: {
-                        if (!_values__WEBPACK_IMPORTED_MODULE_1__[/* nr3Regex */ "s"].test(realString))
-                            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
+                        if (!_values__WEBPACK_IMPORTED_MODULE_2__[/* nr3Regex */ "s"].test(realString))
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed NR3 Base-10 REAL");
                         return parseFloat(realString.replace(",", "."));
                     }
                     default:
-                        throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Undefined Base-10 REAL encoding.");
                 }
             }
             case (0b10000000):
             case (0b11000000): {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1NotImplementedError */ "d"]();
+                const sign = ((this.value[0] & 0b01000000) ? -1 : 1);
+                const base = ((flag) => {
+                    switch (flag) {
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base8): return 8;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingBase */ "b"].base16): return 16;
+                        default:
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible REAL encoding base encountered.");
+                    }
+                })(this.value[0] & 0b00110000);
+                const scale = ((flag) => {
+                    switch (flag) {
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale0): return 0;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale1): return 1;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale2): return 2;
+                        case (_values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1RealEncodingScale */ "c"].scale3): return 3;
+                        default:
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible REAL encoding scale encountered.");
+                    }
+                })(this.value[0] & 0b00001100);
+                let exponent;
+                let mantissa;
+                switch (this.value[0] & 0b00000011) {
+                    case (0b00000000): {
+                        if (this.value.length < 3)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 2));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(2));
+                        break;
+                    }
+                    case (0b00000001): {
+                        if (this.value.length < 4)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Binary-encoded REAL truncated.");
+                        exponent = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeSignedBigEndianInteger(this.value.subarray(1, 3));
+                        mantissa = _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"].decodeUnsignedBigEndianInteger(this.value.subarray(3));
+                        if (exponent <= 127 && exponent >= -128)
+                            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("DER-encoded binary-encoded REAL could have encoded exponent on fewer octets.");
+                        break;
+                    }
+                    case (0b00000010):
+                    case (0b00000011): {
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("DER-encoded binary REAL encoded in a way that would either overflow or encode on too many octets.");
+                    }
+                    default:
+                        throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Impossible binary REAL exponent encoding encountered.");
+                }
+                if (mantissa !== 0 && !(mantissa % 2))
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("DER-encoded REAL may not have an even non-zero mantissa.");
+                return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
         }
     }
@@ -3304,8 +3354,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get utf8String() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UTF8String cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("UTF8String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3331,11 +3381,11 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             currentIndex += element.length;
         });
         this.value = newValue;
-        this.construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed;
+        this.construction = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed;
     }
     get sequence() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("SET or SEQUENCE cannot be primitively constructed.");
         let encodedElements = [];
         if (this.value.length === 0)
             return [];
@@ -3357,7 +3407,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < value.length; i++) {
             const characterCode = value.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -3368,8 +3418,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get numericString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("NumericString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("NumericString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3380,15 +3430,15 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("NumericString can only contain characters 0 - 9 and space.");
             }
         }
         return ret;
     }
     set printableString(value) {
         for (let i = 0; i < value.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"].indexOf(value.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"]}`);
             }
         }
         if (typeof TextEncoder !== "undefined") {
@@ -3399,8 +3449,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get printableString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("PrintableString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("PrintableString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3409,8 +3459,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             ret = (new Buffer(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
-            if (_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_1__[/* printableStringCharacters */ "t"]}`);
+            if (_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"].indexOf(ret.charAt(i)) === -1) {
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"](`PrintableString can only contain these characters: ${_values__WEBPACK_IMPORTED_MODULE_2__[/* printableStringCharacters */ "t"]}`);
             }
         }
         return ret;
@@ -3436,8 +3486,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get ia5String() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("IA5String cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("IA5String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3464,8 +3514,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get utcTime() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UTCTime cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("UTCTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3473,9 +3523,9 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* utcTimeRegex */ "u"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_2__[/* utcTimeRegex */ "u"].exec(dateString);
         if (match === null)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed UTCTime string.");
         const ret = new Date();
         let year = Number(match.groups.year);
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -3509,8 +3559,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get generalizedTime() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GeneralizedTime cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GeneralizedTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
             dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3518,9 +3568,9 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match = _values__WEBPACK_IMPORTED_MODULE_1__[/* generalizedTimeRegex */ "p"].exec(dateString);
+        const match = _values__WEBPACK_IMPORTED_MODULE_2__[/* generalizedTimeRegex */ "p"].exec(dateString);
         if (match === null)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("Malformed GeneralizedTime string.");
         const ret = new Date();
         const year = Number(match.groups.year);
         const month = (Number(match.groups.month) - 1);
@@ -3541,7 +3591,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < value.length; i++) {
             const characterCode = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
                     "can only contain characters between 0x20 and 0x7E.");
         }
         if (typeof TextEncoder !== "undefined") {
@@ -3552,8 +3602,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get graphicString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GraphicString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GraphicString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
@@ -3564,7 +3614,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GraphicString, VisibleString, or ObjectDescriptor " +
                     "can only contain characters between 0x20 and 0x7E.");
             }
         }
@@ -3579,7 +3629,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     set generalString(value) {
         for (let i = 0; i < value.length; i++) {
             if (value.charCodeAt(i) > 0x7F)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
         }
         if (typeof TextEncoder !== "undefined") {
             this.value = (new TextEncoder()).encode(value);
@@ -3589,8 +3639,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
     }
     get generalString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("GeneralString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GeneralString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("windows-1252")).decode(this.value.subarray(0).buffer);
@@ -3600,7 +3650,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         for (let i = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1CharactersError */ "a"]("GeneralString can only contain ASCII characters.");
         }
         return ret;
     }
@@ -3615,10 +3665,10 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = buf;
     }
     get universalString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("UniversalString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("UniversalString cannot be constructed.");
         if (this.value.length % 4)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("UniversalString encoded on non-mulitple of four bytes.");
         let ret = "";
         for (let i = 0; i < this.value.length; i += 4) {
             ret += String.fromCharCode((this.value[i + 0] << 24) +
@@ -3637,10 +3687,10 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         this.value = buf;
     }
     get bmpString() {
-        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1ConstructionError */ "b"]("BMPString cannot be constructed.");
+        if (this.construction !== _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive)
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("BMPString cannot be constructed.");
         if (this.value.length % 2)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
             ret = (new TextDecoder("utf-16be")).decode(this.value.subarray(0).buffer);
@@ -3655,7 +3705,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
         }
         return ret;
     }
-    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
+    constructor(tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal, construction = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive, tagNumber = 0) {
         super();
         this.tagClass = tagClass;
         this.construction = construction;
@@ -3664,32 +3714,32 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
     }
     fromBytes(bytes) {
         if (bytes.length < 2)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Tried to decode a DER element that is less than two bytes.");
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Tried to decode a DER element that is less than two bytes.");
         if ((this.recursionCount + 1) > DERElement.nestingRecursionLimit)
-            throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1RecursionError */ "g"]();
+            throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1RecursionError */ "g"]();
         let cursor = 0;
         switch (bytes[cursor] & 0b11000000) {
             case (0b00000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal;
                 break;
             case (0b01000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].application;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].application;
                 break;
             case (0b10000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].context;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].context;
                 break;
             case (0b11000000):
-                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].private;
+                this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].private;
                 break;
-            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TagClass */ "e"].universal;
+            default: this.tagClass = _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1TagClass */ "e"].universal;
         }
         this.construction = ((bytes[cursor] & 0b00100000) ?
-            _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Construction */ "a"].primitive);
+            _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].constructed : _values__WEBPACK_IMPORTED_MODULE_2__[/* ASN1Construction */ "a"].primitive);
         this.tagNumber = (bytes[cursor] & 0b00011111);
         cursor++;
         if (this.tagNumber >= 31) {
             if (bytes[cursor] === 0b10000000)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1PaddingError */ "f"]("Leading padding byte on long tag number encoding.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("Leading padding byte on long tag number encoding.");
             this.tagNumber = 0;
             const limit = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
             while (cursor < limit) {
@@ -3698,26 +3748,26 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
             }
             if (bytes[cursor - 1] & 0b10000000) {
                 if (limit === bytes.length - 1) {
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 tag number appears to have been truncated.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 tag number appears to have been truncated.");
                 }
                 else
-                    throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 tag number too large.");
+                    throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("ASN.1 tag number too large.");
             }
             for (let i = 1; i < cursor; i++) {
                 this.tagNumber <<= 7;
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
             if (this.tagNumber <= 31)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("ASN.1 tag number could have been encoded in short form.");
         }
         if ((bytes[cursor] & 0b10000000) === 0b10000000) {
             const numberOfLengthOctets = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets === 0b01111111)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1UndefinedError */ "j"]("Length byte with undefined meaning encountered.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1UndefinedError */ "j"]("Length byte with undefined meaning encountered.");
             if (numberOfLengthOctets > 4)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("Element length too long to decode to an integer.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("Element length too long to decode to an integer.");
             if (cursor + numberOfLengthOctets >= bytes.length)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("Element length bytes appear to have been truncated.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("Element length bytes appear to have been truncated.");
             cursor++;
             const lengthNumberOctets = new Uint8Array(4);
             for (let i = numberOfLengthOctets; i > 0; i--) {
@@ -3729,17 +3779,17 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_2__[/* X690Element */ "a
                 length += octet;
             });
             if ((cursor + length) < cursor)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1OverflowError */ "e"]("ASN.1 element too large.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"]("ASN.1 element too large.");
             cursor += (numberOfLengthOctets);
             if ((cursor + length) > bytes.length)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }
         else {
             const length = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length)
-                throw new _errors__WEBPACK_IMPORTED_MODULE_0__[/* ASN1TruncationError */ "i"]("ASN.1 element was truncated.");
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 element was truncated.");
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }
