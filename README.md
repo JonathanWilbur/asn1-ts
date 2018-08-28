@@ -12,6 +12,10 @@ This library was based off of my [D ASN.1 Library](https://github.com/JonathanWi
 so please forgive me if there are mistakes in the documentation that refer to
 D files or D concepts.
 
+Requires [NodeJS](https://nodejs.org/en/) v10.3.0 or higher, mostly to support
+[Regular Expression Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups).
+See [this page](https://node.green/) for NodeJS ES2018 support.
+
 ## What is ASN.1?
 
 ASN.1 stands for *Abstract Syntax Notation*. ASN.1 was first specified in

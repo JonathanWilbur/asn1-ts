@@ -19,16 +19,17 @@
   "author": "Jonathan M. Wilbur",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^10.7.1",
+    "@types/node": "^10.9.2",
+    "jasmine": "^3.2.0",
     "jasmine-core": "^3.2.1",
     "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
     "karma-safari-launcher": "^1.0.0",
-    "ts-loader": "^4.4.2",
+    "ts-loader": "^4.5.0",
     "typescript": "^3.0.0",
-    "webpack": "^4.16.5",
+    "webpack": "^4.17.1",
     "webpack-cli": "^2.1.5"
   }
 }
