@@ -5,6 +5,12 @@
  */
 describe('Distinguished Encoding Rules', () => {
 
+    it('throws an exception when decoding a length that could have been encoded on fewer octets', () => {
+        const el = new DERElement();
+        const data = new Uint8Array([ 0x05, 0x83, 0x00, 0x00, 0x01, 0xFF ]);
+        expect(() => el.fromBytes(data)).toThrow();
+    });
+
     it('throws an exception when decoding a multi-byte BOOLEAN', () => {
         const el = new DERElement();
         el.value = new Uint8Array([ 0x01, 0x01 ]);

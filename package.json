@@ -1,8 +1,8 @@
 {
   "name": "asn1-ts",
-  "version": "0.12.3",
+  "version": "1.0.0-beta",
   "description": "ASN.1 encoding and decoding",
-  "main": "index.js",
+  "main": "./dist/asn1.js",
   "directories": {
     "test": "test"
   },
@@ -18,8 +18,9 @@
   ],
   "author": "Jonathan M. Wilbur",
   "license": "MIT",
+  "types": "./dist/types/index.d.ts",
   "devDependencies": {
-    "@types/node": "^10.9.2",
+    "@types/node": "^10.9.3",
     "jasmine": "^3.2.0",
     "jasmine-core": "^3.2.1",
     "karma": "^3.0.0",

@@ -6,7 +6,9 @@
 
 ## Procedure
 
-- Make the constructor first
+- Make static methods to parse base-128 unsigned integers (For the tag number)
+- Make static methods to decode both signed and unsigned big-endian integers
+- Make the constructor
 - `BOOLEAN`
   - Implement this before `SEQUENCE` or `SET` so you have one data type to
     test with.

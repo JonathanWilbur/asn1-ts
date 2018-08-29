@@ -6,7 +6,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "../../dist"),
         filename: "ber.js",
-        library: "ber",
+        library: "asn1",
         libraryTarget: "var"
     },
     resolve: {
@@ -22,7 +22,7 @@ module.exports = {
         ]
     },
     optimization: {
-        minimize: false
+        minimize: true
     },
     target: "web"
 };

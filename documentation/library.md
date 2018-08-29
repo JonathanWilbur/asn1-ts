@@ -5,18 +5,14 @@
 * This library uses the term "element" to refer to a datum encoded using one of the ASN.1 codecs.
 * This library uses the term "mantissa" instead of "significand," because "mantissa" is what's used in the specification.
 
-## Floating Point
-
-This library expects that the target system uses IEEE 754 floating-point formats.
-
 ## Structure
 
-This library begins with `source/asn1/codec.d`, whose flagship item is `ASN1Element`,
+This library begins with `source/asn1.ts`, whose flagship item is `ASN1Element`,
 the abstract class from which all other codecs must inherit. An `ASN1Element`
 represents a single encoded value (although it could be a single `SEQUENCE`
 or `SET`). In the `source/asn1/codecs` directory, you will find all of the codecs that
 inherit from `ASN1Element`. The `BERElement` class, for instance, can be found in
-`ber.d`, and it represents a ASN.1 value, encoded via the Basic Encoding Rules
+`ber.ts`, and it represents a ASN.1 value, encoded via the Basic Encoding Rules
 (BER) specified in the
 [International Telecommunications Union](https://www.itu.int/en/pages/default.aspx)'s
 [X.690 - ASN.1 encoding rules](https://www.itu.int/rec/T-REC-X.690/en).

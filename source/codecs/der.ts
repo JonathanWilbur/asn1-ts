@@ -1,6 +1,6 @@
 import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
-import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
+import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex, MAX_SINT_32, MIN_SINT_32 } from "../values";
 import { X690Element } from "../x690";
 
 export
@@ -689,6 +689,15 @@ class DERElement extends X690Element {
             cursor += (numberOfLengthOctets);
             if ((cursor + length) > bytes.length)
                 throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+
+            if (
+                ((length <= 127 && length >= -128) && numberOfLengthOctets > 1) ||
+                ((length <= 32767 && length >= -32768) && numberOfLengthOctets > 2) ||
+                ((length <= 8388607 && length >= -8388608) && numberOfLengthOctets > 3)
+            )
+                throw new errors.ASN1PaddingError
+                ("DER-encoded long-form length encoded on more octets than necessary");
+
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         } else { // Definite Short

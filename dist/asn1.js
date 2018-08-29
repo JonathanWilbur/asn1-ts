@@ -3783,6 +3783,10 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             cursor += (numberOfLengthOctets);
             if ((cursor + length) > bytes.length)
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1TruncationError */ "i"]("ASN.1 element truncated.");
+            if (((length <= 127 && length >= -128) && numberOfLengthOctets > 1) ||
+                ((length <= 32767 && length >= -32768) && numberOfLengthOctets > 2) ||
+                ((length <= 8388607 && length >= -8388608) && numberOfLengthOctets > 3))
+                throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1PaddingError */ "f"]("DER-encoded long-form length encoded on more octets than necessary");
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }

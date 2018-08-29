@@ -5,12 +5,7 @@
 * License: [MIT License](https://mit-license.org/)
 * Version: _See `version` file or git tags._
 
-**Version 1.0.0 has not been released yet, meaning that I, as the maker of this
-library, strongly advise against using this in anything production-facing.**
-
-This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d),
-so please forgive me if there are mistakes in the documentation that refer to
-D files or D concepts.
+This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d).
 
 Requires [NodeJS](https://nodejs.org/en/) v10.3.0 or higher, mostly to support
 [Regular Expression Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups).
@@ -89,46 +84,6 @@ let el2 : BERElement = new BERElement();
 el2.fromBytes(encodedData);
 console.log(el2.integer); // Logs '1433'
 ```
-
-<!-- For more information on usage of the library, see `documentation/library.md`,
-`documentation/security.md`, `documentation/concurrency.md`. After that, see
-the compiler-generated HTML documentation in `documentation/html` for even
-more detail. -->
-
-## Development Roadmap
-
-- [x] Fix infinite recursion vulnerabilities
-- [ ] Implement a Distinguished Encoding Rules Codec
-  - [ ] Ensure length is encoded on minimum number of octets
-  - [ ] Add tests
-- [ ] Build all codecs separately
-- [x] Support binary `REAL` decoding
-- [x] Make each codec inherit from `ASN1Element`
-- [x] Use longer names with aliases
-- [x] Improve the system of exceptions
-- [x] Make concurrency possible by making the `recursionCount`s non-static.
-- [x] More time type testing
-- [x] Deduplicate `OBJECT IDENTIFIER` and `RELATIVE OID` code
-- [x] Deduplicate `SET` and `SEQUENCE` and `deconstruct` code
-- [x] More aggressive time type validation
-- [x] Check that accessors do not mutate state
-- [x] Make sure that long-encoded tag numbers cannot encode numbers smaller than 31.
-- [x] Add more construction restrictions
-- [x] More `REAL` checks
-- [x] Change Time type validation for `BERElement`
-- [x] Fix `BIT STRING` decoding
-- [x] Test `BIT STRING` `0x00`
-- [x] Refactor shared functionality into an `X690Element` class
-- [x] Update build to `esnext`
-- [x] Organize imports
-- [x] Generic big-endian unsigned integer decoder
-- [x] Generic big-endian signed integer decoder
-- [ ] Test Formatting
-  - [x] Use `value` instead of `fromBytes`
-  - [x] Use `() => {}` syntax
-  - [ ] Use hexadecimal numbers
-  - [x] Use `const`
-  - [x] Use single quotes
 
 ## See Also
 
