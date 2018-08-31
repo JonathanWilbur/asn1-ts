@@ -1,26 +1,18 @@
 {
-  "name": "asn1-ts",
-  "version": "1.0.0-beta",
-  "description": "ASN.1 encoding and decoding",
-  "main": "./dist/asn1.js",
-  "directories": {
-    "test": "test"
+  "bugs": {
+    "email": "jonathan@wilbur.space",
+    "url": "https://github.com/JonathanWilbur/asn1-ts/issues"
   },
-  "scripts": {
-    "test": "karma run",
-    "build": "webpack"
-  },
-  "keywords": [
-    "ASN1",
-    "ASN.1",
-    "BER",
-    "DER"
+  "contributors": [
+    {
+      "email": "jonathan@wilbur.space",
+      "name": "Jonathan M. Wilbur",
+      "url": "https://jonathan.wilbur.space/"
+    }
   ],
-  "author": "Jonathan M. Wilbur",
-  "license": "MIT",
-  "types": "./dist/types/index.d.ts",
+  "description": "ASN.1 encoding and decoding",
   "devDependencies": {
-    "@types/node": "^10.9.3",
+    "@types/node": "^10.9.4",
     "jasmine": "^3.2.0",
     "jasmine-core": "^3.2.1",
     "karma": "^3.0.0",
@@ -29,8 +21,35 @@
     "karma-jasmine": "^1.1.2",
     "karma-safari-launcher": "^1.0.0",
     "ts-loader": "^4.5.0",
-    "typescript": "^3.0.0",
+    "typescript": "^3.0.3",
     "webpack": "^4.17.1",
     "webpack-cli": "^2.1.5"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=10.3.0"
+  },
+  "homepage": "https://github.com/JonathanWilbur/asn1-ts",
+  "keywords": [
+    "ASN1",
+    "ASN.1",
+    "BER",
+    "DER"
+  ],
+  "license": "MIT",
+  "main": "./dist/node/asn1.js",
+  "name": "asn1-ts",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JonathanWilbur/asn1-ts.git"
+  },
+  "scripts": {
+    "build": "make -f build/Makefile",
+    "test": "karma run"
+  },
+  "types": "./dist/types/index.d.ts",
+  "version": "1.0.0"
 }

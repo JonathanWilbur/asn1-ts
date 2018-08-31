@@ -1,14 +1,27 @@
 {
     "compilerOptions": {
+        "allowJs": false,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
         "module": "ESNext",
-        "target": "ESNext",
-        "outDir": "./dist",
-        "declaration": true,
-        "declarationDir": "types",
+        "newLine": "LF",
+        "noEmitOnError": true,
         "noImplicitAny": true,
-        "removeComments": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "./dist",
         "preserveConstEnums": true,
-        "sourceMap": false
+        "removeComments": true,
+        "sourceMap": false,
+        "strict": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "target": "ESNext"
     },
     "include": [
         "./source/*.ts",

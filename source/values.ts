@@ -4,7 +4,7 @@ export const MAX_SINT_32 : number = 0x7FFFFFFF;
 export const MIN_SINT_32 : number = -0x80000000;
 
 export
-enum ASN1TagClass {
+const enum ASN1TagClass {
     universal = 0,
     application = 1,
     context = 3,
@@ -12,20 +12,19 @@ enum ASN1TagClass {
 }
 
 export
-enum ASN1Construction {
+const enum ASN1Construction {
     primitive = 0,
     constructed = 1
 }
 
 export
-enum LengthEncodingPreference {
+const enum LengthEncodingPreference {
     definite,
     indefinite
 }
 
 export
-enum ASN1SpecialRealValue
-{
+const enum ASN1SpecialRealValue {
     plusInfinity = 0b01000000,
     minusInfinity = 0b01000001,
     notANumber = 0b01000010,
@@ -33,16 +32,14 @@ enum ASN1SpecialRealValue
 }
 
 export
-enum ASN1RealEncodingBase
-{
+const enum ASN1RealEncodingBase {
     base2 =  0b00000000,
     base8 =  0b00010000,
     base16 = 0b00100000
 }
 
 export
-enum ASN1RealEncodingScale
-{
+const enum ASN1RealEncodingScale {
     scale0 = 0b00000000,
     scale1 = 0b00000100,
     scale2 = 0b00001000,
@@ -50,8 +47,7 @@ enum ASN1RealEncodingScale
 }
 
 export
-enum ASN1UniversalType
-{
+const enum ASN1UniversalType {
     endOfContent = 0x00,
     boolean = 0x01,
     integer = 0x02,

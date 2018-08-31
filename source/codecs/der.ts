@@ -1,6 +1,6 @@
 import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
-import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex, MAX_SINT_32, MIN_SINT_32 } from "../values";
+import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, generalizedTimeRegex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";
 import { X690Element } from "../x690";
 
 export
@@ -119,6 +119,8 @@ class DERElement extends X690Element {
                     realString = (new TextDecoder("utf-8")).decode(this.value.slice(1));
                 } else if (typeof Buffer !== "undefined") { // NodeJS
                     realString = (new Buffer(this.value.slice(1))).toString("utf-8");
+                } else {
+                    throw new errors.ASN1Error("No ability to decode bytes to string!");
                 }
                 switch (this.value[0] & 0b00111111) {
                     case 1: // NR1
@@ -190,6 +192,8 @@ class DERElement extends X690Element {
 
                 return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
             }
+            default:
+                throw new errors.ASN1Error("Impossible REAL format encountered.");
         }
     }
 
@@ -383,8 +387,9 @@ class DERElement extends X690Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match : RegExpExecArray = utcTimeRegex.exec(dateString);
+        const match : RegExpExecArray | null = utcTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
+        if (match.groups === undefined) throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret : Date = new Date();
         let year : number = Number(match.groups.year);
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -427,8 +432,9 @@ class DERElement extends X690Element {
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
-        const match : RegExpExecArray = generalizedTimeRegex.exec(dateString);
+        const match : RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
+        if (match.groups === undefined) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret : Date = new Date();
         const year : number = Number(match.groups.year);
         const month : number = (Number(match.groups.month) - 1);

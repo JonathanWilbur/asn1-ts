@@ -20,6 +20,11 @@ export declare class BERElement extends X690Element {
     graphicString: string;
     visibleString: string;
     generalString: string;
+    /** NOTE:
+    * This might not decode anything above 0xFFFF, because JavaScript
+    * natively uses either UCS-2 or UTF-16. If it uses UTF-16 (which
+    * most do), it might work, but UCS-2 will definitely not work.
+    */
     universalString: string;
     bmpString: string;
     constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);

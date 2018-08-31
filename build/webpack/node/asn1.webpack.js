@@ -1,17 +1,19 @@
+// TODO: Switch to commonjs2 modules
 const path = require('path');
 module.exports = {
     entry: [
-        "./source/indices/ber.ts"
+        "./source/index.ts"
     ],
     output: {
-        path: path.resolve(__dirname, "../../dist"),
-        filename: "ber.js",
-        library: "asn1",
-        libraryTarget: "var"
+        path: path.resolve(__dirname, "../../dist/node"),
+        filename: "asn1.js",
+        libraryTarget: "commonjs2",
+        "strictModuleExceptionHandling": true
     },
     resolve: {
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
     },
+    mode: "production",
     module: {
         rules: [
             {
@@ -22,7 +24,7 @@ module.exports = {
         ]
     },
     optimization: {
-        minimize: true
+        minimize: false
     },
-    target: "web"
+    target: "node"
 };

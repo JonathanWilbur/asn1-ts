@@ -4,18 +4,19 @@ module.exports = {
         "./source/indices/der.ts"
     ],
     output: {
-        path: path.resolve(__dirname, "../../dist"),
-        filename: "der.js",
+        path: path.resolve(__dirname, "../../dist/web"),
+        filename: "der.min.js",
         library: "asn1",
         libraryTarget: "var"
     },
     resolve: {
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [ ".ts" ]
     },
+    mode: "production",
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.ts$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/
             }

@@ -7,10 +7,6 @@
 
 This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d).
 
-Requires [NodeJS](https://nodejs.org/en/) v10.3.0 or higher, mostly to support
-[Regular Expression Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups).
-See [this page](https://node.green/) for NodeJS ES2018 support.
-
 ## What is ASN.1?
 
 ASN.1 stands for *Abstract Syntax Notation*. ASN.1 was first specified in
@@ -58,6 +54,24 @@ If you look in the
 you'll see all of the protocols that use ASN.1.
 
 This list can also be found in `documentation/asn1.d`.
+
+## Building
+
+This library requires [NodeJS](https://nodejs.org/en/) v10.3.0 or higher, mostly to support
+[Regular Expression Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups).
+See [this page](https://node.green/) for NodeJS ES2018 support.
+
+You can build this library by running:
+
+* `npm run-script build`
+* `make -f build/Makefile`
+
+The outputs will all be in `dist`.
+
+* `dist/web/asn1.js` is the entire ASN.1 library for the web browser, which is not minified.
+* `dist/web` contains other smaller libraries that only contain specific codecs, and which are minified.
+* `dist/node/asn1js` is the entire NodeJS library.
+* `dist/types` contains all of the type declarations.
 
 ## Library Usage
 

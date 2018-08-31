@@ -2,38 +2,38 @@ export declare const MAX_UINT_32: number;
 export declare const MIN_UINT_32: number;
 export declare const MAX_SINT_32: number;
 export declare const MIN_SINT_32: number;
-export declare enum ASN1TagClass {
+export declare const enum ASN1TagClass {
     universal = 0,
     application = 1,
     context = 3,
     private = 4
 }
-export declare enum ASN1Construction {
+export declare const enum ASN1Construction {
     primitive = 0,
     constructed = 1
 }
-export declare enum LengthEncodingPreference {
+export declare const enum LengthEncodingPreference {
     definite = 0,
     indefinite = 1
 }
-export declare enum ASN1SpecialRealValue {
+export declare const enum ASN1SpecialRealValue {
     plusInfinity = 64,
     minusInfinity = 65,
     notANumber = 66,
     minusZero = 67
 }
-export declare enum ASN1RealEncodingBase {
+export declare const enum ASN1RealEncodingBase {
     base2 = 0,
     base8 = 16,
     base16 = 32
 }
-export declare enum ASN1RealEncodingScale {
+export declare const enum ASN1RealEncodingScale {
     scale0 = 0,
     scale1 = 4,
     scale2 = 8,
     scale3 = 12
 }
-export declare enum ASN1UniversalType {
+export declare const enum ASN1UniversalType {
     endOfContent = 0,
     boolean = 1,
     integer = 2,
@@ -66,6 +66,13 @@ export declare enum ASN1UniversalType {
     characterString = 29,
     bmpString = 30
 }
+/**
+    The acceptable characters for a printableString.
+    The sorting of letters below is a slight optimization:
+    they are sorted in order of decreasing frequency in the English
+    language, so that canFind will usually have to iterate through
+    fewer letters before finding a match.
+*/
 export declare const printableStringCharacters: string;
 export declare const utcTimeRegex: RegExp;
 export declare const distinguishedUTCTimeRegex: RegExp;
