@@ -365,6 +365,15 @@ class ObjectIdentifier {
 
 
 class x690_X690Element extends asn1_ASN1Element {
+    validateTag(permittedClasses, permittedConstruction, permittedNumbers) {
+        if (!permittedClasses.includes(this.tagClass))
+            return -1;
+        if (!permittedConstruction.includes(this.construction))
+            return -2;
+        if (!permittedNumbers.includes(this.tagNumber))
+            return -3;
+        return 0;
+    }
     set integer(value) {
         if (value < MIN_SINT_32)
             throw new ASN1OverflowError(`Number ${value} too small to be converted.`);

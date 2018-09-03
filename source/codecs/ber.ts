@@ -1,12 +1,3 @@
-// TODO: Unused variable 'i' in BER.objectIdentifier getter in D library (line 898)
-// TODO: Add warning about use of indefinite form encoding: there's nothing stopping you from supplying a value that contains two consecutive null octets.
-// TODO: Would it be possible to underflow recursionCount by triggering an exception when no recursion was performed?
-// TODO: The D Library does not accept constructed UTCTime and GeneralizedTime
-// TODO: Unnecessary "if (numbers.length > 2) {" in OID types
-// TODO: Make D Library check for tag numbers under 31
-// TODO: ITU X.680 S 47.3: "UTCTime ::= [UNIVERSAL 23] IMPLICIT VisibleString"
-// TODO: ITU X.680 S 46.3: "GeneralizedTime ::= [UNIVERSAL 24] IMPLICIT VisibleString"
-// REVIEW: Is it a problem that my ASN.1 D library supports length tags with leading zeros? Section 8.1.3.5: "NOTE 2 –In the long form, it is a sender's option whether to use more length octets than the minimum necessary"
 import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
 import { ASN1Construction, ASN1RealEncodingBase, ASN1RealEncodingScale, ASN1SpecialRealValue, ASN1TagClass, ASN1UniversalType, generalizedTimeRegex, LengthEncodingPreference, nr1Regex, nr2Regex, nr3Regex, printableStringCharacters, utcTimeRegex } from "../values";

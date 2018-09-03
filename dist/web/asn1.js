@@ -408,6 +408,15 @@ class ObjectIdentifier {
 
 
 class X690Element extends _asn1__WEBPACK_IMPORTED_MODULE_0__[/* ASN1Element */ "a"] {
+    validateTag(permittedClasses, permittedConstruction, permittedNumbers) {
+        if (!permittedClasses.includes(this.tagClass))
+            return -1;
+        if (!permittedConstruction.includes(this.construction))
+            return -2;
+        if (!permittedNumbers.includes(this.tagNumber))
+            return -3;
+        return 0;
+    }
     set integer(value) {
         if (value < _values__WEBPACK_IMPORTED_MODULE_3__[/* MIN_SINT_32 */ "j"])
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1OverflowError */ "e"](`Number ${value} too small to be converted.`);

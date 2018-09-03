@@ -1,8 +1,5 @@
-// TODO: Fix typo in D ASN.1 library: "At least two nodes must be provided to ObjectIdenifier constructor."
-// TODO: Fix error in D ASN.1 library, line 1934 of ber.d: should be "else if"
 export
-class ObjectIdentifier
-{
+class ObjectIdentifier {
     public readonly _nodes : number[];
 
     constructor(nodes : number[]) {

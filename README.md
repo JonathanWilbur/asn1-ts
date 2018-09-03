@@ -70,7 +70,7 @@ The outputs will all be in `dist`.
 
 * `dist/web/asn1.js` is the entire ASN.1 library for the web browser, which is not minified.
 * `dist/web` contains other smaller libraries that only contain specific codecs, and which are minified.
-* `dist/node/asn1js` is the entire NodeJS library.
+* `dist/node/asn1.js` is the entire NodeJS library.
 * `dist/types` contains all of the type declarations.
 
 ## Library Usage
