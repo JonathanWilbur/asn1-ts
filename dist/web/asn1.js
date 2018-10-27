@@ -1271,8 +1271,8 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
     }
     toBytes() {
         let tagBytes = [0x00];
-        tagBytes[0] |= this.tagClass;
-        tagBytes[0] |= this.construction;
+        tagBytes[0] |= (this.tagClass << 6);
+        tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         }
@@ -3825,8 +3825,8 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
     }
     toBytes() {
         let tagBytes = [0x00];
-        tagBytes[0] |= this.tagClass;
-        tagBytes[0] |= this.construction;
+        tagBytes[0] |= (this.tagClass << 6);
+        tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         }

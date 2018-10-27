@@ -1218,8 +1218,8 @@ class ber_BERElement extends x690_X690Element {
     }
     toBytes() {
         let tagBytes = [0x00];
-        tagBytes[0] |= this.tagClass;
-        tagBytes[0] |= this.construction;
+        tagBytes[0] |= (this.tagClass << 6);
+        tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         }
@@ -1964,8 +1964,8 @@ class der_DERElement extends x690_X690Element {
     }
     toBytes() {
         let tagBytes = [0x00];
-        tagBytes[0] |= this.tagClass;
-        tagBytes[0] |= this.construction;
+        tagBytes[0] |= (this.tagClass << 6);
+        tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         }

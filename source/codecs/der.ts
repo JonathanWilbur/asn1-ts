@@ -717,8 +717,8 @@ class DERElement extends X690Element {
 
     public toBytes () : Uint8Array {
         let tagBytes : number[] = [ 0x00 ];
-        tagBytes[0] |= this.tagClass;
-        tagBytes[0] |= this.construction;
+        tagBytes[0] |= (this.tagClass << 6);
+        tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         } else {
