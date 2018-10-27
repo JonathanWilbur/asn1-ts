@@ -7,8 +7,8 @@ export
 const enum ASN1TagClass {
     universal = 0,
     application = 1,
-    context = 3,
-    private = 4
+    context = 2,
+    private = 3
 }
 
 export

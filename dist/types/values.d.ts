@@ -5,8 +5,8 @@ export declare const MIN_SINT_32: number;
 export declare const enum ASN1TagClass {
     universal = 0,
     application = 1,
-    context = 3,
-    private = 4
+    context = 2,
+    private = 3
 }
 export declare const enum ASN1Construction {
     primitive = 0,

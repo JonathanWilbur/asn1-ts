@@ -196,8 +196,8 @@ var ASN1TagClass;
 (function (ASN1TagClass) {
     ASN1TagClass[ASN1TagClass["universal"] = 0] = "universal";
     ASN1TagClass[ASN1TagClass["application"] = 1] = "application";
-    ASN1TagClass[ASN1TagClass["context"] = 3] = "context";
-    ASN1TagClass[ASN1TagClass["private"] = 4] = "private";
+    ASN1TagClass[ASN1TagClass["context"] = 2] = "context";
+    ASN1TagClass[ASN1TagClass["private"] = 3] = "private";
 })(ASN1TagClass || (ASN1TagClass = {}));
 var ASN1Construction;
 (function (ASN1Construction) {
@@ -1179,10 +1179,10 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
                 this.tagClass = 1;
                 break;
             case (0b10000000):
-                this.tagClass = 3;
+                this.tagClass = 2;
                 break;
             case (0b11000000):
-                this.tagClass = 4;
+                this.tagClass = 3;
                 break;
             default: this.tagClass = 0;
         }
@@ -3751,10 +3751,10 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
                 this.tagClass = 1;
                 break;
             case (0b10000000):
-                this.tagClass = 3;
+                this.tagClass = 2;
                 break;
             case (0b11000000):
-                this.tagClass = 4;
+                this.tagClass = 3;
                 break;
             default: this.tagClass = 0;
         }
