@@ -339,7 +339,7 @@ class ObjectIdentifier {
             throw new Error("OIDs first node must be 0, 1, or 2!");
         if (((nodes[0] < 2) && nodes[1] > 39) ||
             (nodes[0] === 2 && nodes[1] > 175))
-            throw new Error("OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 if node #1 is 2!");
+            throw new Error(`OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 if node #1 is 2. Received these nodes: ${nodes}.`);
         nodes.forEach(node => {
             if (node < 0)
                 throw new Error("OID node numbers cannot be negative!");
