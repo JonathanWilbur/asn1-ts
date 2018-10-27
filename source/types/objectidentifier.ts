@@ -11,8 +11,8 @@ class ObjectIdentifier {
 
         if
         (
-            ((nodes[0] == 0 || nodes[0] == 1) && nodes[2] > 39) ||
-            (nodes[0] == 2 && nodes[0] > 175)
+            ((nodes[0] < 2) && nodes[1] > 39) ||
+            (nodes[0] === 2 && nodes[1] > 175)
         )
             throw new Error("OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 if node #1 is 2!");
 
