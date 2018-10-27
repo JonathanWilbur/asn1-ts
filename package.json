@@ -31,6 +31,9 @@
   "engines": {
     "node": ">=10.3.0"
   },
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/JonathanWilbur/asn1-ts",
   "keywords": [
     "ASN1",
