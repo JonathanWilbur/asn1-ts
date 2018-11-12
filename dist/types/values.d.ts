@@ -83,3 +83,4 @@ export declare const nr2Regex: RegExp;
 export declare const nr3Regex: RegExp;
 export declare const canonicalNR3Regex: RegExp;
 export declare const distinguishedNR3Regex: RegExp;
+export declare const CANONICAL_TAG_CLASS_ORDERING: ASN1TagClass[];

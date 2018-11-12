@@ -1,7 +1,8 @@
 import { ASN1Element } from "./asn1";
 import * as errors from "./errors";
 import { ObjectIdentifier as OID } from "./types/objectidentifier";
-import { ASN1Construction, MAX_SINT_32, MIN_SINT_32, ASN1TagClass } from "./values";
+import { ASN1Construction, MAX_SINT_32, MIN_SINT_32, ASN1TagClass, CANONICAL_TAG_CLASS_ORDERING } from "./values";
+import { isNull } from "util";
 
 export
 abstract class X690Element extends ASN1Element {
@@ -183,6 +184,36 @@ abstract class X690Element extends ASN1Element {
             ret = ret.concat(encodedOIDNode);
         }
         return ret;
+    }
+
+    public static isInCanonicalOrder (elements : X690Element[]) : boolean {
+
+        let previousTagClass : ASN1TagClass | null = null;
+        let previousTagNumber : number | null = null;
+
+        if (!elements.every((element) : boolean => {
+
+            // Checks that the tag classes are in canonical order
+            if (
+                !isNull(previousTagClass) &&
+                element.tagClass !== previousTagClass &&
+                CANONICAL_TAG_CLASS_ORDERING.indexOf(element.tagClass) <=
+                CANONICAL_TAG_CLASS_ORDERING.indexOf(previousTagClass)
+            )
+                return false;
+
+            // Checks that the tag numbers are in canonical order
+            if (element.tagClass !== previousTagClass) previousTagNumber = null;
+            if (!isNull(previousTagNumber) && element.tagNumber < previousTagNumber)
+                return false;
+
+            previousTagClass = element.tagClass;
+            previousTagNumber = element.tagNumber;
+            return true;
+        }))
+            return false;
+
+        return true;
     }
 
 }

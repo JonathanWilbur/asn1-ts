@@ -108,3 +108,11 @@ export const nr2Regex : RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$
 export const nr3Regex : RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
 export const canonicalNR3Regex : RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
 export const distinguishedNR3Regex : RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+
+export
+const CANONICAL_TAG_CLASS_ORDERING : ASN1TagClass[] = [
+    ASN1TagClass.universal,
+    ASN1TagClass.application,
+    ASN1TagClass.private,
+    ASN1TagClass.context
+];

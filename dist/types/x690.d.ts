@@ -18,4 +18,5 @@ export declare abstract class X690Element extends ASN1Element {
     relativeObjectIdentifier: number[];
     protected static decodeObjectIdentifierNodes(value: Uint8Array): number[];
     protected static encodeObjectIdentifierNodes(value: number[]): number[];
+    static isInCanonicalOrder(elements: X690Element[]): boolean;
 }

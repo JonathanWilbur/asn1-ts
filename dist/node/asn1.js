@@ -88,18 +88,24 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = __webpack_require__(1);
-
+module.exports = require("util");
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(2);
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -329,6 +335,12 @@ const nr2Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
 const nr3Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
 const canonicalNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
 const distinguishedNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+const CANONICAL_TAG_CLASS_ORDERING = [
+    0,
+    1,
+    3,
+    2
+];
 
 // CONCATENATED MODULE: ./source/types/objectidentifier.ts
 class ObjectIdentifier {
@@ -359,7 +371,11 @@ class ObjectIdentifier {
     }
 }
 
+// EXTERNAL MODULE: external "util"
+var external_util_ = __webpack_require__(0);
+
 // CONCATENATED MODULE: ./source/x690.ts
+
 
 
 
@@ -520,6 +536,26 @@ class x690_X690Element extends asn1_ASN1Element {
             ret = ret.concat(encodedOIDNode);
         }
         return ret;
+    }
+    static isInCanonicalOrder(elements) {
+        let previousTagClass = null;
+        let previousTagNumber = null;
+        if (!elements.every((element) => {
+            if (!Object(external_util_["isNull"])(previousTagClass) &&
+                element.tagClass !== previousTagClass &&
+                CANONICAL_TAG_CLASS_ORDERING.indexOf(element.tagClass) <=
+                    CANONICAL_TAG_CLASS_ORDERING.indexOf(previousTagClass))
+                return false;
+            if (element.tagClass !== previousTagClass)
+                previousTagNumber = null;
+            if (!Object(external_util_["isNull"])(previousTagNumber) && element.tagNumber < previousTagNumber)
+                return false;
+            previousTagClass = element.tagClass;
+            previousTagNumber = element.tagNumber;
+            return true;
+        }))
+            return false;
+        return true;
     }
 }
 
@@ -2045,6 +2081,7 @@ class der_DERElement extends x690_X690Element {
 /* concated harmony reexport nr3Regex */__webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return nr3Regex; });
 /* concated harmony reexport canonicalNR3Regex */__webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return canonicalNR3Regex; });
 /* concated harmony reexport distinguishedNR3Regex */__webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return distinguishedNR3Regex; });
+/* concated harmony reexport CANONICAL_TAG_CLASS_ORDERING */__webpack_require__.d(__webpack_exports__, "CANONICAL_TAG_CLASS_ORDERING", function() { return CANONICAL_TAG_CLASS_ORDERING; });
 
 
 

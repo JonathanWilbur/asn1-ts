@@ -12,18 +12,16 @@
   ],
   "description": "ASN.1 encoding and decoding",
   "devDependencies": {
-    "@types/node": "^10.9.4",
-    "jasmine": "^3.2.0",
-    "jasmine-core": "^3.2.1",
-    "karma": "^3.0.0",
+    "@types/node": "^10.12.5",
+    "jasmine": "^3.3.0",
+    "jasmine-core": "^3.3.0",
+    "karma": "^3.1.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^1.1.2",
     "karma-safari-launcher": "^1.0.0",
     "ts-loader": "^4.5.0",
-    "typescript": "^3.0.3",
-    "webpack": "^4.17.1",
-    "webpack-cli": "^2.1.5"
+    "typescript": "^3.1.6"
   },
   "directories": {
     "test": "test"
@@ -54,5 +52,8 @@
     "test": "karma run"
   },
   "types": "./dist/types/index.d.ts",
-  "version": "1.3.2"
+  "version": "1.4.0",
+  "dependencies": {
+    "util": "^0.11.1"
+  }
 }
