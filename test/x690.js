@@ -248,4 +248,85 @@ describe('X.690 abstract codec', () => {
         expect(DERElement.isInCanonicalOrder(data1)).toBeFalsy();
         expect(DERElement.isInCanonicalOrder(data2)).toBeFalsy();
     });
+
+    it('correctly identifies element arrays with duplicated (tag class, tag number) values', () => {
+        const data1 = [
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                0
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                2
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                2
+            )
+        ];
+
+        const data2 = [
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                2
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                0
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                2
+            )
+        ];
+
+        expect(DERElement.isUniquelyTagged(data1)).toBeFalsy();
+        expect(DERElement.isUniquelyTagged(data2)).toBeFalsy();
+    });
+
+    it('correctly identifies element arrays with non-duplicated (tag class, tag number) values', () => {
+        const data1 = [
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                0
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                2
+            ),
+            new DERElement(
+                ASN1TagClass.application,
+                ASN1Construction.primitive,
+                2
+            )
+        ];
+
+        const data2 = [
+            new DERElement(
+                ASN1TagClass.application,
+                ASN1Construction.primitive,
+                2
+            ),
+            new DERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                0
+            ),
+            new DERElement(
+                ASN1TagClass.private,
+                ASN1Construction.primitive,
+                2
+            )
+        ];
+        expect(DERElement.isUniquelyTagged(data1)).toBeTruthy();
+        expect(DERElement.isUniquelyTagged(data2)).toBeTruthy();
+    });
 });

@@ -557,6 +557,16 @@ class x690_X690Element extends asn1_ASN1Element {
             return false;
         return true;
     }
+    static isUniquelyTagged(elements) {
+        const finds = {};
+        for (let i = 0; i < elements.length; i++) {
+            const key = `${elements[i].tagClass}.${elements[i].tagNumber}`;
+            if (key in finds)
+                return false;
+            finds[key] = null;
+        }
+        return true;
+    }
 }
 
 // CONCATENATED MODULE: ./source/codecs/ber.ts

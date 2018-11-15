@@ -216,4 +216,14 @@ abstract class X690Element extends ASN1Element {
         return true;
     }
 
+    public static isUniquelyTagged (elements : X690Element[]) : boolean {
+        const finds : { [ key : string ] : null } = {};
+        for (let i = 0; i < elements.length; i++) {
+            const key : string = `${elements[i].tagClass}.${elements[i].tagNumber}`;
+            if (key in finds) return false;
+            finds[key] = null;
+        }
+        return true;
+    }
+
 }
