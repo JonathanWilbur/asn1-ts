@@ -9,9 +9,6 @@ module.exports = {
         library: "asn1",
         libraryTarget: "var"
     },
-    resolve: {
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
-    },
     mode: "development",
     module: {
         rules: [

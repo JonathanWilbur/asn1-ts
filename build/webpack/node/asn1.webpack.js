@@ -1,4 +1,3 @@
-// TODO: Switch to commonjs2 modules
 const path = require('path');
 module.exports = {
     entry: [
@@ -11,13 +10,13 @@ module.exports = {
         "strictModuleExceptionHandling": true
     },
     resolve: {
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [ ".ts" ]
     },
     mode: "production",
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.ts$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/
             }

@@ -153,6 +153,12 @@ describe('Basic Encoding Rules', () => {
         }
     });
 
+    it('decodes an OBJECT IDENTIFIER with 0x80 in the middle of a number', () => {
+        const el = new BERElement();
+        el.value = new Uint8Array([ 0x42, 0x81, 0x80, 0x06 ]);
+        expect(el.objectIdentifier.toString()).toBe('1.26.16390');
+    });
+
     it('encodes and decodes an ObjectDescriptor correctly', () => {
         const el = new BERElement();
         el.objectDescriptor = 'HENLO-BORTHERS';
