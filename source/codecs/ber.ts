@@ -89,7 +89,7 @@ class BERElement extends X690Element {
     }
 
     set octetString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get octetString () : Uint8Array {
@@ -360,7 +360,7 @@ class BERElement extends X690Element {
     }
 
     set teletexString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get teletexString () : Uint8Array {
@@ -368,7 +368,7 @@ class BERElement extends X690Element {
     }
 
     set videotexString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get videotexString () : Uint8Array {
@@ -826,7 +826,7 @@ class BERElement extends X690Element {
 
     private deconstruct (dataType : string) : Uint8Array {
         if (this.construction === ASN1Construction.primitive) {
-            return this.value.subarray(0); // Clones it.
+            return new Uint8Array(this.value); // Clones it.
         } else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
                 throw new errors.ASN1RecursionError();

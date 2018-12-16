@@ -66,13 +66,13 @@ class DERElement extends X690Element {
     }
 
     set octetString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get octetString () : Uint8Array {
         if (this.construction !== ASN1Construction.primitive)
             throw new errors.ASN1ConstructionError("OCTET STRING cannot be constructed.");
-        return this.value.subarray(0);
+        return new Uint8Array(this.value);
     }
 
     set objectDescriptor (value : string) {
@@ -210,7 +210,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("UTF8String cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -279,7 +279,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("NumericString cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -313,7 +313,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("PrintableString cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer); // REVIEW: Is the subarray(0) necessary?
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -327,7 +327,7 @@ class DERElement extends X690Element {
     }
 
     set teletexString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get teletexString () : Uint8Array {
@@ -335,7 +335,7 @@ class DERElement extends X690Element {
     }
 
     set videotexString (value : Uint8Array) {
-        this.value = value.subarray(0); // Clones it.
+        this.value = new Uint8Array(value); // Clones it.
     }
 
     get videotexString () : Uint8Array {
@@ -355,7 +355,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("IA5String cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -383,7 +383,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("UTCTime cannot be constructed.");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
@@ -428,7 +428,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("GeneralizedTime cannot be constructed.");
         let dateString : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             dateString = (new Buffer(this.value)).toString("utf-8");
         }
@@ -475,7 +475,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("GraphicString cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("utf-8");
         }
@@ -518,7 +518,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("GeneralString cannot be constructed.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("windows-1252")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("windows-1252")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             ret = (new Buffer(this.value)).toString("ascii");
         }
@@ -581,7 +581,7 @@ class DERElement extends X690Element {
             ("BMPString encoded on non-mulitple of two bytes.");
         let ret : string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-16be")).decode(<ArrayBuffer>this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-16be")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
             const swappedEndianness : Uint8Array = new Uint8Array(this.value.length);
             for (let i : number = 0; i < this.value.length; i += 2) {

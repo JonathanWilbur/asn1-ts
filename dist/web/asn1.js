@@ -1295,7 +1295,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
         }
     }
     set octetString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get octetString() {
         return this.deconstruct("OCTET STRING");
@@ -1562,13 +1562,13 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
         return ret;
     }
     set teletexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get teletexString() {
         return this.deconstruct("TeletexString");
     }
     set videotexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get videotexString() {
         return this.deconstruct("VideotexString");
@@ -1961,7 +1961,7 @@ class BERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
     }
     deconstruct(dataType) {
         if (this.construction === 0) {
-            return this.value.subarray(0);
+            return new Uint8Array(this.value);
         }
         else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit)
@@ -3890,12 +3890,12 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
         return ret;
     }
     set octetString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get octetString() {
         if (this.construction !== 0)
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("OCTET STRING cannot be constructed.");
-        return this.value.subarray(0);
+        return new Uint8Array(this.value);
     }
     set objectDescriptor(value) {
         this.graphicString = value;
@@ -4038,7 +4038,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("UTF8String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -4102,7 +4102,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("NumericString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -4133,7 +4133,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("PrintableString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -4146,13 +4146,13 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
         return ret;
     }
     set teletexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get teletexString() {
         return this.octetString;
     }
     set videotexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get videotexString() {
         return this.octetString;
@@ -4170,7 +4170,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("IA5String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -4198,7 +4198,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("UTCTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
-            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
@@ -4245,7 +4245,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GeneralizedTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
-            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
@@ -4290,7 +4290,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GraphicString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -4327,7 +4327,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1ConstructionError */ "b"]("GeneralString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("windows-1252")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("windows-1252")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("ascii");
@@ -4377,7 +4377,7 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
             throw new _errors__WEBPACK_IMPORTED_MODULE_1__[/* ASN1Error */ "c"]("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-16be")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-16be")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             const swappedEndianness = new Uint8Array(this.value.length);

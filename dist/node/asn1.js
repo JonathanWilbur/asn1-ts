@@ -655,7 +655,7 @@ class ber_BERElement extends x690_X690Element {
         }
     }
     set octetString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get octetString() {
         return this.deconstruct("OCTET STRING");
@@ -922,13 +922,13 @@ class ber_BERElement extends x690_X690Element {
         return ret;
     }
     set teletexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get teletexString() {
         return this.deconstruct("TeletexString");
     }
     set videotexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get videotexString() {
         return this.deconstruct("VideotexString");
@@ -1321,7 +1321,7 @@ class ber_BERElement extends x690_X690Element {
     }
     deconstruct(dataType) {
         if (this.construction === 0) {
-            return this.value.subarray(0);
+            return new Uint8Array(this.value);
         }
         else {
             if ((this.recursionCount + 1) > ber_BERElement.nestingRecursionLimit)
@@ -1416,12 +1416,12 @@ class der_DERElement extends x690_X690Element {
         return ret;
     }
     set octetString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get octetString() {
         if (this.construction !== 0)
             throw new ASN1ConstructionError("OCTET STRING cannot be constructed.");
-        return this.value.subarray(0);
+        return new Uint8Array(this.value);
     }
     set objectDescriptor(value) {
         this.graphicString = value;
@@ -1564,7 +1564,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("UTF8String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -1628,7 +1628,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("NumericString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -1659,7 +1659,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("PrintableString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -1672,13 +1672,13 @@ class der_DERElement extends x690_X690Element {
         return ret;
     }
     set teletexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get teletexString() {
         return this.octetString;
     }
     set videotexString(value) {
-        this.value = value.subarray(0);
+        this.value = new Uint8Array(value);
     }
     get videotexString() {
         return this.octetString;
@@ -1696,7 +1696,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("IA5String cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -1724,7 +1724,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("UTCTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
-            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
@@ -1771,7 +1771,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("GeneralizedTime cannot be constructed.");
         let dateString = "";
         if (typeof TextEncoder !== "undefined") {
-            dateString = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            dateString = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             dateString = (new Buffer(this.value)).toString("utf-8");
@@ -1816,7 +1816,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("GraphicString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-8")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("utf-8");
@@ -1853,7 +1853,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1ConstructionError("GeneralString cannot be constructed.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("windows-1252")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("windows-1252")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             ret = (new Buffer(this.value)).toString("ascii");
@@ -1903,7 +1903,7 @@ class der_DERElement extends x690_X690Element {
             throw new ASN1Error("BMPString encoded on non-mulitple of two bytes.");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("utf-16be")).decode(this.value.subarray(0).buffer);
+            ret = (new TextDecoder("utf-16be")).decode(new Uint8Array(this.value));
         }
         else if (typeof Buffer !== "undefined") {
             const swappedEndianness = new Uint8Array(this.value.length);
