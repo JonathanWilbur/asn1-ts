@@ -1136,7 +1136,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(16);
+exports.isBuffer = __webpack_require__(15);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -1180,7 +1180,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(17);
+exports.inherits = __webpack_require__(16);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -1198,7 +1198,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(15)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8), __webpack_require__(14)))
 
 /***/ }),
 /* 6 */
@@ -2009,9 +2009,9 @@ BERElement.lengthEncodingPreference = 0;
 
 
 
-var base64 = __webpack_require__(12)
-var ieee754 = __webpack_require__(13)
-var isArray = __webpack_require__(14)
+var base64 = __webpack_require__(11)
+var ieee754 = __webpack_require__(12)
+var isArray = __webpack_require__(13)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -4535,103 +4535,11 @@ class DERElement extends _x690__WEBPACK_IMPORTED_MODULE_3__[/* X690Element */ "a
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(11);
+module.exports = __webpack_require__(17);
 
 
 /***/ }),
 /* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _asn1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return _asn1__WEBPACK_IMPORTED_MODULE_0__["a"]; });
-
-/* harmony import */ var _codecs_ber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BERElement", function() { return _codecs_ber__WEBPACK_IMPORTED_MODULE_1__["a"]; });
-
-/* harmony import */ var _codecs_der__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DERElement", function() { return _codecs_der__WEBPACK_IMPORTED_MODULE_2__["a"]; });
-
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(0);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["c"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["d"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RecursionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["g"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TruncationError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["i"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1OverflowError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["e"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SizeError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["h"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1PaddingError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["f"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UndefinedError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["j"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1CharactersError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["a"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1ConstructionError", function() { return _errors__WEBPACK_IMPORTED_MODULE_3__["b"]; });
-
-/* harmony import */ var _types_objectidentifier__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(3);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return _types_objectidentifier__WEBPACK_IMPORTED_MODULE_4__["a"]; });
-
-/* harmony import */ var _values__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(1);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["j"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["l"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["i"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MIN_SINT_32", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["k"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1TagClass", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["e"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1Construction", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["a"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LengthEncodingPreference", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["h"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["d"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RealEncodingBase", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["b"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1RealEncodingScale", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["c"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["f"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["u"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["v"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedUTCTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["p"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["q"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedGeneralizedTimeRegex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["n"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr1Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["r"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr2Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["s"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["t"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["m"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["o"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CANONICAL_TAG_CLASS_ORDERING", function() { return _values__WEBPACK_IMPORTED_MODULE_5__["g"]; });
-
-
-
-
-
-
-
-
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4789,7 +4697,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -4879,7 +4787,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -4890,7 +4798,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -5080,7 +4988,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -5091,7 +4999,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -5117,6 +5025,85 @@ if (typeof Object.create === 'function') {
     ctor.prototype.constructor = ctor
   }
 }
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./source/asn1.ts
+var asn1 = __webpack_require__(2);
+
+// EXTERNAL MODULE: ./source/codecs/ber.ts
+var ber = __webpack_require__(6);
+
+// EXTERNAL MODULE: ./source/codecs/der.ts
+var der = __webpack_require__(9);
+
+// EXTERNAL MODULE: ./source/errors.ts
+var errors = __webpack_require__(0);
+
+// EXTERNAL MODULE: ./source/types/objectidentifier.ts
+var objectidentifier = __webpack_require__(3);
+
+// CONCATENATED MODULE: ./source/types/typeidentifier.ts
+class TypeIdentifier {
+    constructor(id, type) {
+        this.id = id;
+        this.type = type;
+    }
+}
+
+// EXTERNAL MODULE: ./source/values.ts
+var values = __webpack_require__(1);
+
+// CONCATENATED MODULE: ./source/index.ts
+/* concated harmony reexport ASN1Element */__webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return asn1["a" /* ASN1Element */]; });
+/* concated harmony reexport BERElement */__webpack_require__.d(__webpack_exports__, "BERElement", function() { return ber["a" /* BERElement */]; });
+/* concated harmony reexport DERElement */__webpack_require__.d(__webpack_exports__, "DERElement", function() { return der["a" /* DERElement */]; });
+/* concated harmony reexport ASN1Error */__webpack_require__.d(__webpack_exports__, "ASN1Error", function() { return errors["c" /* ASN1Error */]; });
+/* concated harmony reexport ASN1NotImplementedError */__webpack_require__.d(__webpack_exports__, "ASN1NotImplementedError", function() { return errors["d" /* ASN1NotImplementedError */]; });
+/* concated harmony reexport ASN1RecursionError */__webpack_require__.d(__webpack_exports__, "ASN1RecursionError", function() { return errors["g" /* ASN1RecursionError */]; });
+/* concated harmony reexport ASN1TruncationError */__webpack_require__.d(__webpack_exports__, "ASN1TruncationError", function() { return errors["i" /* ASN1TruncationError */]; });
+/* concated harmony reexport ASN1OverflowError */__webpack_require__.d(__webpack_exports__, "ASN1OverflowError", function() { return errors["e" /* ASN1OverflowError */]; });
+/* concated harmony reexport ASN1SizeError */__webpack_require__.d(__webpack_exports__, "ASN1SizeError", function() { return errors["h" /* ASN1SizeError */]; });
+/* concated harmony reexport ASN1PaddingError */__webpack_require__.d(__webpack_exports__, "ASN1PaddingError", function() { return errors["f" /* ASN1PaddingError */]; });
+/* concated harmony reexport ASN1UndefinedError */__webpack_require__.d(__webpack_exports__, "ASN1UndefinedError", function() { return errors["j" /* ASN1UndefinedError */]; });
+/* concated harmony reexport ASN1CharactersError */__webpack_require__.d(__webpack_exports__, "ASN1CharactersError", function() { return errors["a" /* ASN1CharactersError */]; });
+/* concated harmony reexport ASN1ConstructionError */__webpack_require__.d(__webpack_exports__, "ASN1ConstructionError", function() { return errors["b" /* ASN1ConstructionError */]; });
+/* concated harmony reexport ObjectIdentifier */__webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return objectidentifier["a" /* ObjectIdentifier */]; });
+/* concated harmony reexport MAX_UINT_32 */__webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return values["j" /* MAX_UINT_32 */]; });
+/* concated harmony reexport MIN_UINT_32 */__webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return values["l" /* MIN_UINT_32 */]; });
+/* concated harmony reexport MAX_SINT_32 */__webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return values["i" /* MAX_SINT_32 */]; });
+/* concated harmony reexport MIN_SINT_32 */__webpack_require__.d(__webpack_exports__, "MIN_SINT_32", function() { return values["k" /* MIN_SINT_32 */]; });
+/* concated harmony reexport ASN1TagClass */__webpack_require__.d(__webpack_exports__, "ASN1TagClass", function() { return values["e" /* ASN1TagClass */]; });
+/* concated harmony reexport ASN1Construction */__webpack_require__.d(__webpack_exports__, "ASN1Construction", function() { return values["a" /* ASN1Construction */]; });
+/* concated harmony reexport LengthEncodingPreference */__webpack_require__.d(__webpack_exports__, "LengthEncodingPreference", function() { return values["h" /* LengthEncodingPreference */]; });
+/* concated harmony reexport ASN1SpecialRealValue */__webpack_require__.d(__webpack_exports__, "ASN1SpecialRealValue", function() { return values["d" /* ASN1SpecialRealValue */]; });
+/* concated harmony reexport ASN1RealEncodingBase */__webpack_require__.d(__webpack_exports__, "ASN1RealEncodingBase", function() { return values["b" /* ASN1RealEncodingBase */]; });
+/* concated harmony reexport ASN1RealEncodingScale */__webpack_require__.d(__webpack_exports__, "ASN1RealEncodingScale", function() { return values["c" /* ASN1RealEncodingScale */]; });
+/* concated harmony reexport ASN1UniversalType */__webpack_require__.d(__webpack_exports__, "ASN1UniversalType", function() { return values["f" /* ASN1UniversalType */]; });
+/* concated harmony reexport printableStringCharacters */__webpack_require__.d(__webpack_exports__, "printableStringCharacters", function() { return values["u" /* printableStringCharacters */]; });
+/* concated harmony reexport utcTimeRegex */__webpack_require__.d(__webpack_exports__, "utcTimeRegex", function() { return values["v" /* utcTimeRegex */]; });
+/* concated harmony reexport distinguishedUTCTimeRegex */__webpack_require__.d(__webpack_exports__, "distinguishedUTCTimeRegex", function() { return values["p" /* distinguishedUTCTimeRegex */]; });
+/* concated harmony reexport generalizedTimeRegex */__webpack_require__.d(__webpack_exports__, "generalizedTimeRegex", function() { return values["q" /* generalizedTimeRegex */]; });
+/* concated harmony reexport distinguishedGeneralizedTimeRegex */__webpack_require__.d(__webpack_exports__, "distinguishedGeneralizedTimeRegex", function() { return values["n" /* distinguishedGeneralizedTimeRegex */]; });
+/* concated harmony reexport nr1Regex */__webpack_require__.d(__webpack_exports__, "nr1Regex", function() { return values["r" /* nr1Regex */]; });
+/* concated harmony reexport nr2Regex */__webpack_require__.d(__webpack_exports__, "nr2Regex", function() { return values["s" /* nr2Regex */]; });
+/* concated harmony reexport nr3Regex */__webpack_require__.d(__webpack_exports__, "nr3Regex", function() { return values["t" /* nr3Regex */]; });
+/* concated harmony reexport canonicalNR3Regex */__webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return values["m" /* canonicalNR3Regex */]; });
+/* concated harmony reexport distinguishedNR3Regex */__webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return values["o" /* distinguishedNR3Regex */]; });
+/* concated harmony reexport CANONICAL_TAG_CLASS_ORDERING */__webpack_require__.d(__webpack_exports__, "CANONICAL_TAG_CLASS_ORDERING", function() { return values["g" /* CANONICAL_TAG_CLASS_ORDERING */]; });
+
+
+
+
+
+
+
 
 
 /***/ })

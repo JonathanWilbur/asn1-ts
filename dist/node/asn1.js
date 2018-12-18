@@ -2055,6 +2055,14 @@ class der_DERElement extends x690_X690Element {
     }
 }
 
+// CONCATENATED MODULE: ./source/types/typeidentifier.ts
+class TypeIdentifier {
+    constructor(id, type) {
+        this.id = id;
+        this.type = type;
+    }
+}
+
 // CONCATENATED MODULE: ./source/index.ts
 /* concated harmony reexport ASN1Element */__webpack_require__.d(__webpack_exports__, "ASN1Element", function() { return asn1_ASN1Element; });
 /* concated harmony reexport BERElement */__webpack_require__.d(__webpack_exports__, "BERElement", function() { return ber_BERElement; });
@@ -2092,6 +2100,7 @@ class der_DERElement extends x690_X690Element {
 /* concated harmony reexport canonicalNR3Regex */__webpack_require__.d(__webpack_exports__, "canonicalNR3Regex", function() { return canonicalNR3Regex; });
 /* concated harmony reexport distinguishedNR3Regex */__webpack_require__.d(__webpack_exports__, "distinguishedNR3Regex", function() { return distinguishedNR3Regex; });
 /* concated harmony reexport CANONICAL_TAG_CLASS_ORDERING */__webpack_require__.d(__webpack_exports__, "CANONICAL_TAG_CLASS_ORDERING", function() { return CANONICAL_TAG_CLASS_ORDERING; });
+
 
 
 
