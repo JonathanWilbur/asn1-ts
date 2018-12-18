@@ -5075,6 +5075,7 @@ var values = __webpack_require__(1);
 /* concated harmony reexport ASN1CharactersError */__webpack_require__.d(__webpack_exports__, "ASN1CharactersError", function() { return errors["a" /* ASN1CharactersError */]; });
 /* concated harmony reexport ASN1ConstructionError */__webpack_require__.d(__webpack_exports__, "ASN1ConstructionError", function() { return errors["b" /* ASN1ConstructionError */]; });
 /* concated harmony reexport ObjectIdentifier */__webpack_require__.d(__webpack_exports__, "ObjectIdentifier", function() { return objectidentifier["a" /* ObjectIdentifier */]; });
+/* concated harmony reexport TypeIdentifier */__webpack_require__.d(__webpack_exports__, "TypeIdentifier", function() { return TypeIdentifier; });
 /* concated harmony reexport MAX_UINT_32 */__webpack_require__.d(__webpack_exports__, "MAX_UINT_32", function() { return values["j" /* MAX_UINT_32 */]; });
 /* concated harmony reexport MIN_UINT_32 */__webpack_require__.d(__webpack_exports__, "MIN_UINT_32", function() { return values["l" /* MIN_UINT_32 */]; });
 /* concated harmony reexport MAX_SINT_32 */__webpack_require__.d(__webpack_exports__, "MAX_SINT_32", function() { return values["i" /* MAX_SINT_32 */]; });

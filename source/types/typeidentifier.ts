@@ -8,7 +8,7 @@ import { ObjectIdentifier } from "./objectidentifier";
 //     &Type }
 //     WITH SYNTAX {&Type IDENTIFIED BY &id}
 
-export default
+export
 class TypeIdentifier<Element extends ASN1Element> {
 
     constructor (
