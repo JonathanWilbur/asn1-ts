@@ -101,7 +101,7 @@ class DERElement extends X690Element {
     set real (value: number) {
         if (value === 0.0) {
             this.value = new Uint8Array(0); return;
-        } else if (isNaN(value)) {
+        } else if (Number.isNaN(value)) {
             this.value = new Uint8Array([ ASN1SpecialRealValue.notANumber ]); return;
         } else if (value === -0.0) {
             this.value = new Uint8Array([ ASN1SpecialRealValue.minusZero ]); return;
@@ -110,9 +110,12 @@ class DERElement extends X690Element {
         } else if (value === -Infinity) {
             this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]); return;
         }
-        let valueString: string = value.toFixed(7);
-        valueString = (String.fromCharCode(0b00000011) + valueString); // Encodes as NR3
-        this.value = (new TextEncoder()).encode(valueString);
+        const valueString: string = (String.fromCharCode(0b00000011) + value.toFixed(7)); // Encodes as NR3
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(valueString);
+        } else {
+            this.value = Buffer.from(valueString, "utf-8");
+        }
     }
 
     get real (): number {

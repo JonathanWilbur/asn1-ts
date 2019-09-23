@@ -115,7 +115,7 @@ class BERElement extends x690_1.X690Element {
             this.value = new Uint8Array(0);
             return;
         }
-        else if (isNaN(value)) {
+        else if (Number.isNaN(value)) {
             this.value = new Uint8Array([values_1.ASN1SpecialRealValue.notANumber]);
             return;
         }
@@ -131,9 +131,13 @@ class BERElement extends x690_1.X690Element {
             this.value = new Uint8Array([values_1.ASN1SpecialRealValue.minusInfinity]);
             return;
         }
-        let valueString = value.toFixed(7);
-        valueString = (String.fromCharCode(0b00000011) + valueString);
-        this.value = (new TextEncoder()).encode(valueString);
+        const valueString = (String.fromCharCode(0b00000011) + value.toFixed(7));
+        if (typeof TextEncoder !== "undefined") {
+            this.value = (new TextEncoder()).encode(valueString);
+        }
+        else {
+            this.value = Buffer.from(valueString, "utf-8");
+        }
     }
     get real() {
         if (this.construction !== values_1.ASN1Construction.primitive) {
