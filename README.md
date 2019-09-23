@@ -1,9 +1,8 @@
 # ASN.1 TypeScript Library
 
 * Author: [Jonathan M. Wilbur](https://jonathan.wilbur.space) <[jonathan@wilbur.space](mailto:jonathan@wilbur.space)>
-* Copyright Year: 2018
+* Copyright Year: 2019
 * License: [MIT License](https://mit-license.org/)
-* Version: _See `version` file or git tags._
 
 This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d).
 
@@ -53,25 +52,14 @@ If you look in the
 [`asn1` directory of WireShark's source code](https://github.com/wireshark/wireshark/tree/master/epan/dissectors/asn1),
 you'll see all of the protocols that use ASN.1.
 
-This list can also be found in `documentation/asn1.d`.
+This list can also be found in `documentation/asn1.md`.
 
 ## Building
 
-This library requires [NodeJS](https://nodejs.org/en/) v10.3.0 or higher, mostly to support
-[Regular Expression Named Capture Groups](https://github.com/tc39/proposal-regexp-named-groups).
-See [this page](https://node.green/) for NodeJS ES2018 support.
-
-You can build this library by running:
-
-* `npm run-script build`
-* `make -f build/Makefile`
-
-The outputs will all be in `dist`.
-
-* `dist/web/asn1.js` is the entire ASN.1 library for the web browser, which is not minified.
-* `dist/web` contains other smaller libraries that only contain specific codecs, and which are minified.
-* `dist/node/asn1.js` is the entire NodeJS library.
-* `dist/types` contains all of the type declarations.
+You can build this library by running `npm run build`.
+The outputs will all be in `dist`. `dist/asn1.min.js` is the entire ASN.1
+library for the web browser, which is minified, and accessible under the
+variable `asn1`.
 
 ## Library Usage
 
@@ -99,6 +87,8 @@ el2.fromBytes(encodedData);
 console.log(el2.integer); // Logs '1433'
 ```
 
+Tests under the `test` directory can also serve as examples.
+
 ## See Also
 
 * [X.680 - Abstract Syntax Notation One (ASN.1)](https://www.itu.int/rec/T-REC-X.680/en), published by the
@@ -106,11 +96,3 @@ console.log(el2.integer); // Logs '1433'
 * [X.690 - ASN.1 encoding rules](https://www.itu.int/rec/T-REC-X.690/en), published by the
 [International Telecommunications Union](https://www.itu.int/en/pages/default.aspx).
 * [ASN.1: Communication Between Heterogeneous Systems](https://www.oss.com/asn1/resources/books-whitepapers-pubs/dubuisson-asn1-book.PDF) by Olivier Dubuisson
-
-## Contact Me
-
-If you would like to suggest fixes or improvements on this library, please just
-[leave an issue on this GitHub page](https://github.com/JonathanWilbur/asn1-ts/issues). If you would like to contact me for other reasons,
-please email me at [jonathan@wilbur.space](mailto:jonathan@wilbur.space)
-([My GPG Key](https://jonathan.wilbur.space/downloads/jonathan@wilbur.space.gpg.pub))
-([My TLS Certificate](https://jonathan.wilbur.space/downloads/jonathan@wilbur.space.chain.pem)). :boar:
