@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Default",
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": [],
+            "outFiles": [
+                "${workspaceFolder}/**/*.js",
+            ],
+        },
+        // I have found this to be somewhat unresponsive to breakpoints.
+        // I got it to work before by adding a `debugger` statement in
+        // my tests, then fidgeting with the breakpoints once the `debugger`
+        // statement pauses execution.
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Jest Tests",
+            "runtimeArgs": [
+                "--inspect-brk",
+            ],
+            // Use this on Posix machines:
+            "program": "${workspaceRoot}/node_modules/.bin/jest",
+            // Use this on Windows machines:
+            // "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+            "args": [
+                "--runInBand",
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+        }
+    ],
+}

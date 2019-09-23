@@ -1,0 +1,33 @@
+variables:
+  nodeVersion: '12.x'
+
+trigger:
+  branches:
+    include:
+      - master
+
+stages:
+
+  - stage: Development
+    displayName: Development
+    jobs:
+      - job: Lint
+        displayName: Lint Source
+        steps:
+          - task: NodeTool@0
+            displayName: 'Install NodeJS'
+            inputs:
+              versionSpec: $(nodeVersion)
+          - task: Npm@1
+            displayName: 'Install NodeJS Dependencies'
+            inputs:
+              command: install
+          - task: CmdLine@2
+            displayName: 'Run ESLint'
+            inputs:
+              script: 'npx eslint --config .eslintrc.yml ./source/**/*.ts'
+      - template: .azure-pipelines/test.yml
+        parameters:
+          name: 'test_node_12_ubuntu_16_x64'
+          nodeVersion: $(nodeVersion)
+          vmImage: 'ubuntu-16.04'

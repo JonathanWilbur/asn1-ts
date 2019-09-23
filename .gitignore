@@ -1,3 +1,20 @@
+test/jail/
+rubbish/
+junit.xml
+
+# Private keys, wallets, and other sensitive items.
+*.pem
+*.der
+*.key
+*.privkey
+*.privatekey
+*.seckey
+*.secretkey
+*.private
+*.secret
+wallet.dat
+default_wallet
+
 # Sourced from https://github.com/github/gitignore
 
 # NodeJS
@@ -29,17 +46,14 @@ typings/
 .cache
 .next
 .nuxt
+junit.xml
 
 # vuepress build output
 .vuepress/dist
 
 # Serverless directories
 .serverless
-
-
-
-
-
+.build
 
 # Windows Ignores
 Thumbs.db
@@ -84,6 +98,8 @@ Temporary Items
 .directory
 .Trash-*
 .nfs*
+*.rpm
+*.deb
 
 # Ignore PDFs so I don't infringe on intellectual property
 *.pdf
@@ -291,13 +307,6 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
-
-# Visual Studio Code Ignores
-.vscode/*
-.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # XCode Ignores
 xcuserdata/

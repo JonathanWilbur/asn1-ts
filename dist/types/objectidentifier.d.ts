@@ -5,3 +5,4 @@ export declare class ObjectIdentifier {
     readonly dotDelimitedNotation: string;
     toString(): string;
 }
+//# sourceMappingURL=objectidentifier.d.ts.map

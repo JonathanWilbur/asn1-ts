@@ -10,10 +10,8 @@ import { ObjectIdentifier } from "./objectidentifier";
 
 export
 class TypeIdentifier<Element extends ASN1Element> {
-
     constructor (
-        readonly id : ObjectIdentifier,
-        readonly type : Element
+        readonly id: ObjectIdentifier,
+        readonly type: Element
     ) {}
-
 }

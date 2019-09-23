@@ -1,0 +1,1 @@
+{"version":3,"file":"typeidentifier.d.ts","sourceRoot":"","sources":["../../source/types/typeidentifier.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,SAAS,CAAC;AACtC,OAAO,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAC;AAStD,qBACM,cAAc,CAAC,OAAO,SAAS,WAAW;IAExC,QAAQ,CAAC,EAAE,EAAE,gBAAgB;IAC7B,QAAQ,CAAC,IAAI,EAAE,OAAO;gBADb,EAAE,EAAE,gBAAgB,EACpB,IAAI,EAAE,OAAO;CAE7B"}

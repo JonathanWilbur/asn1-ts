@@ -1,0 +1,41 @@
+parameters:
+  name: ''
+  nodeVersion: '12.x'
+  vmImage: 'ubuntu-18.04'
+
+jobs:
+  - job: ${{ parameters.name }}
+    displayName: Build and Test on ${{ parameters.vmImage }} / NodeJS ${{ parameters.nodeVersion }}
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    steps:
+      - task: NodeTool@0
+        displayName: 'Install NodeJS'
+        inputs:
+          versionSpec: ${{ parameters.nodeVersion }}
+      - task: Npm@1
+        displayName: 'Install NodeJS Dependencies'
+        inputs:
+          command: install
+      - task: CmdLine@2
+        displayName: 'Transpile TypeScript'
+        inputs:
+          script: 'npx tsc'
+      - task: CmdLine@2
+        displayName: 'Run Webpack'
+        inputs:
+          script: 'npx webpack'
+      - task: CmdLine@2
+        displayName: 'Run Jest Tests'
+        inputs:
+          script: 'npx jest --ci --reporters=default --reporters=jest-junit'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/junit.xml' 
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          mergeTestResults: false
+          failTaskOnFailedTests: false
+          publishRunAttachments: true
+      # - task: checkVersionNumberIncrement
+      #   displayName: Check that the Version Number was Incremented

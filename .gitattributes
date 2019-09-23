@@ -1,3 +1,14 @@
-test/* linguist-vendored
-documentation/* linguist-documentation
-dist/* linguist-generated=true
+test/*          linguist-vendored
+documentation/* linguist-documentation=true
+dist/*          linguist-generated=true
+*.js            linguist-detectable=false
+
+# Text files
+*               text=crlf
+*.vcproj	    text eol=crlf
+*.sh		    text eol=lf
+Makefile        text eol=lf
+
+# Binary files
+*.jpg		    -text
+*.pdf           -text

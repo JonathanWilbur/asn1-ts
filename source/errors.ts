@@ -1,6 +1,6 @@
 export
 class ASN1Error extends Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -24,7 +24,7 @@ class ASN1RecursionError extends ASN1Error {
 
 export
 class ASN1TruncationError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -32,7 +32,7 @@ class ASN1TruncationError extends ASN1Error {
 
 export
 class ASN1OverflowError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -40,7 +40,7 @@ class ASN1OverflowError extends ASN1Error {
 
 export
 class ASN1SizeError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -48,7 +48,7 @@ class ASN1SizeError extends ASN1Error {
 
 export
 class ASN1PaddingError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -56,7 +56,7 @@ class ASN1PaddingError extends ASN1Error {
 
 export
 class ASN1UndefinedError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -64,7 +64,7 @@ class ASN1UndefinedError extends ASN1Error {
 
 export
 class ASN1CharactersError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -72,7 +72,7 @@ class ASN1CharactersError extends ASN1Error {
 
 export
 class ASN1ConstructionError extends ASN1Error {
-    constructor (m : string) {
+    constructor (m: string) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
