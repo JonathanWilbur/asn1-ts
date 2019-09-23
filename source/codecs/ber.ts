@@ -526,6 +526,7 @@ class BERElement extends X690Element {
                     "GraphicString, VisibleString, or ObjectDescriptor "
                     + "can only contain characters between 0x20 and 0x7E."
                     + ` Buffer: ${this.value.join(":")}`
+                    + ` Ret: ${ret}`
                 );
             }
         }
