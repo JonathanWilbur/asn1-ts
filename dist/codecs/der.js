@@ -499,7 +499,8 @@ class DERElement extends x690_1.X690Element {
             const characterCode = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
                 throw new errors.ASN1CharactersError("GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E.");
+                    + "can only contain characters between 0x20 and 0x7E."
+                    + ` Buffer: ${this.value.join(":")}`);
             }
         }
         return ret;

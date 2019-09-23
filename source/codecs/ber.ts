@@ -525,6 +525,7 @@ class BERElement extends X690Element {
                 throw new errors.ASN1CharactersError(
                     "GraphicString, VisibleString, or ObjectDescriptor "
                     + "can only contain characters between 0x20 and 0x7E."
+                    + ` Buffer: ${this.value.join(":")}`
                 );
             }
         }
