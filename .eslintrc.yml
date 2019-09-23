@@ -123,8 +123,9 @@ rules:
     - error
   no-useless-escape:
     - warn
+  # Named capture groups are not supported in most modern browsers.
   prefer-named-capture-group:
-    - warn
+    - off
   prefer-promise-reject-errors:
     - error
   radix:

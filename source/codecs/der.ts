@@ -415,7 +415,6 @@ class DERElement extends X690Element {
         }
         const match: RegExpExecArray | null = utcTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
-        if (match.groups === undefined) throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret: Date = new Date();
         let year: number = Number(match[1]);
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -461,7 +460,6 @@ class DERElement extends X690Element {
         }
         const match: RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
-        if (match.groups === undefined) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret: Date = new Date();
         const year: number = Number(match[1]);
         const month: number = (Number(match[2]) - 1);
@@ -544,9 +542,9 @@ class DERElement extends X690Element {
         }
         let ret: string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("windows-1252")).decode(new Uint8Array(this.value));
+            ret = (new TextDecoder("utf-8")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("ascii");
+            ret = (Buffer.from(this.value)).toString("utf-8");
         }
         for (let i: number = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F) {

@@ -39,7 +39,7 @@ describe("A Distinguished Encoding Rules Element", () => {
 
     it("does not change in value when the REAL accessor is called", () => {
         const el = new asn1.DERElement();
-        el.value = new Uint8Array([ ASN1SpecialRealValue.plusInfinity ]);
+        el.value = new Uint8Array([ asn1.ASN1SpecialRealValue.plusInfinity ]);
         expect(el.real).toBe(el.real);
     });
 
@@ -63,14 +63,14 @@ describe("A Distinguished Encoding Rules Element", () => {
 
     it("does not change in value when the SEQUENCE accessor is called", () => {
         const el = new asn1.DERElement();
-        el.construction = ASN1Construction.constructed;
+        el.construction = asn1.ASN1Construction.constructed;
         el.value = new Uint8Array([ 1, 1, 0xFF, 2, 1, 0x00 ]);
         expect(el.sequence).toEqual(el.sequence);
     });
 
     it("does not change in value when the SET accessor is called", () => {
         const el = new asn1.DERElement();
-        el.construction = ASN1Construction.constructed;
+        el.construction = asn1.ASN1Construction.constructed;
         el.value = new Uint8Array([ 1, 1, 0xFF, 2, 1, 0x00 ]);
         expect(el.sequence).toEqual(el.sequence);
     });

@@ -91,23 +91,25 @@ enum ASN1UniversalType {
 export const printableStringCharacters: string
     = "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
 
-export const utcTimeRegex: RegExp = /^(\d{2})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)(?:[0-5]\d)?((?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
+// eslint-disable-next-line
+export const utcTimeRegex: RegExp = /^(\d{2})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)([0-5]\d)?((?:(\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
 
 // FIXME: Why is this unused?
-// export const distinguishedUTCTimeRegex: RegExp
-//     = /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?Z$/u;
+// eslint-disable-next-line
+// export const distinguishedUTCTimeRegex: RegExp = /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?Z$/u;
 
-export const generalizedTimeRegex: RegExp = /^(\d{4})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)?([0-5]\d)?(?:(\.|,)(\d+))?((?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
+// eslint-disable-next-line
+export const generalizedTimeRegex: RegExp = /^(\d{4})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)?([0-5]\d)?(?:(?:\.|,)(\d+))?((?:(?:\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
 
 // FIXME: Why is this unused?
-// export const distinguishedGeneralizedTimeRegex: RegExp
-//     = /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)(?:(\.|,)(?<fraction>\d*[1-9]))?Z$/u;
+// eslint-disable-next-line
+// export const distinguishedGeneralizedTimeRegex: RegExp = /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)(?:(\.|,)(?<fraction>\d*[1-9]))?Z$/u;
 
-export const nr1Regex: RegExp = /^\ *(\+|\-)?\d+$/;
-export const nr2Regex: RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
-export const nr3Regex: RegExp = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
-export const canonicalNR3Regex: RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
-export const distinguishedNR3Regex: RegExp = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+export const nr1Regex: RegExp = /^ *(\+|-)?\d+$/u;
+export const nr2Regex: RegExp = /^ *(\+|-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/u;
+export const nr3Regex: RegExp = /^ *(\+|-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|-)?\d+$/u;
+export const canonicalNR3Regex: RegExp = /^ *-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:-?[1-9]\d*)$/u;
+export const distinguishedNR3Regex: RegExp = /^ *-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:-?[1-9]\d*)$/u;
 
 export
 const CANONICAL_TAG_CLASS_ORDERING: ASN1TagClass[] = [

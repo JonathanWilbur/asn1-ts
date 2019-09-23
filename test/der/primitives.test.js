@@ -100,8 +100,8 @@ describe("Distinguished Encoding Rules", () => {
 
     it("encodes and decodes an OBJECT IDENTIFIER correctly", () => {
         const el = new asn1.DERElement();
-        el.objectIdentifier = new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
-        expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
+        el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
+        expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
 
         const sensitiveValues = [
             0,
@@ -129,24 +129,24 @@ describe("Distinguished Encoding Rules", () => {
         for (let x = 0; x < 2; x++) {
             for (let y = 0; y < 40; y++) {
                 sensitiveValues.forEach((z) => {
-                    el.objectIdentifier = new ObjectIdentifier([ x, y, 6, 4, z ]);
-                    expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ x, y, 6, 4, z ]));
-                    el.objectIdentifier = new ObjectIdentifier([ x, y, 6, 4, z, 0 ]);
-                    expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ x, y, 6, 4, z, 0 ]));
-                    el.objectIdentifier = new ObjectIdentifier([ x, y, 6, 4, z, 1 ]);
-                    expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ x, y, 6, 4, z, 1 ]));
+                    el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z ]);
+                    expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ x, y, 6, 4, z ]));
+                    el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]);
+                    expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]));
+                    el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]);
+                    expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]));
                 });
             }
         }
 
         for (let y = 0; y < 175; y++) {
             sensitiveValues.forEach((z) => {
-                el.objectIdentifier = new ObjectIdentifier([ 2, y, 6, 4, z ]);
-                expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 2, y, 6, 4, z ]));
-                el.objectIdentifier = new ObjectIdentifier([ 2, y, 6, 4, z, 0 ]);
-                expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 2, y, 6, 4, z, 0 ]));
-                el.objectIdentifier = new ObjectIdentifier([ 2, y, 6, 4, z, 1 ]);
-                expect(el.objectIdentifier).toEqual(new ObjectIdentifier([ 2, y, 6, 4, z, 1 ]));
+                el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]);
+                expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]));
+                el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]);
+                expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]));
+                el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]);
+                expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]));
             });
         }
     });

@@ -76,13 +76,13 @@ var ASN1UniversalType;
     ASN1UniversalType[ASN1UniversalType["bmpString"] = 30] = "bmpString";
 })(ASN1UniversalType = exports.ASN1UniversalType || (exports.ASN1UniversalType = {}));
 exports.printableStringCharacters = "etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?";
-exports.utcTimeRegex = /^(\d{2})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)(?:[0-5]\d)?((?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
-exports.generalizedTimeRegex = /^(\d{4})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)?([0-5]\d)?(?:(\.|,)(\d+))?((?:(\+|\-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
-exports.nr1Regex = /^\ *(\+|\-)?\d+$/;
-exports.nr2Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/;
-exports.nr3Regex = /^\ *(\+|\-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|\-)?\d+$/;
-exports.canonicalNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
-exports.distinguishedNR3Regex = /^\ *\-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:\-?[1-9]\d*)$/;
+exports.utcTimeRegex = /^(\d{2})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)([0-5]\d)?((?:(\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
+exports.generalizedTimeRegex = /^(\d{4})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)?([0-5]\d)?(?:(?:\.|,)(\d+))?((?:(?:\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
+exports.nr1Regex = /^ *(\+|-)?\d+$/u;
+exports.nr2Regex = /^ *(\+|-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/u;
+exports.nr3Regex = /^ *(\+|-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)(e|E)(\+|-)?\d+$/u;
+exports.canonicalNR3Regex = /^ *-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:-?[1-9]\d*)$/u;
+exports.distinguishedNR3Regex = /^ *-?(?:[1-9]\d*)?[1-9]\.E(?:\+0)|(?:-?[1-9]\d*)$/u;
 exports.CANONICAL_TAG_CLASS_ORDERING = [
     ASN1TagClass.universal,
     ASN1TagClass.application,

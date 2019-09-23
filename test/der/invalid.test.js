@@ -1,10 +1,5 @@
 const asn1 = require("../../dist/index.js");
 
-/**
- * Until the issue linked below is fixed, all of these tests can only ensure
- * that an error is thrown, but not that a specific type of error is thrown.
- * See https://github.com/jasmine/jasmine/issues/819.
- */
 describe("Distinguished Encoding Rules", () => {
     it("throws an exception when decoding a length that could have been encoded on fewer octets", () => {
         const el = new asn1.DERElement();

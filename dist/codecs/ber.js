@@ -427,8 +427,6 @@ class BERElement extends x690_1.X690Element {
         const match = values_1.utcTimeRegex.exec(dateString);
         if (match === null)
             throw new errors.ASN1Error("Malformed UTCTime string.");
-        if (match.groups === undefined)
-            throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret = new Date();
         let year = Number(match[1]);
         year = (year < 70 ? (2000 + year) : (1900 + year));
@@ -472,8 +470,6 @@ class BERElement extends x690_1.X690Element {
         }
         const match = values_1.generalizedTimeRegex.exec(dateString);
         if (match === null)
-            throw new errors.ASN1Error("Malformed GeneralizedTime string.");
-        if (match.groups === undefined)
             throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret = new Date();
         const year = Number(match[1]);
@@ -546,10 +542,10 @@ class BERElement extends x690_1.X690Element {
         const valueBytes = this.deconstruct("GeneralString");
         let ret = "";
         if (typeof TextEncoder !== "undefined") {
-            ret = (new TextDecoder("windows-1252")).decode(valueBytes.buffer);
+            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("ascii");
+            ret = (Buffer.from(this.value)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F) {

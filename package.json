@@ -12,12 +12,12 @@
     ],
     "description": "ASN.1 encoding and decoding",
     "devDependencies": {
-        "@babel/core": "^7.6.0",
-        "@babel/preset-env": "^7.6.0",
+        "@babel/core": "^7.6.2",
+        "@babel/preset-env": "^7.6.2",
         "@babel/preset-typescript": "^7.6.0",
         "@types/node": "^12.7.4",
-        "@typescript-eslint/eslint-plugin": "^2.1.0",
-        "@typescript-eslint/parser": "^2.1.0",
+        "@typescript-eslint/eslint-plugin": "^2.3.1",
+        "@typescript-eslint/parser": "^2.3.1",
         "babel-jest": "^24.9.0",
         "eslint": "^6.3.0",
         "jest": "^24.9.0",
@@ -62,5 +62,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
-    "version": "1.6.1"
+    "version": "2.0.0"
 }
