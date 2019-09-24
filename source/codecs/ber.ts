@@ -261,7 +261,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         return ret;
     }
@@ -329,7 +329,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i: number = 0; i < ret.length; i++) {
             const characterCode: number = ret.charCodeAt(i);
@@ -362,7 +362,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i: number = 0; i < ret.length; i++) {
             if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
@@ -404,7 +404,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         return ret;
     }
@@ -431,7 +431,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            dateString = (Buffer.from(this.value)).toString("utf-8");
+            dateString = (Buffer.from(valueBytes)).toString("utf-8");
         }
         const match: RegExpExecArray | null = utcTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
@@ -474,7 +474,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            dateString = (Buffer.from(this.value)).toString("utf-8");
+            dateString = (Buffer.from(valueBytes)).toString("utf-8");
         }
         const match: RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
@@ -517,7 +517,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i: number = 0; i < ret.length; i++) {
             const characterCode: number = ret.charCodeAt(i);
@@ -525,8 +525,6 @@ class BERElement extends X690Element {
                 throw new errors.ASN1CharactersError(
                     "GraphicString, VisibleString, or ObjectDescriptor "
                     + "can only contain characters between 0x20 and 0x7E."
-                    + ` Buffer: ${this.value.join(":")}`
-                    + ` Ret: ${ret}`
                 );
             }
         }
@@ -560,7 +558,7 @@ class BERElement extends X690Element {
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i: number = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F) {
@@ -597,7 +595,7 @@ class BERElement extends X690Element {
                 (valueBytes[i + 0] << 24)
                 + (valueBytes[i + 1] << 16)
                 + (valueBytes[i + 2] << 8)
-                +  (valueBytes[i + 3] << 0)
+                + (valueBytes[i + 3] << 0)
             );
         }
         return ret;

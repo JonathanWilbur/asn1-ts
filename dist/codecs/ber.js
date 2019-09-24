@@ -269,7 +269,7 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         return ret;
     }
@@ -333,7 +333,7 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
@@ -363,7 +363,7 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
             if (values_1.printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
@@ -399,7 +399,7 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         return ret;
     }
@@ -426,7 +426,7 @@ class BERElement extends x690_1.X690Element {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            dateString = (Buffer.from(this.value)).toString("utf-8");
+            dateString = (Buffer.from(valueBytes)).toString("utf-8");
         }
         const match = values_1.utcTimeRegex.exec(dateString);
         if (match === null)
@@ -470,7 +470,7 @@ class BERElement extends x690_1.X690Element {
             dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            dateString = (Buffer.from(this.value)).toString("utf-8");
+            dateString = (Buffer.from(valueBytes)).toString("utf-8");
         }
         const match = values_1.generalizedTimeRegex.exec(dateString);
         if (match === null)
@@ -512,15 +512,13 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
             const characterCode = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
                 throw new errors.ASN1CharactersError("GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E."
-                    + ` Buffer: ${this.value.join(":")}`
-                    + ` Ret: ${ret}`);
+                    + "can only contain characters between 0x20 and 0x7E.");
             }
         }
         return ret;
@@ -551,7 +549,7 @@ class BERElement extends x690_1.X690Element {
             ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer);
         }
         else if (typeof Buffer !== "undefined") {
-            ret = (Buffer.from(this.value)).toString("utf-8");
+            ret = (Buffer.from(valueBytes)).toString("utf-8");
         }
         for (let i = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F) {
