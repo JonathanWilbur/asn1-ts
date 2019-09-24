@@ -22,7 +22,6 @@
         "eslint": "^6.3.0",
         "jest": "^24.9.0",
         "jest-junit": "^7.0.0",
-        "serverless": "^1.51.0",
         "ts-loader": "^6.0.4",
         "typescript": "^3.6.2",
         "webpack": "^4.39.3",
@@ -53,9 +52,7 @@
     "scripts": {
         "build": "npx tsc && npx webpack",
         "clean": "rm -rf dist; mkdir -p dist",
-        "deploy-functions": "npx sls deploy",
         "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
-        "remove-functions": "npx sls remove",
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
