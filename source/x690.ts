@@ -26,8 +26,12 @@ abstract class X690Element extends ASN1Element {
      * JavaScript.
      */
     set integer (value: number) {
-        if (value < MIN_SINT_32) throw new errors.ASN1OverflowError(`Number ${value} too small to be converted.`);
-        if (value > MAX_SINT_32) throw new errors.ASN1OverflowError(`Number ${value} too big to be converted.`);
+        if (value < MIN_SINT_32) {
+            throw new errors.ASN1OverflowError(`Number ${value} too small to be converted.`);
+        }
+        if (value > MAX_SINT_32) {
+            throw new errors.ASN1OverflowError(`Number ${value} too big to be converted.`);
+        }
 
         if (value <= 127 && value >= -128) {
             this.value = new Uint8Array([
@@ -62,15 +66,21 @@ abstract class X690Element extends ASN1Element {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.");
         }
-        if (this.value.length === 0) throw new errors.ASN1SizeError("Number encoded on zero bytes!");
-        if (this.value.length > 4) throw new errors.ASN1OverflowError("Number too long to decode.");
+        if (this.value.length === 0) {
+            throw new errors.ASN1SizeError("Number encoded on zero bytes!");
+        }
+        if (this.value.length > 4) {
+            throw new errors.ASN1OverflowError("Number too long to decode.");
+        }
         if (
             this.value.length > 2
             && (
                 (this.value[0] === 0xFF && this.value[1] >= 0b10000000)
                 || (this.value[0] === 0x00 && this.value[1] < 0b10000000)
             )
-        ) throw new errors.ASN1PaddingError("Unnecessary padding bytes on INTEGER or ENUMERATED.");
+        ) {
+            throw new errors.ASN1PaddingError("Unnecessary padding bytes on INTEGER or ENUMERATED.");
+        }
         return ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(0));
     }
 

@@ -16,6 +16,8 @@ import {
     utcTimeRegex,
 } from "../values";
 import { X690Element } from "../x690";
+import convertBytesToText from "../convertBytesToText";
+import convertTextToBytes from "../convertTextToBytes";
 
 export
 class BERElement extends X690Element {
@@ -31,7 +33,9 @@ class BERElement extends X690Element {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
         }
-        if (this.value.length !== 1) throw new errors.ASN1SizeError("BOOLEAN not one byte");
+        if (this.value.length !== 1) {
+            throw new errors.ASN1SizeError("BOOLEAN not one byte");
+        }
         return (this.value[0] !== 0);
     }
 
@@ -75,33 +79,34 @@ class BERElement extends X690Element {
             }
             ret.length -= this.value[0];
             return ret;
-        } else {
-            if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
-            let appendy: boolean[] = [];
-            const substrings: BERElement[] = this.sequence;
-            substrings.slice(0, (substrings.length - 1)).forEach((substring) => {
-                if (
-                    substring.construction === ASN1Construction.primitive
-                    && substring.value.length > 0
-                    && substring.value[0] !== 0x00
-                ) {
-                    throw new errors.ASN1Error(
-                        "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
-                    );
-                }
-            });
-            substrings.forEach((substring) => {
-                if (substring.tagClass !== this.tagClass) {
-                    throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
-                }
-                if (substring.tagNumber !== this.tagNumber) {
-                    throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
-                }
-                substring.recursionCount = (this.recursionCount + 1);
-                appendy = appendy.concat(substring.bitString);
-            });
-            return appendy;
         }
+        if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) {
+            throw new errors.ASN1RecursionError();
+        }
+        let appendy: boolean[] = [];
+        const substrings: BERElement[] = this.sequence;
+        substrings.slice(0, (substrings.length - 1)).forEach((substring: BERElement): void => {
+            if (
+                substring.construction === ASN1Construction.primitive
+                && substring.value.length > 0
+                && substring.value[0] !== 0x00
+            ) {
+                throw new errors.ASN1Error(
+                    "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
+                );
+            }
+        });
+        substrings.forEach((substring: BERElement): void => {
+            if (substring.tagClass !== this.tagClass) {
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+            }
+            if (substring.tagNumber !== this.tagNumber) {
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+            }
+            substring.recursionCount = (this.recursionCount + 1);
+            appendy = appendy.concat(substring.bitString);
+        });
+        return appendy;
     }
 
     set octetString (value: Uint8Array) {
@@ -134,11 +139,7 @@ class BERElement extends X690Element {
             this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]); return;
         }
         const valueString: string = (String.fromCharCode(0b00000011) + value.toFixed(7)); // Encodes as NR3
-        if (typeof TextEncoder !== "undefined") {
-            this.value = (new TextEncoder()).encode(valueString);
-        } else {
-            this.value = Buffer.from(valueString, "utf-8");
-        }
+        this.value = convertTextToBytes(valueString);
     }
 
     get real (): number {
@@ -155,14 +156,7 @@ class BERElement extends X690Element {
             throw new errors.ASN1UndefinedError("Unrecognized special REAL value!");
         }
         case (0b00000000): {
-            let realString: string;
-            if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-                realString = (new TextDecoder("utf-8")).decode(this.value.slice(1));
-            } else if (typeof Buffer !== "undefined") { // NodeJS
-                realString = (Buffer.from(this.value.slice(1))).toString("utf-8");
-            } else {
-                throw new errors.ASN1Error("No ability to decode bytes to string!");
-            }
+            const realString: string = convertBytesToText(this.value.slice(1));
             switch (this.value[0] & 0b00111111) {
             case 1: { // NR1
                 if (!nr1Regex.test(realString)) throw new errors.ASN1Error("Malformed NR1 Base-10 REAL");
@@ -248,22 +242,11 @@ class BERElement extends X690Element {
     }
 
     set utf8String (value: string) {
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get utf8String (): string {
-        const valueBytes: Uint8Array = this.deconstruct("UTF8String");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
-        return ret;
+        return convertBytesToText(this.deconstruct("UTF8String"));
     }
 
     set sequence (value: BERElement[]) {
@@ -315,22 +298,11 @@ class BERElement extends X690Element {
                 throw new errors.ASN1CharactersError("NumericString can only contain characters 0 - 9 and space.");
             }
         }
-
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get numericString (): string {
-        const valueBytes: Uint8Array = this.deconstruct("NumericString");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const ret: string = convertBytesToText(this.deconstruct("NumericString"));
         for (let i: number = 0; i < ret.length; i++) {
             const characterCode: number = ret.charCodeAt(i);
             if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
@@ -348,22 +320,11 @@ class BERElement extends X690Element {
                 );
             }
         }
-
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get printableString (): string {
-        const valueBytes: Uint8Array = this.deconstruct("PrintableString");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const ret: string = convertBytesToText(this.deconstruct("PrintableString"));
         for (let i: number = 0; i < ret.length; i++) {
             if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
                 throw new errors.ASN1CharactersError(
@@ -391,22 +352,11 @@ class BERElement extends X690Element {
     }
 
     set ia5String (value: string) {
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get ia5String (): string {
-        const valueBytes: Uint8Array = this.deconstruct("IA5String");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
-        return ret;
+        return convertBytesToText(this.deconstruct("IA5String"));
     }
 
     set utcTime (value: Date) {
@@ -418,21 +368,11 @@ class BERElement extends X690Element {
         const minute: string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
         const second: string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
         const utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(utcString);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(utcString, "utf-8");
-        }
+        this.value = convertTextToBytes(utcString);
     }
 
     get utcTime (): Date {
-        const valueBytes: Uint8Array = this.deconstruct("UTCTime");
-        let dateString: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            dateString = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const dateString: string = convertBytesToText(this.deconstruct("UTCTime"));
         const match: RegExpExecArray | null = utcTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
         const ret: Date = new Date();
@@ -461,21 +401,11 @@ class BERElement extends X690Element {
         const minute: string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
         const second: string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
         const timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(timeString);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(timeString, "utf-8");
-        }
+        this.value = convertTextToBytes(timeString);
     }
 
     get generalizedTime (): Date {
-        const valueBytes: Uint8Array = this.deconstruct("GeneralizedTime");
-        let dateString: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            dateString = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            dateString = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const dateString: string = convertBytesToText(this.deconstruct("GeneralizedTime"));
         const match: RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
         if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
         const ret: Date = new Date();
@@ -503,22 +433,11 @@ class BERElement extends X690Element {
                     + "can only contain characters between 0x20 and 0x7E."
             );
         }
-
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "utf-8");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get graphicString (): string {
-        const valueBytes: Uint8Array = this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const ret: string = convertBytesToText(this.deconstruct("GraphicString, VisibleString, or ObjectDescriptor"));
         for (let i: number = 0; i < ret.length; i++) {
             const characterCode: number = ret.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) {
@@ -545,21 +464,11 @@ class BERElement extends X690Element {
                 throw new errors.ASN1CharactersError("GeneralString can only contain ASCII characters.");
             }
         }
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            this.value = (new TextEncoder()).encode(value);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            this.value = Buffer.from(value, "ascii");
-        }
+        this.value = convertTextToBytes(value);
     }
 
     get generalString (): string {
-        const valueBytes: Uint8Array = this.deconstruct("GeneralString");
-        let ret: string = "";
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-8")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            ret = (Buffer.from(valueBytes)).toString("utf-8");
-        }
+        const ret: string = convertBytesToText(this.deconstruct("GeneralString"));
         for (let i: number = 0; i < ret.length; i++) {
             if (ret.charCodeAt(i) > 0x7F) {
                 throw new errors.ASN1CharactersError("GeneralString can only contain ASCII characters.");
@@ -613,9 +522,8 @@ class BERElement extends X690Element {
     get bmpString (): string {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
         if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.");
-        let ret: string = "";
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            ret = (new TextDecoder("utf-16be")).decode(valueBytes.buffer as ArrayBuffer);
+            return (new TextDecoder("utf-16be")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
             const swappedEndianness: Uint8Array = new Uint8Array(valueBytes.length);
             for (let i: number = 0; i < valueBytes.length; i += 2) {
@@ -627,9 +535,10 @@ class BERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            ret = (Buffer.from(swappedEndianness)).toString("utf-16le");
+            return (Buffer.from(swappedEndianness)).toString("utf-16le");
+        } else {
+            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
         }
-        return ret;
     }
 
     constructor
@@ -650,7 +559,9 @@ class BERElement extends X690Element {
         if (bytes.length < 2) {
             throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.");
         }
-        if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
+        if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) {
+            throw new errors.ASN1RecursionError();
+        }
         let cursor: number = 0;
         switch (bytes[cursor] & 0b11000000) {
         case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
@@ -720,7 +631,7 @@ class BERElement extends X690Element {
                     lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
                 }
                 let length: number = 0;
-                lengthNumberOctets.forEach((octet) => {
+                lengthNumberOctets.forEach((octet: number): void => {
                     length <<= 8;
                     length += octet;
                 });
@@ -728,7 +639,9 @@ class BERElement extends X690Element {
                     throw new errors.ASN1OverflowError("ASN.1 element too large.");
                 }
                 cursor += (numberOfLengthOctets);
-                if ((cursor + length) > bytes.length) throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+                if ((cursor + length) > bytes.length) {
+                    throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+                }
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
             } else { // Indefinite
@@ -760,7 +673,9 @@ class BERElement extends X690Element {
             }
         } else { // Definite Short
             const length: number = (bytes[cursor++] & 0x7F);
-            if ((cursor + length) > bytes.length) throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
+            if ((cursor + length) > bytes.length) {
+                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
+            }
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
         }

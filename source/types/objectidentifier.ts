@@ -3,9 +3,13 @@ class ObjectIdentifier {
     public readonly _nodes: number[];
 
     constructor (nodes: number[]) {
-        if (nodes.length < 2) throw new Error("Cannot construct an OID with less than two nodes!");
+        if (nodes.length < 2) {
+            throw new Error("Cannot construct an OID with less than two nodes!");
+        }
 
-        if (nodes.length >= 1 && !(nodes[0] in [0, 1, 2])) throw new Error("OIDs first node must be 0, 1, or 2!");
+        if (nodes.length >= 1 && !(nodes[0] in [0, 1, 2])) {
+            throw new Error("OIDs first node must be 0, 1, or 2!");
+        }
 
         if
         (
@@ -18,9 +22,13 @@ class ObjectIdentifier {
             );
         }
 
-        nodes.forEach((node) => {
-            if (node < 0) throw new Error("OID node numbers cannot be negative!");
-            if (node > Number.MAX_SAFE_INTEGER) throw new Error("OID number was too big!");
+        nodes.forEach((node: number): void => {
+            if (node < 0) {
+                throw new Error("OID node numbers cannot be negative!");
+            }
+            if (node > Number.MAX_SAFE_INTEGER) {
+                throw new Error("OID number was too big!");
+            }
         });
 
         this._nodes = nodes.slice(0);

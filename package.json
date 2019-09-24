@@ -50,7 +50,7 @@
         "url": "https://github.com/JonathanWilbur/asn1-ts.git"
     },
     "scripts": {
-        "build": "npx tsc && npx webpack",
+        "build": "npx tsc && npx webpack --config ber.webpack.config.js && npx webpack --config der.webpack.config.js && npx webpack --config webpack.config.js",
         "clean": "rm -rf dist; mkdir -p dist",
         "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"

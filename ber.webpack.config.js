@@ -2,12 +2,12 @@ const path = require("path");
 
 module.exports = {
     entry: [
-        "./source/index.ts",
+        "./source/indices/ber.ts",
     ],
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "asn1.min.js",
-        library: "asn1",
+        filename: "ber.min.js",
+        library: "ber",
         libraryTarget: "var",
     },
     mode: "production",
