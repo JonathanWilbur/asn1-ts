@@ -1,1 +1,0 @@
-{"version":3,"file":"objectidentifier.d.ts","sourceRoot":"","sources":["../../source/types/objectidentifier.ts"],"names":[],"mappings":"AAAA,qBACM,gBAAgB;IAClB,SAAgB,MAAM,EAAE,MAAM,EAAE,CAAC;gBAEpB,KAAK,EAAE,MAAM,EAAE;aAgCxB,KAAK,EAAK,MAAM,EAAE;aAIlB,oBAAoB,EAAK,MAAM;IAI5B,QAAQ,IAAK,MAAM;CAG7B"}

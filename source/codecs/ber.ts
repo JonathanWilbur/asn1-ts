@@ -601,6 +601,42 @@ class BERElement extends X690Element {
         }
     }
 
+    /**
+     * A convenience method, created because `SEQUENCE` is so common. `null`
+     * and `undefined` elements may be supplied, and will simply be filtered
+     * out, which is particularly handy for encoding optional elements in a
+     * `SEQUENCE`.
+     *
+     * @param sequence The elements (or absence thereof) to encode.
+     */
+    public static fromSequence (sequence: (BERElement | null | undefined)[]): BERElement {
+        const ret: BERElement = new BERElement(
+            ASN1TagClass.universal,
+            ASN1Construction.constructed,
+            ASN1UniversalType.sequence,
+        );
+        ret.sequence = sequence.filter(element => Boolean(element)) as BERElement[];
+        return ret;
+    }
+
+    /**
+     * A convenience method, created because `SET` is so common. `null`
+     * and `undefined` elements may be supplied, and will simply be filtered
+     * out, which is particularly handy for encoding optional elements in a
+     * `SET`.
+     *
+     * @param set The elements (or absence thereof) to encode.
+     */
+    public static fromSet (set: (BERElement | null | undefined)[]): BERElement {
+        const ret: BERElement = new BERElement(
+            ASN1TagClass.universal,
+            ASN1Construction.constructed,
+            ASN1UniversalType.set,
+        );
+        ret.set = set.filter(element => Boolean(element)) as BERElement[];
+        return ret;
+    }
+
     constructor (
         tagClass: ASN1TagClass = ASN1TagClass.universal,
         construction: ASN1Construction = ASN1Construction.primitive,
