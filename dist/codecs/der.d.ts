@@ -21,7 +21,8 @@ export declare class DERElement extends X690Element {
     generalString: string;
     universalString: string;
     bmpString: string;
-    constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number);
+    encode(value: any): void;
+    constructor(tagClass?: ASN1TagClass, construction?: ASN1Construction, tagNumber?: number, value?: any);
     fromBytes(bytes: Uint8Array): number;
     toBytes(): Uint8Array;
 }

@@ -16,6 +16,7 @@ const values_1 = require("../values");
 const x690_1 = require("../x690");
 const convertBytesToText_1 = __importDefault(require("../convertBytesToText"));
 const convertTextToBytes_1 = __importDefault(require("../convertTextToBytes"));
+const objectidentifier_1 = require("../types/objectidentifier");
 class DERElement extends x690_1.X690Element {
     set boolean(value) {
         this.value = new Uint8Array(1);
@@ -498,12 +499,77 @@ class DERElement extends x690_1.X690Element {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
         }
     }
-    constructor(tagClass = values_1.ASN1TagClass.universal, construction = values_1.ASN1Construction.primitive, tagNumber = 0) {
+    encode(value) {
+        switch (typeof value) {
+            case ("undefined"): {
+                this.value = new Uint8Array(0);
+                break;
+            }
+            case ("boolean"): {
+                this.tagNumber = values_1.ASN1UniversalType.boolean;
+                this.boolean = value;
+                break;
+            }
+            case ("number"): {
+                if (Number.isInteger(value)) {
+                    this.tagNumber = values_1.ASN1UniversalType.integer;
+                    this.integer = value;
+                }
+                else {
+                    this.tagNumber = values_1.ASN1UniversalType.realNumber;
+                    this.real = value;
+                }
+                break;
+            }
+            case ("string"): {
+                this.tagNumber = values_1.ASN1UniversalType.utf8String;
+                this.utf8String = value;
+                break;
+            }
+            case ("object"): {
+                if (!value) {
+                    this.tagNumber = values_1.ASN1UniversalType.nill;
+                }
+                else if (value instanceof Uint8Array) {
+                    this.tagNumber = values_1.ASN1UniversalType.octetString;
+                    this.octetString = value;
+                }
+                else if (value instanceof asn1_1.ASN1Element) {
+                    this.construction = values_1.ASN1Construction.constructed;
+                    this.sequence = [value];
+                }
+                else if (value instanceof objectidentifier_1.ObjectIdentifier) {
+                    this.tagNumber = values_1.ASN1UniversalType.objectIdentifier;
+                    this.objectIdentifier = value;
+                }
+                else if (Array.isArray(value)) {
+                    this.construction = values_1.ASN1Construction.constructed;
+                    this.tagNumber = values_1.ASN1UniversalType.sequence;
+                    this.sequence = value.map((sub) => {
+                        const ret = new DERElement();
+                        ret.encode(sub);
+                        return ret;
+                    });
+                }
+                else if (value instanceof Date) {
+                    this.generalizedTime = value;
+                }
+                else {
+                    throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+                }
+                break;
+            }
+            default: {
+                throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+            }
+        }
+    }
+    constructor(tagClass = values_1.ASN1TagClass.universal, construction = values_1.ASN1Construction.primitive, tagNumber = values_1.ASN1UniversalType.endOfContent, value = undefined) {
         super();
+        this.encode(value);
         this.tagClass = tagClass;
         this.construction = construction;
         this.tagNumber = tagNumber;
-        this.value = new Uint8Array(0);
     }
     fromBytes(bytes) {
         if (bytes.length < 2) {

@@ -12,19 +12,19 @@
     ],
     "description": "ASN.1 encoding and decoding",
     "devDependencies": {
-        "@babel/core": "^7.6.2",
-        "@babel/preset-env": "^7.6.2",
+        "@babel/core": "^7.6.4",
+        "@babel/preset-env": "^7.6.3",
         "@babel/preset-typescript": "^7.6.0",
-        "@types/node": "^12.7.4",
-        "@typescript-eslint/eslint-plugin": "^2.3.1",
-        "@typescript-eslint/parser": "^2.3.1",
+        "@types/node": "^12.7.12",
+        "@typescript-eslint/eslint-plugin": "^2.3.3",
+        "@typescript-eslint/parser": "^2.3.3",
         "babel-jest": "^24.9.0",
-        "eslint": "^6.3.0",
+        "eslint": "^6.5.1",
         "jest": "^24.9.0",
         "jest-junit": "^7.0.0",
-        "ts-loader": "^6.0.4",
-        "typescript": "^3.6.2",
-        "webpack": "^4.39.3",
+        "ts-loader": "^6.2.0",
+        "typescript": "^3.6.4",
+        "webpack": "^4.41.1",
         "webpack-cli": "^3.3.8"
     },
     "directories": {
@@ -56,5 +56,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
-    "version": "2.0.0"
+    "version": "2.1.0"
 }

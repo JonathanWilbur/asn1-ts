@@ -6,6 +6,7 @@ import {
     ASN1RealEncodingScale,
     ASN1SpecialRealValue,
     ASN1TagClass,
+    ASN1UniversalType,
     generalizedTimeRegex,
     nr3Regex,
     printableStringCharacters,
@@ -14,6 +15,7 @@ import {
 import { X690Element } from "../x690";
 import convertBytesToText from "../convertBytesToText";
 import convertTextToBytes from "../convertTextToBytes";
+import { ObjectIdentifier } from "../types/objectidentifier";
 
 export
 class DERElement extends X690Element {
@@ -541,17 +543,76 @@ class DERElement extends X690Element {
         }
     }
 
-    constructor
-    (
+    public encode (value: any): void {
+        switch (typeof value) {
+        case ("undefined"): {
+            this.value = new Uint8Array(0);
+            break;
+        }
+        case ("boolean"): {
+            this.tagNumber = ASN1UniversalType.boolean;
+            this.boolean = value;
+            break;
+        }
+        case ("number"): {
+            if (Number.isInteger(value)) {
+                this.tagNumber = ASN1UniversalType.integer;
+                this.integer = value;
+            } else {
+                this.tagNumber = ASN1UniversalType.realNumber;
+                this.real = value;
+            }
+            break;
+        }
+        case ("string"): {
+            this.tagNumber = ASN1UniversalType.utf8String;
+            this.utf8String = value;
+            break;
+        }
+        case ("object"): {
+            if (!value) {
+                this.tagNumber = ASN1UniversalType.nill;
+            } else if (value instanceof Uint8Array) {
+                this.tagNumber = ASN1UniversalType.octetString;
+                this.octetString = value;
+            } else if (value instanceof ASN1Element) {
+                this.construction = ASN1Construction.constructed;
+                this.sequence = [ value as DERElement ];
+            } else if (value instanceof ObjectIdentifier) {
+                this.tagNumber = ASN1UniversalType.objectIdentifier;
+                this.objectIdentifier = value;
+            } else if (Array.isArray(value)) {
+                this.construction = ASN1Construction.constructed;
+                this.tagNumber = ASN1UniversalType.sequence;
+                this.sequence = value.map((sub: any): DERElement => {
+                    const ret: DERElement = new DERElement();
+                    ret.encode(sub);
+                    return ret;
+                });
+            } else if (value instanceof Date) {
+                this.generalizedTime = value;
+            } else {
+                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+            }
+            break;
+        }
+        default: {
+            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+        }
+        }
+    }
+
+    constructor (
         tagClass: ASN1TagClass = ASN1TagClass.universal,
         construction: ASN1Construction = ASN1Construction.primitive,
-        tagNumber: number = 0
+        tagNumber: number = ASN1UniversalType.endOfContent,
+        value: any = undefined,
     ) {
         super();
+        this.encode(value);
         this.tagClass = tagClass;
         this.construction = construction;
         this.tagNumber = tagNumber;
-        this.value = new Uint8Array(0);
     }
 
     // Returns the number of bytes read
