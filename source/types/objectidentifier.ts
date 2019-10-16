@@ -11,8 +11,7 @@ class ObjectIdentifier {
             throw new Error("OIDs first node must be 0, 1, or 2!");
         }
 
-        if
-        (
+        if (
             ((nodes[0] < 2) && nodes[1] > 39)
             || (nodes[0] === 2 && nodes[1] > 175)
         ) {

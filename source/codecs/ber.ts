@@ -615,7 +615,7 @@ class BERElement extends X690Element {
             ASN1Construction.constructed,
             ASN1UniversalType.sequence,
         );
-        ret.sequence = sequence.filter(element => Boolean(element)) as BERElement[];
+        ret.sequence = sequence.filter((element) => Boolean(element)) as BERElement[];
         return ret;
     }
 
@@ -633,7 +633,7 @@ class BERElement extends X690Element {
             ASN1Construction.constructed,
             ASN1UniversalType.set,
         );
-        ret.set = set.filter(element => Boolean(element)) as BERElement[];
+        ret.set = set.filter((element) => Boolean(element)) as BERElement[];
         return ret;
     }
 

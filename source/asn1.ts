@@ -68,6 +68,7 @@ abstract class ASN1Element {
     abstract set bmpString (value: string);
     abstract get bmpString (): string;
 
+    // TODO: Convert this to a separate function.
     // eslint-disable-next-line
     protected static validateDateTime (
         dataType: string,
@@ -126,6 +127,7 @@ abstract class ASN1Element {
         if (seconds > 59) throw new errors.ASN1Error(`Seconds > 60 encountered in ${dataType}.`);
     }
 
+    // TODO: Convert this to a function
     protected static decodeUnsignedBigEndianInteger (value: Uint8Array): number {
         if (value.length === 0) return 0;
         if (value.length > 4) throw new errors.ASN1OverflowError("Number too long to decode.");
@@ -134,6 +136,7 @@ abstract class ASN1Element {
         return new Uint32Array(u8.reverse().buffer)[0];
     }
 
+    // TODO: Convert this to a function
     protected static decodeSignedBigEndianInteger (value: Uint8Array): number {
         if (value.length === 0) return 0;
         if (value.length > 4) throw new errors.ASN1OverflowError("Number too long to decode.");

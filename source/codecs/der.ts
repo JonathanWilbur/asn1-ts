@@ -616,7 +616,7 @@ class DERElement extends X690Element {
             ASN1Construction.constructed,
             ASN1UniversalType.sequence,
         );
-        ret.sequence = sequence.filter(element => Boolean(element)) as DERElement[];
+        ret.sequence = sequence.filter((element) => Boolean(element)) as DERElement[];
         return ret;
     }
 
@@ -634,7 +634,7 @@ class DERElement extends X690Element {
             ASN1Construction.constructed,
             ASN1UniversalType.set,
         );
-        ret.set = set.filter(element => Boolean(element)) as DERElement[];
+        ret.set = set.filter((element) => Boolean(element)) as DERElement[];
         return ret;
     }
 

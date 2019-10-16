@@ -154,6 +154,7 @@ rules:
     - error
   max-params:
     - warn
+    - 5
   no-lonely-if:
     - error
   no-mixed-operators:
