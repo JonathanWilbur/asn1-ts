@@ -153,4 +153,20 @@ describe("Basic Encoding Rules", () => {
         element.fromBytes(data);
         expect(element.printableString).toBe("0123456789");
     });
+
+    it("encodes and decodes explicitly-encoded elements correctly", () => {
+        const outerElement = new asn1.BERElement(
+            asn1.ASN1TagClass.context,
+            asn1.ASN1Construction.primitive,
+            5,
+        );
+        const innerElement = new asn1.BERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.primitive,
+            asn1.ASN1UniversalType.objectIdentifier,
+            new asn1.ObjectIdentifier([ 1, 5, 7 ]),
+        );
+        outerElement.inner = innerElement;
+        expect(outerElement.inner.objectIdentifier.nodes).toEqual([ 1, 5, 7 ]);
+    });
 });

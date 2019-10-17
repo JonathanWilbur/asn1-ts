@@ -638,6 +638,31 @@ class DERElement extends X690Element {
         return ret;
     }
 
+    get inner (): DERElement {
+        if (this.construction !== ASN1Construction.constructed) {
+            throw new errors.ASN1ConstructionError(
+                "An explicitly-encoded element cannot be encoded using "
+                + "primitive construction.",
+            );
+        }
+        const ret: DERElement = new DERElement();
+        const readBytes: number = ret.fromBytes(this.value);
+        if (readBytes !== this.value.length) {
+            throw new errors.ASN1ConstructionError(
+                "An explicitly-encoding element contained more than one single "
+                + "encoded element. The tag number of the first decoded "
+                + `element was ${ret.tagNumber}, and it was encoded on `
+                + `${readBytes} bytes.`,
+            );
+        }
+        return ret;
+    }
+
+    set inner (value: DERElement) {
+        this.construction = ASN1Construction.constructed;
+        this.value = value.toBytes();
+    }
+
     constructor (
         tagClass: ASN1TagClass = ASN1TagClass.universal,
         construction: ASN1Construction = ASN1Construction.primitive,
