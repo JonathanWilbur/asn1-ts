@@ -1,4 +1,4 @@
-const asn1 = require("../dist/index.js");
+const asn1 = require("../../dist/index.js");
 
 describe("X.690 abstract codec", () => {
     it("correctly identifies canonical ordering of tag classes", () => {
