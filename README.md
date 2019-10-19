@@ -63,6 +63,25 @@ console.log(el2.integer); // Logs '1433'
 
 Tests under the `test` directory can also serve as examples.
 
+## Future Development
+
+- [ ] Support `EXTERNAL` type.
+- [ ] Support `EmbeddedPDV` type.
+- [ ] Support `CharacterString` type.
+- [ ] Implement these codecs:
+  - [ ] Octet Encoding Rules
+  - [ ] JSON Encoding Rules
+  - [ ] Canonical Encoding Rules
+  - [ ] Lightweight Encoding Rules
+  - [ ] BACNet Encoding Rules
+- [ ] Use the `name` field in errors.
+- [ ] Internationalized strings.
+- [ ] Error UUIDs.
+- [ ] Serverless Functions
+  - [ ] `ValidateSize`
+  - [ ] `ValidateRange`
+  - [ ] All things relating to JSON Encoding Rules.
+
 ## See Also
 
 * [X.680 - Abstract Syntax Notation One (ASN.1)](https://www.itu.int/rec/T-REC-X.680/en), published by the
