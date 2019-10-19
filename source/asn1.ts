@@ -7,6 +7,7 @@ abstract class ASN1Element {
     protected recursionCount: number = 0;
     protected static readonly nestingRecursionLimit: number = 5;
 
+    public name: string = "";
     public tagClass: ASN1TagClass = ASN1TagClass.universal;
     public construction: ASN1Construction = ASN1Construction.primitive;
     public tagNumber: number = 0;
@@ -67,6 +68,146 @@ abstract class ASN1Element {
     // characterString
     abstract set bmpString (value: string);
     abstract get bmpString (): string;
+
+    private validateSize (name: string, units: string, actualSize: number, min: number, max?: number): void {
+        const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);
+        if (actualSize < min) {
+            throw new errors.ASN1SizeError(
+                `${name} encoded ${actualSize} ${units} when the `
+                + `minimum permissible is ${min} ${units}.`,
+            );
+        }
+        if (actualSize > effectiveMax) {
+            throw new errors.ASN1SizeError(
+                `${name} encoded ${actualSize} ${units} when the `
+                + `maximum permissible is ${effectiveMax} ${units}.`,
+            );
+        }
+    }
+
+    private validateRange (name: string, actualValue: number, min: number, max?: number): void {
+        const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);
+        if (actualValue < min) {
+            throw new errors.ASN1OverflowError(
+                `${name} was ${actualValue} when the `
+                + `minimum permissible is ${min}.`,
+            );
+        }
+        if (actualValue > effectiveMax) {
+            throw new errors.ASN1OverflowError(
+                `${name} was ${actualValue} when the `
+                + `maximum permissible is ${effectiveMax}.`,
+            );
+        }
+    }
+
+    public sizeConstrainedBitString (min: number, max?: number): boolean[] {
+        const ret: boolean[] = this.bitString;
+        this.validateSize(this.name || "BIT STRING", "bits", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedOctetString (min: number, max?: number): Uint8Array {
+        const ret: Uint8Array = this.octetString;
+        this.validateSize(this.name || "OCTET STRING", "octets", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedObjectDescriptor (min: number, max?: number): string {
+        const ret: string = this.objectDescriptor;
+        this.validateSize(this.name || "ObjectDescriptor", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedUTF8String (min: number, max?: number): string {
+        const ret: string = this.utf8String;
+        this.validateSize(this.name || "UTF8String", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedSequenceOf (min: number, max?: number): ASN1Element[] {
+        const ret: ASN1Element[] = this.sequence;
+        this.validateSize(this.name || "SEQUENCE OF", "elements", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedSetOf (min: number, max?: number): ASN1Element[] {
+        const ret: ASN1Element[] = this.set;
+        this.validateSize(this.name || "SET OF", "elements", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedNumericString (min: number, max?: number): string {
+        const ret: string = this.numericString;
+        this.validateSize(this.name || "NumericString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedPrintableString (min: number, max?: number): string {
+        const ret: string = this.printableString;
+        this.validateSize(this.name || "PrintableString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedTeletexString (min: number, max?: number): Uint8Array {
+        const ret: Uint8Array = this.teletexString;
+        this.validateSize(this.name || "TeletexString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedVideotexString (min: number, max?: number): Uint8Array {
+        const ret: Uint8Array = this.videotexString;
+        this.validateSize(this.name || "VideotexString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedIA5String (min: number, max?: number): string {
+        const ret: string = this.ia5String;
+        this.validateSize(this.name || "IA5String", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedGraphicString (min: number, max?: number): string {
+        const ret: string = this.graphicString;
+        this.validateSize(this.name || "GraphicString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedVisibleString (min: number, max?: number): string {
+        const ret: string = this.visibleString;
+        this.validateSize(this.name || "VisibleString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedGeneralString (min: number, max?: number): string {
+        const ret: string = this.generalString;
+        this.validateSize(this.name || "GeneralString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedUniversalString (min: number, max?: number): string {
+        const ret: string = this.universalString;
+        this.validateSize(this.name || "UniversalString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public sizeConstrainedBMPString (min: number, max?: number): string {
+        const ret: string = this.bmpString;
+        this.validateSize(this.name || "BMPString", "characters", ret.length, min, max);
+        return ret;
+    }
+
+    public rangeConstrainedInteger (min: number, max?: number): number {
+        const ret: number = this.integer;
+        this.validateRange(this.name || "INTEGER", ret, min, max);
+        return ret;
+    }
+
+    public rangeConstrainedReal (min: number, max?: number): number {
+        const ret: number = this.real;
+        this.validateRange(this.name || "REAL", ret, min, max);
+        return ret;
+    }
 
     // TODO: Convert this to a separate function.
     // eslint-disable-next-line
