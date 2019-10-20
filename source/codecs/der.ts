@@ -572,6 +572,7 @@ class DERElement extends X690Element {
         case ("object"): {
             if (!value) {
                 this.tagNumber = ASN1UniversalType.nill;
+                this.value = new Uint8Array(0);
             } else if (value instanceof Uint8Array) {
                 this.tagNumber = ASN1UniversalType.octetString;
                 this.octetString = value;
