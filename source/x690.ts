@@ -5,17 +5,6 @@ import { ASN1Construction, MAX_SINT_32, MIN_SINT_32, ASN1TagClass, CANONICAL_TAG
 
 export
 abstract class X690Element extends ASN1Element {
-    public validateTag (
-        permittedClasses: ASN1TagClass[],
-        permittedConstruction: ASN1Construction[],
-        permittedNumbers: number[],
-    ): number {
-        if (!permittedClasses.includes(this.tagClass)) return -1;
-        if (!permittedConstruction.includes(this.construction)) return -2;
-        if (!permittedNumbers.includes(this.tagNumber)) return -3;
-        return 0;
-    }
-
     /**
      * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
      * JavaScript's bitshift operators treat all integers as though they were

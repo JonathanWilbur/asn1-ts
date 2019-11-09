@@ -291,4 +291,169 @@ abstract class ASN1Element {
     }
 
     abstract deconstruct (dataType: string): Uint8Array;
+
+    public validateTag (
+        permittedClasses: ASN1TagClass[],
+        permittedConstruction: ASN1Construction[],
+        permittedNumbers: number[],
+    ): number {
+        if (!permittedClasses.includes(this.tagClass)) return -1;
+        if (!permittedConstruction.includes(this.construction)) return -2;
+        if (!permittedNumbers.includes(this.tagNumber)) return -3;
+        return 0;
+    }
+
+    // Shorter aliases to make for smaller libraries
+
+    set bool (value: boolean) {
+        this.boolean = value;
+    }
+
+    get bool (): boolean {
+        return this.boolean;
+    }
+
+    set int (value: number) {
+        this.integer = value;
+    }
+
+    get int (): number {
+        return this.integer;
+    }
+
+    set bits (value: boolean[]) {
+        this.bitString = value;
+    }
+
+    get bits (): boolean[] {
+        return this.bitString;
+    }
+
+    set octs (value: Uint8Array) {
+        this.octetString = value;
+    }
+
+    get octs (): Uint8Array {
+        return this.octetString;
+    }
+
+    set oid (value: OID) {
+        this.objectIdentifier = value;
+    }
+
+    get oid (): OID {
+        return this.objectIdentifier;
+    }
+
+    set odesc (value: string) {
+        this.objectDescriptor = value;
+    }
+
+    get odesc (): string {
+        return this.objectDescriptor;
+    }
+
+    set enum (value: number) {
+        this.enumerated = value;
+    }
+
+    get enum (): number {
+        return this.enumerated;
+    }
+
+    set utf8 (value: string) {
+        this.utf8String = value;
+    }
+
+    get utf8 (): string {
+        return this.utf8String;
+    }
+
+    set roid (value: number[]) {
+        this.relativeObjectIdentifier = value;
+    }
+
+    get roid (): number[] {
+        return this.relativeObjectIdentifier;
+    }
+
+    set seq (value: ASN1Element[]) {
+        this.sequence = value;
+    }
+
+    get seq (): ASN1Element[] {
+        return this.sequence;
+    }
+
+    set nums (value: string) {
+        this.numericString = value;
+    }
+
+    get nums (): string {
+        return this.numericString;
+    }
+
+    set prints (value: string) {
+        this.printableString = value;
+    }
+
+    get prints (): string {
+        return this.printableString;
+    }
+
+    set ttex (value: Uint8Array) {
+        this.teletexString = value;
+    }
+
+    get ttex (): Uint8Array {
+        return this.teletexString;
+    }
+
+    set vtex (value: Uint8Array) {
+        this.videotexString = value;
+    }
+
+    get vtex (): Uint8Array {
+        return this.videotexString;
+    }
+
+    set ia5 (value: string) {
+        this.ia5String = value;
+    }
+
+    get ia5 (): string {
+        return this.ia5String;
+    }
+
+    set utc (value: Date) {
+        this.utcTime = value;
+    }
+
+    get utc (): Date {
+        return this.utcTime;
+    }
+
+    set gtime (value: Date) {
+        this.generalizedTime = value;
+    }
+
+    get gtime (): Date {
+        return this.generalizedTime;
+    }
+
+    set ustr (value: string) {
+        this.universalString = value;
+    }
+
+    get ustr (): string {
+        return this.universalString;
+    }
+
+    set bmp (value: string) {
+        this.bmpString = value;
+    }
+
+    get bmp (): string {
+        return this.bmpString;
+    }
 }
