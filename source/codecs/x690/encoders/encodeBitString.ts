@@ -1,7 +1,7 @@
 export default
 function encodeBitString (value: boolean[]): Uint8Array {
     if (value.length === 0) {
-        return new Uint8Array(0);
+        return new Uint8Array([ 0 ]);
     }
     const pre: number[] = [];
     pre.length = ((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1;

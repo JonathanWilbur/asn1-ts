@@ -2,84 +2,50 @@ import { ASN1Element } from "../asn1";
 import * as errors from "../errors";
 import {
     ASN1Construction,
-    ASN1RealEncodingBase,
-    ASN1RealEncodingScale,
-    ASN1SpecialRealValue,
     ASN1TagClass,
     ASN1UniversalType,
-    generalizedTimeRegex,
     LengthEncodingPreference,
-    nr1Regex,
-    nr2Regex,
-    nr3Regex,
     printableStringCharacters,
-    utcTimeRegex,
 } from "../values";
 import { X690Element } from "../x690";
 import convertBytesToText from "../convertBytesToText";
 import convertTextToBytes from "../convertTextToBytes";
 import { ObjectIdentifier } from "../types/objectidentifier";
+import encodeBoolean from "./x690/encoders/encodeBoolean";
+import decodeBoolean from "./ber/decoders/decodeBoolean";
+import encodeBitString from "./x690/encoders/encodeBitString";
+import decodeBitString from "./ber/decoders/decodeBitString";
+import encodeReal from "./x690/encoders/encodeReal";
+import decodeReal from "./ber/decoders/decodeReal";
+import encodeSequence from "./x690/encoders/encodeSequence";
+import decodeSequence from "./ber/decoders/decodeSequence";
+import encodeUTCTime from "./x690/encoders/encodeUTCTime";
+import decodeUTCTime from "./ber/decoders/decodeUTCTime";
+import encodeGeneralizedTime from "./x690/encoders/encodeGeneralizedTime";
+import decodeGeneralizedTime from "./ber/decoders/decodeGeneralizedTime";
 
 export
 class BERElement extends X690Element {
-    public static lengthEncodingPreference: LengthEncodingPreference =
-        LengthEncodingPreference.definite;
+    public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
     set boolean (value: boolean) {
-        this.value = new Uint8Array(1);
-        this.value[0] = (value ? 0xFF : 0x00);
+        this.value = encodeBoolean(value);
     }
 
     get boolean (): boolean {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
         }
-        if (this.value.length !== 1) {
-            throw new errors.ASN1SizeError("BOOLEAN not one byte");
-        }
-        return (this.value[0] !== 0);
+        return decodeBoolean(this.value);
     }
 
     set bitString (value: boolean[]) {
-        if (value.length === 0) this.value = new Uint8Array(0);
-        const pre: number[] = [];
-        pre.length = ((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1;
-        for (let i = 0; i < value.length; i++) {
-            if (value[i] === false) continue;
-            pre[((i >>> 3) + 1)] |= (0b10000000 >>> (i % 8));
-        }
-        pre[0] = (8 - (value.length % 8));
-        if (pre[0] === 8) pre[0] = 0;
-        this.value = new Uint8Array(pre);
+        this.value = encodeBitString(value);
     }
 
     get bitString (): boolean[] {
         if (this.construction === ASN1Construction.primitive) {
-            if (this.value.length === 0) {
-                throw new errors.ASN1Error("ASN.1 BIT STRING cannot be encoded on zero bytes!");
-            }
-            if (this.value.length === 1 && this.value[0] !== 0) {
-                throw new errors.ASN1Error("ASN.1 BIT STRING encoded with deceptive first byte!");
-            }
-            if (this.value[0] > 7) {
-                throw new errors.ASN1Error("First byte of an ASN.1 BIT STRING must be <= 7!");
-            }
-
-            let ret: boolean[] = [];
-            for (let i = 1; i < this.value.length; i++) {
-                ret = ret.concat([
-                    (Boolean(this.value[i] & 0b10000000)),
-                    (Boolean(this.value[i] & 0b01000000)),
-                    (Boolean(this.value[i] & 0b00100000)),
-                    (Boolean(this.value[i] & 0b00010000)),
-                    (Boolean(this.value[i] & 0b00001000)),
-                    (Boolean(this.value[i] & 0b00000100)),
-                    (Boolean(this.value[i] & 0b00000010)),
-                    (Boolean(this.value[i] & 0b00000001)),
-                ]);
-            }
-            ret.length -= this.value[0];
-            return ret;
+            return decodeBitString(this.value);
         }
         if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) {
             throw new errors.ASN1RecursionError();
@@ -126,120 +92,15 @@ class BERElement extends X690Element {
         return this.graphicString;
     }
 
-    // Only encodes with seven digits of precision.
     set real (value: number) {
-        if (value === 0.0) {
-            this.value = new Uint8Array(0); return;
-        } else if (Number.isNaN(value)) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.notANumber ]); return;
-        } else if (value === -0.0) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.minusZero ]); return;
-        } else if (value === Infinity) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.plusInfinity ]); return;
-        } else if (value === -Infinity) {
-            this.value = new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]); return;
-        }
-        const valueString: string = (String.fromCharCode(0b00000011) + value.toFixed(7)); // Encodes as NR3
-        this.value = convertTextToBytes(valueString);
+        this.value = encodeReal(value);
     }
 
     get real (): number {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
         }
-        if (this.value.length === 0) return 0.0;
-        switch (this.value[0] & 0b11000000) {
-        case (0b01000000): {
-            if (this.value[0] === ASN1SpecialRealValue.notANumber) return NaN;
-            if (this.value[0] === ASN1SpecialRealValue.minusZero) return -0.0;
-            if (this.value[0] === ASN1SpecialRealValue.plusInfinity) return Infinity;
-            if (this.value[0] === ASN1SpecialRealValue.minusInfinity) return -Infinity;
-            throw new errors.ASN1UndefinedError("Unrecognized special REAL value!");
-        }
-        case (0b00000000): {
-            const realString: string = convertBytesToText(this.value.slice(1));
-            switch (this.value[0] & 0b00111111) {
-            case 1: { // NR1
-                if (!nr1Regex.test(realString)) throw new errors.ASN1Error("Malformed NR1 Base-10 REAL");
-                return parseFloat(realString);
-            }
-            case 2: { // NR2
-                if (!nr2Regex.test(realString)) throw new errors.ASN1Error("Malformed NR2 Base-10 REAL");
-                return parseFloat(realString.replace(",", "."));
-            }
-            case 3: { // NR3
-                if (!nr3Regex.test(realString)) throw new errors.ASN1Error("Malformed NR3 Base-10 REAL");
-                return parseFloat(realString.replace(",", "."));
-            }
-            default:
-                throw new errors.ASN1UndefinedError("Undefined Base-10 REAL encoding.");
-            }
-        }
-        case (0b10000000):
-        case (0b11000000): {
-            const sign: number = ((this.value[0] & 0b01000000) ? -1 : 1);
-
-            const base: number = ((flag: number): number => {
-                switch (flag) {
-                case (ASN1RealEncodingBase.base2):  return 2;
-                case (ASN1RealEncodingBase.base8):  return 8;
-                case (ASN1RealEncodingBase.base16): return 16;
-                default:
-                    throw new errors.ASN1Error("Impossible REAL encoding base encountered.");
-                }
-            })(this.value[0] & 0b00110000);
-
-            const scale: number = ((flag: number): number => {
-                switch (flag) {
-                case (ASN1RealEncodingScale.scale0): return 0;
-                case (ASN1RealEncodingScale.scale1): return 1;
-                case (ASN1RealEncodingScale.scale2): return 2;
-                case (ASN1RealEncodingScale.scale3): return 3;
-                default:
-                    throw new errors.ASN1Error("Impossible REAL encoding scale encountered.");
-                }
-            })(this.value[0] & 0b00001100);
-
-            let exponent: number;
-            let mantissa: number;
-            switch (this.value[0] & 0b00000011) { // Exponent encoding
-            case (0b00000000): { // On the following octet
-                if (this.value.length < 3) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-                exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 2));
-                mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(2));
-                break;
-            }
-            case (0b00000001): { // On the following two octets
-                if (this.value.length < 4) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-                exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 3));
-                mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(3));
-                break;
-            }
-            case (0b00000010): { // On the following three octets
-                if (this.value.length < 5) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-                exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(1, 4));
-                mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray(4));
-                break;
-            }
-            case (0b00000011): { // Complicated.
-                if (this.value.length < 3) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-                const exponentLength: number = this.value[1];
-                if (this.value.length < (3 + exponentLength)) {
-                    throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-                }
-                exponent = ASN1Element.decodeSignedBigEndianInteger(this.value.subarray(2, (2 + exponentLength)));
-                mantissa = ASN1Element.decodeUnsignedBigEndianInteger(this.value.subarray((2 + exponentLength)));
-                break;
-            }
-            default:
-                throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
-            }
-
-            return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
-        }
-        default:
-            throw new errors.ASN1Error("Impossible REAL format encountered.");
-        }
+        return decodeReal(this.value);
     }
 
     set utf8String (value: string) {
@@ -251,21 +112,7 @@ class BERElement extends X690Element {
     }
 
     set sequence (value: ASN1Element[]) {
-        const encodedElements: Uint8Array[] = [];
-        value.forEach((element) => {
-            encodedElements.push(element.toBytes());
-        });
-        let totalLength: number = 0;
-        encodedElements.forEach((element) => {
-            totalLength += element.length;
-        });
-        const newValue = new Uint8Array(totalLength);
-        let currentIndex: number = 0;
-        encodedElements.forEach((element) => {
-            newValue.set(element, currentIndex);
-            currentIndex += element.length;
-        });
-        this.value = newValue;
+        this.value = encodeSequence(value);
         this.construction = ASN1Construction.constructed;
     }
 
@@ -273,15 +120,7 @@ class BERElement extends X690Element {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
         }
-        const encodedElements: BERElement[] = [];
-        if (this.value.length === 0) return [];
-        let i: number = 0;
-        while (i < this.value.length) {
-            const next: BERElement = new BERElement();
-            i += next.fromBytes(this.value.slice(i));
-            encodedElements.push(next);
-        }
-        return encodedElements;
+        return decodeSequence(this.value);
     }
 
     set set (value: ASN1Element[]) {
@@ -361,69 +200,19 @@ class BERElement extends X690Element {
     }
 
     set utcTime (value: Date) {
-        let year: string = value.getUTCFullYear().toString();
-        year = (year.substring(year.length - 2, year.length)); // Will fail if you supply a <2 digit date.
-        const month: string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
-        const day: string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
-        const hour: string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
-        const minute: string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
-        const second: string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
-        const utcString = `${year}${month}${day}${hour}${minute}${second}Z`;
-        this.value = convertTextToBytes(utcString);
+        this.value = encodeUTCTime(value);
     }
 
     get utcTime (): Date {
-        const dateString: string = convertBytesToText(this.deconstruct("UTCTime"));
-        const match: RegExpExecArray | null = utcTimeRegex.exec(dateString);
-        if (match === null) throw new errors.ASN1Error("Malformed UTCTime string.");
-        const ret: Date = new Date();
-        let year: number = Number(match[1]);
-        year = (year < 70 ? (2000 + year) : (1900 + year));
-        const month: number = (Number(match[2]) - 1);
-        const date: number = Number(match[3]);
-        const hours: number = Number(match[4]);
-        const minutes: number = Number(match[5]);
-        const seconds: number = Number(match[6]);
-        BERElement.validateDateTime("UTCTime", year, month, date, hours, minutes, seconds);
-        ret.setUTCFullYear(year);
-        ret.setUTCMonth(month);
-        ret.setUTCDate(date);
-        ret.setUTCHours(hours);
-        ret.setUTCMinutes(minutes);
-        ret.setUTCSeconds(seconds);
-        return ret;
+        return decodeUTCTime(this.deconstruct("UTCTime"));
     }
 
     set generalizedTime (value: Date) {
-        const year: string = value.getUTCFullYear().toString();
-        const month: string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
-        const day: string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);
-        const hour: string = (value.getUTCHours() < 10 ? `0${value.getUTCHours()}` : `${value.getUTCHours()}`);
-        const minute: string = (value.getUTCMinutes() < 10 ? `0${value.getUTCMinutes()}` : `${value.getUTCMinutes()}`);
-        const second: string = (value.getUTCSeconds() < 10 ? `0${value.getUTCSeconds()}` : `${value.getUTCSeconds()}`);
-        const timeString = `${year}${month}${day}${hour}${minute}${second}Z`;
-        this.value = convertTextToBytes(timeString);
+        this.value = encodeGeneralizedTime(value);
     }
 
     get generalizedTime (): Date {
-        const dateString: string = convertBytesToText(this.deconstruct("GeneralizedTime"));
-        const match: RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
-        if (match === null) throw new errors.ASN1Error("Malformed GeneralizedTime string.");
-        const ret: Date = new Date();
-        const year: number = Number(match[1]);
-        const month: number = (Number(match[2]) - 1);
-        const date: number = Number(match[3]);
-        const hours: number = Number(match[4]);
-        const minutes: number = Number(match[5]);
-        const seconds: number = Number(match[6]);
-        BERElement.validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
-        ret.setUTCFullYear(year);
-        ret.setUTCMonth(month);
-        ret.setUTCDate(date);
-        ret.setUTCHours(hours);
-        ret.setUTCMinutes(minutes);
-        ret.setUTCSeconds(seconds);
-        return ret;
+        return decodeGeneralizedTime(this.deconstruct("GeneralizedTime"));
     }
 
     set graphicString (value: string) {
