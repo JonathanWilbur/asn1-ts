@@ -85,8 +85,8 @@ class BERElement extends X690Element {
             throw new errors.ASN1RecursionError();
         }
         let appendy: boolean[] = [];
-        const substrings: BERElement[] = this.sequence;
-        substrings.slice(0, (substrings.length - 1)).forEach((substring: BERElement): void => {
+        const substrings: ASN1Element[] = this.sequence;
+        substrings.slice(0, (substrings.length - 1)).forEach((substring: ASN1Element): void => {
             if (
                 substring.construction === ASN1Construction.primitive
                 && substring.value.length > 0
@@ -97,7 +97,7 @@ class BERElement extends X690Element {
                 );
             }
         });
-        substrings.forEach((substring: BERElement): void => {
+        substrings.forEach((substring: ASN1Element): void => {
             if (substring.tagClass !== this.tagClass) {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
             }
@@ -250,7 +250,7 @@ class BERElement extends X690Element {
         return convertBytesToText(this.deconstruct("UTF8String"));
     }
 
-    set sequence (value: BERElement[]) {
+    set sequence (value: ASN1Element[]) {
         const encodedElements: Uint8Array[] = [];
         value.forEach((element) => {
             encodedElements.push(element.toBytes());
@@ -269,7 +269,7 @@ class BERElement extends X690Element {
         this.construction = ASN1Construction.constructed;
     }
 
-    get sequence (): BERElement[] {
+    get sequence (): ASN1Element[] {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
         }
@@ -284,11 +284,11 @@ class BERElement extends X690Element {
         return encodedElements;
     }
 
-    set set (value: BERElement[]) {
+    set set (value: ASN1Element[]) {
         this.sequence = value;
     }
 
-    get set (): BERElement[] {
+    get set (): ASN1Element[] {
         return this.sequence;
     }
 
@@ -431,7 +431,7 @@ class BERElement extends X690Element {
             const characterCode: number = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) throw new errors.ASN1CharactersError(
                 "GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E."
+                    + "can only contain characters between 0x20 and 0x7E.",
             );
         }
         this.value = convertTextToBytes(value);
@@ -444,7 +444,7 @@ class BERElement extends X690Element {
             if (characterCode < 0x20 || characterCode > 0x7E) {
                 throw new errors.ASN1CharactersError(
                     "GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E."
+                    + "can only contain characters between 0x20 and 0x7E.",
                 );
             }
         }
@@ -504,8 +504,8 @@ class BERElement extends X690Element {
             ret += String.fromCharCode(
                 (valueBytes[i + 0] << 24)
                 + (valueBytes[i + 1] << 16)
-                + (valueBytes[i + 2] << 8)
-                + (valueBytes[i + 3] << 0)
+                + (valueBytes[i + 2] <<  8)
+                + (valueBytes[i + 3] <<  0),
             );
         }
         return ret;
@@ -863,7 +863,7 @@ class BERElement extends X690Element {
             tagBytes.length
             + lengthOctets.length
             + this.value.length
-            + (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite ? 2 : 0)
+            + (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite ? 2 : 0),
         );
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
@@ -871,13 +871,13 @@ class BERElement extends X690Element {
         return ret;
     }
 
-    private deconstruct (dataType: string): Uint8Array {
+    public deconstruct (dataType: string): Uint8Array {
         if (this.construction === ASN1Construction.primitive) {
             return new Uint8Array(this.value); // Clones it.
         } else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
             let appendy: Uint8Array[] = [];
-            const substrings: BERElement[] = this.sequence;
+            const substrings: ASN1Element[] = this.sequence;
             substrings.forEach((substring) => {
                 if (substring.tagClass !== this.tagClass) {
                     throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);

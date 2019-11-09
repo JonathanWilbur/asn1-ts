@@ -4,7 +4,7 @@ import { ASN1Construction, ASN1TagClass } from "./values";
 
 export
 abstract class ASN1Element {
-    protected recursionCount: number = 0;
+    public recursionCount: number = 0;
     protected static readonly nestingRecursionLimit: number = 5;
 
     public name: string = "";
@@ -16,6 +16,9 @@ abstract class ASN1Element {
     get length (): number {
         return this.value.length;
     }
+
+    abstract fromBytes (bytes: Uint8Array): number;
+    abstract toBytes (): Uint8Array;
 
     abstract set boolean (value: boolean);
     abstract get boolean (): boolean;
@@ -286,4 +289,6 @@ abstract class ASN1Element {
         u8.set(value, (4 - value.length));
         return new Int32Array(u8.reverse().buffer)[0];
     }
+
+    abstract deconstruct (dataType: string): Uint8Array;
 }

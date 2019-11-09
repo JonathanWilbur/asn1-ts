@@ -225,7 +225,7 @@ class DERElement extends X690Element {
         return convertBytesToText(this.value);
     }
 
-    set sequence (value: DERElement[]) {
+    set sequence (value: ASN1Element[]) {
         const encodedElements: Uint8Array[] = [];
         value.forEach((element) => {
             encodedElements.push(element.toBytes());
@@ -244,7 +244,7 @@ class DERElement extends X690Element {
         this.construction = ASN1Construction.constructed;
     }
 
-    get sequence (): DERElement[] {
+    get sequence (): ASN1Element[] {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
         }
@@ -259,11 +259,11 @@ class DERElement extends X690Element {
         return encodedElements;
     }
 
-    set set (value: DERElement[]) {
+    set set (value: ASN1Element[]) {
         this.sequence = value;
     }
 
-    get set (): DERElement[] {
+    get set (): ASN1Element[] {
         return this.sequence;
     }
 
@@ -421,7 +421,7 @@ class DERElement extends X690Element {
             const characterCode: number = value.charCodeAt(i);
             if (characterCode < 0x20 || characterCode > 0x7E) throw new errors.ASN1CharactersError(
                 "GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E."
+                    + "can only contain characters between 0x20 and 0x7E.",
             );
         }
         this.value = convertTextToBytes(value);
@@ -438,7 +438,7 @@ class DERElement extends X690Element {
                 throw new errors.ASN1CharactersError(
                     "GraphicString, VisibleString, or ObjectDescriptor "
                     + "can only contain characters between 0x20 and 0x7E."
-                    + ` Buffer: ${this.value.join(":")}`
+                    + ` Buffer: ${this.value.join(":")}`,
                 );
             }
         }
@@ -503,8 +503,8 @@ class DERElement extends X690Element {
             ret += String.fromCharCode(
                 (this.value[i + 0] << 24)
                 + (this.value[i + 1] << 16)
-                + (this.value[i + 2] << 8)
-                +  (this.value[i + 3] << 0)
+                + (this.value[i + 2] <<  8)
+                + (this.value[i + 3] <<  0),
             );
         }
         return ret;
@@ -611,13 +611,13 @@ class DERElement extends X690Element {
      *
      * @param sequence The elements (or absence thereof) to encode.
      */
-    public static fromSequence (sequence: (DERElement | null | undefined)[]): DERElement {
+    public static fromSequence (sequence: (ASN1Element | null | undefined)[]): DERElement {
         const ret: DERElement = new DERElement(
             ASN1TagClass.universal,
             ASN1Construction.constructed,
             ASN1UniversalType.sequence,
         );
-        ret.sequence = sequence.filter((element) => Boolean(element)) as DERElement[];
+        ret.sequence = sequence.filter((element) => Boolean(element)) as ASN1Element[];
         return ret;
     }
 
@@ -629,13 +629,13 @@ class DERElement extends X690Element {
      *
      * @param set The elements (or absence thereof) to encode.
      */
-    public static fromSet (set: (DERElement | null | undefined)[]): DERElement {
+    public static fromSet (set: (ASN1Element | null | undefined)[]): DERElement {
         const ret: DERElement = new DERElement(
             ASN1TagClass.universal,
             ASN1Construction.constructed,
             ASN1UniversalType.set,
         );
-        ret.set = set.filter((element) => Boolean(element)) as DERElement[];
+        ret.set = set.filter((element) => Boolean(element)) as ASN1Element[];
         return ret;
     }
 
@@ -835,11 +835,15 @@ class DERElement extends X690Element {
         const ret: Uint8Array = new Uint8Array(
             tagBytes.length
             + lengthOctets.length
-            + this.value.length
+            + this.value.length,
         );
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
+    }
+
+    public deconstruct (): Uint8Array {
+        return this.value.subarray(0);
     }
 }
