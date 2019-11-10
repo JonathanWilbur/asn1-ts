@@ -1,9 +1,15 @@
 import * as errors from "./errors";
 import { ObjectIdentifier as OID } from "./types/objectidentifier";
 import { ASN1Construction, ASN1TagClass } from "./values";
+import Byteable from "./interfaces/Byteable";
+import Named from "./interfaces/Named";
+import Long from "./interfaces/Long";
+import External from "./types/External";
+import EmbeddedPDV from "./types/EmbeddedPDV";
+import CharacterString from "./types/CharacterString";
 
 export
-abstract class ASN1Element {
+abstract class ASN1Element implements Byteable, Named, Long {
     public recursionCount: number = 0;
     protected static readonly nestingRecursionLimit: number = 5;
 
@@ -32,12 +38,14 @@ abstract class ASN1Element {
     abstract get objectIdentifier (): OID;
     abstract set objectDescriptor (value: string);
     abstract get objectDescriptor (): string;
-    // EXTERNAL
+    abstract set external (value: External);
+    abstract get external (): External;
     abstract set real (value: number);
     abstract get real (): number;
     abstract set enumerated (value: number);
     abstract get enumerated (): number;
-    // EmbeddedPDV
+    abstract set embeddedPDV (value: EmbeddedPDV);
+    abstract get embeddedPDV (): EmbeddedPDV;
     abstract set utf8String (value: string);
     abstract get utf8String (): string;
     abstract set relativeObjectIdentifier (value: number[]);
@@ -68,7 +76,8 @@ abstract class ASN1Element {
     abstract get generalString (): string;
     abstract set universalString (value: string);
     abstract get universalString (): string;
-    // characterString
+    abstract set characterString (value: CharacterString);
+    abstract get characterString (): CharacterString;
     abstract set bmpString (value: string);
     abstract get bmpString (): string;
 

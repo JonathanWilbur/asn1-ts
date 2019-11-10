@@ -65,9 +65,10 @@ Tests under the `test` directory can also serve as examples.
 
 ## Future Development
 
-- [ ] Support `EXTERNAL` type.
-- [ ] Support `EmbeddedPDV` type.
-- [ ] Support `CharacterString` type.
+- [x] Support `EXTERNAL` type.
+- [x] Support `EmbeddedPDV` type.
+- [x] Support `CharacterString` type.
+- [ ] Use default exports for everything.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
   - [ ] JSON Encoding Rules
@@ -80,6 +81,8 @@ Tests under the `test` directory can also serve as examples.
 - [ ] Serverless Functions
   - [ ] `ValidateSize`
   - [ ] `ValidateRange`
+  - [ ] A function to encode almost every type.
+  - [ ] A function to decode almost every type.
   - [ ] All things relating to JSON Encoding Rules.
 
 ## See Also
