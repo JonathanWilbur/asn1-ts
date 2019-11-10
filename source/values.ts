@@ -79,6 +79,12 @@ enum ASN1UniversalType {
     universalString = 0x1C,
     characterString = 0x1D,
     bmpString = 0x1E,
+    date = 31,
+    timeOfDay = 32,
+    dateTime = 33,
+    duration = 34,
+    oidIRI = 35,
+    roidIRI = 36,
 }
 
 /**
