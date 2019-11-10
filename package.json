@@ -10,7 +10,7 @@
             "url": "https://jonathan.wilbur.space/"
         }
     ],
-    "description": "ASN.1 encoding and decoding",
+    "description": "ASN.1 encoding and decoding, including BER, CER, and DER.",
     "devDependencies": {
         "@babel/core": "^7.7.2",
         "@babel/preset-env": "^7.7.1",
@@ -39,6 +39,7 @@
         "ASN1",
         "ASN.1",
         "BER",
+        "CER",
         "DER"
     ],
     "license": "MIT",

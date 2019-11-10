@@ -2,6 +2,7 @@ const asn1 = require("../../../dist/index.js");
 
 [
     asn1.BERElement,
+    asn1.CERElement,
     asn1.DERElement,
 ].forEach((CodecElement) => {
     describe(CodecElement.constructor.name, () => {

@@ -69,15 +69,22 @@ Tests under the `test` directory can also serve as examples.
 - [x] Support `EmbeddedPDV` type.
 - [x] Support `CharacterString` type.
 - [ ] Use default exports for everything.
+- [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
   - [ ] JSON Encoding Rules
-  - [ ] Canonical Encoding Rules
+  - [x] Canonical Encoding Rules
   - [ ] Lightweight Encoding Rules
   - [ ] BACNet Encoding Rules
+  - [ ] Packed Encoding Rules
+    - [ ] Basic Aligned Packed Encoding Rules
+    - [ ] Basic Unaligned Packed Encoding Rules
+    - [ ] Canonical Aligned Packed Encoding Rules
+    - [ ] Canonical Unaligned Packed Encoding Rules
 - [ ] Use the `name` field in errors.
 - [ ] Internationalized strings.
 - [ ] Error UUIDs.
+- [ ] Fix the indices (They do not export everything)
 - [ ] Serverless Functions
   - [ ] `ValidateSize`
   - [ ] `ValidateRange`

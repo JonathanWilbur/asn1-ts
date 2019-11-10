@@ -2,8 +2,10 @@ import { BERElement } from "../../ber";
 
 export default
 function decodeSequence (value: Uint8Array): BERElement[] {
+    if (value.length === 0) {
+        return [];
+    }
     const encodedElements: BERElement[] = [];
-    if (value.length === 0) return [];
     let i: number = 0;
     while (i < value.length) {
         const next: BERElement = new BERElement();
