@@ -72,15 +72,15 @@ Tests under the `test` directory can also serve as examples.
 - [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
-  - [ ] JSON Encoding Rules
+  - [ ] JSON Encoding Rules (May require changes to ASN1Element)
   - [x] Canonical Encoding Rules
   - [ ] Lightweight Encoding Rules
   - [ ] BACNet Encoding Rules
   - [ ] Packed Encoding Rules
-    - [ ] Basic Aligned Packed Encoding Rules
-    - [ ] Basic Unaligned Packed Encoding Rules
-    - [ ] Canonical Aligned Packed Encoding Rules
-    - [ ] Canonical Unaligned Packed Encoding Rules
+    - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP.)
+    - [ ] Basic Unaligned Packed Encoding Rules (UPER) (May require changes to ASN1Element) (Used by 3GPP RRC)
+    - [ ] Canonical Aligned Packed Encoding Rules (CPER)
+    - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
 - [ ] Use the `name` field in errors.
 - [ ] Internationalized strings.
 - [ ] Error UUIDs.
