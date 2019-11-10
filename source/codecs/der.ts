@@ -7,6 +7,9 @@ import {
     printableStringCharacters,
 } from "../values";
 import { X690Element } from "../x690";
+import External from "../types/external";
+import EmbeddedPDV from "../types/EmbeddedPDV";
+import CharacterString from "../types/CharacterString";
 import convertBytesToText from "../convertBytesToText";
 import convertTextToBytes from "../convertTextToBytes";
 import { ObjectIdentifier } from "../types/objectidentifier";
@@ -22,6 +25,12 @@ import encodeUTCTime from "./x690/encoders/encodeUTCTime";
 import decodeUTCTime from "./der/decoders/decodeUTCTime";
 import encodeGeneralizedTime from "./x690/encoders/encodeGeneralizedTime";
 import decodeGeneralizedTime from "./der/decoders/decodeGeneralizedTime";
+import encodeExternal from "../codecs/x690/encoders/encodeExternal";
+import encodeEmbeddedPDV from "../codecs/x690/encoders/encodeEmbeddedPDV";
+import encodeCharacterString from "../codecs/x690/encoders/encodeCharacterString";
+import decodeExternal from "../codecs/x690/decoders/decodeExternal";
+import decodeEmbeddedPDV from "../codecs/x690/decoders/decodeEmbeddedPDV";
+import decodeCharacterString from "../codecs/x690/decoders/decodeCharacterString";
 
 export
 class DERElement extends X690Element {
@@ -66,6 +75,14 @@ class DERElement extends X690Element {
         return this.graphicString;
     }
 
+    set external (value: External) {
+        this.value = encodeExternal(value);
+    }
+
+    get external (): External {
+        return decodeExternal(this.value);
+    }
+
     set real (value: number) {
         this.value = encodeReal(value);
     }
@@ -75,6 +92,14 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
         }
         return decodeReal(this.value);
+    }
+
+    set embeddedPDV (value: EmbeddedPDV) {
+        this.value = encodeEmbeddedPDV(value);
+    }
+
+    get embeddedPDV (): EmbeddedPDV {
+        return decodeEmbeddedPDV(this.value);
     }
 
     set utf8String (value: string) {
@@ -264,6 +289,14 @@ class DERElement extends X690Element {
             }
         }
         return ret;
+    }
+
+    set characterString (value: CharacterString) {
+        this.value = encodeCharacterString(value);
+    }
+
+    get characterString (): CharacterString {
+        return decodeCharacterString(this.value);
     }
 
     set universalString (value: string) {

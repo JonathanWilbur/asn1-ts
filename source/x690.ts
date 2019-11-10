@@ -64,6 +64,7 @@ abstract class X690Element extends ASN1Element {
         return decodeRelativeObjectIdentifier(this.value);
     }
 
+    // TODO: Remove in a major version change.
     public static isInCanonicalOrder (elements: X690Element[]): boolean {
         let previousTagClass: ASN1TagClass | null = null;
         let previousTagNumber: number | null = null;
@@ -89,6 +90,7 @@ abstract class X690Element extends ASN1Element {
         return true;
     }
 
+    // TODO: Remove in a major version change.
     public static isUniquelyTagged (elements: X690Element[]): boolean {
         const finds: { [ key: string ]: null } = {};
         for (let i = 0; i < elements.length; i++) {
