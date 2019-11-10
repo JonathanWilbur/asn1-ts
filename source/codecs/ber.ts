@@ -8,7 +8,7 @@ import {
     printableStringCharacters,
 } from "../values";
 import { X690Element } from "../x690";
-import External from "../types/external";
+import External from "../types/External";
 import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
 import convertBytesToText from "../convertBytesToText";
