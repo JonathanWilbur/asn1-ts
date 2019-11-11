@@ -1,6 +1,6 @@
 import * as errors from "./errors";
 import { ObjectIdentifier as OID } from "./types/objectidentifier";
-import { ASN1Construction, ASN1TagClass } from "./values";
+import { ASN1Construction, ASN1TagClass, CANONICAL_TAG_CLASS_ORDERING } from "./values";
 import Byteable from "./interfaces/Byteable";
 import Named from "./interfaces/Named";
 import Long from "./interfaces/Long";
@@ -406,4 +406,39 @@ abstract class ASN1Element implements Byteable, Named, Long {
     get bmp (): string {
         return this.bmpString;
     }
+
+    // TODO: Remove in a major version change.
+    public static isInCanonicalOrder (elements: ASN1Element[]): boolean {
+        let previousTagClass: ASN1TagClass | null = null;
+        let previousTagNumber: number | null = null;
+        if (!elements.every((element): boolean => {
+            // Checks that the tag classes are in canonical order
+            if (
+                previousTagClass !== null
+                && element.tagClass !== previousTagClass
+                && CANONICAL_TAG_CLASS_ORDERING.indexOf(element.tagClass)
+                <= CANONICAL_TAG_CLASS_ORDERING.indexOf(previousTagClass)
+            ) return false;
+            // Checks that the tag numbers are in canonical order
+            if (element.tagClass !== previousTagClass) previousTagNumber = null;
+            if (previousTagNumber !== null && element.tagNumber < previousTagNumber) return false;
+            previousTagClass = element.tagClass;
+            previousTagNumber = element.tagNumber;
+            return true;
+        })) return false;
+        return true;
+    }
+
+    // TODO: Remove in a major version change.
+    public static isUniquelyTagged (elements: ASN1Element[]): boolean {
+        const finds: { [ key: string ]: null } = {};
+        for (let i = 0; i < elements.length; i++) {
+            const key: string = `${elements[i].tagClass}.${elements[i].tagNumber}`;
+            if (key in finds) return false;
+            finds[key] = null;
+        }
+        return true;
+    }
+
+    abstract get inner (): ASN1Element;
 }

@@ -75,7 +75,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] JSON Encoding Rules (May require changes to ASN1Element)
   - [x] Canonical Encoding Rules
   - [ ] Lightweight Encoding Rules
-  - [ ] BACNet Encoding Rules
+  - [ ] BACNet Encoding Rules? (ISO 16484-5:2017)
   - [ ] Packed Encoding Rules
     - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP.)
     - [ ] Basic Unaligned Packed Encoding Rules (UPER) (May require changes to ASN1Element) (Used by 3GPP RRC)

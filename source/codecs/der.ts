@@ -4,9 +4,7 @@ import {
     ASN1Construction,
     ASN1TagClass,
     ASN1UniversalType,
-    printableStringCharacters,
 } from "../values";
-import { X690Element } from "../x690";
 import External from "../types/External";
 import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
@@ -31,6 +29,19 @@ import encodeCharacterString from "../codecs/x690/encoders/encodeCharacterString
 import decodeExternal from "../codecs/x690/decoders/decodeExternal";
 import decodeEmbeddedPDV from "../codecs/x690/decoders/decodeEmbeddedPDV";
 import decodeCharacterString from "../codecs/x690/decoders/decodeCharacterString";
+import encodeGraphicString from "../codecs/ber/encoders/encodeGraphicString";
+import encodeNumericString from "../codecs/ber/encoders/encodeNumericString";
+import encodeObjectDescriptor from "../codecs/ber/encoders/encodeObjectDescriptor";
+import encodePrintableString from "../codecs/ber/encoders/encodePrintableString";
+import encodeVisibleString from "../codecs/ber/encoders/encodeVisibleString";
+import encodeGeneralString from "../codecs/ber/encoders/encodeGeneralString";
+import decodeGraphicString from "../codecs/x690/decoders/decodeGraphicString";
+import decodeNumericString from "../codecs/x690/decoders/decodeNumericString";
+import decodeObjectDescriptor from "../codecs/x690/decoders/decodeObjectDescriptor";
+import decodePrintableString from "../codecs/x690/decoders/decodePrintableString";
+import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
+import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
+import { X690Element } from "../x690";
 
 export
 class DERElement extends X690Element {
@@ -68,11 +79,11 @@ class DERElement extends X690Element {
     }
 
     set objectDescriptor (value: string) {
-        this.graphicString = value;
+        this.value = encodeObjectDescriptor(value);
     }
 
     get objectDescriptor (): string {
-        return this.graphicString;
+        return decodeObjectDescriptor(this.value);
     }
 
     set external (value: External) {
@@ -134,53 +145,25 @@ class DERElement extends X690Element {
     }
 
     set numericString (value: string) {
-        for (let i: number = 0; i < value.length; i++) {
-            const characterCode: number = value.charCodeAt(i);
-            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new errors.ASN1CharactersError("NumericString can only contain characters 0 - 9 and space.");
-            }
-        }
-        this.value = convertTextToBytes(value);
+        this.value = encodeNumericString(value);
     }
 
     get numericString (): string {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("NumericString cannot be constructed.");
         }
-        const ret: string = convertBytesToText(this.value);
-        for (let i: number = 0; i < ret.length; i++) {
-            const characterCode: number = ret.charCodeAt(i);
-            if (!((characterCode >= 0x30 && characterCode <= 0x39) || characterCode === 0x20)) {
-                throw new errors.ASN1CharactersError("NumericString can only contain characters 0 - 9 and space.");
-            }
-        }
-        return ret;
+        return decodeNumericString(this.value);
     }
 
     set printableString (value: string) {
-        for (let i: number = 0; i < value.length; i++) {
-            if (printableStringCharacters.indexOf(value.charAt(i)) === -1) {
-                throw new errors.ASN1CharactersError(
-                    `PrintableString can only contain these characters: ${printableStringCharacters}`,
-                );
-            }
-        }
-        this.value = convertTextToBytes(value);
+        this.value = encodePrintableString(value);
     }
 
     get printableString (): string {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("PrintableString cannot be constructed.");
         }
-        const ret: string = convertBytesToText(this.value);
-        for (let i: number = 0; i < ret.length; i++) {
-            if (printableStringCharacters.indexOf(ret.charAt(i)) === -1) {
-                throw new errors.ASN1CharactersError(
-                    `PrintableString can only contain these characters: ${printableStringCharacters}`,
-                );
-            }
-        }
-        return ret;
+        return decodePrintableString(this.value);
     }
 
     set teletexString (value: Uint8Array) {
@@ -233,62 +216,33 @@ class DERElement extends X690Element {
     }
 
     set graphicString (value: string) {
-        for (let i: number = 0; i < value.length; i++) {
-            const characterCode: number = value.charCodeAt(i);
-            if (characterCode < 0x20 || characterCode > 0x7E) throw new errors.ASN1CharactersError(
-                "GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E.",
-            );
-        }
-        this.value = convertTextToBytes(value);
+        this.value = encodeGraphicString(value);
     }
 
     get graphicString (): string {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("GraphicString cannot be constructed.");
         }
-        const ret: string = convertBytesToText(this.value);
-        for (let i: number = 0; i < ret.length; i++) {
-            const characterCode: number = ret.charCodeAt(i);
-            if (characterCode < 0x20 || characterCode > 0x7E) {
-                throw new errors.ASN1CharactersError(
-                    "GraphicString, VisibleString, or ObjectDescriptor "
-                    + "can only contain characters between 0x20 and 0x7E."
-                    + ` Buffer: ${this.value.join(":")}`,
-                );
-            }
-        }
-        return ret;
+        return decodeGraphicString(this.value);
     }
 
     set visibleString (value: string) {
-        this.graphicString = value;
+        this.value = encodeVisibleString(value);
     }
 
     get visibleString (): string {
-        return this.graphicString;
+        return decodeVisibleString(this.value);
     }
 
     set generalString (value: string) {
-        for (let i: number = 0; i < value.length; i++) {
-            if (value.charCodeAt(i) > 0x7F) {
-                throw new errors.ASN1CharactersError("GeneralString can only contain ASCII characters.");
-            }
-        }
-        this.value = convertTextToBytes(value);
+        this.value = encodeGeneralString(value);
     }
 
     get generalString (): string {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("GeneralString cannot be constructed.");
         }
-        const ret: string = convertBytesToText(this.value);
-        for (let i: number = 0; i < ret.length; i++) {
-            if (ret.charCodeAt(i) > 0x7F) {
-                throw new errors.ASN1CharactersError("GeneralString can only contain ASCII characters.");
-            }
-        }
-        return ret;
+        return decodeGeneralString(this.value);
     }
 
     set characterString (value: CharacterString) {
