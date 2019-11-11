@@ -81,9 +81,7 @@ Tests under the `test` directory can also serve as examples.
     - [ ] Basic Unaligned Packed Encoding Rules (UPER) (May require changes to ASN1Element) (Used by 3GPP RRC)
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
-- [ ] Use the `name` field in errors.
 - [ ] Internationalized strings.
-- [ ] Error UUIDs.
 - [ ] Fix the indices (They do not export everything)
 - [ ] Serverless Functions
   - [ ] `ValidateSize`
@@ -91,6 +89,10 @@ Tests under the `test` directory can also serve as examples.
   - [ ] A function to encode almost every type.
   - [ ] A function to decode almost every type.
   - [ ] All things relating to JSON Encoding Rules.
+- [ ] Compatibility-breaking changes
+  - [ ] Error UUIDs.
+  - [ ] Use the `name` field in errors.
+  - [ ] Pass in the offending element into errors.
 
 ## See Also
 

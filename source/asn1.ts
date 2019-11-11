@@ -7,9 +7,10 @@ import Long from "./interfaces/Long";
 import External from "./types/External";
 import EmbeddedPDV from "./types/EmbeddedPDV";
 import CharacterString from "./types/CharacterString";
+import Elementable from "./interfaces/Elementable";
 
 export
-abstract class ASN1Element implements Byteable, Named, Long {
+abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     public recursionCount: number = 0;
     protected static readonly nestingRecursionLimit: number = 5;
 
@@ -441,4 +442,15 @@ abstract class ASN1Element implements Byteable, Named, Long {
     }
 
     abstract get inner (): ASN1Element;
+
+    public toElement (): ASN1Element {
+        return this;
+    }
+
+    public fromElement (el: ASN1Element): void {
+        this.tagClass = el.tagClass;
+        this.construction = el.construction;
+        this.tagNumber = el.tagNumber;
+        this.value = el.value;
+    }
 }
