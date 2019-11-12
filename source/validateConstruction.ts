@@ -1,4 +1,4 @@
-import { ASN1Element } from "./asn1";
+import ASN1Element from "./asn1";
 import ConstructedElementSpecification from "./ConstructedElementSpecification";
 import * as errors from "./errors";
 

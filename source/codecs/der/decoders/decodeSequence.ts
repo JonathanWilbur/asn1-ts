@@ -1,4 +1,4 @@
-import { DERElement } from "../../der";
+import DERElement from "../../der";
 
 export default
 function decodeSequence (value: Uint8Array): DERElement[] {

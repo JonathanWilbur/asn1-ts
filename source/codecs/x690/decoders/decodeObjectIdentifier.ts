@@ -1,4 +1,4 @@
-import { ObjectIdentifier } from "../../../types/objectidentifier";
+import ObjectIdentifier from "../../../types/ObjectIdentifier";
 import * as errors from "../../../errors";
 import splitBytesByContinuationBit from "../../../splitBytesByContinuationBit";
 import decodeObjectIdentifierNode from "./decodeObjectIdentifierNode";

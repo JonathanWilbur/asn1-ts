@@ -1,5 +1,5 @@
-import { ObjectIdentifier } from "./objectidentifier";
-import { ASN1Element } from "../asn1";
+import ObjectIdentifier from "./ObjectIdentifier";
+import ASN1Element from "../asn1";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:

@@ -68,7 +68,7 @@ Tests under the `test` directory can also serve as examples.
 - [x] Support `EXTERNAL` type.
 - [x] Support `EmbeddedPDV` type.
 - [x] Support `CharacterString` type.
-- [ ] Use default exports for everything.
+- [x] Use default exports for everything.
 - [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
@@ -77,7 +77,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Lightweight Encoding Rules
   - [ ] BACNet Encoding Rules? (ISO 16484-5:2017)
   - [ ] Packed Encoding Rules
-    - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP.)
+    - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP. I believe it is also used by J2735 / DSRC.)
     - [ ] Basic Unaligned Packed Encoding Rules (UPER) (May require changes to ASN1Element) (Used by 3GPP RRC)
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
@@ -93,6 +93,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Error UUIDs.
   - [ ] Use the `name` field in errors.
   - [ ] Pass in the offending element into errors.
+  - [ ] Use `Uint8Array` to represent `BIT STRING`.
 
 ## See Also
 

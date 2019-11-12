@@ -1,4 +1,4 @@
-import { ASN1Element } from "../asn1";
+import ASN1Element from "../asn1";
 import * as errors from "../errors";
 import {
     ASN1Construction,
@@ -6,13 +6,13 @@ import {
     ASN1UniversalType,
     LengthEncodingPreference,
 } from "../values";
-import { X690Element } from "../x690";
+import X690Element from "../x690";
 import External from "../types/External";
 import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
 import convertBytesToText from "../convertBytesToText";
 import convertTextToBytes from "../convertTextToBytes";
-import { ObjectIdentifier } from "../types/objectidentifier";
+import ObjectIdentifier from "../types/ObjectIdentifier";
 import encodeBoolean from "./x690/encoders/encodeBoolean";
 import decodeBoolean from "./ber/decoders/decodeBoolean";
 import encodeBitString from "./x690/encoders/encodeBitString";
@@ -44,7 +44,7 @@ import decodePrintableString from "../codecs/x690/decoders/decodePrintableString
 import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
 
-export
+export default
 class BERElement extends X690Element {
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 

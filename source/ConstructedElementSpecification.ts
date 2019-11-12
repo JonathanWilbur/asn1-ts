@@ -1,4 +1,4 @@
-import { ASN1Element } from "./asn1";
+import ASN1Element from "./asn1";
 import { ASN1TagClass, ASN1Construction, ASN1UniversalType } from "./values";
 
 export default

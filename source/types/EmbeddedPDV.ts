@@ -1,4 +1,4 @@
-import { ASN1Element } from "../asn1";
+import ASN1Element from "../asn1";
 
 /**
     An `EmbeddedPDV` is a constructed data type, defined in

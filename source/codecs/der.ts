@@ -1,4 +1,4 @@
-import { ASN1Element } from "../asn1";
+import ASN1Element from "../asn1";
 import * as errors from "../errors";
 import {
     ASN1Construction,
@@ -10,7 +10,7 @@ import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
 import convertBytesToText from "../convertBytesToText";
 import convertTextToBytes from "../convertTextToBytes";
-import { ObjectIdentifier } from "../types/objectidentifier";
+import ObjectIdentifier from "../types/ObjectIdentifier";
 import encodeBoolean from "./x690/encoders/encodeBoolean";
 import decodeBoolean from "./der/decoders/decodeBoolean";
 import encodeBitString from "./x690/encoders/encodeBitString";
@@ -41,9 +41,9 @@ import decodeObjectDescriptor from "../codecs/x690/decoders/decodeObjectDescript
 import decodePrintableString from "../codecs/x690/decoders/decodePrintableString";
 import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
-import { X690Element } from "../x690";
+import X690Element from "../x690";
 
-export
+export default
 class DERElement extends X690Element {
     set boolean (value: boolean) {
         this.value = encodeBoolean(value);

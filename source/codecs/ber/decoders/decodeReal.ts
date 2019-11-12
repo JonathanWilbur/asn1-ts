@@ -7,7 +7,7 @@ import {
     nr2Regex,
     nr3Regex,
 } from "../../../values";
-import { ASN1Element } from "../../../asn1";
+import ASN1Element from "../../../asn1";
 import convertBytesToText from "../../../convertBytesToText";
 
 export default

@@ -1,4 +1,4 @@
-export
+export default
 class ObjectIdentifier {
     public readonly _nodes: number[];
 

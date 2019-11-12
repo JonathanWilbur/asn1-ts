@@ -1,4 +1,4 @@
-import { BERElement } from "../../ber";
+import BERElement from "../../ber";
 
 export default
 function decodeSequence (value: Uint8Array): BERElement[] {

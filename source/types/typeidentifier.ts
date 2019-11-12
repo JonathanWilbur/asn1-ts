@@ -1,5 +1,5 @@
-import { ASN1Element } from "../asn1";
-import { ObjectIdentifier } from "./objectidentifier";
+import ASN1Element from "../asn1";
+import ObjectIdentifier from "./ObjectIdentifier";
 
 /**
  * From ITU X.681, Annex A.2:

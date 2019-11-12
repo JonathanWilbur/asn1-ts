@@ -1,4 +1,4 @@
-import { ASN1Element } from "../../../asn1";
+import ASN1Element from "../../../asn1";
 import concatenateBytes from "../../../concatenateBytes";
 
 export default

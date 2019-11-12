@@ -1,5 +1,5 @@
 import EmbeddedPDV from "../../../types/EmbeddedPDV";
-import { DERElement } from "../../../codecs/der";
+import DERElement from "../../../codecs/der";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values";
 import encodeSequence from "./encodeSequence";
 

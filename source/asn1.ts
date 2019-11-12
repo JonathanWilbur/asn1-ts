@@ -1,5 +1,5 @@
 import * as errors from "./errors";
-import { ObjectIdentifier as OID } from "./types/objectidentifier";
+import OID from "./types/ObjectIdentifier";
 import { ASN1Construction, ASN1TagClass, CANONICAL_TAG_CLASS_ORDERING } from "./values";
 import Byteable from "./interfaces/Byteable";
 import Named from "./interfaces/Named";
@@ -9,7 +9,7 @@ import EmbeddedPDV from "./types/EmbeddedPDV";
 import CharacterString from "./types/CharacterString";
 import Elementable from "./interfaces/Elementable";
 
-export
+export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     public recursionCount: number = 0;
     protected static readonly nestingRecursionLimit: number = 5;

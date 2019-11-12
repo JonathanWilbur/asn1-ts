@@ -1,4 +1,4 @@
-import { CERElement } from "../../cer";
+import CERElement from "../../cer";
 
 export default
 function decodeSequence (value: Uint8Array): CERElement[] {

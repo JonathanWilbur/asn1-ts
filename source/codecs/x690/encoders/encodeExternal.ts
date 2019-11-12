@@ -1,7 +1,7 @@
 import External from "../../../types/External";
-import { DERElement } from "../../../codecs/der";
+import DERElement from "../../../codecs/der";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values";
-import { ASN1Element } from "../../../asn1";
+import ASN1Element from "../../../asn1";
 
 export default
 function encodeExternal (value: External): Uint8Array {

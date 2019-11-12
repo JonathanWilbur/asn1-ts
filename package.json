@@ -57,5 +57,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
-    "version": "2.10.1"
+    "version": "2.10.2"
 }

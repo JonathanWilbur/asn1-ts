@@ -1,4 +1,4 @@
-import { ObjectIdentifier } from "../../../types/objectidentifier";
+import ObjectIdentifier from "../../../types/ObjectIdentifier";
 import encodeObjectIdentifierNode from "./encodeObjectIdentifierNode";
 import concatenateBytes from "../../../concatenateBytes";
 
