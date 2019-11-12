@@ -5,7 +5,7 @@ module.exports = {
         "./source/indices/ber.ts",
     ],
     output: {
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "..", "dist"),
         filename: "ber.min.js",
         library: "ber",
         libraryTarget: "var",

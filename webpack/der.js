@@ -5,7 +5,7 @@ module.exports = {
         "./source/indices/der.ts",
     ],
     output: {
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "..", "dist"),
         filename: "der.min.js",
         library: "der",
         libraryTarget: "var",

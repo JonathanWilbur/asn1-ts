@@ -29,6 +29,7 @@ The outputs will all be in `dist`.
 - `dist/asn1.min.js` is the entire ASN.1 library for the web browser, which is
   minified, and accessible under the variable `asn1`.
 - `dist/ber.min.js` is only the Basic Encoding Rules (BER), minified.
+- `dist/cer.min.js` is only the Canonical Encoding Rules (CER), minified.
 - `dist/der.min.js` is only the Distinguished Encoding Rules (DER), minified.
 
 In many cases, you will only need one set of encoding rules or the other, so it

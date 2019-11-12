@@ -5,7 +5,7 @@ module.exports = {
         "./source/index.ts",
     ],
     output: {
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "..", "dist"),
         filename: "asn1.min.js",
         library: "asn1",
         libraryTarget: "var",

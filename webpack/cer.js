@@ -5,7 +5,7 @@ module.exports = {
         "./source/indices/cer.ts",
     ],
     output: {
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "..", "dist"),
         filename: "cer.min.js",
         library: "cer",
         libraryTarget: "var",
