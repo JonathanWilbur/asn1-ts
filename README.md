@@ -65,15 +65,10 @@ Tests under the `test` directory can also serve as examples.
 
 ## Future Development
 
-- [x] Support `EXTERNAL` type.
-- [x] Support `EmbeddedPDV` type.
-- [x] Support `CharacterString` type.
-- [x] Use default exports for everything.
 - [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
   - [ ] JSON Encoding Rules (May require changes to ASN1Element)
-  - [x] Canonical Encoding Rules
   - [ ] Lightweight Encoding Rules
   - [ ] BACNet Encoding Rules? (ISO 16484-5:2017)
   - [ ] Packed Encoding Rules
@@ -82,7 +77,6 @@ Tests under the `test` directory can also serve as examples.
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
 - [ ] Internationalized strings.
-- [ ] Fix the indices (They do not export everything)
 - [ ] Serverless Functions
   - [ ] `ValidateSize`
   - [ ] `ValidateRange`
@@ -94,11 +88,13 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Use the `name` field in errors.
   - [ ] Pass in the offending element into errors.
   - [ ] Use `Uint8Array` to represent `BIT STRING`.
+  - [ ] Get rid of the codec-specific libraries.
 
 ## See Also
 
 * [X.680 - Abstract Syntax Notation One (ASN.1)](https://www.itu.int/rec/T-REC-X.680/en), published by the
 [International Telecommunications Union](https://www.itu.int/en/pages/default.aspx).
-* [X.690 - ASN.1 encoding rules](https://www.itu.int/rec/T-REC-X.690/en), published by the
+* [X.690 - BER, CER, and DER](https://www.itu.int/rec/T-REC-X.690/en), published by the
 [International Telecommunications Union](https://www.itu.int/en/pages/default.aspx).
+* [X.691 - Packed Encoding Rules](https://www.itu.int/rec/T-REC-X.691-201508-I/en).
 * [ASN.1: Communication Between Heterogeneous Systems](https://www.oss.com/asn1/resources/books-whitepapers-pubs/dubuisson-asn1-book.PDF) by Olivier Dubuisson

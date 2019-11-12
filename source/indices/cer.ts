@@ -1,5 +1,10 @@
-export * from "../asn1";
-export * from "../codecs/cer";
+export { default as ASN1Element } from "../asn1";
+export { default as CERElement } from "./cer";
+export { default as concatenateBytes } from "../concatenateBytes";
+export { default as ConstructedElementSpecification } from "../ConstructedElementSpecification";
 export * from "../errors";
-export * from "../types/ObjectIdentifier";
+export * from "../interfaces";
+export * from "../types/index";
+export { default as validateConstruction } from "../validateConstruction";
+export * from "../validators/index";
 export * from "../values";
