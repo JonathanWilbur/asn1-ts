@@ -9,3 +9,4 @@ export * from "./types/typeidentifier";
 export * from "./values";
 export { default as ConstructedElementSpecification } from "./ConstructedElementSpecification";
 export { default as validateConstruction } from "./validateConstruction";
+export { default as concatenateBytes } from "./concatenateBytes";

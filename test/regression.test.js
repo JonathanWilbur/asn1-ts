@@ -11,5 +11,12 @@ describe("The encode() method", () => {
             );
         }).not.toThrow();
     });
+});
 
+describe("concatenateBytes()", () => {
+    it("does not throw upon being given an empty array", () => {
+        expect(() => {
+            asn1.concatenateBytes([]);
+        }).not.toThrow();
+    });
 });
