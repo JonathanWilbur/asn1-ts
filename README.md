@@ -1,7 +1,7 @@
 # ASN.1 TypeScript Library
 
 * Author: [Jonathan M. Wilbur](https://github.com/JonathanWilbur) <[jonathan@wilbur.space](mailto:jonathan@wilbur.space)>
-* Copyright Year: 2019
+* Copyright Year: 2020
 * License: [MIT License](https://mit-license.org/)
 
 This library was based off of my [D ASN.1 Library](https://github.com/JonathanWilbur/asn1-d).
