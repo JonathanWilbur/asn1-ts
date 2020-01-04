@@ -6,6 +6,7 @@ export { default as concatenateBytes } from "./concatenateBytes";
 export { default as ConstructedElementSpecification } from "./ConstructedElementSpecification";
 export * from "./errors";
 export * from "./interfaces";
+export * from "./macros";
 export * from "./types/index";
 export { default as validateConstruction } from "./validateConstruction";
 export * from "./validators/index";

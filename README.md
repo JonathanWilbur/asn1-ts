@@ -67,7 +67,7 @@ Tests under the `test` directory can also serve as examples.
 ## Future Development
 
 - [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
-- [ ] `OPTIONAL` template
+- [x] Macros, like `OPTIONAL<T>`
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
@@ -92,6 +92,8 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Pass in the offending element into errors.
   - [ ] Use `Uint8Array` to represent `BIT STRING`.
   - [ ] Get rid of the codec-specific libraries.
+  - [ ] Make `TypeIdentifier` a `default` export.
+  - [ ] Make all functions use the macros instead of native types?
 
 ## See Also
 
