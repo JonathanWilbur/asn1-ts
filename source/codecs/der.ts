@@ -357,6 +357,17 @@ class DERElement extends X690Element {
             } else if (value instanceof ASN1Element) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as DERElement ];
+            } else if (value instanceof Set) {
+                this.construction = ASN1Construction.constructed;
+                this.set = Array.from(value).map((v: any) => {
+                    if (typeof v === "object" && v instanceof ASN1Element) {
+                        return v;
+                    } else {
+                        const e = new DERElement();
+                        e.encode(v);
+                        return e;
+                    }
+                });
             } else if (value instanceof ObjectIdentifier) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;

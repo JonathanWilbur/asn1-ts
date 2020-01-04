@@ -67,6 +67,8 @@ Tests under the `test` directory can also serve as examples.
 ## Future Development
 
 - [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
+- [ ] `OPTIONAL` template
+- [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules
   - [ ] JSON Encoding Rules (May require changes to ASN1Element)
