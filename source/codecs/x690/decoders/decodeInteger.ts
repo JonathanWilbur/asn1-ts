@@ -1,5 +1,5 @@
 import * as errors from "../../../errors";
-import decodeSignedBigEndianInteger from "../../../decodeSignedBigEndianInteger";
+import decodeSignedBigEndianInteger from "../../../utils/decodeSignedBigEndianInteger";
 
 export default
 function decodeInteger (value: Uint8Array): number {

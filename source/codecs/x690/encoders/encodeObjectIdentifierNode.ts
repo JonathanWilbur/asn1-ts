@@ -1,3 +1,4 @@
+// TODO: Replace with encodeBase128UnsignedInteger.
 export default
 function encodeObjectIdentifierNode (value: number): Uint8Array {
     if (value < 128) {

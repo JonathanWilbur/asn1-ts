@@ -70,9 +70,40 @@ Tests under the `test` directory can also serve as examples.
 - [x] Macros, like `OPTIONAL<T>`
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
-  - [ ] Octet Encoding Rules
-  - [ ] JSON Encoding Rules (May require changes to ASN1Element)
-  - [ ] Lightweight Encoding Rules
+  - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
+    - [ ] Generic helpers
+      - [x] `encodeBase128`
+      - [x] `decodeBase128`
+      - [x] `encodeBigEndianSignedInteger`
+      - [x] `encodeBigEndianUnsignedInteger`
+      - [x] `decodeBigEndianSignedInteger`
+      - [x] `decodeBigEndianUnsignedInteger`
+      - [ ] `encodeSignedInt8`
+      - [ ] `encodeSignedInt16`
+      - [ ] `encodeSignedInt32`
+      - [ ] `encodeUnsignedInt8`
+      - [ ] `encodeUnsignedInt16`
+      - [ ] `encodeUnsignedInt32`
+      - [ ] `decodeSignedInt8`
+      - [ ] `decodeSignedInt16`
+      - [ ] `decodeSignedInt32`
+      - [ ] `decodeUnsignedInt8`
+      - [ ] `decodeUnsignedInt16`
+      - [ ] `decodeUnsignedInt32`
+      - [x] `encodeIEEE754SinglePrecisionFloat`
+      - [x] `encodeIEEE754DoublePrecisionFloat`
+      - [x] `decodeIEEE754SinglePrecisionFloat`
+      - [x] `decodeIEEE754DoublePrecisionFloat`
+      - [x] `dissectFloat`
+      - [x] `encodeX690BinaryRealNumber` (Base always = 0, Mantissa is odd, min octets for M and E.)
+      - [x] `encodeX690Base10RealNumber`
+      - [x] `decodeX690RealNumber`
+      - [x] `packBits`
+      - [x] `unpackBits`
+  - [ ] Canonical Octet Encoding Rules
+  - [ ] NTCIP Encoding Rules
+  - [ ] JSON Encoding Rules (May require changes to ASN1Element, or a separate element.)
+  - [x] ~~Lightweight Encoding Rules~~ (I cannot find a standard anywhere for this.)
   - [ ] BACNet Encoding Rules? (ISO 16484-5:2017)
   - [ ] Packed Encoding Rules
     - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP. I believe it is also used by J2735 / DSRC.)

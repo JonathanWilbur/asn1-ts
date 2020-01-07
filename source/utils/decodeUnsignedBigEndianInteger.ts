@@ -1,7 +1,7 @@
-import * as errors from "./errors";
+import * as errors from "../errors";
 
 export default
-function decodeSignedBigEndianInteger (value: Uint8Array): number {
+function decodeUnsignedBigEndianInteger (value: Uint8Array): number {
     if (value.length === 0) {
         return 0;
     }
@@ -9,9 +9,6 @@ function decodeSignedBigEndianInteger (value: Uint8Array): number {
         throw new errors.ASN1OverflowError("Number too long to decode.");
     }
     const u8 = new Uint8Array(4);
-    if (value[0] >= 0b10000000) {
-        u8.fill(0xFF);
-    }
     u8.set(value, (4 - value.length));
-    return new Int32Array(u8.reverse().buffer)[0];
+    return new Uint32Array(u8.reverse().buffer)[0];
 }
