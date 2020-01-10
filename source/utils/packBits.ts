@@ -7,7 +7,7 @@ function packBits (bits: Int8Array): Uint8Array {
     for (let byte: number = 0; byte < ret.length; byte++) {
         for (let bit: number = 0; bit < 8; bit++) {
             if (bits[(byte << 2) + bit] !== FALSE_BIT) {
-                ret[byte] |= (0x01 << bit);
+                ret[byte] |= (0b1000_0000 >>> bit);
             }
         }
     }
