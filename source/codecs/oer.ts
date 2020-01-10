@@ -23,10 +23,10 @@ import encodeEnumerated from "./oer/encoders/encodeEnumerated";
 import decodeEnumerated from "./oer/decoders/decodeEnumerated";
 // import encodeSequence from "./x690/encoders/encodeSequence";
 // import decodeSequence from "./ber/decoders/decodeSequence";
-// import encodeUTCTime from "./x690/encoders/encodeUTCTime";
-// import decodeUTCTime from "./ber/decoders/decodeUTCTime";
-// import encodeGeneralizedTime from "./x690/encoders/encodeGeneralizedTime";
-// import decodeGeneralizedTime from "./ber/decoders/decodeGeneralizedTime";
+import encodeUTCTime from "./x690/encoders/encodeUTCTime";
+import decodeUTCTime from "./ber/decoders/decodeUTCTime";
+import encodeGeneralizedTime from "./x690/encoders/encodeGeneralizedTime";
+import decodeGeneralizedTime from "./ber/decoders/decodeGeneralizedTime";
 // import encodeExternal from "../codecs/x690/encoders/encodeExternal";
 // import encodeEmbeddedPDV from "../codecs/x690/encoders/encodeEmbeddedPDV";
 // import encodeCharacterString from "../codecs/x690/encoders/encodeCharacterString";
@@ -49,9 +49,38 @@ import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger"
 import encodeSignedBigEndianInteger from "../utils/encodeSignedBigEndianInteger";
 import encodeRelativeObjectIdentifier from "./x690/encoders/encodeRelativeObjectIdentifier";
 import decodeRelativeObjectIdentifier from "./x690/decoders/decodeRelativeObjectIdentifier";
+import encodeUnsignedBigEndianInteger from "../utils/encodeUnsignedBigEndianInteger";
+import encodeBase128 from "../utils/encodeBase128";
+import { TRUE_BIT, FALSE_BIT } from "../macros";
+import packBits from "../utils/packBits";
 
 export default
 class OERElement extends ASN1Element {
+    public tagRequired: boolean = false;
+    public lengthDeterminantRequired: boolean = false;
+
+    // These are used in SEQUENCE.
+    public extended: boolean | undefined = undefined;
+    public rootComponentPresenceBitmap: Int8Array | undefined;
+    public extensionIndex: number = 0; // Where the extension addition bitmap goes.
+    public extensionAdditionPresenceBitmap: Int8Array | undefined;
+    // Defined in Section 16.2.
+    get preamble (): Uint8Array {
+        if (typeof this.extended === "undefined" && !this.rootComponentPresenceBitmap) {
+            return new Uint8Array(0);
+        }
+        const extensionBit: Int8Array = typeof this.extended !== "undefined"
+            ? new Int8Array([ this.extended ? TRUE_BIT : FALSE_BIT ])
+            : new Int8Array(0);
+        if (this.rootComponentPresenceBitmap) {
+            const bits: Int8Array = new Int8Array(extensionBit.length + this.rootComponentPresenceBitmap.length);
+            bits[0] = this.extended ? TRUE_BIT : FALSE_BIT;
+            bits.set(this.rootComponentPresenceBitmap, 1);
+            return packBits(bits);
+        } else {
+            return packBits(new Int8Array([ this.extended ? TRUE_BIT : FALSE_BIT ]));
+        }
+    }
 
     get boolean (): boolean {
         return decodeBoolean(this.value);
@@ -103,6 +132,7 @@ class OERElement extends ASN1Element {
         return decodeObjectDescriptor(this.value);
     }
 
+    // Encoded using PER encoding
     // TODO: External
 
     // TODO: Handle constrained REAL
@@ -141,8 +171,12 @@ class OERElement extends ASN1Element {
         return decodeRelativeObjectIdentifier(this.value);
     }
 
+    // NOTE: You cannot decode SEQUENCE or SET, because there is no way to know what it encodes.
+    // Use packBits() for this.
     // TODO: Sequence
     // TODO: Set
+    // TODO: SequenceOf
+    // TODO: SetOf
 
     set numericString (value: string) {
         this.value = encodeNumericString(value);
@@ -193,7 +227,21 @@ class OERElement extends ASN1Element {
         return convertBytesToText(this.value);
     }
 
-    // TODO: Time types
+    set utcTime (value: Date) {
+        this.value = encodeUTCTime(value);
+    }
+
+    get utcTime (): Date {
+        return decodeUTCTime(this.value);
+    }
+
+    set generalizedTime (value: Date) {
+        this.value = encodeGeneralizedTime(value);
+    }
+
+    get generalizedTime (): Date {
+        return decodeGeneralizedTime(this.value);
+    }
 
     set graphicString (value: string) {
         this.value = encodeGraphicString(value);
@@ -295,76 +343,76 @@ class OERElement extends ASN1Element {
         }
     }
 
-    public encode (value: any): void {
-        switch (typeof value) {
-        case ("undefined"): {
-            this.value = new Uint8Array(0);
-            break;
-        }
-        case ("boolean"): {
-            this.tagNumber = ASN1UniversalType.boolean;
-            this.boolean = value;
-            break;
-        }
-        case ("number"): {
-            if (Number.isInteger(value)) {
-                this.tagNumber = ASN1UniversalType.integer;
-                this.integer = value;
-            } else {
-                this.tagNumber = ASN1UniversalType.realNumber;
-                this.real = value;
-            }
-            break;
-        }
-        case ("string"): {
-            this.tagNumber = ASN1UniversalType.utf8String;
-            this.utf8String = value;
-            break;
-        }
-        case ("object"): {
-            if (!value) {
-                this.tagNumber = ASN1UniversalType.nill;
-                this.value = new Uint8Array(0);
-            } else if (value instanceof Uint8Array) {
-                this.tagNumber = ASN1UniversalType.octetString;
-                this.octetString = value;
-            } else if (value instanceof ASN1Element) {
-                this.construction = ASN1Construction.constructed;
-                this.sequence = [ value as OERElement ];
-            } else if (value instanceof Set) {
-                this.construction = ASN1Construction.constructed;
-                this.set = Array.from(value).map((v: any) => {
-                    if (typeof v === "object" && v instanceof ASN1Element) {
-                        return v;
-                    } else {
-                        const e = new OERElement();
-                        e.encode(v);
-                        return e;
-                    }
-                });
-            } else if (value instanceof ObjectIdentifier) {
-                this.tagNumber = ASN1UniversalType.objectIdentifier;
-                this.objectIdentifier = value;
-            } else if (Array.isArray(value)) {
-                this.construction = ASN1Construction.constructed;
-                this.tagNumber = ASN1UniversalType.sequence;
-                this.sequence = value.map((sub: any): OERElement => {
-                    const ret: OERElement = new OERElement();
-                    ret.encode(sub);
-                    return ret;
-                });
-            } else if (value instanceof Date) {
-                this.generalizedTime = value;
-            } else {
-                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
-            }
-            break;
-        }
-        default: {
-            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
-        }
-        }
-    }
+    // public encode (value: any): void {
+    //     switch (typeof value) {
+    //     case ("undefined"): {
+    //         this.value = new Uint8Array(0);
+    //         break;
+    //     }
+    //     case ("boolean"): {
+    //         this.tagNumber = ASN1UniversalType.boolean;
+    //         this.boolean = value;
+    //         break;
+    //     }
+    //     case ("number"): {
+    //         if (Number.isInteger(value)) {
+    //             this.tagNumber = ASN1UniversalType.integer;
+    //             this.integer = value;
+    //         } else {
+    //             this.tagNumber = ASN1UniversalType.realNumber;
+    //             this.real = value;
+    //         }
+    //         break;
+    //     }
+    //     case ("string"): {
+    //         this.tagNumber = ASN1UniversalType.utf8String;
+    //         this.utf8String = value;
+    //         break;
+    //     }
+    //     case ("object"): {
+    //         if (!value) {
+    //             this.tagNumber = ASN1UniversalType.nill;
+    //             this.value = new Uint8Array(0);
+    //         } else if (value instanceof Uint8Array) {
+    //             this.tagNumber = ASN1UniversalType.octetString;
+    //             this.octetString = value;
+    //         } else if (value instanceof ASN1Element) {
+    //             this.construction = ASN1Construction.constructed;
+    //             this.sequence = [ value as OERElement ];
+    //         } else if (value instanceof Set) {
+    //             this.construction = ASN1Construction.constructed;
+    //             this.set = Array.from(value).map((v: any) => {
+    //                 if (typeof v === "object" && v instanceof ASN1Element) {
+    //                     return v;
+    //                 } else {
+    //                     const e = new OERElement();
+    //                     e.encode(v);
+    //                     return e;
+    //                 }
+    //             });
+    //         } else if (value instanceof ObjectIdentifier) {
+    //             this.tagNumber = ASN1UniversalType.objectIdentifier;
+    //             this.objectIdentifier = value;
+    //         } else if (Array.isArray(value)) {
+    //             this.construction = ASN1Construction.constructed;
+    //             this.tagNumber = ASN1UniversalType.sequence;
+    //             this.sequence = value.map((sub: any): OERElement => {
+    //                 const ret: OERElement = new OERElement();
+    //                 ret.encode(sub);
+    //                 return ret;
+    //             });
+    //         } else if (value instanceof Date) {
+    //             this.generalizedTime = value;
+    //         } else {
+    //             throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+    //         }
+    //         break;
+    //     }
+    //     default: {
+    //         throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+    //     }
+    //     }
+    // }
 
     /**
      * A convenience method, created because `SEQUENCE` is so common. `null`
@@ -402,26 +450,6 @@ class OERElement extends ASN1Element {
         return ret;
     }
 
-    get inner (): OERElement {
-        if (this.construction !== ASN1Construction.constructed) {
-            throw new errors.ASN1ConstructionError(
-                "An explicitly-encoded element cannot be encoded using "
-                + "primitive construction.",
-            );
-        }
-        const ret: OERElement = new OERElement();
-        const readBytes: number = ret.fromBytes(this.value);
-        if (readBytes !== this.value.length) {
-            throw new errors.ASN1ConstructionError(
-                "An explicitly-encoding element contained more than one single "
-                + "encoded element. The tag number of the first decoded "
-                + `element was ${ret.tagNumber}, and it was encoded on `
-                + `${readBytes} bytes.`,
-            );
-        }
-        return ret;
-    }
-
     set inner (value: OERElement) {
         this.construction = ASN1Construction.constructed;
         this.value = value.toBytes();
@@ -431,226 +459,73 @@ class OERElement extends ASN1Element {
         tagClass: ASN1TagClass = ASN1TagClass.universal,
         construction: ASN1Construction = ASN1Construction.primitive,
         tagNumber: number = ASN1UniversalType.endOfContent,
-        value: any = undefined,
     ) {
         super();
-        this.encode(value);
         this.tagClass = tagClass;
         this.construction = construction;
         this.tagNumber = tagNumber;
     }
 
-    // Returns the number of bytes read
-    public fromBytes (bytes: Uint8Array): number {
-        if (bytes.length < 2) {
-            throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.");
-        }
-        if ((this.recursionCount + 1) > OERElement.nestingRecursionLimit) {
-            throw new errors.ASN1RecursionError();
-        }
-        let cursor: number = 0;
-        switch (bytes[cursor] & 0b11000000) {
-        case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
-        case (0b01000000): this.tagClass = ASN1TagClass.application; break;
-        case (0b10000000): this.tagClass = ASN1TagClass.context; break;
-        case (0b11000000): this.tagClass = ASN1TagClass.private; break;
-        default: this.tagClass = ASN1TagClass.universal;
-        }
-        this.construction = ((bytes[cursor] & 0b00100000)
-            ? ASN1Construction.constructed : ASN1Construction.primitive);
-        this.tagNumber = (bytes[cursor] & 0b00011111);
-        cursor++;
-        if (this.tagNumber >= 31) {
-            /* NOTE:
-                Section 8.1.2.4.2, point C of the International
-                Telecommunications Union's X.690 specification says:
-                "bits 7 to 1 of the first subsequent octet shall not all be zero."
-                in reference to the bytes used to encode the tag number in long
-                form, which happens when the least significant five bits of the
-                first byte are all set.
-                This essentially means that the long-form tag number must be
-                encoded on the fewest possible octets. If the first byte is
-                0b10000000, then it is not encoded on the fewest possible octets.
-            */
-            if (bytes[cursor] === 0b10000000) {
-                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.");
-            }
-            this.tagNumber = 0;
-            // This loop looks for the end of the encoded tag number.
-            const limit: number = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
-            while (cursor < limit) {
-                if (!(bytes[cursor++] & 0b10000000)) break;
-            }
-            if (bytes[cursor-1] & 0b10000000) {
-                if (limit === (bytes.length - 1)) {
-                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.");
-                } else {
-                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.");
-                }
-            }
-            for (let i: number = 1; i < cursor; i++) {
-                this.tagNumber <<= 7;
-                this.tagNumber |= (bytes[i] & 0x7F);
-            }
-            if (this.tagNumber <= 31) {
-                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.");
-            }
-        }
+    // TODO: Use lengthDeterminantRequired and tagRequired to decode.
+    /**
+     * There is no way to decode Octet Encoding Rules-encoded elements
+     * without knowing in advance what type it is and whether it
+     * is encoded with a length determinant.
+     */
+    public fromBytes (): number {
+        throw new errors.ASN1NotImplementedError();
+    }
 
-        // Length
-        if ((bytes[cursor] & 0b10000000) === 0b10000000) {
-            const numberOfLengthOctets: number = (bytes[cursor] & 0x7F);
-            if (numberOfLengthOctets) { // Definite Long or Reserved
-                if (numberOfLengthOctets === 0b01111111) { // Reserved
-                    throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.");
-                }
-                // Definite Long, if it has made it this far
-                if (numberOfLengthOctets > 4) {
-                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.");
-                }
-                if (cursor + numberOfLengthOctets >= bytes.length) {
-                    throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.");
-                }
-                cursor++;
-                const lengthNumberOctets: Uint8Array = new Uint8Array(4);
-                for (let i: number = numberOfLengthOctets; i > 0; i--) {
-                    lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
-                }
-                let length: number = 0;
-                lengthNumberOctets.forEach((octet: number): void => {
-                    length <<= 8;
-                    length += octet;
-                });
-                if ((cursor + length) < cursor) { // This catches an overflow.
-                    throw new errors.ASN1OverflowError("ASN.1 element too large.");
-                }
-                cursor += (numberOfLengthOctets);
-                if ((cursor + length) > bytes.length) {
-                    throw new errors.ASN1TruncationError("ASN.1 element truncated.");
-                }
-                this.value = bytes.slice(cursor, (cursor + length));
-                return (cursor + length);
-            } else { // Indefinite
-                if (this.construction !== ASN1Construction.constructed) {
-                    throw new errors.ASN1ConstructionError(
-                        "Indefinite length ASN.1 element was not of constructed construction.",
-                    );
-                }
-                const startOfValue: number = ++cursor;
-                let sentinel: number = cursor; // Used to track the length of the nested elements.
-                while (sentinel < bytes.length) {
-                    const child: OERElement = new OERElement();
-                    child.recursionCount = (this.recursionCount + 1);
-                    sentinel += child.fromBytes(bytes.slice(sentinel));
-                    if (
-                        child.tagClass === ASN1TagClass.universal
-                        && child.construction === ASN1Construction.primitive
-                        && child.tagNumber === ASN1UniversalType.endOfContent
-                        && child.value.length === 0
-                    ) break;
-                }
-                if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00)) {
-                    throw new errors.ASN1TruncationError(
-                        "No END OF CONTENT element found at the end of indefinite length ASN.1 element.",
-                    );
-                }
-                this.value = bytes.slice(startOfValue, (sentinel - 2));
-                return sentinel;
-            }
-        } else { // Definite Short
-            const length: number = (bytes[cursor++] & 0x7F);
-            if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
-            }
-            this.value = bytes.slice(cursor, (cursor + length));
-            return (cursor + length);
+    get lengthDeterminantBytes (): Uint8Array {
+        if (this.length <= 127) {
+            return new Uint8Array([ this.length ]);
+        } else {
+            const lengthBytes: Uint8Array = encodeUnsignedBigEndianInteger(this.length);
+            const ret: Uint8Array = new Uint8Array(1 + lengthBytes.length);
+            ret[0] = (lengthBytes.length | 0b10000000);
+            ret.set(lengthBytes, 1);
+            return ret;
+        }
+    }
+
+    get tagBytes (): Uint8Array {
+        let firstByte: number = (this.tagClass << 6);
+        if (this.tagNumber < 63) {
+            firstByte |= this.tagNumber;
+            return new Uint8Array([ firstByte ]);
+        } else {
+            firstByte |= 0b00111111;
+            const subsequentTagBytes: Uint8Array = encodeBase128(encodeUnsignedBigEndianInteger(this.tagNumber));
+            const ret: Uint8Array = new Uint8Array(1 + subsequentTagBytes.length);
+            ret[0] = firstByte;
+            ret.set(subsequentTagBytes, 1);
+            return ret;
         }
     }
 
     public toBytes (): Uint8Array {
-        let tagBytes: number[] = [ 0x00 ];
-        tagBytes[0] |= (this.tagClass << 6);
-        tagBytes[0] |= (this.construction << 5);
-        if (this.tagNumber < 31) {
-            tagBytes[0] |= this.tagNumber;
-        } else {
-            /*
-                Per section 8.1.2.4 of X.690:
-                The last five bits of the first byte being set indicate that
-                the tag number is encoded in base-128 on the subsequent octets,
-                using the first bit of each subsequent octet to indicate if the
-                encoding continues on the next octet, just like how the
-                individual numbers of OBJECT IDENTIFIER and RELATIVE OBJECT
-                IDENTIFIER are encoded.
-            */
-            tagBytes[0] |= 0b00011111;
-            let number: number = this.tagNumber; // We do not want to modify by reference.
-            const encodedNumber: number[] = [];
-            while (number !== 0) {
-                encodedNumber.unshift(number & 0x7F);
-                number >>>= 7;
-                encodedNumber[0] |= 0b10000000;
-            }
-            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
-            tagBytes = tagBytes.concat(encodedNumber);
-        }
-
-        let lengthOctets: number[] = [ 0x00 ];
-        if (this.value.length < 127) {
-            lengthOctets = [ this.value.length ];
-        } else {
-            const length: number = this.value.length;
-            lengthOctets = [ 0, 0, 0, 0 ];
-            for (let i: number = 0; i < 4; i++) {
-                lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 0xFF);
-            }
-            let startOfNonPadding: number = 0;
-            for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
-                if (lengthOctets[i] === 0x00) startOfNonPadding++;
-            }
-            lengthOctets = lengthOctets.slice(startOfNonPadding);
-            lengthOctets.unshift(0b10000000 | lengthOctets.length);
-        }
+        const tagBytes: Uint8Array = this.tagRequired
+            ? this.tagBytes
+            : new Uint8Array(0);
+        const lengthDeterminantBytes: Uint8Array = this.lengthDeterminantBytes
+            ? this.lengthDeterminantBytes
+            : new Uint8Array(0);
 
         const ret: Uint8Array = new Uint8Array(
             tagBytes.length
-            + lengthOctets.length
+            + lengthDeterminantBytes.length
             + this.value.length,
         );
         ret.set(tagBytes, 0);
-        ret.set(lengthOctets, tagBytes.length);
-        ret.set(this.value, (tagBytes.length + lengthOctets.length));
+        ret.set(lengthDeterminantBytes, tagBytes.length);
+        ret.set(this.value, (tagBytes.length + lengthDeterminantBytes.length));
         return ret;
     }
 
-    public deconstruct (dataType: string): Uint8Array {
-        if (this.construction === ASN1Construction.primitive) {
-            return new Uint8Array(this.value); // Clones it.
-        } else {
-            if ((this.recursionCount + 1) > OERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
-            let appendy: Uint8Array[] = [];
-            const substrings: ASN1Element[] = this.sequence;
-            substrings.forEach((substring) => {
-                if (substring.tagClass !== this.tagClass) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
-                }
-                if (substring.tagNumber !== this.tagNumber) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
-                }
-                substring.recursionCount = (this.recursionCount + 1);
-                appendy = appendy.concat(substring.deconstruct(dataType));
-            });
-            let totalLength: number = 0;
-            appendy.forEach((substring) => {
-                totalLength += substring.length;
-            });
-            const whole = new Uint8Array(totalLength);
-            let currentIndex: number = 0;
-            appendy.forEach((substring) => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            return whole;
-        }
+    /**
+     * There is no way to deconstruct OER elements.
+     */
+    public deconstruct (): Uint8Array {
+        throw new errors.ASN1NotImplementedError();
     }
 }
