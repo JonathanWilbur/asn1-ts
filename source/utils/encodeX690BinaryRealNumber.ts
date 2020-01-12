@@ -18,21 +18,23 @@ function encodeX690BinaryRealNumber (value: number): Uint8Array {
         return new Uint8Array([ ASN1SpecialRealValue.minusInfinity ]);
     }
     const floatComponents = dissectFloat(value);
-    if (floatComponents.mantissa !== 0 && (floatComponents.mantissa % 2) === 0) {
-        floatComponents.mantissa >>> 1;
+    while (floatComponents.mantissa !== 0 && (floatComponents.mantissa % 2) === 0) {
+        floatComponents.mantissa = floatComponents.mantissa >>> 1;
         floatComponents.exponent++;
     }
+    // console.log(floatComponents);
     const singleByteExponent: boolean = (
         (floatComponents.exponent <= 127)
         && (floatComponents.exponent >= -128)
     );
     const firstByte: number = (
-        (value >= 0 ? 0x00 : 0x40)
-        | (singleByteExponent ? 0x00 : 0x01)
+        0b1000_0000
+        | (value >= 0 ? 0b0000_0000 : 0b0100_0000)
+        | (singleByteExponent ? 0b0000_0000 : 0b0000_0001)
     );
-    const exponentBytes: Uint8Array = singleByteExponent
-        ? new Uint8Array([ floatComponents.exponent ])
-        : encodeSignedBigEndianInteger(floatComponents.exponent);
+    // TODO: Ensure that singleByteExponent is never true incorrectly.
+    const exponentBytes: Uint8Array = encodeSignedBigEndianInteger(floatComponents.exponent);
+    // console.log(exponentBytes);
     const mantissaBytes: Uint8Array = encodeUnsignedBigEndianInteger(floatComponents.mantissa);
     const ret: Uint8Array = new Uint8Array(1 + exponentBytes.length + mantissaBytes.length);
     ret[0] = firstByte;

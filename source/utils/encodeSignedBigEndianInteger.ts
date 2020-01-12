@@ -1,6 +1,7 @@
 import * as errors from "../errors";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values";
 
+// TODO: Consider using typed arrays instead.
 export default
 function encodeBigEndianSignedInteger (value: number): Uint8Array {
     if (value < MIN_SINT_32) {

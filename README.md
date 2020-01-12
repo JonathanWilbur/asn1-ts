@@ -111,6 +111,7 @@ Tests under the `test` directory can also serve as examples.
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
 - [ ] Internationalized strings.
+- [ ] Document mistake of not returning number of bytes read for accessors.
 - [ ] Serverless Functions
   - [ ] `ValidateSize`
   - [ ] `ValidateRange`
@@ -121,7 +122,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Error UUIDs.
   - [ ] Use the `name` field in errors.
   - [ ] Pass in the offending element into errors.
-  - [ ] Use `Uint8Array` to represent `BIT STRING`.
+  - [ ] Use `Int8Array` to represent `BIT STRING`.
   - [ ] Get rid of the codec-specific libraries.
   - [ ] Make `TypeIdentifier` a `default` export.
   - [ ] Make all functions use the macros instead of native types?
