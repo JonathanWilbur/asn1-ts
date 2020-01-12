@@ -71,25 +71,29 @@ Tests under the `test` directory can also serve as examples.
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
-    - [ ] Generic helpers
+    - [x] Generic helpers
       - [x] `encodeBase128`
       - [x] `decodeBase128`
       - [x] `encodeBigEndianSignedInteger`
       - [x] `encodeBigEndianUnsignedInteger`
       - [x] `decodeBigEndianSignedInteger`
       - [x] `decodeBigEndianUnsignedInteger`
-      - [ ] `encodeSignedInt8`
-      - [ ] `encodeSignedInt16`
-      - [ ] `encodeSignedInt32`
-      - [ ] `encodeUnsignedInt8`
-      - [ ] `encodeUnsignedInt16`
-      - [ ] `encodeUnsignedInt32`
-      - [ ] `decodeSignedInt8`
-      - [ ] `decodeSignedInt16`
-      - [ ] `decodeSignedInt32`
-      - [ ] `decodeUnsignedInt8`
-      - [ ] `decodeUnsignedInt16`
-      - [ ] `decodeUnsignedInt32`
+      - [x] ~~`encodeSignedInt8`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeSignedInt16`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeSignedInt32`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeSignedInt64`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeUnsignedInt8`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeUnsignedInt16`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeUnsignedInt32`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`encodeUnsignedInt64`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeSignedInt8`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeSignedInt16`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeSignedInt32`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeSignedInt64`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeUnsignedInt8`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeUnsignedInt16`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeUnsignedInt32`~~ (These turned out to be totally unnecessary.)
+      - [x] ~~`decodeUnsignedInt64`~~ (These turned out to be totally unnecessary.)
       - [x] `encodeIEEE754SinglePrecisionFloat`
       - [x] `encodeIEEE754DoublePrecisionFloat`
       - [x] `decodeIEEE754SinglePrecisionFloat`
@@ -122,7 +126,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] Error UUIDs.
   - [ ] Use the `name` field in errors.
   - [ ] Pass in the offending element into errors.
-  - [ ] Use `Int8Array` to represent `BIT STRING`.
+  - [ ] Use `Uint8ClampedArray` to represent `BIT STRING`.
   - [ ] Get rid of the codec-specific libraries.
   - [ ] Make `TypeIdentifier` a `default` export.
   - [ ] Make all functions use the macros instead of native types?
