@@ -7,8 +7,10 @@ import {
     nr2Regex,
     nr3Regex,
 } from "../values";
-import ASN1Element from "../asn1";
+// import ASN1Element from "../asn1";
 import convertBytesToText from "../convertBytesToText";
+import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger";
+import decodeUnsignedBigEndianInteger from "../utils/decodeUnsignedBigEndianInteger";
 
 export default
 function decodeX690RealNumber (bytes: Uint8Array): number {
@@ -70,20 +72,20 @@ function decodeX690RealNumber (bytes: Uint8Array): number {
         switch (bytes[0] & 0b00000011) { // Exponent encoding
         case (0b00000000): { // On the following octet
             if (bytes.length < 3) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(bytes.subarray(1, 2));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(bytes.subarray(2));
+            exponent = decodeSignedBigEndianInteger(bytes.subarray(1, 2));
+            mantissa = decodeUnsignedBigEndianInteger(bytes.subarray(2));
             break;
         }
         case (0b00000001): { // On the following two octets
             if (bytes.length < 4) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(bytes.subarray(1, 3));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(bytes.subarray(3));
+            exponent = decodeSignedBigEndianInteger(bytes.subarray(1, 3));
+            mantissa = decodeUnsignedBigEndianInteger(bytes.subarray(3));
             break;
         }
         case (0b00000010): { // On the following three octets
             if (bytes.length < 5) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(bytes.subarray(1, 4));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(bytes.subarray(4));
+            exponent = decodeSignedBigEndianInteger(bytes.subarray(1, 4));
+            mantissa = decodeUnsignedBigEndianInteger(bytes.subarray(4));
             break;
         }
         case (0b00000011): { // Complicated.
@@ -92,14 +94,17 @@ function decodeX690RealNumber (bytes: Uint8Array): number {
             if (bytes.length < (3 + exponentLength)) {
                 throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
             }
-            exponent = ASN1Element.decodeSignedBigEndianInteger(bytes.subarray(2, (2 + exponentLength)));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(bytes.subarray((2 + exponentLength)));
+            exponent = decodeSignedBigEndianInteger(bytes.subarray(2, (2 + exponentLength)));
+            mantissa = decodeUnsignedBigEndianInteger(bytes.subarray((2 + exponentLength)));
             break;
         }
         default:
             throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
         }
 
+        console.log(mantissa);
+        console.log(exponent);
+        console.log(scale);
         return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
     }
     default:

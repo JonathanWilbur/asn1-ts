@@ -9,11 +9,11 @@ import { TRUE_BIT } from "../macros";
  */
 export default
 function unpackBits (bytes: Uint8Array): Int8Array {
-    const ret: Int8Array = new Int8Array(bytes.length << 2);
+    const ret: Int8Array = new Int8Array(bytes.length << 3);
     for (let byte: number = 0; byte < bytes.length; byte++) {
         for (let bit: number = 0; bit < 8; bit++) {
-            if (bytes[byte] & (0x01 << bit)) {
-                ret[(byte * 8) + bit] = TRUE_BIT;
+            if (bytes[byte] & (0x01 << (7 - bit))) {
+                ret[(byte << 3) + bit] = TRUE_BIT;
             }
         }
     }
