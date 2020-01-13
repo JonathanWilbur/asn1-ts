@@ -11,4 +11,4 @@ export * from "./types/index";
 export { default as validateConstruction } from "./validateConstruction";
 export * from "./validators/index";
 export * from "./values";
-export { default as encodeBase128 } from "./utils/encodeBase128";
+export * from "./utils";
