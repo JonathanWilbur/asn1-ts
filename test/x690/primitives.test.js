@@ -6,7 +6,8 @@ const asn1 = require("../../dist/index.js");
     asn1.DERElement,
 ].forEach((CodecElement) => {
     describe(CodecElement.constructor.name, () => {
-        const floatingPointErrorTolerance = 1e-06;
+        const floatingPointErrorTolerance = 1e-05;
+        const EXPECTED_DIGITS_OF_PRECISION = 5;
 
         // it('encodes a long tag number correctly', () => {
         //     let bob = new CodecElement();
@@ -174,7 +175,7 @@ const asn1 = require("../../dist/index.js");
                 // Alternating negative and positive floating point numbers exploring extreme values
                 const num = Math.pow((i % 2 ? -1 : 1) * 1.23, i);
                 el.real = num;
-                expect(Math.abs(el.real - num)).toBeLessThan(floatingPointErrorTolerance);
+                expect(el.real / num).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
             }
 
             const edgeCaseTests = [
@@ -188,6 +189,7 @@ const asn1 = require("../../dist/index.js");
 
             edgeCaseTests.forEach((test) => {
                 el.real = test;
+                // Use absolute difference here rather than ratio, because you would otherwise divide by zero.
                 expect(Math.abs(el.real - test)).toBeLessThan(floatingPointErrorTolerance);
             });
 
@@ -202,14 +204,14 @@ const asn1 = require("../../dist/index.js");
 
             // These tests might fail due to overflow
             el.real = Number.MAX_VALUE;
-            expect(Math.abs(el.real - Number.MAX_VALUE)).toBeLessThan(floatingPointErrorTolerance);
-            el.real = Number.MIN_VALUE;
-            expect(Math.abs(el.real - Number.MIN_VALUE)).toBeLessThan(floatingPointErrorTolerance);
+            expect(el.real / Number.MAX_VALUE).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
+            el.real = (Number.MIN_VALUE * 1e50);
+            expect(el.real / (Number.MIN_VALUE * 1e50)).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
 
             el.real = (Number.MAX_SAFE_INTEGER + 1.0);
-            expect(Math.abs(el.real - (Number.MAX_SAFE_INTEGER + 1.0))).toBeLessThan(floatingPointErrorTolerance);
+            expect(el.real / (Number.MAX_SAFE_INTEGER + 1.0)).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
             el.real = (Number.MIN_SAFE_INTEGER - 1.0);
-            expect(Math.abs(el.real - (Number.MIN_SAFE_INTEGER - 1.0))).toBeLessThan(floatingPointErrorTolerance);
+            expect(el.real / (Number.MIN_SAFE_INTEGER - 1.0)).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
 
             const evenMoreEdgeCases = [
                 Math.E,
@@ -262,7 +264,7 @@ const asn1 = require("../../dist/index.js");
 
             evenMoreEdgeCases.forEach((test) => {
                 el.real = test;
-                expect(Math.abs(el.real - test)).toBeLessThan(floatingPointErrorTolerance);
+                expect(el.real / test).toBeCloseTo(1.0, EXPECTED_DIGITS_OF_PRECISION);
             });
         });
 
