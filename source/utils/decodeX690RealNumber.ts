@@ -102,9 +102,6 @@ function decodeX690RealNumber (bytes: Uint8Array): number {
             throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
         }
 
-        console.log(mantissa);
-        console.log(exponent);
-        console.log(scale);
         return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
     }
     default:
