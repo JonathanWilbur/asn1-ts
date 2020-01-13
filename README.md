@@ -66,9 +66,16 @@ Tests under the `test` directory can also serve as examples.
 
 ## Future Development
 
-- [ ] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
+- [x] Encode `REAL` in Base-2 format in the DER encoder, because X.509 forbids base-10 encoding.
 - [x] Macros, like `OPTIONAL<T>`
 - [x] Encode a `Set` of elements as `SET`
+- [ ] Support the new 2015 data types:
+  - [ ] `DATE`
+  - [ ] `TIME-OF-DAY`
+  - [ ] `DATE-TIME`
+  - [ ] `DURATION`
+  - [ ] `OID-IRI`
+  - [ ] `RELATIVE-OID-IRI`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
   - [ ] Canonical Octet Encoding Rules
