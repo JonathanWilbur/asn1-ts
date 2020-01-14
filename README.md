@@ -97,9 +97,9 @@ Tests under the `test` directory can also serve as examples.
   - [x] Get rid of the codec-specific libraries.
   - [x] Make `TypeIdentifier` a `default` export.
   - [x] Make all functions use the macros instead of native types?
-  - [ ] Document recommendation of macros.
-  - [ ] Get rid of TODOs
-  - [ ] Refactor methods out of `ASN1Element`
+  - [x] Document recommendation of macros.
+  - [x] Get rid of TODOs
+  - [x] Refactor methods out of `ASN1Element`
   - [ ] Support the new 2015 data types:
     - [ ] `DATE`
     - [ ] `TIME-OF-DAY`

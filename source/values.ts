@@ -100,16 +100,14 @@ export const printableStringCharacters: string
 // eslint-disable-next-line
 export const utcTimeRegex: RegExp = /^(\d{2})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)([0-5]\d)?((?:(\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)$/;
 
-// FIXME: Why is this unused?
 // eslint-disable-next-line
-// export const distinguishedUTCTimeRegex: RegExp = /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?Z$/u;
+export const distinguishedUTCTimeRegex: RegExp = /^(?<year>\d{2})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)?Z$/;
 
 // eslint-disable-next-line
 export const generalizedTimeRegex: RegExp = /^(\d{4})((?:1[0-2])|(?:0\d))((?:3[01])|(?:[0-2]\d))((?:2[0-3])|(?:[01]\d))([0-5]\d)?([0-5]\d)?(?:(?:\.|,)(\d+))?((?:(?:\+|-)((?:2[0-3])|(?:[01]\d))[0-5]\d)|Z)?$/;
 
-// FIXME: Why is this unused?
 // eslint-disable-next-line
-// export const distinguishedGeneralizedTimeRegex: RegExp = /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)(?:(\.|,)(?<fraction>\d*[1-9]))?Z$/u;
+export const distinguishedGeneralizedTimeRegex: RegExp = /^(?<year>\d{4})(?<month>(?:1[0-2])|(?:0\d))(?<date>(?:3[01])|(?:[0-2]\d))(?<hour>(?:2[0-3])|(?:[01]\d))(?<minute>[0-5]\d)(?<second>[0-5]\d)(?:(\.|,)(?<fraction>\d*[1-9]))?Z$/;
 
 export const nr1Regex: RegExp = /^ *(\+|-)?\d+$/u;
 export const nr2Regex: RegExp = /^ *(\+|-)?(?:\d+(\.|,)\d*)|(?:\d*(\.|,)\d+)$/u;
