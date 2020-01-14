@@ -659,7 +659,7 @@ class BERElement extends X690Element {
         switch (BERElement.lengthEncodingPreference) {
         case (LengthEncodingPreference.definite): {
             if (this.value.length < 127) {
-                lengthOctets = [ this.value.length ];
+                lengthOctets[0] = this.value.length;
             } else {
                 const length: number = this.value.length;
                 lengthOctets = [ 0, 0, 0, 0 ];

@@ -674,8 +674,7 @@ class CERElement extends X690Element {
         switch (this.construction) {
         case (ASN1Construction.primitive): {
             if (this.value.length < 127) {
-                // TODO: I think you can slightly optimize this by writing to [0].
-                lengthOctets = [ this.value.length ];
+                lengthOctets[0] = this.value.length;
             } else {
                 const length: number = this.value.length;
                 lengthOctets = [ 0, 0, 0, 0 ];

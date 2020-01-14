@@ -634,7 +634,7 @@ class DERElement extends X690Element {
 
         let lengthOctets: number[] = [ 0x00 ];
         if (this.value.length < 127) {
-            lengthOctets = [ this.value.length ];
+            lengthOctets[0] = this.value.length;
         } else {
             const length: number = this.value.length;
             lengthOctets = [ 0, 0, 0, 0 ];
