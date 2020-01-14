@@ -77,7 +77,7 @@ class BERElement extends X690Element {
 
     get boolean (): BOOLEAN {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
+            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.", this);
         }
         return decodeBoolean(this.value);
     }
@@ -103,15 +103,16 @@ class BERElement extends X690Element {
             ) {
                 throw new errors.ASN1Error(
                     "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
+                    this,
                 );
             }
         });
         substrings.forEach((substring: ASN1Element): void => {
             if (substring.tagClass !== this.tagClass) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             if (substring.tagNumber !== this.tagNumber) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             substring.recursionCount = (this.recursionCount + 1);
             appendy = appendy.concat(Array.from(substring.bitString).map(b => b !== FALSE_BIT));
@@ -178,7 +179,7 @@ class BERElement extends X690Element {
 
     get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
-            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
+            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
         }
         return decodeSequence(this.value);
     }
@@ -302,7 +303,7 @@ class BERElement extends X690Element {
     get universalString (): UniversalString {
         const valueBytes: Uint8Array = this.deconstruct("UniversalString");
         if (valueBytes.length % 4) {
-            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
+            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.", this);
         }
         let ret: string = "";
         for (let i: number = 0; i < valueBytes.length; i += 4) {
@@ -327,7 +328,7 @@ class BERElement extends X690Element {
 
     get bmpString (): BMPString {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
-        if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.");
+        if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             return (new TextDecoder("utf-16be")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -343,7 +344,7 @@ class BERElement extends X690Element {
              */
             return (Buffer.from(swappedEndianness)).toString("utf-16le");
         } else {
-            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
+            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
     }
 
@@ -380,6 +381,9 @@ class BERElement extends X690Element {
             } else if (value instanceof Uint8Array) {
                 this.tagNumber = ASN1UniversalType.octetString;
                 this.octetString = value;
+            } else if (value instanceof Uint8ClampedArray) {
+                this.tagNumber = ASN1UniversalType.bitString;
+                this.bitString = value;
             } else if (value instanceof ASN1Element) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as BERElement ];
@@ -408,12 +412,12 @@ class BERElement extends X690Element {
             } else if (value instanceof Date) {
                 this.generalizedTime = value;
             } else {
-                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`, this);
             }
             break;
         }
         default: {
-            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`, this);
         }
         }
     }
@@ -459,6 +463,7 @@ class BERElement extends X690Element {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoded element cannot be encoded using "
                 + "primitive construction.",
+                this,
             );
         }
         const ret: BERElement = new BERElement();
@@ -469,6 +474,7 @@ class BERElement extends X690Element {
                 + "encoded element. The tag number of the first decoded "
                 + `element was ${ret.tagNumber}, and it was encoded on `
                 + `${readBytes} bytes.`,
+                this,
             );
         }
         return ret;
@@ -495,7 +501,7 @@ class BERElement extends X690Element {
     // Returns the number of bytes read
     public fromBytes (bytes: Uint8Array): number {
         if (bytes.length < 2) {
-            throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.");
+            throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.", this);
         }
         if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) {
             throw new errors.ASN1RecursionError();
@@ -525,7 +531,7 @@ class BERElement extends X690Element {
                 0b10000000, then it is not encoded on the fewest possible octets.
             */
             if (bytes[cursor] === 0b10000000) {
-                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.");
+                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.", this);
             }
             this.tagNumber = 0;
             // This loop looks for the end of the encoded tag number.
@@ -535,9 +541,9 @@ class BERElement extends X690Element {
             }
             if (bytes[cursor-1] & 0b10000000) {
                 if (limit === (bytes.length - 1)) {
-                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.");
+                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.", this);
                 } else {
-                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.");
+                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.", this);
                 }
             }
             for (let i: number = 1; i < cursor; i++) {
@@ -545,7 +551,7 @@ class BERElement extends X690Element {
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
             if (this.tagNumber <= 31) {
-                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.");
+                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.", this);
             }
         }
 
@@ -554,14 +560,14 @@ class BERElement extends X690Element {
             const numberOfLengthOctets: number = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets) { // Definite Long or Reserved
                 if (numberOfLengthOctets === 0b01111111) { // Reserved
-                    throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.");
+                    throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
                 }
                 // Definite Long, if it has made it this far
                 if (numberOfLengthOctets > 4) {
-                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.");
+                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
                 }
                 if (cursor + numberOfLengthOctets >= bytes.length) {
-                    throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.");
+                    throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
                 }
                 cursor++;
                 const lengthNumberOctets: Uint8Array = new Uint8Array(4);
@@ -574,11 +580,11 @@ class BERElement extends X690Element {
                     length += octet;
                 });
                 if ((cursor + length) < cursor) { // This catches an overflow.
-                    throw new errors.ASN1OverflowError("ASN.1 element too large.");
+                    throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
                 }
                 cursor += (numberOfLengthOctets);
                 if ((cursor + length) > bytes.length) {
-                    throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+                    throw new errors.ASN1TruncationError("ASN.1 element truncated.", this);
                 }
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
@@ -586,6 +592,7 @@ class BERElement extends X690Element {
                 if (this.construction !== ASN1Construction.constructed) {
                     throw new errors.ASN1ConstructionError(
                         "Indefinite length ASN.1 element was not of constructed construction.",
+                        this,
                     );
                 }
                 const startOfValue: number = ++cursor;
@@ -604,6 +611,7 @@ class BERElement extends X690Element {
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00)) {
                     throw new errors.ASN1TruncationError(
                         "No END OF CONTENT element found at the end of indefinite length ASN.1 element.",
+                        this,
                     );
                 }
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
@@ -612,7 +620,7 @@ class BERElement extends X690Element {
         } else { // Definite Short
             const length: number = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
+                throw new errors.ASN1TruncationError("ASN.1 element was truncated.", this);
             }
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
@@ -672,7 +680,7 @@ class BERElement extends X690Element {
             break;
         }
         default:
-            throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!");
+            throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!", this);
         }
 
         const ret: Uint8Array = new Uint8Array(
@@ -696,10 +704,10 @@ class BERElement extends X690Element {
             const substrings: ASN1Element[] = this.sequence;
             substrings.forEach((substring) => {
                 if (substring.tagClass !== this.tagClass) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 if (substring.tagNumber !== this.tagNumber) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
                 appendy = appendy.concat(substring.deconstruct(dataType));

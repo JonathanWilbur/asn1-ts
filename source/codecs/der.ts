@@ -73,7 +73,7 @@ class DERElement extends X690Element {
 
     get boolean (): BOOLEAN {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
+            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.", this);
         }
         return decodeBoolean(this.value);
     }
@@ -84,7 +84,7 @@ class DERElement extends X690Element {
 
     get bitString (): BIT_STRING {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("BIT STRING cannot be constructed.");
+            throw new errors.ASN1ConstructionError("BIT STRING cannot be constructed.", this);
         }
         return decodeBitString(this.value);
     }
@@ -95,7 +95,7 @@ class DERElement extends X690Element {
 
     get octetString (): OCTET_STRING {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("OCTET STRING cannot be constructed.");
+            throw new errors.ASN1ConstructionError("OCTET STRING cannot be constructed.", this);
         }
         return new Uint8Array(this.value);
     }
@@ -122,7 +122,7 @@ class DERElement extends X690Element {
 
     get real (): REAL {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
+            throw new errors.ASN1ConstructionError("REAL cannot be constructed.", this);
         }
         return decodeReal(this.value);
     }
@@ -141,7 +141,7 @@ class DERElement extends X690Element {
 
     get utf8String (): UTF8String {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("UTF8String cannot be constructed.");
+            throw new errors.ASN1ConstructionError("UTF8String cannot be constructed.", this);
         }
         return convertBytesToText(this.value);
     }
@@ -153,7 +153,7 @@ class DERElement extends X690Element {
 
     get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
-            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
+            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
         }
         return decodeSequence(this.value);
     }
@@ -172,7 +172,7 @@ class DERElement extends X690Element {
 
     get numericString (): NumericString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("NumericString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("NumericString cannot be constructed.", this);
         }
         return decodeNumericString(this.value);
     }
@@ -183,7 +183,7 @@ class DERElement extends X690Element {
 
     get printableString (): PrintableString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("PrintableString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("PrintableString cannot be constructed.", this);
         }
         return decodePrintableString(this.value);
     }
@@ -210,7 +210,7 @@ class DERElement extends X690Element {
 
     get ia5String (): IA5String {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("IA5String cannot be constructed.");
+            throw new errors.ASN1ConstructionError("IA5String cannot be constructed.", this);
         }
         return convertBytesToText(this.value);
     }
@@ -221,7 +221,7 @@ class DERElement extends X690Element {
 
     get utcTime (): UTCTime {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("UTCTime cannot be constructed.");
+            throw new errors.ASN1ConstructionError("UTCTime cannot be constructed.", this);
         }
         return decodeUTCTime(this.value);
     }
@@ -232,7 +232,7 @@ class DERElement extends X690Element {
 
     get generalizedTime (): GeneralizedTime {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("GeneralizedTime cannot be constructed.");
+            throw new errors.ASN1ConstructionError("GeneralizedTime cannot be constructed.", this);
         }
         return decodeGeneralizedTime(this.value);
     }
@@ -243,7 +243,7 @@ class DERElement extends X690Element {
 
     get graphicString (): GraphicString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("GraphicString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("GraphicString cannot be constructed.", this);
         }
         return decodeGraphicString(this.value);
     }
@@ -262,7 +262,7 @@ class DERElement extends X690Element {
 
     get generalString (): GeneralString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("GeneralString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("GeneralString cannot be constructed.", this);
         }
         return decodeGeneralString(this.value);
     }
@@ -293,10 +293,10 @@ class DERElement extends X690Element {
      */
     get universalString (): UniversalString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("UniversalString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("UniversalString cannot be constructed.", this);
         }
         if (this.value.length % 4) {
-            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
+            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.", this);
         }
         let ret: string = "";
         for (let i: number = 0; i < this.value.length; i += 4) {
@@ -321,9 +321,9 @@ class DERElement extends X690Element {
 
     get bmpString (): BMPString {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("BMPString cannot be constructed.");
+            throw new errors.ASN1ConstructionError("BMPString cannot be constructed.", this);
         }
-        if (this.value.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.");
+        if (this.value.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             return (new TextDecoder("utf-16be")).decode(new Uint8Array(this.value));
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -339,7 +339,7 @@ class DERElement extends X690Element {
              */
             return (Buffer.from(swappedEndianness)).toString("utf-16le");
         } else {
-            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
+            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
     }
 
@@ -376,6 +376,9 @@ class DERElement extends X690Element {
             } else if (value instanceof Uint8Array) {
                 this.tagNumber = ASN1UniversalType.octetString;
                 this.octetString = value;
+            } else if (value instanceof Uint8ClampedArray) {
+                this.tagNumber = ASN1UniversalType.bitString;
+                this.bitString = value;
             } else if (value instanceof ASN1Element) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as DERElement ];
@@ -404,12 +407,12 @@ class DERElement extends X690Element {
             } else if (value instanceof Date) {
                 this.generalizedTime = value;
             } else {
-                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`, this);
             }
             break;
         }
         default: {
-            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`, this);
         }
         }
     }
@@ -455,6 +458,7 @@ class DERElement extends X690Element {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoded element cannot be encoded using "
                 + "primitive construction.",
+                this,
             );
         }
         const ret: DERElement = new DERElement();
@@ -465,6 +469,7 @@ class DERElement extends X690Element {
                 + "encoded element. The tag number of the first decoded "
                 + `element was ${ret.tagNumber}, and it was encoded on `
                 + `${readBytes} bytes.`,
+                this,
             );
         }
         return ret;
@@ -491,7 +496,7 @@ class DERElement extends X690Element {
     // Returns the number of bytes read
     public fromBytes (bytes: Uint8Array): number {
         if (bytes.length < 2) {
-            throw new errors.ASN1TruncationError("Tried to decode a DER element that is less than two bytes.");
+            throw new errors.ASN1TruncationError("Tried to decode a DER element that is less than two bytes.", this);
         }
         if ((this.recursionCount + 1) > DERElement.nestingRecursionLimit) {
             throw new errors.ASN1RecursionError();
@@ -521,7 +526,7 @@ class DERElement extends X690Element {
                 0b10000000, then it is not encoded on the fewest possible octets.
             */
             if (bytes[cursor] === 0b10000000) {
-                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.");
+                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.", this);
             }
             this.tagNumber = 0;
             // This loop looks for the end of the encoded tag number.
@@ -531,9 +536,9 @@ class DERElement extends X690Element {
             }
             if (bytes[cursor-1] & 0b10000000) {
                 if (limit === (bytes.length - 1)) {
-                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.");
+                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.", this);
                 } else {
-                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.");
+                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.", this);
                 }
             }
             for (let i: number = 1; i < cursor; i++) {
@@ -541,7 +546,7 @@ class DERElement extends X690Element {
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
             if (this.tagNumber <= 31) {
-                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.");
+                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.", this);
             }
         }
 
@@ -549,14 +554,14 @@ class DERElement extends X690Element {
         if ((bytes[cursor] & 0b10000000) === 0b10000000) {
             const numberOfLengthOctets: number = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets === 0b01111111) { // Reserved
-                throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.");
+                throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
             }
             // Definite Long, if it has made it this far
             if (numberOfLengthOctets > 4) {
-                throw new errors.ASN1OverflowError("Element length too long to decode to an integer.");
+                throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
             }
             if (cursor + numberOfLengthOctets >= bytes.length) {
-                throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.");
+                throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
             }
             cursor++;
             const lengthNumberOctets: Uint8Array = new Uint8Array(4);
@@ -569,11 +574,11 @@ class DERElement extends X690Element {
                 length += octet;
             });
             if ((cursor + length) < cursor) { // This catches an overflow.
-                throw new errors.ASN1OverflowError("ASN.1 element too large.");
+                throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
             }
             cursor += (numberOfLengthOctets);
             if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+                throw new errors.ASN1TruncationError("ASN.1 element truncated.", this);
             }
 
             if (
@@ -583,6 +588,7 @@ class DERElement extends X690Element {
             ) {
                 throw new errors.ASN1PaddingError(
                     "DER-encoded long-form length encoded on more octets than necessary",
+                    this,
                 );
             }
 
@@ -591,7 +597,7 @@ class DERElement extends X690Element {
         } else { // Definite Short
             const length: number = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
+                throw new errors.ASN1TruncationError("ASN.1 element was truncated.", this);
             }
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);

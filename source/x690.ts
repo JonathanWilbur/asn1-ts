@@ -31,7 +31,7 @@ abstract class X690Element extends ASN1Element {
 
     get integer (): INTEGER {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.");
+            throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.", this);
         }
         return decodeInteger(this.value);
     }
@@ -42,10 +42,10 @@ abstract class X690Element extends ASN1Element {
 
     get objectIdentifier (): OBJECT_IDENTIFIER {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.");
+            throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.", this);
         }
         if (this.value.length === 0) {
-            throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
+            throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!", this);
         }
         return decodeObjectIdentifier(this.value);
     }
@@ -64,7 +64,7 @@ abstract class X690Element extends ASN1Element {
 
     get relativeObjectIdentifier (): RELATIVE_OID {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("Relative OID cannot be constructed.");
+            throw new errors.ASN1ConstructionError("Relative OID cannot be constructed.", this);
         }
         return decodeRelativeObjectIdentifier(this.value);
     }

@@ -90,14 +90,13 @@ Tests under the `test` directory can also serve as examples.
   - [ ] A function to decode almost every type.
   - [ ] All things relating to JSON Encoding Rules.
 - [ ] Compatibility-breaking changes
-  - [ ] Error UUIDs.
-  - [ ] Enable `encode()` to encode `BIT STRING`
-  - [ ] Use the `name` field in errors.
-  - [ ] Pass in the offending element into errors.
-  - [ ] Use `Uint8ClampedArray` to represent `BIT STRING`.
+  - [x] ~~Error UUIDs.~~ (Though this would have been better from the start, the benefits of changing to this would be minimal, especially since the errors are not generally actionable in the first place.)
+  - [x] Enable `encode()` to encode `BIT STRING`
+  - [x] Pass in the offending element into errors.
+  - [x] Use `Uint8ClampedArray` to represent `BIT STRING`.
   - [ ] Get rid of the codec-specific libraries.
   - [x] Make `TypeIdentifier` a `default` export.
-  - [ ] Make all functions use the macros instead of native types?
+  - [x] Make all functions use the macros instead of native types?
   - [ ] Get rid of TODOs
   - [ ] Refactor methods out of `ASN1Element`
   - [ ] Support the new 2015 data types:
