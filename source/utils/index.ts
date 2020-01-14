@@ -16,6 +16,8 @@ export { default as encodeX690Base10RealNumber } from "./encodeX690Base10RealNum
 export { default as encodeX690BinaryRealNumber } from "./encodeX690BinaryRealNumber";
 export { default as getBitFromBase128 } from "./getBitFromBase128";
 export { default as getBitFromBase256 } from "./getBitFromBase256";
+export { default as isInCanonicalOrder } from "./isInCanonicalOrder";
+export { default as isUniquelyTagged } from "./isUniquelyTagged";
 export { default as packBits } from "./packBits";
 export { default as setBitInBase128 } from "./setBitInBase128";
 export { default as setBitInBase256 } from "./setBitInBase256";

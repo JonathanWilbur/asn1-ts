@@ -10,21 +10,21 @@ describe("The unsigned big-endian integer decoder", () => {
         const data = new Uint8Array([
             0x00, 0x00, 0x00, 0x00,
         ]);
-        expect(ASN1Element.decodeUnsignedBigEndianInteger(data)).toBe(MIN_UINT_32);
+        expect(asn1.decodeUnsignedBigEndianInteger(data)).toBe(MIN_UINT_32);
     });
 
     it("decodes 65535 correctly", () => {
         const data = new Uint8Array([
             0xFF, 0xFF,
         ]);
-        expect(ASN1Element.decodeUnsignedBigEndianInteger(data)).toBe(65535);
+        expect(asn1.decodeUnsignedBigEndianInteger(data)).toBe(65535);
     });
 
     it("decodes MAX_UINT_32 correctly", () => {
         const data = new Uint8Array([
             0xFF, 0xFF, 0xFF, 0xFF,
         ]);
-        expect(ASN1Element.decodeUnsignedBigEndianInteger(data)).toBe(MAX_UINT_32);
+        expect(asn1.decodeUnsignedBigEndianInteger(data)).toBe(MAX_UINT_32);
     });
 });
 
@@ -33,27 +33,27 @@ describe("The signed big-endian integer decoder", () => {
         const data = new Uint8Array([
             0x00, 0x00, 0x00, 0x00,
         ]);
-        expect(ASN1Element.decodeSignedBigEndianInteger(data)).toBe(0);
+        expect(asn1.decodeSignedBigEndianInteger(data)).toBe(0);
     });
 
     it("decodes 65535 correctly", () => {
         const data = new Uint8Array([
             0xFF, 0xFF,
         ]);
-        expect(ASN1Element.decodeSignedBigEndianInteger(data)).toBe(-1);
+        expect(asn1.decodeSignedBigEndianInteger(data)).toBe(-1);
     });
 
     it("decodes MIN_SINT_32 correctly", () => {
         const data = new Uint8Array([
             0x80, 0x00, 0x00, 0x00,
         ]);
-        expect(ASN1Element.decodeSignedBigEndianInteger(data)).toBe(MIN_SINT_32);
+        expect(asn1.decodeSignedBigEndianInteger(data)).toBe(MIN_SINT_32);
     });
 
     it("decodes MAX_SINT_32 correctly", () => {
         const data = new Uint8Array([
             0x7F, 0xFF, 0xFF, 0xFF,
         ]);
-        expect(ASN1Element.decodeSignedBigEndianInteger(data)).toBe(MAX_SINT_32);
+        expect(asn1.decodeSignedBigEndianInteger(data)).toBe(MAX_SINT_32);
     });
 });
