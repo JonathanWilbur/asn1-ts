@@ -7,9 +7,10 @@ import {
     nr2Regex,
     nr3Regex,
 } from "../../../values";
-import ASN1Element from "../../../asn1";
 import convertBytesToText from "../../../utils/convertBytesToText";
 import { REAL } from "../../../macros";
+import decodeUnsignedBigEndianInteger from "../../../utils/decodeUnsignedBigEndianInteger";
+import decodeSignedBigEndianInteger from "../../../utils/decodeSignedBigEndianInteger";
 
 export default
 function decodeReal (value: Uint8Array): REAL {
@@ -71,20 +72,20 @@ function decodeReal (value: Uint8Array): REAL {
         switch (value[0] & 0b00000011) { // Exponent encoding
         case (0b00000000): { // On the following octet
             if (value.length < 3) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(value.subarray(1, 2));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(value.subarray(2));
+            exponent = decodeSignedBigEndianInteger(value.subarray(1, 2));
+            mantissa = decodeUnsignedBigEndianInteger(value.subarray(2));
             break;
         }
         case (0b00000001): { // On the following two octets
             if (value.length < 4) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(value.subarray(1, 3));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(value.subarray(3));
+            exponent = decodeSignedBigEndianInteger(value.subarray(1, 3));
+            mantissa = decodeUnsignedBigEndianInteger(value.subarray(3));
             break;
         }
         case (0b00000010): { // On the following three octets
             if (value.length < 5) throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
-            exponent = ASN1Element.decodeSignedBigEndianInteger(value.subarray(1, 4));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(value.subarray(4));
+            exponent = decodeSignedBigEndianInteger(value.subarray(1, 4));
+            mantissa = decodeUnsignedBigEndianInteger(value.subarray(4));
             break;
         }
         case (0b00000011): { // Complicated.
@@ -93,8 +94,8 @@ function decodeReal (value: Uint8Array): REAL {
             if (value.length < (3 + exponentLength)) {
                 throw new errors.ASN1TruncationError("Binary-encoded REAL truncated.");
             }
-            exponent = ASN1Element.decodeSignedBigEndianInteger(value.subarray(2, (2 + exponentLength)));
-            mantissa = ASN1Element.decodeUnsignedBigEndianInteger(value.subarray((2 + exponentLength)));
+            exponent = decodeSignedBigEndianInteger(value.subarray(2, (2 + exponentLength)));
+            mantissa = decodeUnsignedBigEndianInteger(value.subarray((2 + exponentLength)));
             break;
         }
         default:
