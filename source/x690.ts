@@ -1,6 +1,5 @@
 import ASN1Element from "./asn1";
 import * as errors from "./errors";
-import OID from "./types/ObjectIdentifier";
 import { ASN1Construction } from "./values";
 import encodeInteger from "./codecs/x690/encoders/encodeInteger";
 import decodeInteger from "./codecs/x690/decoders/decodeInteger";
@@ -8,6 +7,12 @@ import encodeObjectIdentifier from "./codecs/x690/encoders/encodeObjectIdentifie
 import decodeObjectIdentifier from "./codecs/x690/decoders/decodeObjectIdentifier";
 import encodeRelativeObjectIdentifier from "./codecs/x690/encoders/encodeRelativeObjectIdentifier";
 import decodeRelativeObjectIdentifier from "./codecs/x690/decoders/decodeRelativeObjectIdentifier";
+import {
+    INTEGER,
+    OBJECT_IDENTIFIER,
+    ENUMERATED,
+    RELATIVE_OID,
+} from "./macros";
 
 export default
 abstract class X690Element extends ASN1Element {
@@ -20,22 +25,22 @@ abstract class X690Element extends ASN1Element {
      * when lower-level binary operations are not available, as is the case in
      * JavaScript.
      */
-    set integer (value: number) {
+    set integer (value: INTEGER) {
         this.value = encodeInteger(value);
     }
 
-    get integer (): number {
+    get integer (): INTEGER {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("INTEGER cannot be constructed.");
         }
         return decodeInteger(this.value);
     }
 
-    set objectIdentifier (value: OID) {
+    set objectIdentifier (value: OBJECT_IDENTIFIER) {
         this.value = encodeObjectIdentifier(value);
     }
 
-    get objectIdentifier (): OID {
+    get objectIdentifier (): OBJECT_IDENTIFIER {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.");
         }
@@ -45,19 +50,19 @@ abstract class X690Element extends ASN1Element {
         return decodeObjectIdentifier(this.value);
     }
 
-    set enumerated (value: number) {
+    set enumerated (value: ENUMERATED) {
         this.integer = value;
     }
 
-    get enumerated (): number {
+    get enumerated (): ENUMERATED {
         return this.integer;
     }
 
-    set relativeObjectIdentifier (value: number[]) {
+    set relativeObjectIdentifier (value: RELATIVE_OID) {
         this.value = encodeRelativeObjectIdentifier(value);
     }
 
-    get relativeObjectIdentifier (): number[] {
+    get relativeObjectIdentifier (): RELATIVE_OID {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("Relative OID cannot be constructed.");
         }

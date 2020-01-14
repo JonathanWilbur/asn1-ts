@@ -1,8 +1,9 @@
 import * as errors from "../../../errors";
 import decodeSignedBigEndianInteger from "../../../utils/decodeSignedBigEndianInteger";
+import { INTEGER } from "../../../macros";
 
 export default
-function decodeInteger (value: Uint8Array): number {
+function decodeInteger (value: Uint8Array): INTEGER {
     if (value.length === 0) {
         throw new errors.ASN1SizeError("Number encoded on zero bytes!");
     }

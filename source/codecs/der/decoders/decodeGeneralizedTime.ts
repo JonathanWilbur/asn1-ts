@@ -1,10 +1,11 @@
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
 import { generalizedTimeRegex } from "../../../values";
 import * as errors from "../../../errors";
-import validateDateTime from "../../../validateDateTime";
+import validateDateTime from "../../../validators/validateDateTime";
+import { GeneralizedTime } from "../../../macros";
 
 export default
-function decodeGeneralizedTime (value: Uint8Array): Date {
+function decodeGeneralizedTime (value: Uint8Array): GeneralizedTime {
     const dateString: string = convertBytesToText(value);
     const match: RegExpExecArray | null = generalizedTimeRegex.exec(dateString);
     if (match === null) {

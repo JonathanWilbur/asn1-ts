@@ -1,9 +1,10 @@
 import isGeneralCharacter from "../../../validators/isGeneralCharacter";
-import convertTextToBytes from "../../../convertTextToBytes";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 import { ASN1CharactersError } from "../../../errors";
+import { GeneralString } from "../../../macros";
 
 export default
-function encodeGeneralString (value: string): Uint8Array {
+function encodeGeneralString (value: GeneralString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
     bytes.forEach((characterCode: number): void => {
         if (!isGeneralCharacter(characterCode)) {

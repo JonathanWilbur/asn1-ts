@@ -1,7 +1,8 @@
 import DERElement from "../../der";
+import { SEQUENCE } from "../../../macros";
 
 export default
-function decodeSequence (value: Uint8Array): DERElement[] {
+function decodeSequence (value: Uint8Array): SEQUENCE<DERElement> {
     if (value.length === 0) {
         return [];
     }

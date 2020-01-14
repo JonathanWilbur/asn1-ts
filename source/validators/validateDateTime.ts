@@ -1,4 +1,4 @@
-import * as errors from "./errors";
+import * as errors from "../errors";
 
 // eslint-disable-next-line
 export default function validateDateTime (

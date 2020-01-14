@@ -1,10 +1,11 @@
 import ObjectIdentifier from "../../../types/ObjectIdentifier";
 import * as errors from "../../../errors";
-import splitBytesByContinuationBit from "../../../splitBytesByContinuationBit";
+import splitBytesByContinuationBit from "../../../utils/splitBytesByContinuationBit";
 import decodeObjectIdentifierNode from "./decodeObjectIdentifierNode";
+import { OBJECT_IDENTIFIER } from "../../../macros";
 
 export default
-function decodeObjectIdentifier (value: Uint8Array): ObjectIdentifier {
+function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
     if (value.length === 0) {
         throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
     }

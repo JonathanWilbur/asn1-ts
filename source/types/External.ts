@@ -1,4 +1,4 @@
-import ObjectIdentifier from "./ObjectIdentifier";
+import { BIT_STRING, INTEGER, OBJECT_IDENTIFIER, OCTET_STRING, ObjectDescriptor } from "../macros";
 import ASN1Element from "../asn1";
 
 /**
@@ -16,9 +16,9 @@ import ASN1Element from "../asn1";
 export default
 class External {
     constructor (
-        readonly directReference: ObjectIdentifier | undefined,
-        readonly indirectReference: number | undefined,
-        readonly dataValueDescriptor: string | undefined,
-        readonly encoding: ASN1Element | Uint8Array | boolean[],
+        readonly directReference: OBJECT_IDENTIFIER | undefined,
+        readonly indirectReference: INTEGER | undefined,
+        readonly dataValueDescriptor: ObjectDescriptor | undefined,
+        readonly encoding: ASN1Element | OCTET_STRING | BIT_STRING,
     ) {}
 }

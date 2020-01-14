@@ -8,7 +8,7 @@ import {
     nr3Regex,
 } from "../values";
 // import ASN1Element from "../asn1";
-import convertBytesToText from "../convertBytesToText";
+import convertBytesToText from "./convertBytesToText";
 import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger";
 import decodeUnsignedBigEndianInteger from "../utils/decodeUnsignedBigEndianInteger";
 

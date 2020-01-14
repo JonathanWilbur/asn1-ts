@@ -1,13 +1,38 @@
 import * as errors from "./errors";
-import OID from "./types/ObjectIdentifier";
 import { ASN1Construction, ASN1TagClass, CANONICAL_TAG_CLASS_ORDERING } from "./values";
 import Byteable from "./interfaces/Byteable";
 import Named from "./interfaces/Named";
 import Long from "./interfaces/Long";
-import External from "./types/External";
-import EmbeddedPDV from "./types/EmbeddedPDV";
 import CharacterString from "./types/CharacterString";
 import Elementable from "./interfaces/Elementable";
+import {
+    BOOLEAN,
+    INTEGER,
+    BIT_STRING,
+    OCTET_STRING,
+    OBJECT_IDENTIFIER,
+    ObjectDescriptor,
+    EXTERNAL,
+    REAL,
+    ENUMERATED,
+    EMBEDDED_PDV,
+    UTF8String,
+    RELATIVE_OID,
+    SEQUENCE,
+    SET,
+    GraphicString,
+    NumericString,
+    VisibleString,
+    PrintableString,
+    TeletexString,
+    GeneralString,
+    UniversalString,
+    VideotexString,
+    BMPString,
+    IA5String,
+    UTCTime,
+    GeneralizedTime,
+} from "./macros";
 
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
@@ -27,60 +52,60 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     abstract fromBytes (bytes: Uint8Array): number;
     abstract toBytes (): Uint8Array;
 
-    abstract set boolean (value: boolean);
-    abstract get boolean (): boolean;
-    abstract set integer (value: number);
-    abstract get integer (): number;
-    abstract set bitString (value: boolean[]);
-    abstract get bitString (): boolean[];
-    abstract set octetString (value: Uint8Array);
-    abstract get octetString (): Uint8Array;
-    abstract set objectIdentifier (value: OID);
-    abstract get objectIdentifier (): OID;
-    abstract set objectDescriptor (value: string);
-    abstract get objectDescriptor (): string;
-    abstract set external (value: External);
-    abstract get external (): External;
-    abstract set real (value: number);
-    abstract get real (): number;
-    abstract set enumerated (value: number);
-    abstract get enumerated (): number;
-    abstract set embeddedPDV (value: EmbeddedPDV);
-    abstract get embeddedPDV (): EmbeddedPDV;
-    abstract set utf8String (value: string);
-    abstract get utf8String (): string;
-    abstract set relativeObjectIdentifier (value: number[]);
-    abstract get relativeObjectIdentifier (): number[];
-    abstract set sequence (value: ASN1Element[]);
-    abstract get sequence (): ASN1Element[];
-    abstract set set (value: ASN1Element[]);
-    abstract get set (): ASN1Element[];
-    abstract set numericString (value: string);
-    abstract get numericString (): string;
-    abstract set printableString (value: string);
-    abstract get printableString (): string;
-    abstract set teletexString (value: Uint8Array);
-    abstract get teletexString (): Uint8Array;
-    abstract set videotexString (value: Uint8Array);
-    abstract get videotexString (): Uint8Array;
-    abstract set ia5String (value: string);
-    abstract get ia5String (): string;
-    abstract set utcTime (value: Date);
-    abstract get utcTime (): Date;
-    abstract set generalizedTime (value: Date);
-    abstract get generalizedTime (): Date;
-    abstract set graphicString (value: string);
-    abstract get graphicString (): string;
-    abstract set visibleString (value: string);
-    abstract get visibleString (): string;
-    abstract set generalString (value: string);
-    abstract get generalString (): string;
-    abstract set universalString (value: string);
-    abstract get universalString (): string;
+    abstract set boolean (value: BOOLEAN);
+    abstract get boolean (): BOOLEAN;
+    abstract set integer (value: INTEGER);
+    abstract get integer (): INTEGER;
+    abstract set bitString (value: BIT_STRING);
+    abstract get bitString (): BIT_STRING;
+    abstract set octetString (value: OCTET_STRING);
+    abstract get octetString (): OCTET_STRING;
+    abstract set objectIdentifier (value: OBJECT_IDENTIFIER);
+    abstract get objectIdentifier (): OBJECT_IDENTIFIER;
+    abstract set objectDescriptor (value: ObjectDescriptor);
+    abstract get objectDescriptor (): ObjectDescriptor;
+    abstract set external (value: EXTERNAL);
+    abstract get external (): EXTERNAL;
+    abstract set real (value: REAL);
+    abstract get real (): REAL;
+    abstract set enumerated (value: ENUMERATED);
+    abstract get enumerated (): ENUMERATED;
+    abstract set embeddedPDV (value: EMBEDDED_PDV);
+    abstract get embeddedPDV (): EMBEDDED_PDV;
+    abstract set utf8String (value: UTF8String);
+    abstract get utf8String (): UTF8String;
+    abstract set relativeObjectIdentifier (value: RELATIVE_OID);
+    abstract get relativeObjectIdentifier (): RELATIVE_OID;
+    abstract set sequence (value: SEQUENCE<ASN1Element>);
+    abstract get sequence (): SEQUENCE<ASN1Element>;
+    abstract set set (value: SET<ASN1Element>);
+    abstract get set (): SET<ASN1Element>;
+    abstract set numericString (value: NumericString);
+    abstract get numericString (): NumericString;
+    abstract set printableString (value: PrintableString);
+    abstract get printableString (): PrintableString;
+    abstract set teletexString (value: TeletexString);
+    abstract get teletexString (): TeletexString;
+    abstract set videotexString (value: VideotexString);
+    abstract get videotexString (): VideotexString;
+    abstract set ia5String (value: IA5String);
+    abstract get ia5String (): IA5String;
+    abstract set utcTime (value: UTCTime);
+    abstract get utcTime (): UTCTime;
+    abstract set generalizedTime (value: GeneralizedTime);
+    abstract get generalizedTime (): GeneralizedTime;
+    abstract set graphicString (value: GraphicString);
+    abstract get graphicString (): GraphicString;
+    abstract set visibleString (value: VisibleString);
+    abstract get visibleString (): VisibleString;
+    abstract set generalString (value: GeneralString);
+    abstract get generalString (): GeneralString;
+    abstract set universalString (value: UniversalString);
+    abstract get universalString (): UniversalString;
     abstract set characterString (value: CharacterString);
     abstract get characterString (): CharacterString;
-    abstract set bmpString (value: string);
-    abstract get bmpString (): string;
+    abstract set bmpString (value: BMPString);
+    abstract get bmpString (): BMPString;
 
     private validateSize (name: string, units: string, actualSize: number, min: number, max?: number): void {
         const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);
@@ -114,110 +139,110 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         }
     }
 
-    public sizeConstrainedBitString (min: number, max?: number): boolean[] {
-        const ret: boolean[] = this.bitString;
+    public sizeConstrainedBitString (min: number, max?: number): BIT_STRING {
+        const ret: BIT_STRING = this.bitString;
         this.validateSize(this.name || "BIT STRING", "bits", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedOctetString (min: number, max?: number): Uint8Array {
-        const ret: Uint8Array = this.octetString;
+    public sizeConstrainedOctetString (min: number, max?: number): OCTET_STRING {
+        const ret: OCTET_STRING = this.octetString;
         this.validateSize(this.name || "OCTET STRING", "octets", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedObjectDescriptor (min: number, max?: number): string {
-        const ret: string = this.objectDescriptor;
+    public sizeConstrainedObjectDescriptor (min: number, max?: number): ObjectDescriptor {
+        const ret: ObjectDescriptor = this.objectDescriptor;
         this.validateSize(this.name || "ObjectDescriptor", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedUTF8String (min: number, max?: number): string {
-        const ret: string = this.utf8String;
+    public sizeConstrainedUTF8String (min: number, max?: number): UTF8String {
+        const ret: UTF8String = this.utf8String;
         this.validateSize(this.name || "UTF8String", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedSequenceOf (min: number, max?: number): ASN1Element[] {
-        const ret: ASN1Element[] = this.sequence;
+    public sizeConstrainedSequenceOf (min: number, max?: number): SEQUENCE<ASN1Element> {
+        const ret: SEQUENCE<ASN1Element> = this.sequence;
         this.validateSize(this.name || "SEQUENCE OF", "elements", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedSetOf (min: number, max?: number): ASN1Element[] {
+    public sizeConstrainedSetOf (min: number, max?: number): SET<ASN1Element> {
         const ret: ASN1Element[] = this.set;
         this.validateSize(this.name || "SET OF", "elements", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedNumericString (min: number, max?: number): string {
-        const ret: string = this.numericString;
+    public sizeConstrainedNumericString (min: number, max?: number): NumericString {
+        const ret: NumericString = this.numericString;
         this.validateSize(this.name || "NumericString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedPrintableString (min: number, max?: number): string {
-        const ret: string = this.printableString;
+    public sizeConstrainedPrintableString (min: number, max?: number): PrintableString {
+        const ret: PrintableString = this.printableString;
         this.validateSize(this.name || "PrintableString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedTeletexString (min: number, max?: number): Uint8Array {
-        const ret: Uint8Array = this.teletexString;
+    public sizeConstrainedTeletexString (min: number, max?: number): TeletexString {
+        const ret: TeletexString = this.teletexString;
         this.validateSize(this.name || "TeletexString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedVideotexString (min: number, max?: number): Uint8Array {
-        const ret: Uint8Array = this.videotexString;
+    public sizeConstrainedVideotexString (min: number, max?: number): VideotexString {
+        const ret: VideotexString = this.videotexString;
         this.validateSize(this.name || "VideotexString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedIA5String (min: number, max?: number): string {
-        const ret: string = this.ia5String;
+    public sizeConstrainedIA5String (min: number, max?: number): IA5String {
+        const ret: IA5String = this.ia5String;
         this.validateSize(this.name || "IA5String", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedGraphicString (min: number, max?: number): string {
-        const ret: string = this.graphicString;
+    public sizeConstrainedGraphicString (min: number, max?: number): GraphicString {
+        const ret: GraphicString = this.graphicString;
         this.validateSize(this.name || "GraphicString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedVisibleString (min: number, max?: number): string {
-        const ret: string = this.visibleString;
+    public sizeConstrainedVisibleString (min: number, max?: number): VisibleString {
+        const ret: VisibleString = this.visibleString;
         this.validateSize(this.name || "VisibleString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedGeneralString (min: number, max?: number): string {
-        const ret: string = this.generalString;
+    public sizeConstrainedGeneralString (min: number, max?: number): GeneralString {
+        const ret: GeneralString = this.generalString;
         this.validateSize(this.name || "GeneralString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedUniversalString (min: number, max?: number): string {
-        const ret: string = this.universalString;
+    public sizeConstrainedUniversalString (min: number, max?: number): UniversalString {
+        const ret: UniversalString = this.universalString;
         this.validateSize(this.name || "UniversalString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public sizeConstrainedBMPString (min: number, max?: number): string {
-        const ret: string = this.bmpString;
+    public sizeConstrainedBMPString (min: number, max?: number): BMPString {
+        const ret: BMPString = this.bmpString;
         this.validateSize(this.name || "BMPString", "characters", ret.length, min, max);
         return ret;
     }
 
-    public rangeConstrainedInteger (min: number, max?: number): number {
-        const ret: number = this.integer;
+    public rangeConstrainedInteger (min: number, max?: number): INTEGER {
+        const ret: INTEGER = this.integer;
         this.validateRange(this.name || "INTEGER", ret, min, max);
         return ret;
     }
 
-    public rangeConstrainedReal (min: number, max?: number): number {
-        const ret: number = this.real;
+    public rangeConstrainedReal (min: number, max?: number): REAL {
+        const ret: REAL = this.real;
         this.validateRange(this.name || "REAL", ret, min, max);
         return ret;
     }
@@ -256,155 +281,155 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
 
     // Shorter aliases to make for smaller libraries
 
-    set bool (value: boolean) {
+    set bool (value: BOOLEAN) {
         this.boolean = value;
     }
 
-    get bool (): boolean {
+    get bool (): BOOLEAN {
         return this.boolean;
     }
 
-    set int (value: number) {
+    set int (value: INTEGER) {
         this.integer = value;
     }
 
-    get int (): number {
+    get int (): INTEGER {
         return this.integer;
     }
 
-    set bits (value: boolean[]) {
+    set bits (value: BIT_STRING) {
         this.bitString = value;
     }
 
-    get bits (): boolean[] {
+    get bits (): BIT_STRING {
         return this.bitString;
     }
 
-    set octs (value: Uint8Array) {
+    set octs (value: OCTET_STRING) {
         this.octetString = value;
     }
 
-    get octs (): Uint8Array {
+    get octs (): OCTET_STRING {
         return this.octetString;
     }
 
-    set oid (value: OID) {
+    set oid (value: OBJECT_IDENTIFIER) {
         this.objectIdentifier = value;
     }
 
-    get oid (): OID {
+    get oid (): OBJECT_IDENTIFIER {
         return this.objectIdentifier;
     }
 
-    set odesc (value: string) {
+    set odesc (value: ObjectDescriptor) {
         this.objectDescriptor = value;
     }
 
-    get odesc (): string {
+    get odesc (): ObjectDescriptor {
         return this.objectDescriptor;
     }
 
-    set enum (value: number) {
+    set enum (value: ENUMERATED) {
         this.enumerated = value;
     }
 
-    get enum (): number {
+    get enum (): ENUMERATED {
         return this.enumerated;
     }
 
-    set utf8 (value: string) {
+    set utf8 (value: UTF8String) {
         this.utf8String = value;
     }
 
-    get utf8 (): string {
+    get utf8 (): UTF8String {
         return this.utf8String;
     }
 
-    set roid (value: number[]) {
+    set roid (value: RELATIVE_OID) {
         this.relativeObjectIdentifier = value;
     }
 
-    get roid (): number[] {
+    get roid (): RELATIVE_OID {
         return this.relativeObjectIdentifier;
     }
 
-    set seq (value: ASN1Element[]) {
+    set seq (value: SEQUENCE<ASN1Element>) {
         this.sequence = value;
     }
 
-    get seq (): ASN1Element[] {
+    get seq (): SEQUENCE<ASN1Element> {
         return this.sequence;
     }
 
-    set nums (value: string) {
+    set nums (value: NumericString) {
         this.numericString = value;
     }
 
-    get nums (): string {
+    get nums (): NumericString {
         return this.numericString;
     }
 
-    set prints (value: string) {
+    set prints (value: PrintableString) {
         this.printableString = value;
     }
 
-    get prints (): string {
+    get prints (): PrintableString {
         return this.printableString;
     }
 
-    set ttex (value: Uint8Array) {
+    set ttex (value: TeletexString) {
         this.teletexString = value;
     }
 
-    get ttex (): Uint8Array {
+    get ttex (): TeletexString {
         return this.teletexString;
     }
 
-    set vtex (value: Uint8Array) {
+    set vtex (value: VideotexString) {
         this.videotexString = value;
     }
 
-    get vtex (): Uint8Array {
+    get vtex (): VideotexString {
         return this.videotexString;
     }
 
-    set ia5 (value: string) {
+    set ia5 (value: IA5String) {
         this.ia5String = value;
     }
 
-    get ia5 (): string {
+    get ia5 (): IA5String {
         return this.ia5String;
     }
 
-    set utc (value: Date) {
+    set utc (value: UTCTime) {
         this.utcTime = value;
     }
 
-    get utc (): Date {
+    get utc (): UTCTime {
         return this.utcTime;
     }
 
-    set gtime (value: Date) {
+    set gtime (value: GeneralizedTime) {
         this.generalizedTime = value;
     }
 
-    get gtime (): Date {
+    get gtime (): GeneralizedTime {
         return this.generalizedTime;
     }
 
-    set ustr (value: string) {
+    set ustr (value: UniversalString) {
         this.universalString = value;
     }
 
-    get ustr (): string {
+    get ustr (): UniversalString {
         return this.universalString;
     }
 
-    set bmp (value: string) {
+    set bmp (value: BMPString) {
         this.bmpString = value;
     }
 
-    get bmp (): string {
+    get bmp (): BMPString {
         return this.bmpString;
     }
 

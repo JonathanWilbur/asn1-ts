@@ -6,10 +6,11 @@ import {
     nr3Regex,
 } from "../../../values";
 import ASN1Element from "../../../asn1";
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
+import { REAL } from "../../../macros";
 
 export default
-function decodeReal (value: Uint8Array): number {
+function decodeReal (value: Uint8Array): REAL {
     if (value.length === 0) return 0.0;
     switch (value[0] & 0b11000000) {
     case (0b01000000): {

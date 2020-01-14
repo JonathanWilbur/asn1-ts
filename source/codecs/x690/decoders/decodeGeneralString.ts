@@ -1,9 +1,10 @@
 import isGeneralCharacter from "../../../validators/isGeneralCharacter";
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
 import { ASN1CharactersError } from "../../../errors";
+import { GeneralString } from "../../../macros";
 
 export default
-function decodeGeneralString (value: Uint8Array): string {
+function decodeGeneralString (value: Uint8Array): GeneralString {
     value.forEach((characterCode: number): void => {
         if (!isGeneralCharacter(characterCode)) {
             throw new ASN1CharactersError(

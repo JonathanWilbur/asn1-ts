@@ -7,11 +7,9 @@ import {
     LengthEncodingPreference,
 } from "../values";
 import X690Element from "../x690";
-import External from "../types/External";
-import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
-import convertBytesToText from "../convertBytesToText";
-import convertTextToBytes from "../convertTextToBytes";
+import convertBytesToText from "../utils/convertBytesToText";
+import convertTextToBytes from "../utils/convertTextToBytes";
 import ObjectIdentifier from "../types/ObjectIdentifier";
 import encodeBoolean from "./x690/encoders/encodeBoolean";
 import decodeBoolean from "./ber/decoders/decodeBoolean";
@@ -43,27 +41,52 @@ import decodeObjectDescriptor from "../codecs/x690/decoders/decodeObjectDescript
 import decodePrintableString from "../codecs/x690/decoders/decodePrintableString";
 import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
+import {
+    BOOLEAN,
+    BIT_STRING,
+    OCTET_STRING,
+    ObjectDescriptor,
+    EXTERNAL,
+    REAL,
+    EMBEDDED_PDV,
+    UTF8String,
+    SEQUENCE,
+    SET,
+    GraphicString,
+    NumericString,
+    VisibleString,
+    PrintableString,
+    TeletexString,
+    GeneralString,
+    UniversalString,
+    VideotexString,
+    BMPString,
+    IA5String,
+    UTCTime,
+    GeneralizedTime,
+    FALSE_BIT,
+} from "../macros";
 
 export default
 class BERElement extends X690Element {
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
-    set boolean (value: boolean) {
+    set boolean (value: BOOLEAN) {
         this.value = encodeBoolean(value);
     }
 
-    get boolean (): boolean {
+    get boolean (): BOOLEAN {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
         }
         return decodeBoolean(this.value);
     }
 
-    set bitString (value: boolean[]) {
+    set bitString (value: BIT_STRING) {
         this.value = encodeBitString(value);
     }
 
-    get bitString (): boolean[] {
+    get bitString (): BIT_STRING {
         if (this.construction === ASN1Construction.primitive) {
             return decodeBitString(this.value);
         }
@@ -91,163 +114,163 @@ class BERElement extends X690Element {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
             }
             substring.recursionCount = (this.recursionCount + 1);
-            appendy = appendy.concat(substring.bitString);
+            appendy = appendy.concat(Array.from(substring.bitString).map(b => b !== FALSE_BIT));
         });
-        return appendy;
+        return new Uint8ClampedArray(appendy.map(b => (b ? 1 : 0)));
     }
 
-    set octetString (value: Uint8Array) {
+    set octetString (value: OCTET_STRING) {
         this.value = new Uint8Array(value); // Clones it.
     }
 
-    get octetString (): Uint8Array {
+    get octetString (): OCTET_STRING {
         return this.deconstruct("OCTET STRING");
     }
 
-    set objectDescriptor (value: string) {
+    set objectDescriptor (value: ObjectDescriptor) {
         this.value = encodeObjectDescriptor(value);
     }
 
-    get objectDescriptor (): string {
+    get objectDescriptor (): ObjectDescriptor {
         const bytes: Uint8Array = this.deconstruct("ObjectDescriptor");
         return decodeObjectDescriptor(bytes);
     }
 
-    set external (value: External) {
+    set external (value: EXTERNAL) {
         this.value = encodeExternal(value);
     }
 
-    get external (): External {
+    get external (): EXTERNAL {
         return decodeExternal(this.value);
     }
 
-    set real (value: number) {
+    set real (value: REAL) {
         this.value = encodeReal(value);
     }
 
-    get real (): number {
+    get real (): REAL {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
         }
         return decodeReal(this.value);
     }
 
-    set embeddedPDV (value: EmbeddedPDV) {
+    set embeddedPDV (value: EMBEDDED_PDV) {
         this.value = encodeEmbeddedPDV(value);
     }
 
-    get embeddedPDV (): EmbeddedPDV {
+    get embeddedPDV (): EMBEDDED_PDV {
         return decodeEmbeddedPDV(this.value);
     }
 
-    set utf8String (value: string) {
+    set utf8String (value: UTF8String) {
         this.value = convertTextToBytes(value);
     }
 
-    get utf8String (): string {
+    get utf8String (): UTF8String {
         return convertBytesToText(this.deconstruct("UTF8String"));
     }
 
-    set sequence (value: ASN1Element[]) {
+    set sequence (value: SEQUENCE<ASN1Element>) {
         this.value = encodeSequence(value);
         this.construction = ASN1Construction.constructed;
     }
 
-    get sequence (): ASN1Element[] {
+    get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
         }
         return decodeSequence(this.value);
     }
 
-    set set (value: ASN1Element[]) {
+    set set (value: SET<ASN1Element>) {
         this.sequence = value;
     }
 
-    get set (): ASN1Element[] {
+    get set (): SET<ASN1Element> {
         return this.sequence;
     }
 
-    set numericString (value: string) {
+    set numericString (value: NumericString) {
         this.value = encodeNumericString(value);
     }
 
-    get numericString (): string {
+    get numericString (): NumericString {
         const bytes: Uint8Array = this.deconstruct("NumericString");
         return decodeNumericString(bytes);
     }
 
-    set printableString (value: string) {
+    set printableString (value: PrintableString) {
         this.value = encodePrintableString(value);
     }
 
-    get printableString (): string {
+    get printableString (): PrintableString {
         const bytes: Uint8Array = this.deconstruct("PrintableString");
         return decodePrintableString(bytes);
     }
 
-    set teletexString (value: Uint8Array) {
+    set teletexString (value: TeletexString) {
         this.value = new Uint8Array(value); // Clones it.
     }
 
-    get teletexString (): Uint8Array {
+    get teletexString (): TeletexString {
         return this.deconstruct("TeletexString");
     }
 
-    set videotexString (value: Uint8Array) {
+    set videotexString (value: VideotexString) {
         this.value = new Uint8Array(value); // Clones it.
     }
 
-    get videotexString (): Uint8Array {
+    get videotexString (): VideotexString {
         return this.deconstruct("VideotexString");
     }
 
-    set ia5String (value: string) {
+    set ia5String (value: IA5String) {
         this.value = convertTextToBytes(value);
     }
 
-    get ia5String (): string {
+    get ia5String (): IA5String {
         return convertBytesToText(this.deconstruct("IA5String"));
     }
 
-    set utcTime (value: Date) {
+    set utcTime (value: UTCTime) {
         this.value = encodeUTCTime(value);
     }
 
-    get utcTime (): Date {
+    get utcTime (): UTCTime {
         return decodeUTCTime(this.deconstruct("UTCTime"));
     }
 
-    set generalizedTime (value: Date) {
+    set generalizedTime (value: GeneralizedTime) {
         this.value = encodeGeneralizedTime(value);
     }
 
-    get generalizedTime (): Date {
+    get generalizedTime (): GeneralizedTime {
         return decodeGeneralizedTime(this.deconstruct("GeneralizedTime"));
     }
 
-    set graphicString (value: string) {
+    set graphicString (value: GraphicString) {
         this.value = encodeGraphicString(value);
     }
 
-    get graphicString (): string {
+    get graphicString (): GraphicString {
         const bytes: Uint8Array = this.deconstruct("GraphicString");
         return decodeGraphicString(bytes);
     }
 
-    set visibleString (value: string) {
+    set visibleString (value: VisibleString) {
         this.value = encodeVisibleString(value);
     }
 
-    get visibleString (): string {
+    get visibleString (): VisibleString {
         return decodeVisibleString(this.value);
     }
 
-    set generalString (value: string) {
+    set generalString (value: GeneralString) {
         this.value = encodeGeneralString(value);
     }
 
-    get generalString (): string {
+    get generalString (): GeneralString {
         const bytes: Uint8Array = this.deconstruct("GeneralString");
         return decodeGeneralString(bytes);
     }
@@ -260,7 +283,7 @@ class BERElement extends X690Element {
         return decodeCharacterString(this.value);
     }
 
-    set universalString (value: string) {
+    set universalString (value: UniversalString) {
         const buf: Uint8Array = new Uint8Array(value.length << 2);
         for (let i: number = 0; i < value.length; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
@@ -276,7 +299,7 @@ class BERElement extends X690Element {
      * natively uses either UCS-2 or UTF-16. If it uses UTF-16 (which
      * most do), it might work, but UCS-2 will definitely not work.
      */
-    get universalString (): string {
+    get universalString (): UniversalString {
         const valueBytes: Uint8Array = this.deconstruct("UniversalString");
         if (valueBytes.length % 4) {
             throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
@@ -293,7 +316,7 @@ class BERElement extends X690Element {
         return ret;
     }
 
-    set bmpString (value: string) {
+    set bmpString (value: BMPString) {
         const buf: Uint8Array = new Uint8Array(value.length << 1);
         for (let i: number = 0, strLen: number = value.length; i < strLen; i++) {
             buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
@@ -302,7 +325,7 @@ class BERElement extends X690Element {
         this.value = buf;
     }
 
-    get bmpString (): string {
+    get bmpString (): BMPString {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
         if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.");
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript

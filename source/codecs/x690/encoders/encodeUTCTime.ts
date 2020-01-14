@@ -1,7 +1,8 @@
-import convertTextToBytes from "../../../convertTextToBytes";
+import { UTCTime } from "../../../macros";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 
 export default
-function encodeUTCTime (value: Date): Uint8Array {
+function encodeUTCTime (value: UTCTime): Uint8Array {
     let year: string = value.getUTCFullYear().toString();
     year = (year.substring(year.length - 2, year.length)); // Will fail if you supply a <2 digit date.
     const month: string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);

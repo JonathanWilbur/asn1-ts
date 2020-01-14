@@ -1,9 +1,10 @@
 import isGraphicCharacter from "../../../validators/isGraphicCharacter";
-import convertTextToBytes from "../../../convertTextToBytes";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 import { ASN1CharactersError } from "../../../errors";
+import { GraphicString } from "../../../macros";
 
 export default
-function encodeGraphicString (value: string): Uint8Array {
+function encodeGraphicString (value: GraphicString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
     bytes.forEach((characterCode: number): void => {
         if (!isGraphicCharacter(characterCode)) {

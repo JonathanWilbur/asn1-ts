@@ -82,19 +82,19 @@ const asn1 = require("../../dist/index.js");
 
         it("encodes and decodes a BIT STRING correctly", () => {
             const el = new CodecElement();
-            el.bitString = []; // 0 bits
+            el.bitString = new Uint8ClampedArray(0); // 0 bits
             expect(el.bitString.length).toBe(0);
             expect(el.value).toEqual(new Uint8Array([ 0x00 ]));
-            el.bitString = [ true, false, true, true, false, false, true ]; // 7 bits
-            expect(el.bitString).toEqual([ true, false, true, true, false, false, true ]);
-            el.bitString = [ true, false, true, true, false, false, true, false ]; // 8 bits
-            expect(el.bitString).toEqual([ true, false, true, true, false, false, true, false ]);
-            el.bitString = [ true, false, true, true, false, false, true, false, true ]; // 9 bits
-            expect(el.bitString).toEqual([ true, false, true, true, false, false, true, false, true ]);
+            el.bitString = new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1 ]); // 7 bits
+            expect(el.bitString).toEqual(new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1 ]));
+            el.bitString = new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1, 0 ]); // 8 bits
+            expect(el.bitString).toEqual(new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1, 0 ]));
+            el.bitString = new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1, 0, 1 ]); // 9 bits
+            expect(el.bitString).toEqual(new Uint8ClampedArray([ 1, 0, 1, 1, 0, 0, 1, 0, 1 ]));
 
-            el.bitString = [ true, false, true, true, false, true, true, true, false, true ];
+            el.bitString = new Uint8ClampedArray([ 1, 0, 1, 1, 0, 1, 1, 1, 0, 1 ]);
             expect(el.value).toEqual(new Uint8Array([ 6, 183, 64 ]));
-            expect(el.bitString).toEqual([ true, false, true, true, false, true, true, true, false, true ]);
+            expect(el.bitString).toEqual(new Uint8ClampedArray([ 1, 0, 1, 1, 0, 1, 1, 1, 0, 1 ]));
         });
 
         it("encodes and decodes an OCTET STRING correctly", () => {

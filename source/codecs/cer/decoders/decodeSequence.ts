@@ -1,7 +1,8 @@
 import CERElement from "../../cer";
+import { SEQUENCE } from "../../../macros";
 
 export default
-function decodeSequence (value: Uint8Array): CERElement[] {
+function decodeSequence (value: Uint8Array): SEQUENCE<CERElement> {
     if (value.length === 0) {
         return [];
     }

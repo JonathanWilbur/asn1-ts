@@ -59,7 +59,7 @@ const asn1 = require("../../dist/index.js");
                 asn1.ASN1TagClass.universal,
                 asn1.ASN1Construction.primitive,
                 asn1.ASN1UniversalType.boolean,
-                true
+                true,
             );
 
             const el = new CodecElement(

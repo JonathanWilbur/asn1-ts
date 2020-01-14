@@ -1,10 +1,10 @@
-import External from "../../../types/External";
+import { EXTERNAL } from "../../../macros";
 import DERElement from "../../../codecs/der";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values";
 import ASN1Element from "../../../asn1";
 
 export default
-function encodeExternal (value: External): Uint8Array {
+function encodeExternal (value: EXTERNAL): Uint8Array {
     let directReferenceElement: DERElement | undefined = undefined;
     if (value.directReference) {
         directReferenceElement = new DERElement(

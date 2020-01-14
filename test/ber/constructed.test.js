@@ -89,11 +89,11 @@ describe("Basic Encoding Rules", () => {
 
         const element = new asn1.BERElement();
         element.fromBytes(data);
-        expect(element.bitString).toEqual([
-            false, false, false, false, true, true, true, true,
-            false, false, false, false, true, true, true, true,
-            true, true, true,
-        ]);
+        expect(element.bitString).toEqual(new Uint8ClampedArray([
+            0, 0, 0, 0, 1, 1, 1, 1,
+            0, 0, 0, 0, 1, 1, 1, 1,
+            1, 1, 1,
+        ]));
     });
 
     it("encodes and decodes a constructed OCTET STRING correctly", () => {

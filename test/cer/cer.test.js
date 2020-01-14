@@ -11,11 +11,11 @@ describe("Canonical Encoding Rules", function () {
             longEvenBits,
         ].forEach((bits) => {
             for (let i = 0; i < bits.length; i++) {
-                bits[i] = Boolean(i % 2);
+                bits[i] = (i % 2);
             }
 
-            el.bitString = bits;
-            expect(el.bitString).toEqual(bits);
+            el.bitString = new Uint8ClampedArray(bits);
+            expect(el.bitString).toEqual(new Uint8ClampedArray(bits));
         });
     });
 

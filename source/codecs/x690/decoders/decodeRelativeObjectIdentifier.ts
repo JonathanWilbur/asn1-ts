@@ -1,9 +1,10 @@
-import splitBytesByContinuationBit from "../../../splitBytesByContinuationBit";
+import splitBytesByContinuationBit from "../../../utils/splitBytesByContinuationBit";
 import decodeObjectIdentifierNode from "./decodeObjectIdentifierNode";
 import * as errors from "../../../errors";
+import { RELATIVE_OID } from "../../../macros";
 
 export default
-function decodeRelativeObjectIdentifier (value: Uint8Array): number[] {
+function decodeRelativeObjectIdentifier (value: Uint8Array): RELATIVE_OID {
     if (value.length === 0) {
         return [];
     }

@@ -1,9 +1,10 @@
 import isNumericCharacter from "../../../validators/isNumericCharacter";
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
 import { ASN1CharactersError } from "../../../errors";
+import { NumericString } from "../../../macros";
 
 export default
-function decodeNumericString (value: Uint8Array): string {
+function decodeNumericString (value: Uint8Array): NumericString {
     value.forEach((characterCode: number): void => {
         if (!isNumericCharacter(characterCode)) {
             throw new ASN1CharactersError(

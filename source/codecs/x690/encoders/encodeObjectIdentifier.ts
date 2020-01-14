@@ -1,9 +1,9 @@
-import ObjectIdentifier from "../../../types/ObjectIdentifier";
 import encodeObjectIdentifierNode from "./encodeObjectIdentifierNode";
-import concatenateBytes from "../../../concatenateBytes";
+import concatenateBytes from "../../../utils/concatenateBytes";
+import { OBJECT_IDENTIFIER } from "../../../macros";
 
 export default
-function encodeObjectIdentifier (value: ObjectIdentifier): Uint8Array {
+function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Uint8Array {
     const numbers: number[] = value.nodes;
     const pre: Uint8Array = new Uint8Array([ ((numbers[0] * 40) + numbers[1]) ]);
     const post: Uint8Array[] = numbers

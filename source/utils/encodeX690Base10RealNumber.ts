@@ -1,5 +1,5 @@
 import { ASN1SpecialRealValue } from "../values";
-import convertTextToBytes from "../convertTextToBytes";
+import convertTextToBytes from "./convertTextToBytes";
 
 /**
  * Only encodes with seven digits of precision.

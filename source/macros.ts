@@ -1,12 +1,13 @@
 import ObjectIdentifier from "./types/ObjectIdentifier";
 import EmbeddedPDV from "./types/EmbeddedPDV";
-import { TypeIdentifier } from "./types/TypeIdentifier";
+import External from "./types/External";
+import TypeIdentifier from "./types/TypeIdentifier";
 
 export type COMPONENTS_OF<T> = T;
 export type OPTIONAL<T> = T | undefined;
 export type BOOLEAN = boolean;
 export type INTEGER = number;
-export type BIT_STRING = Int8Array;
+export type BIT_STRING = Uint8ClampedArray;
 export type OCTET_STRING = Uint8Array;
 export type NULL = null;
 export type OBJECT_IDENTIFIER = ObjectIdentifier;
@@ -20,8 +21,8 @@ export type UTF8String = string;
 export type RELATIVE_OID = number[];
 export type SEQUENCE<T> = T[];
 export type SEQUENCE_OF<T> = T[];
-export type SET<T> = Set<T>;
-export type SET_OF<T> = Set<T>;
+export type SET<T> = T[];
+export type SET_OF<T> = T[];
 export type GraphicString = string;
 export type NumericString = string;
 export type VisibleString = string;
@@ -35,12 +36,13 @@ export type VideotexString = Uint8Array;
 export type BMPString = string;
 export type IA5String = string;
 // export type CharacterString = CharacterString;
+export { default as CharacterString } from "./types/CharacterString";
 export type UTCTime = Date;
 export type GeneralizedTime = Date;
 export type DATE = Date;
 export type TIME_OF_DAY = Date;
 export type DATE_TIME = Date;
-// DURATION
+export type DURATION = number;
 export type OID_IRI = string;
 export type RELATIVE_OID_IRI = string;
 
