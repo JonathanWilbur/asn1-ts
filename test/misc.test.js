@@ -3,7 +3,6 @@ const MAX_SINT_32 = asn1.MAX_SINT_32;
 const MIN_SINT_32 = asn1.MIN_SINT_32;
 const MAX_UINT_32 = asn1.MAX_UINT_32;
 const MIN_UINT_32 = asn1.MIN_UINT_32;
-const ASN1Element = asn1.ASN1Element;
 
 describe("The unsigned big-endian integer decoder", () => {
     it("decodes MIN_UINT_32 correctly", () => {
