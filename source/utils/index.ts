@@ -19,4 +19,5 @@ export { default as getBitFromBase256 } from "./getBitFromBase256";
 export { default as packBits } from "./packBits";
 export { default as setBitInBase128 } from "./setBitInBase128";
 export { default as setBitInBase256 } from "./setBitInBase256";
+export { default as trimLeadingPaddingBytes } from "./trimLeadingPaddingBytes";
 export { default as unpackBits } from "./unpackBits";
