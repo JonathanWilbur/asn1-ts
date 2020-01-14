@@ -1,5 +1,6 @@
 import * as errors from "../../../errors";
 
+// TODO: decodeBase128 and decodeUnsignedBigEndianInteger()
 /**
  * This will assume that the whole `value` encodes one and only one node. If an
  * unset most significant bit (MSB) is encountered within these bytes, it will
@@ -19,7 +20,7 @@ function decodeObjectIdentifierNode (value: Uint8Array): number {
     let currentNumber: number = 0;
     for (let byteIndex: number = 0; byteIndex < value.length; byteIndex++) {
         if (currentNumber === 0 && value[byteIndex] === 0b10000000) {
-            throw new errors.ASN1PaddingError("OID had invalid padding byte.");
+            throw new errors.ASN1PaddingError("OID had invalid padding byte (0x80).");
         }
         // NOTE: You must use the unsigned shift >>> or MAX_SAFE_INTEGER will become -1
         if (currentNumber > (Number.MAX_SAFE_INTEGER >>> 7)) {

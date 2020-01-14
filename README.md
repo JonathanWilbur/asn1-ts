@@ -94,9 +94,10 @@ Tests under the `test` directory can also serve as examples.
   - [x] Enable `encode()` to encode `BIT STRING`
   - [x] Pass in the offending element into errors.
   - [x] Use `Uint8ClampedArray` to represent `BIT STRING`.
-  - [ ] Get rid of the codec-specific libraries.
+  - [x] Get rid of the codec-specific libraries.
   - [x] Make `TypeIdentifier` a `default` export.
   - [x] Make all functions use the macros instead of native types?
+  - [ ] Document recommendation of macros.
   - [ ] Get rid of TODOs
   - [ ] Refactor methods out of `ASN1Element`
   - [ ] Support the new 2015 data types:

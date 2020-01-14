@@ -12,12 +12,12 @@
     ],
     "description": "ASN.1 encoding and decoding, including BER, CER, and DER.",
     "devDependencies": {
-        "@babel/core": "^7.8.0",
-        "@babel/preset-env": "^7.8.2",
-        "@babel/preset-typescript": "^7.8.0",
+        "@babel/core": "^7.8.3",
+        "@babel/preset-env": "^7.8.3",
+        "@babel/preset-typescript": "^7.8.3",
         "@types/node": "^12.12.24",
-        "@typescript-eslint/eslint-plugin": "^2.15.0",
-        "@typescript-eslint/parser": "^2.15.0",
+        "@typescript-eslint/eslint-plugin": "^2.16.0",
+        "@typescript-eslint/parser": "^2.16.0",
         "babel-jest": "^24.9.0",
         "eslint": "^6.8.0",
         "jest": "^24.9.0",
@@ -51,7 +51,7 @@
         "url": "https://github.com/JonathanWilbur/asn1-ts.git"
     },
     "scripts": {
-        "build": "npx tsc && npx webpack --config ./webpack/ber.js && npx webpack --config ./webpack/cer.js && npx webpack --config ./webpack/der.js && npx webpack --config ./webpack/asn1.js",
+        "build": "npx tsc && npx webpack --config ./webpack/asn1.js",
         "clean": "rm -rf dist; mkdir -p dist",
         "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
