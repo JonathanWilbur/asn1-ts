@@ -272,6 +272,41 @@ encoding and decoding with ASN.1. This makes it a lot less computationally
 efficient when compared to something little-endian like Google's
 [Protocol Buffers](https://developers.google.com/protocol-buffers/).
 
+### Poor Choice of Date and Time Type Definitions
+
+It would be one thing if a particular set of encoding rules poorly represented
+abstract values, as a separate set of encoding rules that are more amenable
+could be used for defining a new protocol, but the ITU defined the Date and
+Time (defined in X.680:2015) _abstract values_ as having ISO 8601 settings
+applied to them that only allow them to represent years including and after
+1582!
+
+These are the definitions of these types:
+
+```
+DATE ::= [UNIVERSAL 31] IMPLICIT TIME (SETTINGS "Basic=Date Date=YMD Year=Basic")
+TIME-OF-DAY ::= [UNIVERSAL 32] IMPLICIT TIME (SETTINGS "Basic=Time Time=HMS Local-or-UTC=L")
+DATE-TIME ::= [UNIVERSAL 33] IMPLICIT TIME (SETTINGS "Basic=Date-Time Date=YMD Year=Basic Time=HMS Local-or-UTC=L")
+DURATION ::= [UNIVERSAL 34] IMPLICIT TIME (SETTINGS "Basic=Interval Interval-type=D")
+```
+
+It may look sensible and innocuous to use the `Year=Basic` setting, but this
+means that only years inclusively within the range 1582 to 9999 may be
+represented by this abstract value. I cannot find an answer as to whether
+this setting is optional (and therefore, that it would be possible to
+represent the range of all possible years), but this is what would be needed.
+
+Fortunately, I doubt most protocols will ever need to represent a date outside
+of this range, and if they do, the `GeneralizedTime` type may be used, though
+it does not seem well-suited for representing dates with no precise time.
+Further, future versions of ASN.1 specifications may find a way to lift this
+setting so that all years may be represented without breaking backwards
+compatibility.
+
+I also draw your attention to the `Local-or-UTC=L` setting, which means that
+all abstract values for these types must be represented using local time. This
+introduces unnecessary ambiguity with all time types.
+
 ### In summary
 
 DO NOT USE ASN.1 UNLESS YOU HAVE TO.
