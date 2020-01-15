@@ -39,10 +39,56 @@ export type IA5String = string;
 export { default as CharacterString } from "./types/CharacterString";
 export type UTCTime = Date;
 export type GeneralizedTime = Date;
+
+/**
+ * It might be tempting to represent these as dates, and that might be fine
+ * when it comes to mutating, but when accessing, the wide variety of
+ * abstract value representations would entail _months_ of additional
+ * programming to decode.
+ */
+
+// TODO: Where is TIME?
+
+/**
+ * `DATE ::= [UNIVERSAL 31] IMPLICIT TIME (SETTINGS "Basic=Date Date=YMD Year=Basic")`
+ *
+ * This looks like `YYYY-MM-DD`, where `YYYY` is 1582 to 9999.
+ *
+ * The time will be set to local 00:00:00.
+ */
 export type DATE = Date;
+
+/**
+ * `TIME-OF-DAY ::= [UNIVERSAL 32] IMPLICIT TIME (SETTINGS "Basic=Time Time=HMS Local-or-UTC=L")`
+ *
+ * This looks like `hh:mm:ss`.
+ *
+ * The date will be set to today's local date.
+ */
 export type TIME_OF_DAY = Date;
+
+/**
+ * `DATE-TIME ::= [UNIVERSAL 33] IMPLICIT TIME (SETTINGS "Basic=Date-Time Date=YMD Year=Basic Time=HMS Local-or-UTC=L")`
+ *
+ * `YYYY-MM-DDThh:mm:ss`
+ */
 export type DATE_TIME = Date;
+
+/**
+ * `DURATION ::= [UNIVERSAL 34] IMPLICIT TIME (SETTINGS "Basic=Interval Interval-type=D")`
+ *
+ * This must begin with a P, then a sequence of numbers (floating-point
+ * tolerated), each of which is followed by a letter, indicating the unit.
+ * The only exception to this is that an hours-minutes-seconds designation
+ * shall be preceded by a T.
+ * The syntax is really more complicated than this, but that is a good summary.
+ *
+ * This library will use a `number` to represent the value, with 1 in this
+ * scale representing one second, and with the fractional component
+ * representing fractions of a second.
+ */
 export type DURATION = number;
+
 export type OID_IRI = string;
 export type RELATIVE_OID_IRI = string;
 
