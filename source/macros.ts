@@ -47,7 +47,11 @@ export type GeneralizedTime = Date;
  * programming to decode.
  */
 
-// TODO: Where is TIME?
+/**
+ * A string is used to represent the Time type, because it can take on so
+ * many different forms.
+ */
+export type TIME = string;
 
 /**
  * `DATE ::= [UNIVERSAL 31] IMPLICIT TIME (SETTINGS "Basic=Date Date=YMD Year=Basic")`

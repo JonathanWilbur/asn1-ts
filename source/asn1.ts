@@ -32,6 +32,12 @@ import {
     IA5String,
     UTCTime,
     GeneralizedTime,
+    DATE,
+    TIME_OF_DAY,
+    DATE_TIME,
+    DURATION,
+    OID_IRI,
+    RELATIVE_OID_IRI,
 } from "./macros";
 
 export default
@@ -106,6 +112,19 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     abstract get characterString (): CharacterString;
     abstract set bmpString (value: BMPString);
     abstract get bmpString (): BMPString;
+    abstract set date (value: DATE);
+    abstract get date (): DATE;
+    abstract set timeOfDay (value: TIME_OF_DAY);
+    abstract get timeOfDay (): TIME_OF_DAY;
+    abstract set dateTime (value: DATE_TIME);
+    abstract get dateTime (): DATE_TIME;
+    abstract set duration (value: DURATION);
+    abstract get duration (): DURATION;
+    abstract set oidIRI (value: OID_IRI);
+    abstract get oidIRI (): OID_IRI;
+    abstract set relativeOIDIRI (value: RELATIVE_OID_IRI);
+    abstract get relativeOIDIRI (): RELATIVE_OID_IRI;
+
 
     private validateSize (name: string, units: string, actualSize: number, min: number, max?: number): void {
         const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);

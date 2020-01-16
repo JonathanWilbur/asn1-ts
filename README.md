@@ -71,6 +71,19 @@ Tests under the `test` directory can also serve as examples.
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
+    - [ ] Add `TIME` types
+      - [ ] `YEAR-ENCODING`
+      - [ ] `YEAR-MONTH-ENCODING`
+      - [ ] `DATE-ENCODING`
+      - [ ] `HOURS-ENCODING`
+      - [ ] `HOURS-DIFF-ENCODING`
+      - [ ] `HOURS-MINUTES-ENCODING`
+      - [ ] `HOURS-MINUTES-DIFF-ENCODING`
+      - [ ] `TIME-OF-DAY-ENCODING`
+      - [ ] `TIME-OF-DAY-DIFF-ENCODING`
+      - [ ] `TIME-OF-DAY-FRACTION-ENCODING`
+      - [ ] `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
+      - [ ] `DURATION-INTERVAL-ENCODING`
   - [ ] Canonical Octet Encoding Rules
   - [ ] NTCIP Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
   - [ ] JSON Encoding Rules (May require changes to ASN1Element, or a separate element.)
@@ -78,6 +91,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] BACNet Encoding Rules? (ISO 16484-5:2017)
   - [ ] Packed Encoding Rules
     - [ ] Basic Aligned Packed Encoding Rules (PER) (This is used by MCS / T.125, which is used by RDP. I believe it is also used by J2735 / DSRC.)
+    - [ ] Make a separate RDPER (Remoted Desktop Protocol Encoding Rules)
     - [ ] Basic Unaligned Packed Encoding Rules (UPER) (May require changes to ASN1Element) (Used by 3GPP RRC)
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
@@ -101,10 +115,11 @@ Tests under the `test` directory can also serve as examples.
   - [x] Get rid of TODOs
   - [x] Refactor methods out of `ASN1Element`
   - [ ] Support the new 2015 data types:
-    - [ ] `DATE`
-    - [ ] `TIME-OF-DAY`
-    - [ ] `DATE-TIME`
-    - [ ] `DURATION`
+    - [x] `TIME`
+    - [x] `DATE`
+    - [x] `TIME-OF-DAY`
+    - [x] `DATE-TIME`
+    - [ ] `DURATION` (This will require a sort of "mini-parser.")
     - [ ] `OID-IRI`
     - [ ] `RELATIVE-OID-IRI`
 
