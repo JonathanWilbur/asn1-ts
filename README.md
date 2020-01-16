@@ -120,8 +120,9 @@ Tests under the `test` directory can also serve as examples.
     - [x] `TIME-OF-DAY`
     - [x] `DATE-TIME`
     - [ ] `DURATION` (This will require a sort of "mini-parser.")
-    - [ ] `OID-IRI`
-    - [ ] `RELATIVE-OID-IRI`
+    - [x] `OID-IRI`
+    - [x] `RELATIVE-OID-IRI`
+    - [ ] Add validation
 
 ## See Also
 
