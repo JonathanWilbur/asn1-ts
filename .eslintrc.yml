@@ -153,8 +153,7 @@ rules:
   no-path-concat:
     - error
   max-params:
-    - warn
-    - 5
+    - off
   no-lonely-if:
     - error
   no-mixed-operators:
@@ -265,4 +264,6 @@ rules:
     - off
   # There is a legitimate case for using this in encoding and decoding REAL.
   no-compare-neg-zero:
+    - off
+  '@typescript-eslint/class-name-casing':
     - off

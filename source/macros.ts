@@ -2,6 +2,7 @@ import ObjectIdentifier from "./types/ObjectIdentifier";
 import EmbeddedPDV from "./types/EmbeddedPDV";
 import External from "./types/External";
 import TypeIdentifier from "./types/TypeIdentifier";
+import DURATION_INTERVAL_ENCODING from "./types/time/DURATION-INTERVAL-ENCODING";
 
 export type COMPONENTS_OF<T> = T;
 export type OPTIONAL<T> = T | undefined;
@@ -91,7 +92,7 @@ export type DATE_TIME = Date;
  * scale representing one second, and with the fractional component
  * representing fractions of a second.
  */
-export type DURATION = number;
+export type DURATION = DURATION_INTERVAL_ENCODING;
 
 export type OID_IRI = string;
 export type RELATIVE_OID_IRI = string;

@@ -71,19 +71,19 @@ Tests under the `test` directory can also serve as examples.
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
-    - [ ] Add `TIME` types
-      - [ ] `YEAR-ENCODING`
-      - [ ] `YEAR-MONTH-ENCODING`
-      - [ ] `DATE-ENCODING`
-      - [ ] `HOURS-ENCODING`
-      - [ ] `HOURS-DIFF-ENCODING`
-      - [ ] `HOURS-MINUTES-ENCODING`
-      - [ ] `HOURS-MINUTES-DIFF-ENCODING`
-      - [ ] `TIME-OF-DAY-ENCODING`
-      - [ ] `TIME-OF-DAY-DIFF-ENCODING`
-      - [ ] `TIME-OF-DAY-FRACTION-ENCODING`
-      - [ ] `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
-      - [ ] `DURATION-INTERVAL-ENCODING`
+    - [x] Add `TIME` types
+      - [x] `YEAR-ENCODING`
+      - [x] `YEAR-MONTH-ENCODING`
+      - [x] `DATE-ENCODING`
+      - [x] `HOURS-ENCODING`
+      - [x] `HOURS-DIFF-ENCODING`
+      - [x] `HOURS-MINUTES-ENCODING`
+      - [x] `HOURS-MINUTES-DIFF-ENCODING`
+      - [x] `TIME-OF-DAY-ENCODING`
+      - [x] `TIME-OF-DAY-DIFF-ENCODING`
+      - [x] `TIME-OF-DAY-FRACTION-ENCODING`
+      - [x] `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
+      - [x] `DURATION-INTERVAL-ENCODING`
   - [ ] Canonical Octet Encoding Rules
   - [ ] NTCIP Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
   - [ ] JSON Encoding Rules (May require changes to ASN1Element, or a separate element.)
@@ -123,6 +123,7 @@ Tests under the `test` directory can also serve as examples.
     - [x] `OID-IRI`
     - [x] `RELATIVE-OID-IRI`
     - [ ] Add validation
+  - [ ] `openType` accessor (because X.696 requires a length determinant on all open types.)
 
 ## See Also
 

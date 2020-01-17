@@ -1,4 +1,3 @@
-import * as errors from "../errors";
 import validateDate from "./validateDate";
 import validateTime from "./validateTime";
 
