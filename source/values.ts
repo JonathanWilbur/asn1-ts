@@ -122,3 +122,15 @@ const CANONICAL_TAG_CLASS_ORDERING: ASN1TagClass[] = [
     ASN1TagClass.private,
     ASN1TagClass.context,
 ];
+
+export const numberRegex: string = "(0|[1-9]\\d*)(?:\\.\\d+)?";
+export const datetimeRegex: RegExp = new RegExp(
+    "(?:(" + numberRegex + ")Y)?"
+    + "(?:(" + numberRegex + ")M)?"
+    + "(?:(" + numberRegex + ")D)?"
+    + "(?:T"
+    + "(?:(" + numberRegex + ")H)?"
+    + "(?:(" + numberRegex + ")M)?"
+    + "(?:(" + numberRegex + ")S)?"
+    + ")?",
+);

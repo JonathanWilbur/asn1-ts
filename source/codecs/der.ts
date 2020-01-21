@@ -39,6 +39,8 @@ import decodeObjectDescriptor from "../codecs/x690/decoders/decodeObjectDescript
 import decodePrintableString from "../codecs/x690/decoders/decodePrintableString";
 import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
+import encodeDuration from "../codecs/x690/encoders/encodeDuration";
+import decodeDuration from "../codecs/der/decoders/decodeDuration";
 import X690Element from "../x690";
 import {
     BOOLEAN,
@@ -63,6 +65,7 @@ import {
     IA5String,
     UTCTime,
     GeneralizedTime,
+    DURATION,
 } from "../macros";
 
 export default
@@ -341,6 +344,14 @@ class DERElement extends X690Element {
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
+    }
+
+    set duration (value: DURATION) {
+        this.value = encodeDuration(value);
+    }
+
+    get duration (): DURATION {
+        return decodeDuration(this.value);
     }
 
     public encode (value: any): void {

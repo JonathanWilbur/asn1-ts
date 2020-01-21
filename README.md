@@ -71,19 +71,6 @@ Tests under the `test` directory can also serve as examples.
 - [x] Encode a `Set` of elements as `SET`
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
-    - [x] Add `TIME` types
-      - [x] `YEAR-ENCODING`
-      - [x] `YEAR-MONTH-ENCODING`
-      - [x] `DATE-ENCODING`
-      - [x] `HOURS-ENCODING`
-      - [x] `HOURS-DIFF-ENCODING`
-      - [x] `HOURS-MINUTES-ENCODING`
-      - [x] `HOURS-MINUTES-DIFF-ENCODING`
-      - [x] `TIME-OF-DAY-ENCODING`
-      - [x] `TIME-OF-DAY-DIFF-ENCODING`
-      - [x] `TIME-OF-DAY-FRACTION-ENCODING`
-      - [x] `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
-      - [x] `DURATION-INTERVAL-ENCODING`
   - [ ] Canonical Octet Encoding Rules
   - [ ] NTCIP Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
   - [ ] JSON Encoding Rules (May require changes to ASN1Element, or a separate element.)
@@ -103,7 +90,7 @@ Tests under the `test` directory can also serve as examples.
   - [ ] A function to encode almost every type.
   - [ ] A function to decode almost every type.
   - [ ] All things relating to JSON Encoding Rules.
-- [ ] Compatibility-breaking changes
+- [x] Compatibility-breaking changes
   - [x] ~~Error UUIDs.~~ (Though this would have been better from the start, the benefits of changing to this would be minimal, especially since the errors are not generally actionable in the first place.)
   - [x] Enable `encode()` to encode `BIT STRING`
   - [x] Pass in the offending element into errors.
@@ -114,16 +101,14 @@ Tests under the `test` directory can also serve as examples.
   - [x] Document recommendation of macros.
   - [x] Get rid of TODOs
   - [x] Refactor methods out of `ASN1Element`
-  - [ ] Support the new 2015 data types:
+  - [x] Support the new 2015 data types:
     - [x] `TIME`
     - [x] `DATE`
     - [x] `TIME-OF-DAY`
     - [x] `DATE-TIME`
-    - [ ] `DURATION` (This will require a sort of "mini-parser.")
+    - [x] `DURATION`
     - [x] `OID-IRI`
     - [x] `RELATIVE-OID-IRI`
-    - [ ] Add validation
-  - [ ] `openType` accessor (because X.696 requires a length determinant on all open types.)
 
 ## See Also
 

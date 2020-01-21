@@ -3,5 +3,5 @@ import convertTextToBytes from "../../../utils/convertTextToBytes";
 
 export default
 function encodeTime (value: TIME): Uint8Array {
-    return convertTextToBytes(value);
+    return convertTextToBytes(value.replace(/,/g, "."));
 }

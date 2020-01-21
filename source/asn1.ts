@@ -32,6 +32,7 @@ import {
     IA5String,
     UTCTime,
     GeneralizedTime,
+    TIME,
     DATE,
     TIME_OF_DAY,
     DATE_TIME,
@@ -82,6 +83,8 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     abstract get utf8String (): UTF8String;
     abstract set relativeObjectIdentifier (value: RELATIVE_OID);
     abstract get relativeObjectIdentifier (): RELATIVE_OID;
+    abstract set time (value: TIME);
+    abstract get time (): TIME;
     abstract set sequence (value: SEQUENCE<ASN1Element>);
     abstract get sequence (): SEQUENCE<ASN1Element>;
     abstract set set (value: SET<ASN1Element>);

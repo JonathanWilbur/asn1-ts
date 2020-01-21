@@ -135,7 +135,7 @@ rules:
   require-await:
     - off
   require-unicode-regexp:
-    - warn
+    - off
   no-label-var:
     - warn
   no-shadow:

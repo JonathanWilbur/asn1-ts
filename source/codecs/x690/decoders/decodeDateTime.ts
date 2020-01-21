@@ -3,7 +3,7 @@ import convertBytesToText from "../../../utils/convertBytesToText";
 import validateDateTime from "../../../validators/validateDateTime";
 
 export default
-function decodeDate (bytes: Uint8Array): DATE_TIME {
+function decodeDateTime (bytes: Uint8Array): DATE_TIME {
     const str: string = convertBytesToText(bytes);
     const year: number = parseInt(str.slice(0, 4), 10);
     const month: number = parseInt(str.slice(4, 6), 10) - 1;

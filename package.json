@@ -15,15 +15,15 @@
         "@babel/core": "^7.8.3",
         "@babel/preset-env": "^7.8.3",
         "@babel/preset-typescript": "^7.8.3",
-        "@types/node": "^12.12.24",
-        "@typescript-eslint/eslint-plugin": "^2.16.0",
-        "@typescript-eslint/parser": "^2.16.0",
+        "@types/node": "^12.12.25",
+        "@typescript-eslint/eslint-plugin": "^2.17.0",
+        "@typescript-eslint/parser": "^2.17.0",
         "babel-jest": "^24.9.0",
         "eslint": "^6.8.0",
         "jest": "^24.9.0",
         "jest-junit": "^7.0.0",
         "ts-loader": "^6.2.1",
-        "typescript": "^3.7.4",
+        "typescript": "^3.7.5",
         "webpack": "^4.41.5",
         "webpack-cli": "^3.3.10"
     },
@@ -57,5 +57,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
-    "version": "2.11.2"
+    "version": "3.0.0"
 }
