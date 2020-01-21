@@ -1,12 +1,13 @@
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
 import * as errors from "../../../errors";
-import { utcTimeRegex } from "../../../values";
-import validateDateTime from "../../../validateDateTime";
+import { distinguishedUTCTimeRegex } from "../../../values";
+import validateDateTime from "../../../validators/validateDateTime";
+import { UTCTime } from "../../../macros";
 
 export default
-function decodeUTCTime (value: Uint8Array): Date {
+function decodeUTCTime (value: Uint8Array): UTCTime {
     const dateString: string = convertBytesToText(value);
-    const match: RegExpExecArray | null = utcTimeRegex.exec(dateString);
+    const match: RegExpExecArray | null = distinguishedUTCTimeRegex.exec(dateString);
     if (match === null) {
         throw new errors.ASN1Error("Malformed UTCTime string.");
     }

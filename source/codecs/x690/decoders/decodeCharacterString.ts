@@ -2,7 +2,7 @@ import CharacterString from "../../../types/CharacterString";
 import { ASN1TagClass, ASN1UniversalType } from "../../../values";
 import ASN1Element from "../../../asn1";
 import ConstructedElementSpecification from "../../../ConstructedElementSpecification";
-import validateConstruction from "../../../validateConstruction";
+import validateConstruction from "../../../validators/validateConstruction";
 import decodeSequence from "../../der/decoders/decodeSequence";
 
 export default

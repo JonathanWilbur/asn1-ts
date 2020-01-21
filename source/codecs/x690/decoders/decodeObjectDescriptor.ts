@@ -1,9 +1,10 @@
 import isObjectDescriptorCharacter from "../../../validators/isObjectDescriptorCharacter";
-import convertBytesToText from "../../../convertBytesToText";
+import convertBytesToText from "../../../utils/convertBytesToText";
 import { ASN1CharactersError } from "../../../errors";
+import { ObjectDescriptor } from "../../../macros";
 
 export default
-function decodeObjectDescriptor (value: Uint8Array): string {
+function decodeObjectDescriptor (value: Uint8Array): ObjectDescriptor {
     value.forEach((characterCode: number): void => {
         if (!isObjectDescriptorCharacter(characterCode)) {
             throw new ASN1CharactersError(

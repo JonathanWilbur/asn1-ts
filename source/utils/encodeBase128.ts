@@ -20,7 +20,5 @@ function encodeBase128 (value: Uint8Array): Uint8Array {
     for (let byte = 0; byte < (encodedBytes.length - 1); byte++) {
         encodedBytes[byte] |= 0x80;
     }
-    // This is unnecessary, because the array is already zeroed.
-    // encodedBytes[encodedBytes.length - 1] &= 0x7F;
     return new Uint8Array(encodedBytes);
 }

@@ -1,9 +1,10 @@
 import isObjectDescriptorCharacter from "../../../validators/isObjectDescriptorCharacter";
-import convertTextToBytes from "../../../convertTextToBytes";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 import { ASN1CharactersError } from "../../../errors";
+import { ObjectDescriptor } from "../../../macros";
 
 export default
-function encodeObjectDescriptor (value: string): Uint8Array {
+function encodeObjectDescriptor (value: ObjectDescriptor): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
     bytes.forEach((characterCode: number): void => {
         if (!isObjectDescriptorCharacter(characterCode)) {

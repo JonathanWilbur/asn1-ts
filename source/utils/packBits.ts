@@ -1,7 +1,7 @@
-import { FALSE_BIT } from "../macros";
+import { BIT_STRING, FALSE_BIT } from "../macros";
 
 export default
-function packBits (bits: Int8Array): Uint8Array {
+function packBits (bits: BIT_STRING): Uint8Array {
     const bytesNeeded: number = Math.ceil(bits.length / 8);
     const ret: Uint8Array = new Uint8Array(bytesNeeded);
     for (let bit: number = 0; bit < bits.length; bit++) {

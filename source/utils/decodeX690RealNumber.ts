@@ -8,7 +8,7 @@ import {
     nr3Regex,
 } from "../values";
 // import ASN1Element from "../asn1";
-import convertBytesToText from "../convertBytesToText";
+import convertBytesToText from "./convertBytesToText";
 import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger";
 import decodeUnsignedBigEndianInteger from "../utils/decodeUnsignedBigEndianInteger";
 
@@ -102,9 +102,6 @@ function decodeX690RealNumber (bytes: Uint8Array): number {
             throw new errors.ASN1Error("Impossible binary REAL exponent encoding encountered.");
         }
 
-        console.log(mantissa);
-        console.log(exponent);
-        console.log(scale);
         return (sign * mantissa * Math.pow(2, scale) * Math.pow(base, exponent));
     }
     default:

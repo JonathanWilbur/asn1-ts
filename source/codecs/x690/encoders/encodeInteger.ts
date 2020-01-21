@@ -1,8 +1,9 @@
 import * as errors from "../../../errors";
 import { MIN_SINT_32, MAX_SINT_32 } from "../../../values";
+import { INTEGER } from "../../../macros";
 
 export default
-function encodeInteger (value: number): Uint8Array {
+function encodeInteger (value: INTEGER): Uint8Array {
     if (value < MIN_SINT_32) {
         throw new errors.ASN1OverflowError(`Number ${value} too small to be converted.`);
     }

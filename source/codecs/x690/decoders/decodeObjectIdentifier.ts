@@ -1,10 +1,11 @@
 import ObjectIdentifier from "../../../types/ObjectIdentifier";
 import * as errors from "../../../errors";
-import splitBytesByContinuationBit from "../../../splitBytesByContinuationBit";
-import decodeObjectIdentifierNode from "./decodeObjectIdentifierNode";
+import splitBytesByContinuationBit from "../../../utils/splitBytesByContinuationBit";
+import { OBJECT_IDENTIFIER } from "../../../macros";
+import { decodeUnsignedBigEndianInteger, decodeBase128 } from "../../../utils";
 
 export default
-function decodeObjectIdentifier (value: Uint8Array): ObjectIdentifier {
+function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
     if (value.length === 0) {
         throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
     }
@@ -30,7 +31,19 @@ function decodeObjectIdentifier (value: Uint8Array): ObjectIdentifier {
     }
     const additionalNodes: number[] = Array
         .from(splitBytesByContinuationBit(value.slice(1)))
-        .map(decodeObjectIdentifierNode);
+        .map((b) => {
+            if (b.length > 1 && b[0] === 0x80) {
+                throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
+            }
+            return b;
+        })
+        .map(decodeBase128)
+        /**
+         * This has to be done, because decodeBase128() does not know how many
+         * leading zero bits are extraneous.
+         */
+        .map((b) => ((b[0] === 0) ? b.slice(1) : b))
+        .map(decodeUnsignedBigEndianInteger);
 
     return new ObjectIdentifier(firstTwoNodes.concat(additionalNodes));
 }

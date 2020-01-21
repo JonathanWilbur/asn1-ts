@@ -1,4 +1,4 @@
-import { ASN1Error } from "./errors";
+import { ASN1Error } from "../errors";
 
 /**
  * A function to support encoding text to bytes both in web browsers and in

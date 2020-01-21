@@ -1,19 +1,16 @@
+import { BIT_STRING } from "../../../macros";
+import packBits from "../../../utils/packBits";
+
 export default
-function encodeBitString (value: boolean[]): Uint8Array {
+function encodeBitString (value: BIT_STRING): Uint8Array {
     if (value.length === 0) {
         return new Uint8Array([ 0 ]);
     }
-    const pre: number[] = [];
-    pre.length = ((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1;
-    for (let i = 0; i < value.length; i++) {
-        if (value[i] === false) {
-            continue;
-        }
-        pre[((i >>> 3) + 1)] |= (0b10000000 >>> (i % 8));
+    const ret: Uint8Array = new Uint8Array(((value.length >>> 3) + ((value.length % 8) ? 1 : 0)) + 1);
+    ret[0] = (8 - (value.length % 8));
+    if (ret[0] === 8) {
+        ret[0] = 0;
     }
-    pre[0] = (8 - (value.length % 8));
-    if (pre[0] === 8) {
-        pre[0] = 0;
-    }
-    return new Uint8Array(pre);
+    ret.set(packBits(value), 1);
+    return ret;
 }

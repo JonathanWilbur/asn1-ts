@@ -1,6 +1,8 @@
+import ASN1Element from "./asn1";
+
 export
 class ASN1Error extends Error {
-    constructor (m: string) {
+    constructor (readonly m: string, readonly element?: ASN1Element) {
         super(m);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
@@ -24,56 +26,56 @@ class ASN1RecursionError extends ASN1Error {
 
 export
 class ASN1TruncationError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1OverflowError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1SizeError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1PaddingError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1UndefinedError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1CharactersError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }
 
 export
 class ASN1ConstructionError extends ASN1Error {
-    constructor (m: string) {
-        super(m);
+    constructor (readonly m: string, readonly element?: ASN1Element) {
+        super(m, element);
         Object.setPrototypeOf(this, ASN1Error.prototype);
     }
 }

@@ -1,4 +1,4 @@
-import EmbeddedPDV from "../../../types/EmbeddedPDV";
+import { EMBEDDED_PDV } from "../../../macros";
 import DERElement from "../../../codecs/der";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values";
 import encodeSequence from "./encodeSequence";
@@ -19,7 +19,7 @@ import encodeSequence from "./encodeSequence";
 //     data-value OCTET STRING }
 // (WITH COMPONENTS { ... , data-value-descriptor ABSENT })`
 export default
-function encodeEmbeddedPDV (value: EmbeddedPDV): Uint8Array {
+function encodeEmbeddedPDV (value: EMBEDDED_PDV): Uint8Array {
     return encodeSequence([
         value.identification,
         new DERElement(

@@ -1,7 +1,8 @@
-import convertTextToBytes from "../../../convertTextToBytes";
+import { GeneralizedTime } from "../../../macros";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 
 export default
-function encodeGeneralizedTime (value: Date): Uint8Array {
+function encodeGeneralizedTime (value: GeneralizedTime): Uint8Array {
     const year: string = value.getUTCFullYear().toString();
     const month: string = (value.getUTCMonth() < 9 ? `0${value.getUTCMonth() + 1}` : `${value.getUTCMonth() + 1}`);
     const day: string = (value.getUTCDate() < 10 ? `0${value.getUTCDate()}` : `${value.getUTCDate()}`);

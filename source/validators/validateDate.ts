@@ -1,14 +1,11 @@
-import * as errors from "./errors";
+import * as errors from "../errors";
 
-// eslint-disable-next-line
-export default function validateDateTime (
+export default
+function validateDate (
     dataType: string,
     year: number,
     month: number,
     date: number,
-    hours: number,
-    minutes: number,
-    seconds: number,
 ): void {
     switch (month) {
     // 31-day months
@@ -19,7 +16,9 @@ export default function validateDateTime (
     case 7: // August
     case 9: // October
     case 11: { // December
-        if (date > 31) throw new errors.ASN1Error(`Day > 31 encountered in ${dataType} with 31-day month.`);
+        if (date > 31) {
+            throw new errors.ASN1Error(`Day > 31 encountered in ${dataType} with 31-day month.`);
+        }
         break;
     }
     // 30-day months
@@ -52,8 +51,4 @@ export default function validateDateTime (
     default:
         throw new errors.ASN1Error(`Month greater than 12 encountered in ${dataType}.`);
     }
-
-    if (hours > 23) throw new errors.ASN1Error(`Hours > 23 encountered in ${dataType}.`);
-    if (minutes > 59) throw new errors.ASN1Error(`Minutes > 60 encountered in ${dataType}.`);
-    if (seconds > 59) throw new errors.ASN1Error(`Seconds > 60 encountered in ${dataType}.`);
 }

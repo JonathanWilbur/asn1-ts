@@ -1,9 +1,10 @@
 import isNumericCharacter from "../../../validators/isNumericCharacter";
-import convertTextToBytes from "../../../convertTextToBytes";
+import convertTextToBytes from "../../../utils/convertTextToBytes";
 import { ASN1CharactersError } from "../../../errors";
+import { NumericString } from "../../../macros";
 
 export default
-function encodeNumericString (value: string): Uint8Array {
+function encodeNumericString (value: NumericString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
     bytes.forEach((characterCode: number): void => {
         if (!isNumericCharacter(characterCode)) {

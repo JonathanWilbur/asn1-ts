@@ -51,9 +51,9 @@ describe("X.690 abstract codec", () => {
             ),
         ];
 
-        expect(asn1.DERElement.isInCanonicalOrder(data1)).toBeTruthy();
-        expect(asn1.DERElement.isInCanonicalOrder(data2)).toBeTruthy();
-        expect(asn1.DERElement.isInCanonicalOrder(data3)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data1)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data2)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data3)).toBeTruthy();
     });
 
     it("correctly identifies non-canonical ordering of tag classes", () => {
@@ -126,9 +126,9 @@ describe("X.690 abstract codec", () => {
             ),
         ];
 
-        expect(asn1.DERElement.isInCanonicalOrder(data1)).toBeFalsy();
-        expect(asn1.DERElement.isInCanonicalOrder(data2)).toBeFalsy();
-        expect(asn1.DERElement.isInCanonicalOrder(data3)).toBeFalsy();
+        expect(asn1.isInCanonicalOrder(data1)).toBeFalsy();
+        expect(asn1.isInCanonicalOrder(data2)).toBeFalsy();
+        expect(asn1.isInCanonicalOrder(data3)).toBeFalsy();
     });
 
     it("correctly identifies canonical ordering of tag number", () => {
@@ -194,9 +194,9 @@ describe("X.690 abstract codec", () => {
             ),
         ];
 
-        expect(asn1.DERElement.isInCanonicalOrder(data1)).toBeTruthy();
-        expect(asn1.DERElement.isInCanonicalOrder(data2)).toBeTruthy();
-        expect(asn1.DERElement.isInCanonicalOrder(data3)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data1)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data2)).toBeTruthy();
+        expect(asn1.isInCanonicalOrder(data3)).toBeTruthy();
     });
 
     it("correctly identifies non-canonical ordering of tag number", () => {
@@ -243,8 +243,8 @@ describe("X.690 abstract codec", () => {
             ),
         ];
 
-        expect(asn1.DERElement.isInCanonicalOrder(data1)).toBeFalsy();
-        expect(asn1.DERElement.isInCanonicalOrder(data2)).toBeFalsy();
+        expect(asn1.isInCanonicalOrder(data1)).toBeFalsy();
+        expect(asn1.isInCanonicalOrder(data2)).toBeFalsy();
     });
 
     it("correctly identifies element arrays with duplicated (tag class, tag number) values", () => {
@@ -284,8 +284,8 @@ describe("X.690 abstract codec", () => {
             ),
         ];
 
-        expect(asn1.DERElement.isUniquelyTagged(data1)).toBeFalsy();
-        expect(asn1.DERElement.isUniquelyTagged(data2)).toBeFalsy();
+        expect(asn1.isUniquelyTagged(data1)).toBeFalsy();
+        expect(asn1.isUniquelyTagged(data2)).toBeFalsy();
     });
 
     it("correctly identifies element arrays with non-duplicated (tag class, tag number) values", () => {
@@ -324,7 +324,7 @@ describe("X.690 abstract codec", () => {
                 2,
             ),
         ];
-        expect(asn1.DERElement.isUniquelyTagged(data1)).toBeTruthy();
-        expect(asn1.DERElement.isUniquelyTagged(data2)).toBeTruthy();
+        expect(asn1.isUniquelyTagged(data1)).toBeTruthy();
+        expect(asn1.isUniquelyTagged(data2)).toBeTruthy();
     });
 });

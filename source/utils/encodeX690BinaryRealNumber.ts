@@ -2,8 +2,8 @@ import dissectFloat from "./dissectFloat";
 import encodeUnsignedBigEndianInteger from "./encodeUnsignedBigEndianInteger";
 import encodeSignedBigEndianInteger from "./encodeSignedBigEndianInteger";
 import { ASN1SpecialRealValue } from "../values";
+import * as errors from "../errors";
 
-// TODO: Support different base encodings.
 export default
 function encodeX690BinaryRealNumber (value: number): Uint8Array {
     if (value === 0.0) {
@@ -22,7 +22,12 @@ function encodeX690BinaryRealNumber (value: number): Uint8Array {
         floatComponents.mantissa = floatComponents.mantissa >>> 1;
         floatComponents.exponent++;
     }
-    // console.log(floatComponents);
+    if (floatComponents.exponent <= -1020) {
+        throw new errors.ASN1OverflowError(
+            `REAL number ${value} (having exponent ${floatComponents.exponent}) `
+            + "is too precise to encode.",
+        );
+    }
     const singleByteExponent: boolean = (
         (floatComponents.exponent <= 127)
         && (floatComponents.exponent >= -128)
@@ -32,7 +37,6 @@ function encodeX690BinaryRealNumber (value: number): Uint8Array {
         | (value >= 0 ? 0b0000_0000 : 0b0100_0000)
         | (singleByteExponent ? 0b0000_0000 : 0b0000_0001)
     );
-    // TODO: Ensure that singleByteExponent is never true incorrectly.
     const exponentBytes: Uint8Array = encodeSignedBigEndianInteger(floatComponents.exponent);
     // console.log(exponentBytes);
     const mantissaBytes: Uint8Array = encodeUnsignedBigEndianInteger(floatComponents.mantissa);

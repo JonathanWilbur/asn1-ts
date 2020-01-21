@@ -6,11 +6,9 @@ import {
     ASN1UniversalType,
 } from "../values";
 import X690Element from "../x690";
-import External from "../types/External";
-import EmbeddedPDV from "../types/EmbeddedPDV";
 import CharacterString from "../types/CharacterString";
-import convertBytesToText from "../convertBytesToText";
-import convertTextToBytes from "../convertTextToBytes";
+import convertBytesToText from "../utils/convertBytesToText";
+import convertTextToBytes from "../utils/convertTextToBytes";
 import ObjectIdentifier from "../types/ObjectIdentifier";
 import encodeBoolean from "./x690/encoders/encodeBoolean";
 import decodeBoolean from "./der/decoders/decodeBoolean";
@@ -30,7 +28,7 @@ import encodeCharacterString from "../codecs/x690/encoders/encodeCharacterString
 import decodeExternal from "../codecs/x690/decoders/decodeExternal";
 import decodeEmbeddedPDV from "../codecs/x690/decoders/decodeEmbeddedPDV";
 import decodeCharacterString from "../codecs/x690/decoders/decodeCharacterString";
-import splitOctetsCanonically from "../splitOctetsCanonically";
+import splitOctetsCanonically from "../utils/splitOctetsCanonically";
 import encodeGraphicString from "../codecs/ber/encoders/encodeGraphicString";
 import encodeNumericString from "../codecs/ber/encoders/encodeNumericString";
 import encodeObjectDescriptor from "../codecs/ber/encoders/encodeObjectDescriptor";
@@ -43,6 +41,34 @@ import decodeObjectDescriptor from "../codecs/x690/decoders/decodeObjectDescript
 import decodePrintableString from "../codecs/x690/decoders/decodePrintableString";
 import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString";
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString";
+import encodeDuration from "../codecs/x690/encoders/encodeDuration";
+import decodeDuration from "../codecs/der/decoders/decodeDuration";
+import {
+    BOOLEAN,
+    BIT_STRING,
+    OCTET_STRING,
+    ObjectDescriptor,
+    EXTERNAL,
+    REAL,
+    EMBEDDED_PDV,
+    UTF8String,
+    SEQUENCE,
+    SET,
+    GraphicString,
+    NumericString,
+    VisibleString,
+    PrintableString,
+    TeletexString,
+    GeneralString,
+    UniversalString,
+    VideotexString,
+    BMPString,
+    IA5String,
+    UTCTime,
+    GeneralizedTime,
+    FALSE_BIT,
+    DURATION,
+} from "../macros";
 
 export default
 class CERElement extends X690Element {
@@ -68,22 +94,22 @@ class CERElement extends X690Element {
         }
     }
 
-    set boolean (value: boolean) {
+    set boolean (value: BOOLEAN) {
         this.value = encodeBoolean(value);
     }
 
-    get boolean (): boolean {
+    get boolean (): BOOLEAN {
         if (this.construction !== ASN1Construction.primitive) {
-            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.");
+            throw new errors.ASN1ConstructionError("BOOLEAN cannot be constructed.", this);
         }
         return decodeBoolean(this.value);
     }
 
-    set bitString (value: boolean[]) {
+    set bitString (value: BIT_STRING) {
         this.unfragmentedValue = encodeBitString(value);
     }
 
-    get bitString (): boolean[] {
+    get bitString (): BIT_STRING {
         if (this.construction === ASN1Construction.primitive) {
             return decodeBitString(this.value);
         }
@@ -100,170 +126,171 @@ class CERElement extends X690Element {
             ) {
                 throw new errors.ASN1Error(
                     "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
+                    this,
                 );
             }
         });
         substrings.forEach((substring: ASN1Element): void => {
             if (substring.tagClass !== this.tagClass) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             if (substring.tagNumber !== this.tagNumber) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.");
+                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             substring.recursionCount = (this.recursionCount + 1);
-            appendy = appendy.concat(substring.bitString);
+            appendy = appendy.concat(Array.from(substring.bitString).map(b => b !== FALSE_BIT));
         });
-        return appendy;
+        return new Uint8ClampedArray(appendy.map(b => (b ? 1 : 0)));
     }
 
-    set octetString (value: Uint8Array) {
+    set octetString (value: OCTET_STRING) {
         this.unfragmentedValue = new Uint8Array(value); // Clones it.
     }
 
-    get octetString (): Uint8Array {
+    get octetString (): OCTET_STRING {
         return this.deconstruct("OCTET STRING");
     }
 
-    set objectDescriptor (value: string) {
+    set objectDescriptor (value: ObjectDescriptor) {
         this.unfragmentedValue = encodeObjectDescriptor(value);
     }
 
-    get objectDescriptor (): string {
+    get objectDescriptor (): ObjectDescriptor {
         return decodeObjectDescriptor(this.deconstruct("ObjectDescriptor"));
     }
 
-    set external (value: External) {
+    set external (value: EXTERNAL) {
         this.value = encodeExternal(value);
     }
 
-    get external (): External {
+    get external (): EXTERNAL {
         return decodeExternal(this.value);
     }
 
-    set real (value: number) {
+    set real (value: REAL) {
         this.value = encodeReal(value);
     }
 
-    get real (): number {
+    get real (): REAL {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("REAL cannot be constructed.");
         }
         return decodeReal(this.value);
     }
 
-    set embeddedPDV (value: EmbeddedPDV) {
+    set embeddedPDV (value: EMBEDDED_PDV) {
         this.value = encodeEmbeddedPDV(value);
     }
 
-    get embeddedPDV (): EmbeddedPDV {
+    get embeddedPDV (): EMBEDDED_PDV {
         return decodeEmbeddedPDV(this.value);
     }
 
-    set utf8String (value: string) {
+    set utf8String (value: UTF8String) {
         this.unfragmentedValue = convertTextToBytes(value);
     }
 
-    get utf8String (): string {
+    get utf8String (): UTF8String {
         return convertBytesToText(this.deconstruct("UTF8String"));
     }
 
-    set sequence (value: ASN1Element[]) {
+    set sequence (value: SEQUENCE<ASN1Element>) {
         this.value = encodeSequence(value);
         this.construction = ASN1Construction.constructed;
     }
 
-    get sequence (): ASN1Element[] {
+    get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
-            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.");
+            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
         }
         return decodeSequence(this.value);
     }
 
-    set set (value: ASN1Element[]) {
+    set set (value: SET<ASN1Element>) {
         this.sequence = value;
     }
 
-    get set (): ASN1Element[] {
+    get set (): SET<ASN1Element> {
         return this.sequence;
     }
 
-    set numericString (value: string) {
+    set numericString (value: NumericString) {
         this.unfragmentedValue = encodeNumericString(value);
     }
 
-    get numericString (): string {
+    get numericString (): NumericString {
         return decodeNumericString(this.deconstruct("NumericString"));
     }
 
-    set printableString (value: string) {
+    set printableString (value: PrintableString) {
         this.unfragmentedValue = encodePrintableString(value);
     }
 
-    get printableString (): string {
+    get printableString (): PrintableString {
         return decodePrintableString(this.deconstruct("PrintableString"));
     }
 
-    set teletexString (value: Uint8Array) {
+    set teletexString (value: TeletexString) {
         this.unfragmentedValue = new Uint8Array(value); // Clones it.
     }
 
-    get teletexString (): Uint8Array {
+    get teletexString (): TeletexString {
         return this.deconstruct("TeletexString");
     }
 
-    set videotexString (value: Uint8Array) {
+    set videotexString (value: VideotexString) {
         this.unfragmentedValue = new Uint8Array(value); // Clones it.
     }
 
-    get videotexString (): Uint8Array {
+    get videotexString (): VideotexString {
         return this.deconstruct("VideotexString");
     }
 
-    set ia5String (value: string) {
+    set ia5String (value: IA5String) {
         this.unfragmentedValue = convertTextToBytes(value);
     }
 
-    get ia5String (): string {
+    get ia5String (): IA5String {
         return convertBytesToText(this.deconstruct("IA5String"));
     }
 
-    set utcTime (value: Date) {
+    set utcTime (value: UTCTime) {
         this.value = encodeUTCTime(value);
     }
 
-    get utcTime (): Date {
+    get utcTime (): UTCTime {
         return decodeUTCTime(this.value);
     }
 
-    set generalizedTime (value: Date) {
+    set generalizedTime (value: GeneralizedTime) {
         this.value = encodeGeneralizedTime(value);
     }
 
-    get generalizedTime (): Date {
+    get generalizedTime (): GeneralizedTime {
         return decodeGeneralizedTime(this.value);
     }
 
-    set graphicString (value: string) {
+    set graphicString (value: GraphicString) {
         this.unfragmentedValue = encodeGraphicString(value);
     }
 
-    get graphicString (): string {
+    get graphicString (): GraphicString {
         return decodeGraphicString(this.deconstruct("GraphicString"));
     }
 
-    set visibleString (value: string) {
+    set visibleString (value: VisibleString) {
         this.unfragmentedValue = encodeVisibleString(value);
     }
 
-    get visibleString (): string {
+    get visibleString (): VisibleString {
         return decodeVisibleString(this.deconstruct("VisibleString"));
     }
 
-    set generalString (value: string) {
+    set generalString (value: GeneralString) {
         this.unfragmentedValue = encodeGeneralString(value);
     }
 
-    get generalString (): string {
+    get generalString (): GeneralString {
         return decodeGeneralString(this.deconstruct("GeneralString"));
     }
 
@@ -275,7 +302,7 @@ class CERElement extends X690Element {
         return decodeCharacterString(this.value);
     }
 
-    set universalString (value: string) {
+    set universalString (value: UniversalString) {
         const buf: Uint8Array = new Uint8Array(value.length << 2);
         for (let i: number = 0; i < value.length; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
@@ -291,10 +318,10 @@ class CERElement extends X690Element {
      * natively uses either UCS-2 or UTF-16. If it uses UTF-16 (which
      * most do), it might work, but UCS-2 will definitely not work.
      */
-    get universalString (): string {
+    get universalString (): UniversalString {
         const valueBytes: Uint8Array = this.deconstruct("UniversalString");
         if (valueBytes.length % 4) {
-            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.");
+            throw new errors.ASN1Error("UniversalString encoded on non-mulitple of four bytes.", this);
         }
         let ret: string = "";
         for (let i: number = 0; i < valueBytes.length; i += 4) {
@@ -308,7 +335,7 @@ class CERElement extends X690Element {
         return ret;
     }
 
-    set bmpString (value: string) {
+    set bmpString (value: BMPString) {
         const buf: Uint8Array = new Uint8Array(value.length << 1);
         for (let i: number = 0, strLen: number = value.length; i < strLen; i++) {
             buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
@@ -317,9 +344,9 @@ class CERElement extends X690Element {
         this.unfragmentedValue = buf;
     }
 
-    get bmpString (): string {
+    get bmpString (): BMPString {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
-        if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.");
+        if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
         if (typeof TextEncoder !== "undefined") { // Browser JavaScript
             return (new TextDecoder("utf-16be")).decode(valueBytes.buffer as ArrayBuffer);
         } else if (typeof Buffer !== "undefined") { // NodeJS
@@ -335,8 +362,16 @@ class CERElement extends X690Element {
              */
             return (Buffer.from(swappedEndianness)).toString("utf-16le");
         } else {
-            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
+            throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
+    }
+
+    set duration (value: DURATION) {
+        this.value = encodeDuration(value);
+    }
+
+    get duration (): DURATION {
+        return decodeDuration(this.value);
     }
 
     public encode (value: any): void {
@@ -372,6 +407,9 @@ class CERElement extends X690Element {
             } else if (value instanceof Uint8Array) {
                 this.tagNumber = ASN1UniversalType.octetString;
                 this.octetString = value;
+            } else if (value instanceof Uint8ClampedArray) {
+                this.tagNumber = ASN1UniversalType.bitString;
+                this.bitString = value;
             } else if (value instanceof ASN1Element) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as CERElement ];
@@ -400,12 +438,12 @@ class CERElement extends X690Element {
             } else if (value instanceof Date) {
                 this.generalizedTime = value;
             } else {
-                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`);
+                throw new errors.ASN1Error(`Cannot encode value of type ${value.constructor.name}.`, this);
             }
             break;
         }
         default: {
-            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`);
+            throw new errors.ASN1Error(`Cannot encode value of type ${typeof value}.`, this);
         }
         }
     }
@@ -451,6 +489,7 @@ class CERElement extends X690Element {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoded element cannot be encoded using "
                 + "primitive construction.",
+                this,
             );
         }
         const ret: CERElement = new CERElement();
@@ -461,6 +500,7 @@ class CERElement extends X690Element {
                 + "encoded element. The tag number of the first decoded "
                 + `element was ${ret.tagNumber}, and it was encoded on `
                 + `${readBytes} bytes.`,
+                this,
             );
         }
         return ret;
@@ -487,7 +527,7 @@ class CERElement extends X690Element {
     // Returns the number of bytes read
     public fromBytes (bytes: Uint8Array): number {
         if (bytes.length < 2) {
-            throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.");
+            throw new errors.ASN1TruncationError("Tried to decode a BER element that is less than two bytes.", this);
         }
         if ((this.recursionCount + 1) > CERElement.nestingRecursionLimit) {
             throw new errors.ASN1RecursionError();
@@ -517,7 +557,7 @@ class CERElement extends X690Element {
                 0b10000000, then it is not encoded on the fewest possible octets.
             */
             if (bytes[cursor] === 0b10000000) {
-                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.");
+                throw new errors.ASN1PaddingError("Leading padding byte on long tag number encoding.", this);
             }
             this.tagNumber = 0;
             // This loop looks for the end of the encoded tag number.
@@ -527,9 +567,9 @@ class CERElement extends X690Element {
             }
             if (bytes[cursor-1] & 0b10000000) {
                 if (limit === (bytes.length - 1)) {
-                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.");
+                    throw new errors.ASN1TruncationError("ASN.1 tag number appears to have been truncated.", this);
                 } else {
-                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.");
+                    throw new errors.ASN1OverflowError("ASN.1 tag number too large.", this);
                 }
             }
             for (let i: number = 1; i < cursor; i++) {
@@ -537,7 +577,7 @@ class CERElement extends X690Element {
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
             if (this.tagNumber <= 31) {
-                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.");
+                throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.", this);
             }
         }
 
@@ -546,14 +586,14 @@ class CERElement extends X690Element {
             const numberOfLengthOctets: number = (bytes[cursor] & 0x7F);
             if (numberOfLengthOctets) { // Definite Long or Reserved
                 if (numberOfLengthOctets === 0b01111111) { // Reserved
-                    throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.");
+                    throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
                 }
                 // Definite Long, if it has made it this far
                 if (numberOfLengthOctets > 4) {
-                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.");
+                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
                 }
                 if (cursor + numberOfLengthOctets >= bytes.length) {
-                    throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.");
+                    throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
                 }
                 cursor++;
                 const lengthNumberOctets: Uint8Array = new Uint8Array(4);
@@ -566,11 +606,11 @@ class CERElement extends X690Element {
                     length += octet;
                 });
                 if ((cursor + length) < cursor) { // This catches an overflow.
-                    throw new errors.ASN1OverflowError("ASN.1 element too large.");
+                    throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
                 }
                 cursor += (numberOfLengthOctets);
                 if ((cursor + length) > bytes.length) {
-                    throw new errors.ASN1TruncationError("ASN.1 element truncated.");
+                    throw new errors.ASN1TruncationError("ASN.1 element truncated.", this);
                 }
                 this.value = bytes.slice(cursor, (cursor + length));
                 return (cursor + length);
@@ -578,6 +618,7 @@ class CERElement extends X690Element {
                 if (this.construction !== ASN1Construction.constructed) {
                     throw new errors.ASN1ConstructionError(
                         "Indefinite length ASN.1 element was not of constructed construction.",
+                        this,
                     );
                 }
                 const startOfValue: number = ++cursor;
@@ -596,6 +637,7 @@ class CERElement extends X690Element {
                 if (sentinel === bytes.length && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00)) {
                     throw new errors.ASN1TruncationError(
                         "No END OF CONTENT element found at the end of indefinite length ASN.1 element.",
+                        this,
                     );
                 }
                 this.value = bytes.slice(startOfValue, (sentinel - 2));
@@ -604,7 +646,7 @@ class CERElement extends X690Element {
         } else { // Definite Short
             const length: number = (bytes[cursor++] & 0x7F);
             if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element was truncated.");
+                throw new errors.ASN1TruncationError("ASN.1 element was truncated.", this);
             }
             this.value = bytes.slice(cursor, (cursor + length));
             return (cursor + length);
@@ -643,8 +685,7 @@ class CERElement extends X690Element {
         switch (this.construction) {
         case (ASN1Construction.primitive): {
             if (this.value.length < 127) {
-                // TODO: I think you can slightly optimize this by writing to [0].
-                lengthOctets = [ this.value.length ];
+                lengthOctets[0] = this.value.length;
             } else {
                 const length: number = this.value.length;
                 lengthOctets = [ 0, 0, 0, 0 ];
@@ -689,10 +730,10 @@ class CERElement extends X690Element {
             const substrings: ASN1Element[] = this.sequence;
             substrings.forEach((substring) => {
                 if (substring.tagClass !== this.tagClass) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 if (substring.tagNumber !== this.tagNumber) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`);
+                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
                 appendy = appendy.concat(substring.deconstruct(dataType));
