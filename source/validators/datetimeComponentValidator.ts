@@ -10,7 +10,7 @@ function datetimeComponentValidator (
         dataType: string,
         value: number,
     ): void {
-        if (Number.isInteger(value)) {
+        if (!Number.isInteger(value)) {
             throw new errors.ASN1Error(`Non-integral ${unitName} supplied to ${dataType}.`);
         }
         if (value > max) {
