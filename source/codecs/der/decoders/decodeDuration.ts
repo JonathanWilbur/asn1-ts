@@ -71,7 +71,6 @@ function decodeDuration (bytes: Uint8Array): DURATION {
         }
     });
 
-    // Even though we are using parseFloat, we have already ensured that only one of these will be a float.
     return new DURATION_EQUIVALENT(
         Number.parseInt(match[1], 10),
         Number.parseInt(match[2], 10),
