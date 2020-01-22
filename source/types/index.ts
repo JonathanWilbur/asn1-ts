@@ -6,6 +6,7 @@ export { default as TypeIdentifier } from "./TypeIdentifier";
 
 // Time structured types, as specified in ITU X.696
 export { default as DATE_ENCODING } from "./time/DATE-ENCODING";
+export { default as DURATION_EQUIVALENT } from "./time/DURATION-EQUIVALENT";
 export { default as DURATION_INTERVAL_ENCODING } from "./time/DURATION-INTERVAL-ENCODING";
 export { default as HOURS_DIFF_ENCODING } from "./time/HOURS-DIFF-ENCODING";
 export { default as HOURS_ENCODING } from "./time/HOURS-ENCODING";
