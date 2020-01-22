@@ -1,7 +1,7 @@
 import { DURATION, INTEGER, OPTIONAL } from "../../../macros";
 import convertBytesToText from "../../../utils/convertBytesToText";
 import * as errors from "../../../errors";
-import { DURATION_INTERVAL_ENCODING } from "../../../types";
+import { DURATION_EQUIVALENT } from "../../../types";
 import { datetimeRegex } from "../../../values";
 
 export default
@@ -19,7 +19,7 @@ function decodeDuration (bytes: Uint8Array): DURATION {
         if (Number.isNaN(weeks)) {
             throw new errors.ASN1Error(`Could not decode a real number of weeks from duration ${str}.`);
         }
-        return new DURATION_INTERVAL_ENCODING(
+        return new DURATION_EQUIVALENT(
             undefined,
             undefined,
             weeks,
@@ -65,21 +65,21 @@ function decodeDuration (bytes: Uint8Array): DURATION {
                 );
             }
             fractional_part = {
-                number_of_digits: (component.length - indexOfFractionalSeparator),
-                fractional_value: Number.parseInt(component.slice(indexOfFractionalSeparator), 10),
+                number_of_digits: (component.length - 1 - indexOfFractionalSeparator),
+                fractional_value: Number.parseInt(component.slice(indexOfFractionalSeparator + 1), 10),
             };
         }
     });
 
     // Even though we are using parseFloat, we have already ensured that only one of these will be a float.
-    return new DURATION_INTERVAL_ENCODING(
-        Number.parseFloat(match[1]),
-        Number.parseFloat(match[2]),
+    return new DURATION_EQUIVALENT(
+        Number.parseInt(match[1], 10),
+        Number.parseInt(match[2], 10),
         undefined,
-        Number.parseFloat(match[3]),
-        Number.parseFloat(match[4]),
-        Number.parseFloat(match[5]),
-        Number.parseFloat(match[6]),
+        Number.parseInt(match[3], 10),
+        Number.parseInt(match[4], 10),
+        Number.parseInt(match[5], 10),
+        Number.parseInt(match[6], 10),
         fractional_part,
     );
 }
