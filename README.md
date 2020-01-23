@@ -20,6 +20,26 @@ or Sun Microsystems' [External Data Representation (XDR)](https://tools.ietf.org
 
 For more information on what ASN.1 is, see `documentation/asn1.md`.
 
+## Why Use This Library?
+
+I believe this library is the first **complete** implementation of ASN.1,
+meaning that it implements **all** data types defined in the specification,
+and encodes and decodes **exactly** as specified.
+
+I have never seen any implementation of ASN.1 elsewhere that supports all
+data types; in fact, most just implement the ten or so most common types.
+Several implementations I have seen do not support things that
+are supported by the specification, such as constructed strings.
+
+This library is **fully compliant to the specification**. If I am wrong,
+please write up an issue and I will correct it.
+
+## Why Not Use This Library?
+
+This library is meant to be **fully compliant to the specification**, not
+lightweight. If you need a web application that encodes and decodes very simple
+ASN.1 data and loads lightning-fast, this may not be the library for you.
+
 ## Building
 
 You can build this library by running `npm run build`.

@@ -138,9 +138,9 @@ class CERElement extends X690Element {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             substring.recursionCount = (this.recursionCount + 1);
-            appendy = appendy.concat(Array.from(substring.bitString).map(b => b !== FALSE_BIT));
+            appendy = appendy.concat(Array.from(substring.bitString).map((b) => b !== FALSE_BIT));
         });
-        return new Uint8ClampedArray(appendy.map(b => (b ? 1 : 0)));
+        return new Uint8ClampedArray(appendy.map((b) => (b ? 1 : 0)));
     }
 
     set octetString (value: OCTET_STRING) {
@@ -730,10 +730,12 @@ class CERElement extends X690Element {
             const substrings: ASN1Element[] = this.sequence;
             substrings.forEach((substring) => {
                 if (substring.tagClass !== this.tagClass) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
+                    throw new errors.ASN1ConstructionError(
+                        `Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 if (substring.tagNumber !== this.tagNumber) {
-                    throw new errors.ASN1ConstructionError(`Invalid tag class in recursively-encoded ${dataType}.`, this);
+                    throw new errors.ASN1ConstructionError(
+                        `Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
                 appendy = appendy.concat(substring.deconstruct(dataType));

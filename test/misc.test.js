@@ -56,3 +56,11 @@ describe("The signed big-endian integer decoder", () => {
         expect(asn1.decodeSignedBigEndianInteger(data)).toBe(MAX_SINT_32);
     });
 });
+
+describe("ObjectIdentifier with a prefix", () => {
+    it("correctly uses the nodes from the prefix", () => {
+        const ds = new asn1.ObjectIdentifier([ 2, 5 ]);
+        const attributeTypes = new asn1.ObjectIdentifier([ 4 ], ds);
+        expect(attributeTypes._nodes).toEqual([ 2, 5, 4 ]);
+    });
+});

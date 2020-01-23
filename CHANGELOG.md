@@ -5,6 +5,7 @@
 ### Added :seedling:
 
 - Dozens of macros that alias the native types and make the code look and feel more like ASN.1.
+- Add the `prefix` argument to `ObjectIdentifier`, which permits another `ObjectIdentifier` as a prefix.
 - Support for the `TIME` data type defined in ITU X.680:2015.
 - Support for the `DATE` data type defined in ITU X.680:2015.
 - Support for the `TIME-OF-DAY` data type defined in ITU X.680:2015.

@@ -15,6 +15,8 @@ function encodeDateTime (value: DATE_TIME): Uint8Array {
         value.getFullYear().toString()
         + (value.getMonth() + 1).toString().padStart(2, "0")
         + value.getDate().toString().padStart(2, "0")
-        + `T${value.getHours()}${value.getMinutes()}${value.getSeconds()}`,
+        + value.getHours().toString().padStart(2, "0")
+        + value.getMinutes().toString().padStart(2, "0")
+        + value.getSeconds().toString().padStart(2, "0"),
     );
 }

@@ -1,7 +1,7 @@
 import { DURATION, INTEGER, OPTIONAL } from "../../../macros";
 import convertBytesToText from "../../../utils/convertBytesToText";
 import * as errors from "../../../errors";
-import { DURATION_INTERVAL_ENCODING } from "../../../types";
+import { DURATION_EQUIVALENT } from "../../../types";
 import { datetimeRegex } from "../../../values";
 
 export default
@@ -15,11 +15,27 @@ function decodeDuration (bytes: Uint8Array): DURATION {
 
     // If there is a W, it is a weeks designation.
     if (str.indexOf("W") === (str.length - 1)) {
-        const weeks: number = parseFloat(str.slice(0, -1));
+        const weekString: string = str.slice(0, -1);
+        const indexOfDecimalSeparator: number = weekString.indexOf(".");
+        const weeks: number = indexOfDecimalSeparator !== -1
+            ? parseInt(weekString.slice(0, indexOfDecimalSeparator), 10)
+            : parseInt(weekString, 10);
         if (Number.isNaN(weeks)) {
-            throw new errors.ASN1Error(`Could not decode a real number of weeks from duration ${str}.`);
+            throw new errors.ASN1Error(`Could not decode a real number of weeks from DURATION ${str}.`);
         }
-        return new DURATION_INTERVAL_ENCODING(
+        let fractional_part: { number_of_digits: number; fractional_value: number } | undefined = undefined;
+        if (indexOfDecimalSeparator !== -1) {
+            const fractionString: string = weekString.slice(indexOfDecimalSeparator + 1);
+            const fractionValue: number = parseInt(fractionString, 10);
+            if (Number.isNaN(fractionValue)) {
+                throw new errors.ASN1Error(`Could not decode a fractional number of weeks from DURATION ${str}.`);
+            }
+            fractional_part = {
+                number_of_digits: fractionString.length,
+                fractional_value: fractionValue,
+            };
+        }
+        return new DURATION_EQUIVALENT(
             undefined,
             undefined,
             weeks,
@@ -27,7 +43,7 @@ function decodeDuration (bytes: Uint8Array): DURATION {
             undefined,
             undefined,
             undefined,
-            undefined,
+            fractional_part,
         );
     }
 
@@ -57,29 +73,25 @@ function decodeDuration (bytes: Uint8Array): DURATION {
         if (!component) {
             return;
         }
+        if (fractional_part) {
+            throw new errors.ASN1Error(
+                `No smaller components permitted after fractional component in DURATION ${str}.`,
+            );
+        }
         const indexOfFractionalSeparator: number = component.indexOf(".");
         if (indexOfFractionalSeparator !== -1) { // It is a real number.
-            if (fractional_part) {
-                throw new errors.ASN1Error(
-                    `Multiple fractional components defined in DURATION ${str}.`,
-                );
-            }
             fractional_part = {
-                number_of_digits: (component.length - indexOfFractionalSeparator),
-                fractional_value: Number.parseInt(component.slice(indexOfFractionalSeparator), 10),
+                number_of_digits: (component.length - 1 - indexOfFractionalSeparator),
+                fractional_value: Number.parseInt(component.slice(indexOfFractionalSeparator + 1), 10),
             };
         }
     });
 
-    // Even though we are using parseFloat, we have already ensured that only one of these will be a float.
-    return new DURATION_INTERVAL_ENCODING(
-        Number.parseFloat(match[1]),
-        Number.parseFloat(match[2]),
-        undefined,
-        Number.parseFloat(match[3]),
-        Number.parseFloat(match[4]),
-        Number.parseFloat(match[5]),
-        Number.parseFloat(match[6]),
-        fractional_part,
-    );
+    const years: OPTIONAL<INTEGER> = match[1] ? Number.parseInt(match[1], 10) : undefined;
+    const months: OPTIONAL<INTEGER> = match[2] ? Number.parseInt(match[2], 10) : undefined;
+    const days: OPTIONAL<INTEGER> = match[3] ? Number.parseInt(match[3], 10) : undefined;
+    const hours: OPTIONAL<INTEGER> = match[4] ? Number.parseInt(match[4], 10) : undefined;
+    const minutes: OPTIONAL<INTEGER> = match[5] ? Number.parseInt(match[5], 10) : undefined;
+    const seconds: OPTIONAL<INTEGER> = match[6] ? Number.parseInt(match[6], 10) : undefined;
+    return new DURATION_EQUIVALENT(years, months, undefined, days, hours, minutes, seconds, fractional_part);
 }
