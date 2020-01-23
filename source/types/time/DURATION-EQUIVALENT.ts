@@ -2,6 +2,7 @@ import {
     INTEGER,
     OPTIONAL,
 } from "../../macros";
+import * as errors from "../../errors";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator";
 
 /**
@@ -36,6 +37,14 @@ class DURATION_EQUIVALENT {
             fractional_value: INTEGER;
         }>,
     ) {
+        if (
+            typeof weeks !== "undefined"
+            && (years || months || days || hours || minutes || seconds)
+        ) {
+            throw new errors.ASN1Error(
+                "DURATION-EQUIVALENT may not combine week components and date-time components.",
+            );
+        }
         if (years) {
             datetimeComponentValidator("year", 0, Number.MAX_SAFE_INTEGER)("DURATION-EQUIVALENT", years);
         }
@@ -56,6 +65,9 @@ class DURATION_EQUIVALENT {
         }
         if (seconds) {
             datetimeComponentValidator("second", 0, Number.MAX_SAFE_INTEGER)("DURATION-EQUIVALENT", seconds);
+        }
+        if (fractional_part && !Number.isSafeInteger(fractional_part.fractional_value)) {
+            throw new errors.ASN1Error("Malformed DURATION-EQUIVALENT fractional part.");
         }
     }
 }

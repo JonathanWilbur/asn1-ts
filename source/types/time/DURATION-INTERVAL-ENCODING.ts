@@ -2,6 +2,7 @@ import {
     INTEGER,
     OPTIONAL,
 } from "../../macros";
+import * as errors from "../../errors";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator";
 
 /**
@@ -39,6 +40,14 @@ class DURATION_INTERVAL_ENCODING {
             fractional_value: INTEGER;
         }>,
     ) {
+        if (
+            typeof weeks !== "undefined"
+            && (years || months || days || hours || minutes || seconds)
+        ) {
+            throw new errors.ASN1Error(
+                "DURATION-INTERVAL-ENCODING may not combine week components and date-time components.",
+            );
+        }
         if (years) {
             datetimeComponentValidator("year", 0, Number.MAX_SAFE_INTEGER)("DURATION-INTERVAL-ENCODING", years);
         }
@@ -59,6 +68,9 @@ class DURATION_INTERVAL_ENCODING {
         }
         if (seconds) {
             datetimeComponentValidator("second", 0, Number.MAX_SAFE_INTEGER)("DURATION-INTERVAL-ENCODING", seconds);
+        }
+        if (fractional_part && !Number.isSafeInteger(fractional_part.fractional_value)) {
+            throw new errors.ASN1Error("Malformed DURATION-INTERVAL-ENCODING fractional part.");
         }
     }
 }
