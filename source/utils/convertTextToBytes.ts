@@ -18,7 +18,7 @@ function convertTextToBytes (text: string, codec: string = "utf-8"): Uint8Array 
     if (typeof TextEncoder !== "undefined") { // Browser JavaScript
         return (new TextEncoder()).encode(text);
     } else if (typeof Buffer !== "undefined") { // NodeJS
-        return Buffer.from(text, codec as any);
+        return new Uint8Array(Buffer.from(text, codec as any).buffer);
     }
     throw new ASN1Error("Neither TextEncoder nor Buffer are defined to encode text into bytes.");
 }
