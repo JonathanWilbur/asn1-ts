@@ -49,7 +49,16 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     public name: string = "";
     public tagClass: ASN1TagClass = ASN1TagClass.universal;
     public construction: ASN1Construction = ASN1Construction.primitive;
-    public tagNumber: number = 0;
+    private _tagNumber: number = 0;
+    get tagNumber (): number {
+        return this._tagNumber;
+    }
+    set tagNumber (value: number) {
+        if (!Number.isSafeInteger(value) || (value < 0)) {
+            throw new errors.ASN1Error(`Tag ${value} was not a non-negative integer.`);
+        }
+        this._tagNumber = value;
+    }
     public value: Uint8Array = new Uint8Array(0);
 
     get length (): number {
