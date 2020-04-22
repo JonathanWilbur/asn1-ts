@@ -446,6 +446,6 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         this.tagClass = el.tagClass;
         this.construction = el.construction;
         this.tagNumber = el.tagNumber;
-        this.value = el.value;
+        this.value = new Uint8Array(el.value);
     }
 }
