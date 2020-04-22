@@ -15,7 +15,7 @@
         "@babel/core": "^7.8.3",
         "@babel/preset-env": "^7.8.3",
         "@babel/preset-typescript": "^7.8.3",
-        "@types/node": "^13.1.8",
+        "@types/node": "^13.5.0",
         "@typescript-eslint/eslint-plugin": "^2.17.0",
         "@typescript-eslint/parser": "^2.17.0",
         "babel-jest": "^25.1.0",
@@ -58,5 +58,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit"
     },
     "types": "./dist/index.d.ts",
-    "version": "3.0.1"
+    "version": "3.0.2"
 }

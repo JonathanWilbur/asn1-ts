@@ -63,6 +63,7 @@ enum ASN1UniversalType {
     utf8String = 0x0C,
     relativeOID = 0x0D,
     reserved14 = 0x0E,
+    time = 0x0E,
     reserved15 = 0x0F,
     sequence = 0x10,
     set = 0x11,
