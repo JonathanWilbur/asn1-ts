@@ -9,6 +9,7 @@ import X690Element from "../x690";
 import CharacterString from "../types/CharacterString";
 import convertBytesToText from "../utils/convertBytesToText";
 import convertTextToBytes from "../utils/convertTextToBytes";
+import sortCanonically from "../utils/sortCanonically";
 import ObjectIdentifier from "../types/ObjectIdentifier";
 import encodeBoolean from "./x690/encoders/encodeBoolean";
 import decodeBoolean from "./der/decoders/decodeBoolean";
@@ -207,6 +208,7 @@ class CERElement extends X690Element {
     }
 
     set set (value: SET<ASN1Element>) {
+        sortCanonically(value);
         this.sequence = value;
     }
 
@@ -360,7 +362,7 @@ class CERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            return (Buffer.from(swappedEndianness)).toString("utf-16le");
+            return (Buffer.from(swappedEndianness)).toString("utf16le");
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }

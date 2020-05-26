@@ -12,4 +12,5 @@
     ],
     "eslint.nodePath": "./node_modules",
     "jest.showCoverageOnLoad": true,
+    "deno.enable": false,
 }

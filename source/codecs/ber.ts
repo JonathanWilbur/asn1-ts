@@ -345,7 +345,7 @@ class BERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            return (Buffer.from(swappedEndianness)).toString("utf-16le");
+            return (Buffer.from(swappedEndianness)).toString("utf16le");
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }

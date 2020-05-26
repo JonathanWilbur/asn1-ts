@@ -120,8 +120,8 @@ export
 const CANONICAL_TAG_CLASS_ORDERING: ASN1TagClass[] = [
     ASN1TagClass.universal,
     ASN1TagClass.application,
-    ASN1TagClass.private,
     ASN1TagClass.context,
+    ASN1TagClass.private,
 ];
 
 export const numberRegex: string = "(?:0|[1-9]\\d*)(?:\\.\\d+)?";
