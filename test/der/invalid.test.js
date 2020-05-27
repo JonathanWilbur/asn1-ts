@@ -1,4 +1,4 @@
-const asn1 = require("../../dist/index.js");
+const asn1 = require("../../dist/node/index.js");
 
 describe("Distinguished Encoding Rules", () => {
     it("throws an exception when decoding a length that could have been encoded on fewer octets", () => {

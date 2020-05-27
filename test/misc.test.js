@@ -1,4 +1,4 @@
-const asn1 = require("../dist/index.js");
+const asn1 = require("../dist/node/index.js");
 const MAX_SINT_32 = asn1.MAX_SINT_32;
 const MIN_SINT_32 = asn1.MIN_SINT_32;
 const MAX_UINT_32 = asn1.MAX_UINT_32;

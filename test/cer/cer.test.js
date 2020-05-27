@@ -1,4 +1,4 @@
-const asn1 = require("../../dist/index.js");
+const asn1 = require("../../dist/node/index.js");
 
 describe("Canonical Encoding Rules", function () {
     it("encodes and decodes long BIT STRINGs correctly", () => {

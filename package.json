@@ -33,7 +33,7 @@
         "test": "test"
     },
     "files": [
-        "dist/**/*"
+        "dist/node/**/*"
     ],
     "homepage": "https://github.com/JonathanWilbur/asn1-ts",
     "keywords": [
@@ -44,7 +44,7 @@
         "DER"
     ],
     "license": "MIT",
-    "main": "./dist/index.js",
+    "main": "./dist/node/index.js",
     "name": "asn1-ts",
     "private": false,
     "repository": {
@@ -52,12 +52,16 @@
         "url": "https://github.com/JonathanWilbur/asn1-ts.git"
     },
     "scripts": {
+        "benchmark": "node ./test/benchmark.js",
         "breaking-update": "npx ncu -u && npm install",
-        "build": "npx tsc && npx webpack --config ./webpack/asn1.js",
+        "build": "npx tsc && npx webpack",
+        "build-node": "npx tsc",
+        "build-web": "npx webpack",
         "clean": "rm -rf dist; mkdir -p dist",
+        "line-count": "npx sloc source",
         "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
-        "test": "npx jest --ci --reporters=default --reporters=jest-junit"
+        "test": "npx jest --ci --reporters=default --reporters=jest-junit --coverage"
     },
-    "types": "./dist/index.d.ts",
-    "version": "3.1.0"
+    "types": "./dist/node/index.d.ts",
+    "version": "3.1.1-rc1"
 }
