@@ -7,18 +7,28 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [8.x, 10.x, 12.x, 14.x]
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
-      run: |
-        npm install
-        npm run lint --if-present
-        npm run build --if-present
-        npm test
-      env:
-        CI: true
+      - name: Check out repository
+        uses: actions/checkout@v1
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          # always-auth: true
+          # registry-url: https://registry.npmjs.org
+          node-version: ${{ matrix.node-version }}
+          # scope: '@jonathanwilbur'
+      - name: Install NPM Dependencies
+        run: npm ci
+        # env:
+          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Lint
+        run: npm run lint --if-present
+      - name: Build for Node.js
+        run: npm run build-node --if-present
+      - name: Build for Web
+        run: npm run build-web --if-present
+      - name: Run Jest Tests
+        run: npm test
+        env:
+          CI: true
