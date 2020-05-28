@@ -79,7 +79,7 @@ Tests under the `test` directory can also serve as examples.
 
 ## Future Development
 
-- [ ] Implement a function for ITU X.680-2015, Section 11.6.
+- [x] Implement a function for ITU X.690, Section 11.6.
 - [ ] Implement these codecs:
   - [ ] Octet Encoding Rules (This is used by Simple Transportation Management Protocol (STMP) and DATEX-ASN.)
   - [ ] Canonical Octet Encoding Rules
@@ -94,7 +94,7 @@ Tests under the `test` directory can also serve as examples.
     - [ ] Canonical Aligned Packed Encoding Rules (CPER)
     - [ ] Canonical Unaligned Packed Encoding Rules (CUPER) (May require changes to ASN1Element)
 - [ ] Internationalized strings
-- [ ] Serverless Functions
+- [x] ~~Serverless Functions~~ (May be done in a different repo.)
 
 ## See Also
 

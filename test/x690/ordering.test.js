@@ -420,3 +420,111 @@ describe("sortCanonically()", () => {
         expect(elements3[3].tagNumber).toBe(3);
     });
 });
+
+describe("sortSetOfCanonically()", () => {
+    test("correctly sorts elements according to ITU X.690-2015, Section 11.6", () => {
+        const elements1 = [
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x00 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x01 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x03 ]),
+            ),
+        ];
+
+        elements1.sort(asn1.compareSetOfElementsCanonically);
+        expect(elements1[0].value[0]).toBe(0);
+        expect(elements1[1].value[0]).toBe(1);
+        expect(elements1[2].value[0]).toBe(2);
+        expect(elements1[3].value[0]).toBe(3);
+
+        const elements2 = [
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x03 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x00 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x01 ]),
+            ),
+        ];
+
+        elements2.sort(asn1.compareSetOfElementsCanonically);
+        expect(elements2[0].value[0]).toBe(0);
+        expect(elements2[1].value[0]).toBe(1);
+        expect(elements2[2].value[0]).toBe(2);
+        expect(elements2[3].value[0]).toBe(3);
+
+        const elements3 = [
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02, 0x00, 0x01 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02 ]),
+            ),
+        ];
+
+        elements3.sort(asn1.compareSetOfElementsCanonically);
+        expect(elements3[0].value.length).toBe(1);
+        expect(elements3[1].value.length).toBe(3);
+
+        const elements4 = [
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02, 0x00, 0x01 ]),
+            ),
+            new asn1.DERElement(
+                asn1.ASN1TagClass.context,
+                asn1.ASN1Construction.primitive,
+                0,
+                new Uint8Array([ 0x02, 0x01 ]),
+            ),
+        ];
+
+        elements4.sort(asn1.compareSetOfElementsCanonically);
+        expect(elements4[0].value.length).toBe(3);
+        expect(elements4[1].value.length).toBe(2);
+    });
+});

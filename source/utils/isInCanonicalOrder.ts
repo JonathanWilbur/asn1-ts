@@ -5,7 +5,7 @@ export default
 function isInCanonicalOrder (elements: ASN1Element[]): boolean {
     let previousTagClass: ASN1TagClass | null = null;
     let previousTagNumber: number | null = null;
-    if (!elements.every((element): boolean => {
+    return (elements.every((element): boolean => {
         // Checks that the tag classes are in canonical order
         if (
             previousTagClass !== null
@@ -19,6 +19,5 @@ function isInCanonicalOrder (elements: ASN1Element[]): boolean {
         previousTagClass = element.tagClass;
         previousTagNumber = element.tagNumber;
         return true;
-    })) return false;
-    return true;
+    }));
 }

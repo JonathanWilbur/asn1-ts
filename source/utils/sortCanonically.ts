@@ -1,5 +1,6 @@
 import ASN1Element from "../asn1";
 import { CANONICAL_TAG_CLASS_ORDERING } from "../values";
+import compareSetOfElementsCanonically from "./compareSetOfElementsCanonically";
 
 export default
 function sortCanonically (elements: ASN1Element[]): void {
@@ -9,6 +10,8 @@ function sortCanonically (elements: ASN1Element[]): void {
         if (aClassOrder !== bClassOrder) {
             return (aClassOrder - bClassOrder);
         }
-        return (a.tagNumber - b.tagNumber);
+        return (a.tagNumber !== b.tagNumber)
+            ? (a.tagNumber - b.tagNumber)
+            : compareSetOfElementsCanonically(a, b);
     });
 }

@@ -4,6 +4,7 @@ export { default as CERElement } from "./codecs/cer";
 export { default as DERElement } from "./codecs/der";
 export { default as concatenateBytes } from "./utils/concatenateBytes";
 export { default as sortCanonically } from "./utils/sortCanonically";
+export { default as compareSetOfElementsCanonically } from "./utils/compareSetOfElementsCanonically";
 export { default as ConstructedElementSpecification } from "./ConstructedElementSpecification";
 export * from "./errors";
 export * from "./interfaces";
