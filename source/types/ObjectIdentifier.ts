@@ -2,8 +2,12 @@ export default
 class ObjectIdentifier {
     public readonly _nodes: number[];
 
-    constructor (nodes: number[], prefix?: ObjectIdentifier) {
-        const _nodes: number[] = prefix ? prefix._nodes.concat(nodes) : nodes.slice(0);
+    constructor (nodes: number[], prefix?: ObjectIdentifier | number) {
+        const _nodes: number[] = prefix
+            ? typeof prefix === "number"
+                ? [ prefix ].concat(nodes)
+                : prefix._nodes.concat(nodes)
+            : nodes.slice(0);
 
         if (_nodes.length < 2) {
             throw new Error("Cannot construct an OID with less than two nodes!");
