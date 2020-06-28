@@ -169,4 +169,16 @@ describe("Basic Encoding Rules", () => {
         outerElement.inner = innerElement;
         expect(outerElement.inner.objectIdentifier.nodes).toEqual([ 1, 5, 7 ]);
     });
+
+    it("decodes non short tag number", () => {
+        const data = new Uint8Array([
+            0x1F, 0x04, 0x03, 0x01, 0x02, 0x03,
+        ]);
+
+        const element = new asn1.BERElement();
+        element.fromBytes(data);
+        expect(element.octetString).toEqual(new Uint8Array([
+            0x01, 0x02, 0x03,
+        ]));
+    });
 });
