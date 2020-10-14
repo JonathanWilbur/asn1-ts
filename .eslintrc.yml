@@ -205,7 +205,7 @@ rules:
   arrow-parens:
     - warn
   arrow-body-style:
-    - warn
+    - off
   generator-star-spacing:
     - error
   no-confusing-arrow:
