@@ -1,8 +1,7 @@
-import ObjectIdentifier from "./types/ObjectIdentifier";
-import EmbeddedPDV from "./types/EmbeddedPDV";
-import External from "./types/External";
-import TypeIdentifier from "./types/TypeIdentifier";
-import DURATION_EQUIVALENT from "./types/time/DURATION-EQUIVALENT";
+import type ObjectIdentifier from "./types/ObjectIdentifier";
+import type EmbeddedPDV from "./types/EmbeddedPDV";
+import type External from "./types/External";
+import type DURATION_EQUIVALENT from "./types/time/DURATION-EQUIVALENT";
 
 export type COMPONENTS_OF<T> = T;
 export type OPTIONAL<T> = T | undefined;
@@ -104,9 +103,6 @@ export const FALSE_BIT = 0;
 export const PLUS_INFINITY = Infinity;
 export const MINUS_INFINITY = -Infinity;
 export const NOT_A_NUMBER = NaN;
-
-export const TYPE_IDENTIFIER = TypeIdentifier;
-// ABSTRACT_SYNTAX
 
 export const itu_t = 0;
 export const ccitt = 0;

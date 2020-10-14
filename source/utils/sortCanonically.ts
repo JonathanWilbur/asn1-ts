@@ -1,4 +1,4 @@
-import ASN1Element from "../asn1";
+import type ASN1Element from "../asn1";
 import { CANONICAL_TAG_CLASS_ORDERING } from "../values";
 import compareSetOfElementsCanonically from "./compareSetOfElementsCanonically";
 

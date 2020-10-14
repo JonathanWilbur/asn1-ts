@@ -6,6 +6,7 @@ export { default as concatenateBytes } from "./utils/concatenateBytes";
 export { default as sortCanonically } from "./utils/sortCanonically";
 export { default as compareSetOfElementsCanonically } from "./utils/compareSetOfElementsCanonically";
 export { default as ConstructedElementSpecification } from "./ConstructedElementSpecification";
+export * from "./classes";
 export * from "./errors";
 export * from "./interfaces";
 export * from "./macros";

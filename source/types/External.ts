@@ -1,5 +1,5 @@
 import { BIT_STRING, INTEGER, OBJECT_IDENTIFIER, OCTET_STRING, ObjectDescriptor } from "../macros";
-import ASN1Element from "../asn1";
+import type ASN1Element from "../asn1";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:

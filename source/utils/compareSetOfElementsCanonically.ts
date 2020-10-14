@@ -1,4 +1,4 @@
-import ASN1Element from "../asn1";
+import type ASN1Element from "../asn1";
 
 /**
  * Compares SET OF elements according to ITU X.690-2015, Section 11.6. For use

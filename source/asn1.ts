@@ -1,11 +1,11 @@
 import * as errors from "./errors";
 import { ASN1Construction, ASN1TagClass } from "./values";
-import Byteable from "./interfaces/Byteable";
-import Named from "./interfaces/Named";
-import Long from "./interfaces/Long";
-import CharacterString from "./types/CharacterString";
-import Elementable from "./interfaces/Elementable";
-import {
+import type Byteable from "./interfaces/Byteable";
+import type Named from "./interfaces/Named";
+import type Long from "./interfaces/Long";
+import type CharacterString from "./types/CharacterString";
+import type Elementable from "./interfaces/Elementable";
+import type {
     BOOLEAN,
     INTEGER,
     BIT_STRING,

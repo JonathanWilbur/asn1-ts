@@ -1,5 +1,5 @@
-import Deelementable from "./Deelementable";
-import Enelementable from "./Enelementable";
+import type Deelementable from "./Deelementable";
+import type Enelementable from "./Enelementable";
 
 /**
  * Represents something that can be converted to or from an Element.

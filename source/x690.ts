@@ -19,7 +19,7 @@ import encodeOIDIRI from "./codecs/x690/encoders/encodeOIDIRI";
 import decodeOIDIRI from "./codecs/x690/decoders/decodeOIDIRI";
 import encodeRelativeOIDIRI from "./codecs/x690/encoders/encodeRelativeOIDIRI";
 import decodeRelativeOIDIRI from "./codecs/x690/decoders/decodeRelativeOIDIRI";
-import {
+import type {
     INTEGER,
     OBJECT_IDENTIFIER,
     ENUMERATED,

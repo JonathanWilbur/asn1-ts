@@ -1,4 +1,4 @@
-import ASN1Element from "../asn1";
+import type ASN1Element from "../asn1";
 
 /**
     A `CharacterString`, is a constructed data type, defined

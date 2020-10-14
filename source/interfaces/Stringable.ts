@@ -1,5 +1,5 @@
-import Enstringable from "./Enstringable";
-import Destringable from "./Destringable";
+import type Enstringable from "./Enstringable";
+import type Destringable from "./Destringable";
 
 /**
  * Represents something that can be converted to or from a string.
