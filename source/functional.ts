@@ -181,6 +181,7 @@ export function _encode_implicit (
     class_: ASN1TagClass | undefined,
     tag: number | undefined,
     encoderGetter: () => ASN1Encoder<any>,
+    outer:  ASN1Encoder<any>, // This needs to remain here.
 ): ASN1Encoder<any> {
     return function (value: any, elGetter: ASN1Encoder<any>): ASN1Element {
         const ret: ASN1Element = encoderGetter()(value, elGetter);
