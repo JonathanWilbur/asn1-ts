@@ -181,7 +181,8 @@ export function _encode_implicit (
     class_: ASN1TagClass | undefined,
     tag: number | undefined,
     encoderGetter: () => ASN1Encoder<any>,
-    outer:  ASN1Encoder<any>, // This needs to remain here.
+    outer:  ASN1Encoder<any>, // eslint-disable-line
+    // ^ This needs to remain here.
 ): ASN1Encoder<any> {
     return function (value: any, elGetter: ASN1Encoder<any>): ASN1Element {
         const ret: ASN1Element = encoderGetter()(value, elGetter);
@@ -1075,14 +1076,13 @@ export function _decode_inextensible_choice<T> (
         string,
         [AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]>]
     >,
-    anythingElseHandler?: [AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]>],
 ): ASN1Decoder<InextensibleChoice<T>> {
     return function (el: ASN1Element): InextensibleChoice<T> {
         const result = choices[`${tagClassName(el.tagClass)} ${el.tagNumber}`];
         if (!result) {
-            if (anythingElseHandler) {
+            if (choices["*"]) {
                 const ret: T = {} as T;
-                ret[anythingElseHandler[0]] = anythingElseHandler[1](el);
+                ret[choices["*"][0]] = choices["*"][1](el);
                 return ret;
             } else {
                 throw new Error(
