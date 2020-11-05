@@ -23,11 +23,12 @@ export default
 interface ABSTRACT_SYNTAX <
     Type = any,
 > {
-    decode: Partial<{ // For decoding types supplied in type fields
-        [K in keyof ABSTRACT_SYNTAX<Type>]: ASN1Decoder<ABSTRACT_SYNTAX<Type>>;
+    class: string; // This is often aliased, so it cannot be const "ABSTRACT-SYNTAX".
+    decoderFor: Partial<{ // For decoding types supplied in type fields
+        [_K in keyof ABSTRACT_SYNTAX<Type>]: ASN1Decoder<ABSTRACT_SYNTAX<Type>[_K]>;
     }>;
-    encode: Partial<{ // For encoding types supplied in type fields
-        [K in keyof ABSTRACT_SYNTAX<Type>]: ASN1Encoder<ABSTRACT_SYNTAX<Type>>;
+    encoderFor: Partial<{ // For encoding types supplied in type fields
+        [_K in keyof ABSTRACT_SYNTAX<Type>]: ASN1Encoder<ABSTRACT_SYNTAX<Type>[_K]>;
     }>;
     "&id": OBJECT_IDENTIFIER, /* UNIQUE */
     "&Type": Type,

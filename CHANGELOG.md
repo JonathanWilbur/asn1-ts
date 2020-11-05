@@ -1,6 +1,11 @@
 # Changelog
 
-## [3.0.0] - Unreleased
+## [5.0.0]
+
+- Remove `anythingElseHandler` from `_decode_inextensible_choice` and use wildcard `"*"` instead.
+- Fix definition of classes in `classes`.
+
+## [3.0.0]
 
 ### Added :seedling:
 

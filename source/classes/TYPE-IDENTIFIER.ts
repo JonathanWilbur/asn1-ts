@@ -17,11 +17,12 @@ export default
 interface TYPE_IDENTIFIER<
     Type = any /* OBJECT_CLASS_TYPE_FIELD_PARAMETER */
 > {
-    decode: Partial<{ // For decoding types supplied in type fields
-        [K in keyof TYPE_IDENTIFIER<Type>]: ASN1Decoder<TYPE_IDENTIFIER<Type>>;
+    class: string; // This is often aliased, so it cannot be const "TYPE-IDENTIFIER".
+    decoderFor: Partial<{ // For decoding types supplied in type fields
+        [_K in keyof TYPE_IDENTIFIER<Type>]: ASN1Decoder<TYPE_IDENTIFIER<Type>[_K]>;
     }>;
-    encode: Partial<{ // For encoding types supplied in type fields
-        [K in keyof TYPE_IDENTIFIER<Type>]: ASN1Encoder<TYPE_IDENTIFIER<Type>>;
+    encoderFor: Partial<{ // For encoding types supplied in type fields
+        [_K in keyof TYPE_IDENTIFIER<Type>]: ASN1Encoder<TYPE_IDENTIFIER<Type>[_K]>;
     }>;
     "&id": OBJECT_IDENTIFIER, /* UNIQUE */
     "&Type": Type,
