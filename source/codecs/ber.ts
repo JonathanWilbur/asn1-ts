@@ -359,7 +359,7 @@ class BERElement extends X690Element {
         return decodeDuration(this.value);
     }
 
-    public encode (value: any): void {
+    public encode (value: any): void { // eslint-disable-line
         switch (typeof value) {
         case ("undefined"): {
             this.value = new Uint8Array(0);
@@ -409,7 +409,7 @@ class BERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if (value instanceof ObjectIdentifier) {
+            } else if ((value instanceof ObjectIdentifier) || (value.constructor?.name === "ObjectIdentifier")) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {

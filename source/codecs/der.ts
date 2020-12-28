@@ -114,9 +114,13 @@ class DERElement extends X690Element {
 
     set external (value: EXTERNAL) {
         this.value = encodeExternal(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get external (): EXTERNAL {
+        if (this.construction !== ASN1Construction.constructed) {
+            throw new errors.ASN1ConstructionError("EXTERNAL cannot be primitively-constructed.", this);
+        }
         return decodeExternal(this.value);
     }
 
@@ -133,9 +137,13 @@ class DERElement extends X690Element {
 
     set embeddedPDV (value: EMBEDDED_PDV) {
         this.value = encodeEmbeddedPDV(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get embeddedPDV (): EMBEDDED_PDV {
+        if (this.construction !== ASN1Construction.constructed) {
+            throw new errors.ASN1ConstructionError("EMBEDDED PDV cannot be primitively-constructed.", this);
+        }
         return decodeEmbeddedPDV(this.value);
     }
 
@@ -274,9 +282,13 @@ class DERElement extends X690Element {
 
     set characterString (value: CharacterString) {
         this.value = encodeCharacterString(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get characterString (): CharacterString {
+        if (this.construction !== ASN1Construction.constructed) {
+            throw new errors.ASN1ConstructionError("CHARACTER STRING cannot be primitively-constructed.", this);
+        }
         return decodeCharacterString(this.value);
     }
 
@@ -356,7 +368,7 @@ class DERElement extends X690Element {
         return decodeDuration(this.value);
     }
 
-    public encode (value: any): void {
+    public encode (value: any): void { // eslint-disable-line
         switch (typeof value) {
         case ("undefined"): {
             this.value = new Uint8Array(0);
@@ -406,7 +418,7 @@ class DERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if (value instanceof ObjectIdentifier) {
+            } else if ((value instanceof ObjectIdentifier) || (value.constructor?.name === "ObjectIdentifier")) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {
