@@ -1131,7 +1131,8 @@ export function _encodeSequenceOf<T> (
 ): SequenceOfEncoder<T> {
     return function (value: SEQUENCE_OF<T>): ASN1Element {
         const el = outerElGetter(value, outerElGetter);
-        el.sequence = value.map((v) => encoderGetter()(v, encoderGetter()));
+        const encoder = encoderGetter();
+        el.sequence = value.map((v) => encoder(v, outerElGetter));
         el.tagClass = ASN1TagClass.universal;
         el.tagNumber = ASN1UniversalType.sequence;
         return el;
@@ -1150,7 +1151,8 @@ export function _encodeSetOf<T> (
 ): SetOfEncoder<T> {
     return function (value: SET_OF<T>): ASN1Element {
         const el = outerElGetter(value, outerElGetter);
-        el.set = value.map((v) => encoderGetter()(v, encoderGetter()));
+        const encoder = encoderGetter();
+        el.set = value.map((v) => encoder(v, outerElGetter));
         el.tagClass = ASN1TagClass.universal;
         el.tagNumber = ASN1UniversalType.set;
         return el;
