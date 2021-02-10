@@ -51,3 +51,16 @@ describe("_encodeSequenceOf<UTF8String>", () => {
         expect(el.sequence[1].utf8String).toBe("world");
     });
 });
+
+describe("Decoding", () => {
+    it("does not fail to decode UTCTime from a Buffer", () => {
+        const el = new asn1.DERElement();
+        el.fromBytes(Buffer.concat([
+            Buffer.from([ 23, 13 ]),
+            Buffer.from("200623194348Z", "ascii"),
+        ]));
+        expect(() => {
+            el.utcTime;
+        }).not.toThrow();
+    });
+});
