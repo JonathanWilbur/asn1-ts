@@ -17,6 +17,10 @@ class ObjectIdentifier {
             throw new Error("OIDs first node must be 0, 1, or 2!");
         }
 
+        if (!_nodes.every((node) => Number.isSafeInteger(node))) {
+            throw new Error("OID contained a non-safe integer value.");
+        }
+
         if (
             ((_nodes[0] < 2) && _nodes[1] > 39)
             || (_nodes[0] === 2 && _nodes[1] > 175)
@@ -49,5 +53,9 @@ class ObjectIdentifier {
 
     public toString (): string {
         return this.dotDelimitedNotation;
+    }
+
+    public static fromString (str: string): ObjectIdentifier {
+        return new ObjectIdentifier(str.split(".").map((arc) => Number.parseInt(arc, 10)));
     }
 }

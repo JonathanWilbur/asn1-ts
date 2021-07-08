@@ -12,21 +12,21 @@
     ],
     "description": "ASN.1 encoding and decoding, including BER, CER, and DER.",
     "devDependencies": {
-        "@babel/core": "^7.12.13",
-        "@babel/preset-env": "^7.12.13",
-        "@babel/preset-typescript": "^7.12.13",
-        "@types/node": "^14.14.25",
-        "@typescript-eslint/eslint-plugin": "^4.15.0",
-        "@typescript-eslint/parser": "^4.15.0",
-        "babel-jest": "^26.6.3",
-        "eslint": "^7.19.0",
-        "jest": "^26.6.3",
-        "jest-junit": "^12.0.0",
-        "npm-check-updates": "^11.1.1",
-        "ts-loader": "^8.0.16",
-        "typescript": "^4.1.4",
-        "webpack": "^5.21.2",
-        "webpack-cli": "^4.5.0"
+        "@babel/core": "^7.14.6",
+        "@babel/preset-env": "^7.14.7",
+        "@babel/preset-typescript": "^7.14.5",
+        "@types/node": "^16.0.1",
+        "@typescript-eslint/eslint-plugin": "^4.28.2",
+        "@typescript-eslint/parser": "^4.28.2",
+        "babel-jest": "^27.0.6",
+        "eslint": "^7.30.0",
+        "jest": "^27.0.6",
+        "jest-junit": "^12.2.0",
+        "npm-check-updates": "^11.8.2",
+        "ts-loader": "^9.2.3",
+        "typescript": "^4.3.5",
+        "webpack": "^5.43.0",
+        "webpack-cli": "^4.7.2"
     },
     "directories": {
         "doc": "documentation",
@@ -63,5 +63,5 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit --coverage"
     },
     "types": "./dist/node/index.d.ts",
-    "version": "5.0.3"
+    "version": "5.1.0"
 }
