@@ -86,4 +86,10 @@ class EmbeddedPDV {
         readonly identification: ASN1Element,
         readonly dataValue: Uint8Array,
     ) {}
+
+    public toString (): string {
+        return (
+            `EMBEDDED PDV { identification ${this.identification.toString()} dataValue ${this.dataValue.toString()} }`
+        );
+    }
 }

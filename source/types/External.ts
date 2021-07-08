@@ -21,4 +21,26 @@ class External {
         readonly dataValueDescriptor: ObjectDescriptor | undefined,
         readonly encoding: ASN1Element | OCTET_STRING | BIT_STRING,
     ) {}
+
+    public toString (): string {
+        let ret: string = "EXTERNAL { ";
+        if (this.directReference) {
+            ret += `directReference ${this.directReference.toString()} `;
+        }
+        if (this.indirectReference) {
+            ret += `indirectReference ${this.indirectReference.toString()} `;
+        }
+        if (this.dataValueDescriptor) {
+            ret += `dataValueDescriptor "${this.dataValueDescriptor}"`;
+        }
+        if (this.encoding instanceof Uint8Array) {
+            ret += `octet-aligned ${this.encoding.toString()} `;
+        } else if (this.encoding instanceof Uint8ClampedArray) {
+            ret += `arbitrary ${this.encoding.toString()} `;
+        } else {
+            ret += `single-ASN1-type ${this.encoding.toString()} `;
+        }
+        ret += "}";
+        return ret;
+    }
 }

@@ -70,4 +70,31 @@ class DURATION_EQUIVALENT {
             throw new errors.ASN1Error("Malformed DURATION-EQUIVALENT fractional part.");
         }
     }
+
+    public toString (): string {
+        let ret: string = "DURATION { ";
+        if (this.years !== undefined) {
+            ret += `years ${this.years}`;
+        }
+        if (this.months !== undefined) {
+            ret += `months ${this.months}`;
+        }
+        if (this.weeks !== undefined) {
+            ret += `weeks ${this.weeks}`;
+        }
+        if (this.days !== undefined) {
+            ret += `days ${this.days}`;
+        }
+        if (this.hours !== undefined) {
+            ret += `hours ${this.hours}`;
+        }
+        if (this.minutes !== undefined) {
+            ret += `minutes ${this.minutes}`;
+        }
+        if (this.seconds !== undefined) {
+            ret += `seconds ${this.seconds}`;
+        }
+        ret += "}";
+        return ret;
+    }
 }

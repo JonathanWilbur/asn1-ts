@@ -29,4 +29,13 @@ class CharacterString {
         readonly identification: ASN1Element,
         readonly stringValue: Uint8Array,
     ) {}
+
+    public toString (): string {
+        return (
+            "CHARACTER STRING { "
+            + `identification ${this.identification.toString()} `
+            + `dataValue ${this.stringValue.toString()} `
+            + "}"
+        );
+    }
 }
