@@ -1,5 +1,6 @@
 import { BIT_STRING, INTEGER, OBJECT_IDENTIFIER, OCTET_STRING, ObjectDescriptor } from "../macros";
 import type ASN1Element from "../asn1";
+import packBits from "../utils/packBits";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:
@@ -34,7 +35,7 @@ class External {
             ret += `dataValueDescriptor "${this.dataValueDescriptor}"`;
         }
         if (this.encoding instanceof Uint8Array) {
-            ret += `octet-aligned ${this.encoding.toString()} `;
+            ret += `octet-aligned ${Array.from(this.encoding).map((byte) => byte.toString(16)).join("")} `;
         } else if (this.encoding instanceof Uint8ClampedArray) {
             ret += `arbitrary ${this.encoding.toString()} `;
         } else {
@@ -42,5 +43,26 @@ class External {
         }
         ret += "}";
         return ret;
+    }
+
+    public toJSON (): unknown {
+        return {
+            directReference: this.directReference,
+            indirectReference: this.indirectReference,
+            dataValueDescriptor: this.dataValueDescriptor,
+            encoding: ((): unknown => {
+                if (this.encoding instanceof Uint8Array) {
+                    return Array.from(this.encoding).map((byte) => byte.toString(16)).join("");
+                } else if (this.encoding instanceof Uint8ClampedArray) {
+                    const bits = this.encoding;
+                    return {
+                        length: bits.length,
+                        value: Array.from(packBits(bits)).map((byte) => byte.toString(16)).join(""),
+                    };
+                } else {
+                    return this.encoding.toJSON();
+                }
+            })(),
+        }
     }
 }

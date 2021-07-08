@@ -58,4 +58,27 @@ class ObjectIdentifier {
     public static fromString (str: string): ObjectIdentifier {
         return new ObjectIdentifier(str.split(".").map((arc) => Number.parseInt(arc, 10)));
     }
+
+    public toJSON (): string {
+        return this.dotDelimitedNotation;
+    }
+
+    public static compare (a: ObjectIdentifier, b: ObjectIdentifier): boolean {
+        if (a._nodes.length !== b._nodes.length) {
+            return false;
+        }
+        const len = a._nodes.length;
+        let i = 0;
+        while (i < len) {
+            if (a._nodes[i] !== b._nodes[i]) {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+
+    public isEqualTo (other: ObjectIdentifier): boolean {
+        return ObjectIdentifier.compare(this, other);
+    }
 }

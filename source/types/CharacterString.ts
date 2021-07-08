@@ -34,8 +34,15 @@ class CharacterString {
         return (
             "CHARACTER STRING { "
             + `identification ${this.identification.toString()} `
-            + `dataValue ${this.stringValue.toString()} `
+            + `dataValue ${Array.from(this.stringValue).map((byte) => byte.toString(16)).join("")} `
             + "}"
         );
+    }
+
+    public toJSON (): unknown {
+        return {
+            identification: this.identification.toJSON(),
+            dataValue: Array.from(this.stringValue).map((byte) => byte.toString(16)).join(""),
+        }
     }
 }

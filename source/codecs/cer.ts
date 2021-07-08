@@ -755,4 +755,15 @@ class CERElement extends X690Element {
             return whole;
         }
     }
+
+    public get components (): CERElement[] {
+        const encodedElements: CERElement[] = [];
+        let i: number = 0;
+        while (i < this.value.length) {
+            const next: CERElement = new CERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
 }

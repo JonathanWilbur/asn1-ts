@@ -688,4 +688,15 @@ class DERElement extends X690Element {
     public deconstruct (): Uint8Array {
         return this.value.subarray(0);
     }
+
+    public get components (): DERElement[] {
+        const encodedElements: DERElement[] = [];
+        let i: number = 0;
+        while (i < this.value.length) {
+            const next: DERElement = new DERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
 }

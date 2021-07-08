@@ -40,6 +40,7 @@ import type {
     OID_IRI,
     RELATIVE_OID_IRI,
 } from "./macros";
+import packBits from "./utils/packBits";
 
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
@@ -446,6 +447,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     }
 
     abstract get inner (): ASN1Element;
+    abstract get components (): ASN1Element[];
 
     public toElement (): ASN1Element {
         return this;
@@ -476,12 +478,12 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.embeddedPDV): return "EMBEDDED PDV";
             case (ASN1UniversalType.utf8String): return `UTF8String "${this.utf8String}"`;
             case (ASN1UniversalType.relativeOID): return "ROID" + this.relativeObjectIdentifier
-                .map((arc) => arc.toString()).join("");
+                .map((arc) => arc.toString()).join(".");
             case (ASN1UniversalType.time): return this.time;
             case (ASN1UniversalType.sequence): return ("{ " + this.sequence
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
-            case (ASN1UniversalType.set): return ("{ " + this.sequence
+            case (ASN1UniversalType.set): return ("{ " + this.set
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
             case (ASN1UniversalType.numericString): return `NumericString "${this.numericString}"`;
@@ -510,13 +512,100 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 return `[UNIV ${this.tagNumber}]: ${this.value.toString()}`;
             }
             }
-        // TODO: Recurse into the non-universal tag types if they are constructed.
+        } else if (this.construction === ASN1Construction.constructed) {
+            const inner = this.components;
+            if (inner.length === 1) {
+                return inner[0].toString();
+            } else {
+                return "{ " + inner.map((el) => el.toString()).join(", ") + " }";
+            }
         } else if (this.tagClass === ASN1TagClass.context) {
             return `[CTXT ${this.tagNumber}]: ${this.value.toString()}`;
         } else if (this.tagClass === ASN1TagClass.private) {
             return `[PRIV ${this.tagNumber}]: ${this.value.toString()}`;
         } else {
             return `[APPL ${this.tagNumber}]: ${this.value.toString()}`;
+        }
+    }
+
+    public toJSON (): unknown {
+        if (this.tagClass === ASN1TagClass.universal) {
+            switch (this.tagNumber) {
+            case (ASN1UniversalType.endOfContent): return undefined;
+            case (ASN1UniversalType.boolean): return this.boolean;
+            case (ASN1UniversalType.integer): return this.integer;
+            case (ASN1UniversalType.bitString): {
+                const bits = this.bitString;
+                return {
+                    length: bits.length,
+                    value: Array.from(packBits(bits)).map((byte) => byte.toString(16)).join(""),
+                };
+            }
+            case (ASN1UniversalType.octetString): return Array.from(this.octetString)
+                .map((byte) => byte.toString(16)).join("");
+            case (ASN1UniversalType.nill): return null;
+            case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.toJSON();
+            case (ASN1UniversalType.objectDescriptor): return this.objectDescriptor;
+            case (ASN1UniversalType.external): return this.external.toJSON();
+            case (ASN1UniversalType.realNumber): {
+                const r = this.real;
+                if (Object.is(r, -0)) {
+                    return "-0";
+                }
+                if (r === -Infinity) {
+                    return "-INF";
+                }
+                if (r === Infinity) {
+                    return "INF";
+                }
+                if (Number.isNaN(r)) {
+                    return "NaN";
+                }
+                return r.toString();
+            }
+            case (ASN1UniversalType.enumerated): return this.enumerated.toString();
+            case (ASN1UniversalType.embeddedPDV): return this.embeddedPDV.toJSON();
+            case (ASN1UniversalType.utf8String): return this.utf8String;
+            case (ASN1UniversalType.relativeOID): return this.relativeObjectIdentifier
+                .map((arc) => arc.toString()).join(".");
+            case (ASN1UniversalType.time): return this.time;
+            case (ASN1UniversalType.sequence): return this.sequence.map((el) => el.toJSON());
+            case (ASN1UniversalType.set): return this.set.map((el) => el.toJSON());
+            case (ASN1UniversalType.numericString): return this.numericString;
+            case (ASN1UniversalType.printableString): return this.printableString;
+            case (ASN1UniversalType.teletexString): return String.fromCodePoint(...Array.from(this.teletexString));
+            case (ASN1UniversalType.videotexString): return String.fromCodePoint(...Array.from(this.videotexString));
+            case (ASN1UniversalType.ia5String): return this.ia5String;
+            case (ASN1UniversalType.utcTime): return this.utcTime.toISOString();
+            case (ASN1UniversalType.generalizedTime): return this.generalizedTime.toISOString();
+            case (ASN1UniversalType.graphicString): return this.graphicString
+            case (ASN1UniversalType.visibleString): return this.visibleString;
+            case (ASN1UniversalType.generalString): return this.generalString;
+            case (ASN1UniversalType.universalString): return this.universalString;
+            case (ASN1UniversalType.characterString): return this.characterString.toJSON();
+            case (ASN1UniversalType.bmpString): return this.bmpString;
+            case (ASN1UniversalType.date): return this.date.toISOString();
+            case (ASN1UniversalType.timeOfDay): {
+                const tod = this.timeOfDay;
+                return `${tod.getUTCHours()}:${tod.getUTCMinutes()}:${tod.getUTCSeconds()}`;
+            }
+            case (ASN1UniversalType.dateTime): return this.dateTime.toISOString();
+            case (ASN1UniversalType.duration): return this.duration.toString();
+            case (ASN1UniversalType.oidIRI): return this.oidIRI;
+            case (ASN1UniversalType.roidIRI): return this.relativeOIDIRI;
+            default: {
+                return undefined;
+            }
+            }
+        } else if (this.construction === ASN1Construction.constructed) {
+            const inner = this.components;
+            if (inner.length === 1) {
+                return inner[0].toJSON();
+            } else {
+                return inner.map((el) => el.toJSON());
+            }
+        } else {
+            return undefined;
         }
     }
 }

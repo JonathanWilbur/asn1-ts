@@ -735,4 +735,15 @@ class BERElement extends X690Element {
             return whole;
         }
     }
+
+    public get components (): BERElement[] {
+        const encodedElements: BERElement[] = [];
+        let i: number = 0;
+        while (i < this.value.length) {
+            const next: BERElement = new BERElement();
+            i += next.fromBytes(this.value.slice(i));
+            encodedElements.push(next);
+        }
+        return encodedElements;
+    }
 }

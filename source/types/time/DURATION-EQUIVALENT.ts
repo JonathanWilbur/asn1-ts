@@ -97,4 +97,22 @@ class DURATION_EQUIVALENT {
         ret += "}";
         return ret;
     }
+
+    public toJSON (): unknown {
+        return {
+            years: this.years,
+            months: this.months,
+            weeks: this.weeks,
+            days: this.days,
+            hours: this.hours,
+            minutes: this.minutes,
+            seconds: this.seconds,
+            fractional_part: this.fractional_part
+                ? {
+                    number_of_digits: this.fractional_part.number_of_digits,
+                    fractional_value: this.fractional_part.fractional_value,
+                }
+                : undefined,
+        };
+    }
 }
