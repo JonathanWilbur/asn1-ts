@@ -528,6 +528,15 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         }
     }
 
+    /**
+     * @summary Convert this ASN.1 value to a JSON-serialized value.
+     * @description
+     *
+     * This method serializes data loosely according to the JSON Encoding Rules
+     * specified in ITU Recommendation X.697.
+     *
+     * @returns Usually a valid JSON Encoding Rules encoding of that element.
+     */
     public toJSON (): unknown {
         if (this.tagClass === ASN1TagClass.universal) {
             switch (this.tagNumber) {
