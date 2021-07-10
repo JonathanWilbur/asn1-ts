@@ -64,3 +64,15 @@ describe("ObjectIdentifier with a prefix", () => {
         expect(attributeTypes._nodes).toEqual([ 2, 5, 4 ]);
     });
 });
+
+describe("ObjectIdentifier", () => {
+    it("compares correctly", () => {
+        const oid1 = new asn1.ObjectIdentifier([ 2, 5, 4, 3 ]);
+        const oid2 = new asn1.ObjectIdentifier([ 2, 5, 4, 3 ]);
+        const oid3 = new asn1.ObjectIdentifier([ 2, 5, 4, 5 ]);
+        const oid4 = new asn1.ObjectIdentifier([ 1, 5, 4, 3 ]);
+        expect(asn1.ObjectIdentifier.compare(oid1, oid2)).toBeTruthy();
+        expect(asn1.ObjectIdentifier.compare(oid1, oid3)).toBeFalsy();
+        expect(asn1.ObjectIdentifier.compare(oid1, oid4)).toBeFalsy();
+    });
+});
