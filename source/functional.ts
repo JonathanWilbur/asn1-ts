@@ -108,6 +108,24 @@ export function hasTagNumberIn (tagNumbers: number[]): TagValidator {
     };
 }
 
+export function and (...fns: TagValidator[]): TagValidator {
+    return function (index: number, elements: ASN1Element[]): boolean {
+        return fns.every((fn) => fn(index, elements));
+    };
+}
+
+export function or (...fns: TagValidator[]): TagValidator {
+    return function (index: number, elements: ASN1Element[]): boolean {
+        return fns.some((fn) => fn(index, elements));
+    };
+}
+
+export function not (fn: TagValidator): TagValidator {
+    return function (index: number, elements: ASN1Element[]): boolean {
+        return !fn(index, elements);
+    };
+}
+
 export function tagClassName (tagClass: ASN1TagClass): string {
     switch (tagClass) {
     case (ASN1TagClass.universal): return "UNIVERSAL";
