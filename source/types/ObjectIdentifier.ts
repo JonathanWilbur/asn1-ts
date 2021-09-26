@@ -51,6 +51,10 @@ class ObjectIdentifier {
         return this._nodes.join(".");
     }
 
+    get asn1Notation (): string {
+        return `{ ${this._nodes.map((node) => node.toString()).join(" ")} }`;
+    }
+
     public toString (): string {
         return this.dotDelimitedNotation;
     }

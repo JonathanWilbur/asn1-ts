@@ -465,49 +465,58 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             switch (this.tagNumber) {
             case (ASN1UniversalType.endOfContent): return "END-OF-CONTENT";
             case (ASN1UniversalType.boolean): return (this.boolean ? "TRUE" : "FALSE");
-            case (ASN1UniversalType.integer): return "INTEGER " + this.integer.toString();
-            case (ASN1UniversalType.bitString): return "BITS " + Array
-                .from(this.bitString).map((num) => num.toString()).join("");
-            case (ASN1UniversalType.octetString): return "OCTETS " + this.octetString.toString();
+            case (ASN1UniversalType.integer): return this.integer.toString();
+            case (ASN1UniversalType.bitString):
+                return `'${Array
+                    .from(this.bitString)
+                    .map((num) => num.toString())
+                    .join("")
+                }'B`;
+            case (ASN1UniversalType.octetString):
+                return `'${Array
+                    .from(this.octetString)
+                    .map((byte) => byte.toString(16).padStart(2, "0"))
+                    .join("")
+                }'H`;
             case (ASN1UniversalType.nill): return "NULL";
-            case (ASN1UniversalType.objectIdentifier): return "OID " + this.objectIdentifier.toString();
-            case (ASN1UniversalType.objectDescriptor): return `ObjectDescriptor "${this.objectDescriptor}"`;
+            case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.asn1Notation;
+            case (ASN1UniversalType.objectDescriptor): return `"${this.objectDescriptor}"`;
             case (ASN1UniversalType.external): return "EXTERNAL";
-            case (ASN1UniversalType.realNumber): return "REAL" + this.real.toString();
-            case (ASN1UniversalType.enumerated): return "ENUM " + this.enumerated.toString();
+            case (ASN1UniversalType.realNumber): return this.real.toString();
+            case (ASN1UniversalType.enumerated): return this.enumerated.toString();
             case (ASN1UniversalType.embeddedPDV): return "EMBEDDED PDV";
-            case (ASN1UniversalType.utf8String): return `UTF8String "${this.utf8String}"`;
-            case (ASN1UniversalType.relativeOID): return "ROID" + this.relativeObjectIdentifier
-                .map((arc) => arc.toString()).join(".");
-            case (ASN1UniversalType.time): return this.time;
+            case (ASN1UniversalType.utf8String): return `"${this.utf8String}"`;
+            case (ASN1UniversalType.relativeOID): return "{ " + this.relativeObjectIdentifier
+                .map((arc) => arc.toString()).join(".") + " }";
+            case (ASN1UniversalType.time): return `"${this.time}"`;
             case (ASN1UniversalType.sequence): return ("{ " + this.sequence
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
             case (ASN1UniversalType.set): return ("{ " + this.set
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
-            case (ASN1UniversalType.numericString): return `NumericString "${this.numericString}"`;
-            case (ASN1UniversalType.printableString): return `PrintableString "${this.printableString}"`;
-            case (ASN1UniversalType.teletexString): return "TeletexString " + this.teletexString.toString();
-            case (ASN1UniversalType.videotexString): return "VideotexString " + this.videotexString.toString();
-            case (ASN1UniversalType.ia5String): return `IA5String "${this.ia5String}"`;
-            case (ASN1UniversalType.utcTime): return "UTCTime " + this.utcTime.toISOString();
-            case (ASN1UniversalType.generalizedTime): return "GeneralizedTime " + this.generalizedTime.toISOString();
-            case (ASN1UniversalType.graphicString): return `GraphicString "${this.graphicString}"`;
-            case (ASN1UniversalType.visibleString): return `VisibleString "${this.visibleString}"`;
-            case (ASN1UniversalType.generalString): return `GeneralString "${this.generalString}"`;
-            case (ASN1UniversalType.universalString): return `UniversalString "${this.universalString}"`;
+            case (ASN1UniversalType.numericString): return `"${this.numericString}"`;
+            case (ASN1UniversalType.printableString): return `"${this.printableString}"`;
+            case (ASN1UniversalType.teletexString): return "TeletexString";
+            case (ASN1UniversalType.videotexString): return "VideotexString";
+            case (ASN1UniversalType.ia5String): return `"${this.ia5String}"`;
+            case (ASN1UniversalType.utcTime): return `"${this.utcTime.toISOString()}"`;
+            case (ASN1UniversalType.generalizedTime): return `"${this.generalizedTime.toISOString()}"`;
+            case (ASN1UniversalType.graphicString): return `"${this.graphicString}"`;
+            case (ASN1UniversalType.visibleString): return `"${this.visibleString}"`;
+            case (ASN1UniversalType.generalString): return `"${this.generalString}"`;
+            case (ASN1UniversalType.universalString): return `"${this.universalString}"`;
             case (ASN1UniversalType.characterString): return "CHARACTER STRING";
-            case (ASN1UniversalType.bmpString): return `BMPString "${this.bmpString}"`;
-            case (ASN1UniversalType.date): return "DATE " + this.date.toISOString();
+            case (ASN1UniversalType.bmpString): return `"${this.bmpString}"`;
+            case (ASN1UniversalType.date): return `"${this.date.toISOString()}"`;
             case (ASN1UniversalType.timeOfDay): {
                 const tod = this.timeOfDay;
-                return `TIME-OF-DAY ${tod.getUTCHours()}:${tod.getUTCMinutes()}:${tod.getUTCSeconds()}`;
+                return `"${tod.getUTCHours()}:${tod.getUTCMinutes()}:${tod.getUTCSeconds()}"`;
             }
-            case (ASN1UniversalType.dateTime): return "DATE-TIME " + this.dateTime.toISOString();
+            case (ASN1UniversalType.dateTime): return `"${this.dateTime.toISOString()}"`;
             case (ASN1UniversalType.duration): return this.duration.toString();
-            case (ASN1UniversalType.oidIRI): return "OID-IRI " + this.oidIRI;
-            case (ASN1UniversalType.roidIRI): return "ROID-IRI " + this.relativeOIDIRI;
+            case (ASN1UniversalType.oidIRI): return this.oidIRI;
+            case (ASN1UniversalType.roidIRI): return this.relativeOIDIRI;
             default: {
                 return `[UNIV ${this.tagNumber}]: ${this.value.toString()}`;
             }
