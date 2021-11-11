@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.0.0]
+
+It's 2021 and we have Browserify and BigInt. We can use `Buffer` methods to
+encode and decode integers (instead rolling our own implementation for
+`Uint8Array`), and we can use `BigInt` so that we can support `INTEGER` and
+`ENUMERATED` values that are infinitely large!
+
+This does mean that I have removed the Webpack configuration. If you want this
+in a web app, it really should just be packed along with your project as a whole
+rather than imported separately. If you really want it as a separate import, the
+only thing you should have to do is define `Buffer` in the global context.
+
 ## [5.0.0]
 
 - Remove `anythingElseHandler` from `_decode_inextensible_choice` and use wildcard `"*"` instead.

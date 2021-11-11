@@ -155,18 +155,20 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         }
     }
 
-    private validateRange (name: string, actualValue: number, min: number, max?: number): void {
-        const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);
+    private validateRange (name: string, actualValue: bigint | number, min: bigint, max?: bigint): void {
         if (actualValue < min) {
             throw new errors.ASN1OverflowError(
                 `${name} was ${actualValue} when the `
                 + `minimum permissible is ${min}.`,
             );
         }
-        if (actualValue > effectiveMax) {
+        if (max === undefined) {
+            return;
+        }
+        if (actualValue > max) {
             throw new errors.ASN1OverflowError(
                 `${name} was ${actualValue} when the `
-                + `maximum permissible is ${effectiveMax}.`,
+                + `maximum permissible is ${max}.`,
             );
         }
     }
@@ -267,13 +269,13 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         return ret;
     }
 
-    public rangeConstrainedInteger (min: number, max?: number): INTEGER {
+    public rangeConstrainedInteger (min: bigint, max?: bigint): INTEGER {
         const ret: INTEGER = this.integer;
         this.validateRange(this.name || "INTEGER", ret, min, max);
         return ret;
     }
 
-    public rangeConstrainedReal (min: number, max?: number): REAL {
+    public rangeConstrainedReal (min: bigint, max?: bigint): REAL {
         const ret: REAL = this.real;
         this.validateRange(this.name || "REAL", ret, min, max);
         return ret;

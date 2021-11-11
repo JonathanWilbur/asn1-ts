@@ -38,7 +38,6 @@ function encodeX690BinaryRealNumber (value: number): Uint8Array {
         | (singleByteExponent ? 0b0000_0000 : 0b0000_0001)
     );
     const exponentBytes: Uint8Array = encodeSignedBigEndianInteger(floatComponents.exponent);
-    // console.log(exponentBytes);
     const mantissaBytes: Uint8Array = encodeUnsignedBigEndianInteger(floatComponents.mantissa);
     const ret: Uint8Array = new Uint8Array(1 + exponentBytes.length + mantissaBytes.length);
     ret[0] = firstByte;

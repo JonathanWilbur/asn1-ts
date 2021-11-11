@@ -54,14 +54,12 @@
     "scripts": {
         "benchmark": "node ./test/benchmark.js",
         "breaking-update": "npx ncu -u && npm install",
-        "build": "npx tsc && npx webpack",
-        "build-node": "npx tsc",
-        "build-web": "npx webpack",
+        "build": "npx tsc",
         "clean": "rm -rf dist; mkdir -p dist",
         "line-count": "npx sloc source",
         "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
         "test": "npx jest --ci --reporters=default --reporters=jest-junit --coverage"
     },
     "types": "./dist/node/index.d.ts",
-    "version": "5.5.0"
+    "version": "6.0.0"
 }

@@ -45,27 +45,27 @@ const asn1 = require("../../dist/node/index.js");
 
             // Examples taken from here: http://luca.ntop.org/Teaching/Appunti/asn1.html
             el.integer = 0;
-            expect(el.value).toEqual(new Uint8Array([ 0x00 ]));
+            expect(el.value).toEqual(Buffer.from([ 0x00 ]));
             expect(el.integer).toBe(0);
             el.integer = 127;
-            expect(el.value).toEqual(new Uint8Array([ 0x7F ]));
+            expect(el.value).toEqual(Buffer.from([ 0x7F ]));
             expect(el.integer).toBe(127);
             el.integer = 128;
-            expect(el.value).toEqual(new Uint8Array([ 0x00, 0x80 ]));
+            expect(el.value).toEqual(Buffer.from([ 0x00, 0x80 ]));
             expect(el.integer).toBe(128);
             el.integer = 256;
-            expect(el.value).toEqual(new Uint8Array([ 0x01, 0x00 ]));
+            expect(el.value).toEqual(Buffer.from([ 0x01, 0x00 ]));
             expect(el.integer).toBe(256);
             el.integer = -128;
-            expect(el.value).toEqual(new Uint8Array([ 0x80 ]));
+            expect(el.value).toEqual(Buffer.from([ 0x80 ]));
             expect(el.integer).toBe(-128);
             el.integer = -129;
-            expect(el.value).toEqual(new Uint8Array([ 0xFF, 0x7F ]));
+            expect(el.value).toEqual(Buffer.from([ 0xFF, 0x7F ]));
             expect(el.integer).toBe(-129);
 
             for (let i = 0; i < 127; i++) {
                 el.integer = i;
-                expect(el.value).toEqual(new Uint8Array([ i ]));
+                expect(el.value).toEqual(Buffer.from([ i ]));
                 expect(el.integer).toBe(i);
             }
 
@@ -76,8 +76,20 @@ const asn1 = require("../../dist/node/index.js");
 
             for (let i = -2147483647; i < 2147483647; i += 15485863) {
                 el.integer = i;
-                expect(el.integer).toBe(i);
+                expect(el.integer == i).toBeTruthy(); // Must be "==" because we are comparing a BigInt to a number.
             }
+
+            el.integer = BigInt("6392757259646");
+            expect(el.integer == BigInt("6392757259646")).toBeTruthy();
+
+            el.integer = (BigInt(-1) * BigInt("6392757259646"));
+            expect(el.integer == (BigInt(-1) * BigInt("6392757259646"))).toBeTruthy();
+
+            el.integer = BigInt("4209759197917957569175245526786543");
+            expect(el.integer == BigInt("4209759197917957569175245526786543")).toBeTruthy();
+
+            el.integer = (BigInt(-1) * BigInt("4209759197917957569175245526786543"));
+            expect(el.integer == (BigInt(-1) * BigInt("4209759197917957569175245526786543"))).toBeTruthy();
         });
 
         it("encodes and decodes a BIT STRING correctly", () => {
@@ -272,7 +284,7 @@ const asn1 = require("../../dist/node/index.js");
             const el = new CodecElement();
             for (let i = 0; i < 127; i++) {
                 el.enumerated = i;
-                expect(el.value).toEqual(new Uint8Array([ i ]));
+                expect(el.value).toEqual(Buffer.from([ i ]));
                 expect(el.enumerated).toBe(i);
             }
 
@@ -283,7 +295,7 @@ const asn1 = require("../../dist/node/index.js");
 
             for (let i = -2147483647; i < 2147483647; i += 15485863) {
                 el.enumerated = i;
-                expect(el.enumerated).toBe(i);
+                expect(el.enumerated == i).toBeTruthy(); // Must be "==" because we are comparing a BigInt to a number.
             }
         });
 

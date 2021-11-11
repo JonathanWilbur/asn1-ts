@@ -1,14 +1,15 @@
 import * as errors from "../errors";
+import { INTEGER } from "../macros";
 
 export default
 function datetimeComponentValidator (
     unitName: string,
-    min: number,
-    max: number,
-): (dataType: string, value: number) => void {
+    min: INTEGER,
+    max: INTEGER,
+): (dataType: string, value: INTEGER) => void {
     return function (
         dataType: string,
-        value: number,
+        value: INTEGER,
     ): void {
         if (!Number.isInteger(value)) {
             throw new errors.ASN1Error(`Non-integral ${unitName} supplied to ${dataType}.`);

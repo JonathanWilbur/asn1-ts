@@ -77,6 +77,11 @@ console.log(el2.integer); // Logs '1433'
 
 Tests under the `test` directory can also serve as examples.
 
+In this library, you can use the Basic Encoding Rules, Canonical Encoding Rules,
+and Distinguished Encoding Rules via the `BERElement`, `CERElement`, and
+`DERElement` classes respectively. You should use `DERElement` for anything that
+will be cryptographically signed or hashed.
+
 ## Future Development
 
 - [x] Implement a function for ITU X.690, Section 11.6.
