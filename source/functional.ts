@@ -138,12 +138,27 @@ export function tagClassName (tagClass: ASN1TagClass): string {
     }
 }
 
-// eslint-disable-next-line
-export function deepEq (value1: any, value2: any): boolean {
-    if (value1 === value2) {
-        return true;
+
+/**
+ * @summary Deeply compares two values of any data type.
+ * @returns `true` if the two values are equal.
+ */
+export function deepEq (value1: unknown, value2: unknown): boolean {
+    try {
+        if (value1 === value2) {
+            return true;
+        }
+        if ( // Because BigInt can't be converted to JSON.
+            ((typeof value1 === "bigint") || (typeof value1 === "number"))
+            && ((typeof value2 === "bigint") || (typeof value2 === "number"))
+        ) {
+            return (BigInt(value1) === BigInt(value2));
+        }
+        // This is imperfect, but it will work 95% of the time.
+        return (JSON.stringify(value1) === JSON.stringify(value2));
+    } catch {
+        return false;
     }
-    return (JSON.stringify(value1) === JSON.stringify(value2));
 }
 
 // eslint-disable-next-line
