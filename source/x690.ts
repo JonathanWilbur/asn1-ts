@@ -73,7 +73,7 @@ abstract class X690Element extends ASN1Element {
     }
 
     get enumerated (): ENUMERATED {
-        return this.integer;
+        return Number(this.integer);
     }
 
     set relativeObjectIdentifier (value: RELATIVE_OID) {

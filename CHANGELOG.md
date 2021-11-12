@@ -1,5 +1,18 @@
 # Changelog
 
+## [7.0.0]
+
+Make `ENUMERATED` have `number` type only. This is most just to avoid breaking
+existing code. This is important, because:
+
+- In common use cases, you'll compare enumerated values. Using the `===` strict
+  equality operator, a `bigint` will not equate to a `number` of similar value.
+  So supporting `bigint` would complicate comparisons.
+- You may wish to represent `ENUMERATED` types as actual enums. If you do, you
+  would not be able to represent all decoded values as a member of that enum
+  without first converting the `bigint` into a `number`.
+- `ENUMERATED` types typically do not have absurdly large values.
+
 ## [6.0.0]
 
 It's 2021 and we have Browserify and BigInt. We can use `Buffer` methods to
