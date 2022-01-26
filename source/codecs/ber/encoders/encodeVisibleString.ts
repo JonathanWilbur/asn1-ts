@@ -6,13 +6,13 @@ import { VisibleString } from "../../../macros";
 export default
 function encodeVisibleString (value: VisibleString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
-    bytes.forEach((characterCode: number): void => {
-        if (!isGraphicCharacter(characterCode)) {
+    for (const char of bytes) {
+        if (!isGraphicCharacter(char)) {
             throw new ASN1CharactersError(
                 "VisibleString can only contain characters between 0x20 and 0x7E. "
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return bytes;
 }

@@ -10,5 +10,5 @@ function decodeUnsignedBigEndianInteger (value: Uint8Array): number {
     }
     const u8 = new Uint8Array(4);
     u8.set(value, (4 - value.length));
-    return new Uint32Array(u8.reverse().buffer)[0];
+    return Buffer.from(u8).readUInt32BE();
 }

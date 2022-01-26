@@ -594,10 +594,10 @@ class DERElement extends X690Element {
                 lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
             }
             let length: number = 0;
-            lengthNumberOctets.forEach((octet: number): void => {
+            for (const octet of lengthNumberOctets) {
                 length <<= 8;
                 length += octet;
-            });
+            }
             if ((cursor + length) < cursor) { // This catches an overflow.
                 throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
             }

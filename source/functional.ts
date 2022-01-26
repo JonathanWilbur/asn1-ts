@@ -825,7 +825,7 @@ function _parse_set (
 
     { // Check the entire set for duplicate tags.
         const encounteredTags: Set<string> = new Set<string>([]);
-        elements.forEach((e) => {
+        for (const e of elements) {
             const tag: string = `${e.tagClass} ${e.tagNumber}`;
             if (encounteredTags.has(tag)) {
                 throw new Error(
@@ -833,7 +833,7 @@ function _parse_set (
                 );
             }
             encounteredTags.add(tag);
-        });
+        }
     }
 
     /**
@@ -844,12 +844,13 @@ function _parse_set (
     const encounteredExtensionGroups: Set<number> = new Set<number>([]);
 
     // Execute callbacks on all components.
-    elements.forEach((e, i) => {
+    for (let i = 0; i < elements.length; i++) {
+        const e = elements[i];
         const spec: ComponentSpec | undefined = components
             .find((cs) => cs.selector(i, elements)); // 758eb9f0-2d70-4cbf-ad19-593bfb939113
         if (!spec) {
             unrecognizedExtensionHandler(e);
-            return;
+            continue;
         }
         if (encounteredComponents.has(spec.name)) {
             throw new Error(`SET '${set.name}' contained more than one '${spec.name}' component.`);
@@ -864,25 +865,20 @@ function _parse_set (
         } else {
             unrecognizedExtensionHandler(e);
         }
-    });
+    }
 
     // Check for missing required components
-    const missingRequiredComponents: string[] = [];
-    rootComponents
-        .filter((c) => (!(c.optional)))
-        .forEach((c) => {
-            if (!(encounteredComponents.has(c.name))) {
-                missingRequiredComponents.push(c.name);
-            }
-        });
+    const missingRequiredComponents: string[] = rootComponents
+        .filter((c) => (!c.optional && !encounteredComponents.has(c.name)))
+        .map((c) => c.name);
     Array.from(encounteredExtensionGroups).forEach((exg) => {
         extensionAdditionsList
-            .filter((c) => ((c.groupIndex === exg) && !(c.optional)))
-            .forEach((c) => {
-                if (!(encounteredComponents.has(c.name))) {
-                    missingRequiredComponents.push(c.name);
-                }
-            });
+            .filter((c) => (
+                (c.groupIndex === exg)
+                && !c.optional)
+                && !encounteredComponents.has(c.name)
+            )
+            .forEach((c) => missingRequiredComponents.push(c.name));
     });
     if (missingRequiredComponents.length > 0) {
         throw new Error(

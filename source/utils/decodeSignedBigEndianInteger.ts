@@ -13,5 +13,5 @@ function decodeSignedBigEndianInteger (value: Uint8Array): number {
         u8.fill(0xFF);
     }
     u8.set(value, (4 - value.length));
-    return new Int32Array(u8.reverse().buffer)[0];
+    return Buffer.from(u8).readInt32BE();
 }

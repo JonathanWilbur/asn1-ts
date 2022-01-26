@@ -5,13 +5,13 @@ import { GraphicString } from "../../../macros";
 
 export default
 function decodeGraphicString (value: Uint8Array): GraphicString {
-    value.forEach((characterCode: number): void => {
-        if (!isGraphicCharacter(characterCode)) {
+    for (const char of value) {
+        if (!isGraphicCharacter(char)) {
             throw new ASN1CharactersError(
                 "GraphicString can only contain characters between 0x20 and 0x7E. "
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return convertBytesToText(value);
 }

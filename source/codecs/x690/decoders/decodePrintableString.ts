@@ -6,13 +6,13 @@ import { PrintableString } from "../../../macros";
 
 export default
 function decodePrintableString (value: Uint8Array): PrintableString {
-    value.forEach((characterCode: number): void => {
-        if (!isPrintableCharacter(characterCode)) {
+    for (const char of value) {
+        if (!isPrintableCharacter(char)) {
             throw new ASN1CharactersError(
                 `PrintableString can only contain these characters: ${printableStringCharacters}. `
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return convertBytesToText(value);
 }

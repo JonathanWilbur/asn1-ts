@@ -107,7 +107,7 @@ describe("Basic Encoding Rules", () => {
 
         const element = new asn1.BERElement();
         element.fromBytes(data);
-        expect(element.octetString).toEqual(new Uint8Array([
+        expect(element.octetString).toEqual(Buffer.from([
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
         ]));
     });

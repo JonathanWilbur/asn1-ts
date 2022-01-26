@@ -31,14 +31,14 @@ class ObjectIdentifier {
             );
         }
 
-        _nodes.forEach((node: number): void => {
+        for (const node of _nodes) {
             if (node < 0) {
                 throw new Error("OID node numbers cannot be negative!");
             }
             if (node > Number.MAX_SAFE_INTEGER) {
                 throw new Error("OID number was too big!");
             }
-        });
+        }
 
         this._nodes = _nodes;
     }

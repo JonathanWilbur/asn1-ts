@@ -603,10 +603,10 @@ class CERElement extends X690Element {
                     lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
                 }
                 let length: number = 0;
-                lengthNumberOctets.forEach((octet: number): void => {
+                for (const octet of lengthNumberOctets) {
                     length <<= 8;
                     length += octet;
-                });
+                }
                 if ((cursor + length) < cursor) { // This catches an overflow.
                     throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
                 }
@@ -728,9 +728,9 @@ class CERElement extends X690Element {
             return new Uint8Array(this.value); // Clones it.
         } else {
             if ((this.recursionCount + 1) > CERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
-            let appendy: Uint8Array[] = [];
+            const appendy: Uint8Array[] = [];
             const substrings: ASN1Element[] = this.sequence;
-            substrings.forEach((substring) => {
+            for (const substring of substrings) {
                 if (substring.tagClass !== this.tagClass) {
                     throw new errors.ASN1ConstructionError(
                         `Invalid tag class in recursively-encoded ${dataType}.`, this);
@@ -740,19 +740,10 @@ class CERElement extends X690Element {
                         `Invalid tag class in recursively-encoded ${dataType}.`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
-                appendy = appendy.concat(substring.deconstruct(dataType));
-            });
-            let totalLength: number = 0;
-            appendy.forEach((substring) => {
-                totalLength += substring.length;
-            });
-            const whole = new Uint8Array(totalLength);
-            let currentIndex: number = 0;
-            appendy.forEach((substring) => {
-                whole.set(substring, currentIndex);
-                currentIndex += substring.length;
-            });
-            return whole;
+                const deconstructed = substring.deconstruct(dataType);
+                appendy.push(deconstructed);
+            }
+            return Buffer.concat(appendy);
         }
     }
 

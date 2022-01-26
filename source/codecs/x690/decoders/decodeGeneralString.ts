@@ -5,13 +5,13 @@ import { GeneralString } from "../../../macros";
 
 export default
 function decodeGeneralString (value: Uint8Array): GeneralString {
-    value.forEach((characterCode: number): void => {
-        if (!isGeneralCharacter(characterCode)) {
+    for (const char of value) {
+        if (!isGeneralCharacter(char)) {
             throw new ASN1CharactersError(
                 "GeneralString can only contain ASCII characters."
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return convertBytesToText(value);
 }

@@ -5,13 +5,13 @@ import { ObjectDescriptor } from "../../../macros";
 
 export default
 function decodeObjectDescriptor (value: Uint8Array): ObjectDescriptor {
-    value.forEach((characterCode: number): void => {
-        if (!isObjectDescriptorCharacter(characterCode)) {
+    for (const char of value) {
+        if (!isObjectDescriptorCharacter(char)) {
             throw new ASN1CharactersError(
                 "ObjectDescriptor can only contain characters between 0x20 and 0x7E. "
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return convertBytesToText(value);
 }

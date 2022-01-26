@@ -17,9 +17,8 @@ function decodeRelativeObjectIdentifier (value: Uint8Array): RELATIVE_OID {
             if (b.length > 1 && b[0] === 0x80) {
                 throw new errors.ASN1PaddingError("Prohibited padding on RELATIVE-OID node.");
             }
-            return b;
+            return decodeBase128(b);
         })
-        .map(decodeBase128)
         /**
          * This has to be done, because decodeBase128() does not know how many
          * leading zero bits are extraneous.

@@ -29,7 +29,7 @@ describe("Canonical Encoding Rules", function () {
             longEvenBytes,
         ].forEach((bytes) => {
             el.octetString = bytes;
-            expect(el.octetString).toEqual(bytes);
+            expect(el.octetString).toEqual(Buffer.from(bytes));
         });
     });
 

@@ -15,14 +15,6 @@ describe("The encode() method", () => {
     });
 });
 
-describe("concatenateBytes()", () => {
-    it("does not throw upon being given an empty array", () => {
-        expect(() => {
-            asn1.concatenateBytes([]);
-        }).not.toThrow();
-    });
-});
-
 describe("_encodeSequenceOf<UTF8String>", () => {
     it("does not crash", () => {
         const encode = asn1fn._encodeSequenceOf(

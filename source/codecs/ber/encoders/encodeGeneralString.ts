@@ -6,13 +6,13 @@ import { GeneralString } from "../../../macros";
 export default
 function encodeGeneralString (value: GeneralString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
-    bytes.forEach((characterCode: number): void => {
-        if (!isGeneralCharacter(characterCode)) {
+    for (const char of bytes) {
+        if (!isGeneralCharacter(char)) {
             throw new ASN1CharactersError(
                 "GeneralString can only contain ASCII characters."
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return bytes;
 }

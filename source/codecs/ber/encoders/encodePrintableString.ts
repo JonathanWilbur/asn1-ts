@@ -7,13 +7,13 @@ import { PrintableString } from "../../../macros";
 export default
 function encodeNumericString (value: PrintableString): Uint8Array {
     const bytes: Uint8Array = convertTextToBytes(value);
-    bytes.forEach((characterCode: number): void => {
-        if (!isPrintableCharacter(characterCode)) {
+    for (const char of bytes) {
+        if (!isPrintableCharacter(char)) {
             throw new ASN1CharactersError(
                 `PrintableString can only contain these characters: ${printableStringCharacters}. `
-                + `Encountered character code ${characterCode}.`,
+                + `Encountered character code ${char}.`,
             );
         }
-    });
+    }
     return bytes;
 }
