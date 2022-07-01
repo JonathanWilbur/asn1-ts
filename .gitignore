@@ -2,6 +2,8 @@ dist/
 test/jail/
 rubbish/
 junit.xml
+target/
+pkg/
 
 # Private keys, wallets, and other sensitive items.
 *.pem
