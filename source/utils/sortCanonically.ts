@@ -1,17 +1,18 @@
 import type ASN1Element from "../asn1";
-import { CANONICAL_TAG_CLASS_ORDERING } from "../values";
-import compareSetOfElementsCanonically from "./compareSetOfElementsCanonically";
 
 export default
-function sortCanonically (elements: ASN1Element[]): void {
-    elements.sort((a, b): number => {
-        const aClassOrder = CANONICAL_TAG_CLASS_ORDERING.findIndex((ctco) => ctco === a.tagClass);
-        const bClassOrder = CANONICAL_TAG_CLASS_ORDERING.findIndex((ctco) => ctco === b.tagClass);
+function sortCanonically (elements: ASN1Element[]): ASN1Element[] {
+    return elements.sort((a, b): number => {
+        const aClassOrder = a.tagClass as number;
+        const bClassOrder = b.tagClass as number;
         if (aClassOrder !== bClassOrder) {
             return (aClassOrder - bClassOrder);
         }
-        return (a.tagNumber !== b.tagNumber)
-            ? (a.tagNumber - b.tagNumber)
-            : compareSetOfElementsCanonically(a, b);
+        /**
+         * Buffer.compare() has the same semantics as the encoding comparison
+         * algorithm described in ITU X.690 (2021), Section 11.6 (which builds
+         * off of the conventions defined in Section 6.3).
+         */
+        return Buffer.compare(a.toBytes(), b.toBytes());
     });
 }
