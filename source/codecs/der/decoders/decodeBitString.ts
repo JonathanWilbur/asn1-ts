@@ -16,9 +16,9 @@ function decodeBitString (value: Uint8Array): BIT_STRING {
         throw new errors.ASN1Error("First byte of an ASN.1 BIT STRING must be <= 7!");
     }
 
-    let ret: number[] = [];
+    const ret: number[] = [];
     for (let i = 1; i < value.length; i++) {
-        ret = ret.concat([
+        ret.push(
             ((value[i] & 0b10000000) ? TRUE_BIT : FALSE_BIT),
             ((value[i] & 0b01000000) ? TRUE_BIT : FALSE_BIT),
             ((value[i] & 0b00100000) ? TRUE_BIT : FALSE_BIT),
@@ -27,11 +27,11 @@ function decodeBitString (value: Uint8Array): BIT_STRING {
             ((value[i] & 0b00000100) ? TRUE_BIT : FALSE_BIT),
             ((value[i] & 0b00000010) ? TRUE_BIT : FALSE_BIT),
             ((value[i] & 0b00000001) ? TRUE_BIT : FALSE_BIT),
-        ]);
+        );
     }
-    ret.slice((ret.length - value[0])).forEach((bit) => {
+    for (const bit of ret.slice((ret.length - value[0]))) {
         if (bit) throw new errors.ASN1Error("BIT STRING had a trailing set bit.");
-    });
+    }
     ret.length -= value[0];
     return new Uint8ClampedArray(ret);
 }

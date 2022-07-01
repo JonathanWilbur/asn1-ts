@@ -117,9 +117,9 @@ class CERElement extends X690Element {
         if ((this.recursionCount + 1) > CERElement.nestingRecursionLimit) {
             throw new errors.ASN1RecursionError();
         }
-        let appendy: boolean[] = [];
+        const appendy: boolean[] = [];
         const substrings: ASN1Element[] = this.sequence;
-        substrings.slice(0, (substrings.length - 1)).forEach((substring: ASN1Element): void => {
+        for (const substring of substrings.slice(0, (substrings.length - 1))) {
             if (
                 substring.construction === ASN1Construction.primitive
                 && substring.value.length > 0
@@ -130,8 +130,8 @@ class CERElement extends X690Element {
                     this,
                 );
             }
-        });
-        substrings.forEach((substring: ASN1Element): void => {
+        }
+        for (const substring of substrings) {
             if (substring.tagClass !== this.tagClass) {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
@@ -139,8 +139,8 @@ class CERElement extends X690Element {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
             substring.recursionCount = (this.recursionCount + 1);
-            appendy = appendy.concat(Array.from(substring.bitString).map((b) => b !== FALSE_BIT));
-        });
+            appendy.push(...Array.from(substring.bitString).map((b) => b !== FALSE_BIT));
+        }
         return new Uint8ClampedArray(appendy.map((b) => (b ? 1 : 0)));
     }
 
@@ -362,7 +362,7 @@ class CERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            return (Buffer.from(swappedEndianness)).toString("utf16le");
+            return (Buffer.from(swappedEndianness.buffer)).toString("utf16le");
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
@@ -656,7 +656,7 @@ class CERElement extends X690Element {
     }
 
     public toBytes (): Uint8Array {
-        let tagBytes: number[] = [ 0x00 ];
+        const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
         tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
@@ -680,7 +680,7 @@ class CERElement extends X690Element {
                 encodedNumber[0] |= 0b10000000;
             }
             encodedNumber[encodedNumber.length - 1] &= 0b01111111;
-            tagBytes = tagBytes.concat(encodedNumber);
+            tagBytes.push(...encodedNumber);
         }
 
         let lengthOctets: number[] = [ 0x00 ];

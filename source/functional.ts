@@ -791,7 +791,7 @@ function _parse_set (
     maximumElements?: number,
 ): void {
     const rootComponents: ComponentSpec[] = rootComponentTypeList1.concat(rootComponentTypeList2);
-    const components: ComponentSpec[] = rootComponents.concat(rootComponentTypeList2);
+    const components: ComponentSpec[] = rootComponents.concat(extensionAdditionsList);
     const elements: ASN1Element[] = set.set;
 
     /**
@@ -872,13 +872,16 @@ function _parse_set (
         .filter((c) => (!c.optional && !encounteredComponents.has(c.name)))
         .map((c) => c.name);
     Array.from(encounteredExtensionGroups).forEach((exg) => {
-        extensionAdditionsList
-            .filter((c) => (
+        for (const c of extensionAdditionsList) {
+            if (!(
                 (c.groupIndex === exg)
-                && !c.optional)
+                && !c.optional
                 && !encounteredComponents.has(c.name)
-            )
-            .forEach((c) => missingRequiredComponents.push(c.name));
+            )) {
+                continue;
+            }
+            missingRequiredComponents.push(c.name);
+        }
     });
     if (missingRequiredComponents.length > 0) {
         throw new Error(
@@ -1094,7 +1097,7 @@ export function _encode_choice<T> (
         }
         const encoder = choices[key];
         if (!encoder) {
-            throw new Error(`Unrecognized alternative '${key}'.`);
+            throw new Error(`Unrecognized alternative '${String(key)}'.`);
         }
         return encoder(value[key] as T[AllUnionMemberKeys<T>], elGetter as any);
     };

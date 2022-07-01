@@ -13,7 +13,7 @@ function convertBytesToText (bytes: Uint8Array, codec: string = "utf-8"): string
     if (typeof TextEncoder !== "undefined") { // Browser JavaScript
         return (new TextDecoder(codec)).decode(bytes);
     } else if (typeof Buffer !== "undefined") { // NodeJS
-        return (Buffer.from(bytes)).toString(codec as any);
+        return (Buffer.from(bytes.buffer)).toString(codec as any);
     }
     throw new ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.");
 }

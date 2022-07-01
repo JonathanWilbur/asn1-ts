@@ -14,20 +14,20 @@ function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
         throw new errors.ASN1TruncationError("OID was truncated.");
     }
 
-    const firstTwoNodes: [ number, number ] = [ 0, 0 ];
+    const nodes: [ number, number ] = [ 0, 0 ];
     if (value[0] >= 0x50) {
-        firstTwoNodes[0] = 2;
-        firstTwoNodes[1] = (value[0] - 0x50);
+        nodes[0] = 2;
+        nodes[1] = (value[0] - 0x50);
     } else if (value[0] >= 0x28) {
-        firstTwoNodes[0] = 1;
-        firstTwoNodes[1] = (value[0] - 0x28);
+        nodes[0] = 1;
+        nodes[1] = (value[0] - 0x28);
     } else {
-        firstTwoNodes[0] = 0;
-        firstTwoNodes[1] = value[0];
+        nodes[0] = 0;
+        nodes[1] = value[0];
     }
 
     if (value.length === 1) {
-        return new ObjectIdentifier(firstTwoNodes);
+        return new ObjectIdentifier(nodes);
     }
     const additionalNodes: number[] = Array
         .from(splitBytesByContinuationBit(value.slice(1)))
@@ -44,5 +44,6 @@ function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
         .map((b) => ((b[0] === 0) ? b.slice(1) : b))
         .map(decodeUnsignedBigEndianInteger);
 
-    return new ObjectIdentifier(firstTwoNodes.concat(additionalNodes));
+    nodes.push(...additionalNodes);
+    return new ObjectIdentifier(nodes);
 }

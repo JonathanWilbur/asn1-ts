@@ -150,14 +150,14 @@ describe("encodeSignedBigEndianInteger()", () => {
 
 describe("encodeUnsignedBigEndianInteger()", () => {
     it("works", () => {
-        expect(encodeUnsignedBigEndianInteger(0)).toEqual(new Uint8Array([ 0x00 ]));
-        expect(encodeUnsignedBigEndianInteger(1)).toEqual(new Uint8Array([ 0x01 ]));
-        expect(encodeUnsignedBigEndianInteger(255)).toEqual(new Uint8Array([ 0xFF ]));
-        expect(encodeUnsignedBigEndianInteger(127)).toEqual(new Uint8Array([ 0x7F ]));
-        expect(encodeUnsignedBigEndianInteger(128)).toEqual(new Uint8Array([ 0x80 ]));
-        expect(encodeUnsignedBigEndianInteger(511)).toEqual(new Uint8Array([ 0x01, 0xFF ]));
-        expect(encodeUnsignedBigEndianInteger(32767)).toEqual(new Uint8Array([ 0x7F, 0xFF ]));
-        expect(encodeUnsignedBigEndianInteger(65535)).toEqual(new Uint8Array([ 0xFF, 0xFF ]));
+        expect(encodeUnsignedBigEndianInteger(0)).toEqual(Buffer.from([ 0x00 ]));
+        expect(encodeUnsignedBigEndianInteger(1)).toEqual(Buffer.from([ 0x01 ]));
+        expect(encodeUnsignedBigEndianInteger(255)).toEqual(Buffer.from([ 0xFF ]));
+        expect(encodeUnsignedBigEndianInteger(127)).toEqual(Buffer.from([ 0x7F ]));
+        expect(encodeUnsignedBigEndianInteger(128)).toEqual(Buffer.from([ 0x80 ]));
+        expect(encodeUnsignedBigEndianInteger(511)).toEqual(Buffer.from([ 0x01, 0xFF ]));
+        expect(encodeUnsignedBigEndianInteger(32767)).toEqual(Buffer.from([ 0x7F, 0xFF ]));
+        expect(encodeUnsignedBigEndianInteger(65535)).toEqual(Buffer.from([ 0xFF, 0xFF ]));
     })
 });
 

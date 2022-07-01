@@ -5,7 +5,7 @@ import * as errors from "../errors";
 export default
 function validateConstruction (elements: ASN1Element[], specification: ConstructedElementSpecification[]): void {
     let i: number = 0;
-    specification.forEach((spec: ConstructedElementSpecification): void => {
+    for (const spec of specification) {
         if (
             (i >= elements.length)
             || (spec.tagClass && spec.tagClass !== elements[i].tagClass)
@@ -41,5 +41,5 @@ function validateConstruction (elements: ASN1Element[], specification: Construct
             spec.callback(elements[i]);
         }
         i++;
-    });
+    }
 }

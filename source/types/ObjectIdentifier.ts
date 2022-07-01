@@ -5,8 +5,8 @@ class ObjectIdentifier {
     constructor (nodes: number[], prefix?: ObjectIdentifier | number) {
         const _nodes: number[] = prefix
             ? typeof prefix === "number"
-                ? [ prefix ].concat(nodes)
-                : prefix._nodes.concat(nodes)
+                ? [ prefix, ...nodes ]
+                : [ ...prefix._nodes, ...nodes ]
             : nodes.slice(0);
 
         if (_nodes.length < 2) {

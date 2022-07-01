@@ -354,7 +354,7 @@ class DERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            return (Buffer.from(swappedEndianness)).toString("utf16le");
+            return (Buffer.from(swappedEndianness.buffer)).toString("utf16le");
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }
@@ -630,7 +630,7 @@ class DERElement extends X690Element {
     }
 
     public toBytes (): Uint8Array {
-        let tagBytes: number[] = [ 0x00 ];
+        const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
         tagBytes[0] |= (this.construction << 5);
         if (this.tagNumber < 31) {
@@ -654,7 +654,7 @@ class DERElement extends X690Element {
                 encodedNumber[0] |= 0b10000000;
             }
             encodedNumber[encodedNumber.length - 1] &= 0b01111111;
-            tagBytes = tagBytes.concat(encodedNumber);
+            tagBytes.push(...encodedNumber);
         }
 
         let lengthOctets: number[] = [ 0x00 ];
