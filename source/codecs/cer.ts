@@ -349,10 +349,8 @@ class CERElement extends X690Element {
     get bmpString (): BMPString {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
         if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
-        if (typeof TextEncoder !== "undefined") { // Browser JavaScript
-            return (new TextDecoder("utf-16be")).decode(valueBytes.buffer as ArrayBuffer);
-        } else if (typeof Buffer !== "undefined") { // NodeJS
-            const swappedEndianness: Uint8Array = new Uint8Array(valueBytes.length);
+        if (typeof Buffer !== "undefined") { // NodeJS
+            const swappedEndianness: Buffer = Buffer.allocUnsafe(valueBytes.length);
             for (let i: number = 0; i < valueBytes.length; i += 2) {
                 swappedEndianness[i] = valueBytes[i + 1];
                 swappedEndianness[i + 1] = valueBytes[i];
@@ -362,7 +360,9 @@ class CERElement extends X690Element {
              * every pair of bytes to make it little-endian, then decode
              * using NodeJS's utf-16-le decoder?
              */
-            return (Buffer.from(swappedEndianness.buffer)).toString("utf16le");
+            return swappedEndianness.toString("utf16le");
+        } else if (typeof TextEncoder !== "undefined") {
+            return (new TextDecoder("utf-16be")).decode(valueBytes.buffer);
         } else {
             throw new errors.ASN1Error("Neither TextDecoder nor Buffer are defined to decode bytes into text.", this);
         }

@@ -1,6 +1,7 @@
 const asn1 = require("../dist/node/index.js");
 const asn1fn = require("../dist/node/functional");
 const { ASN1UniversalType, ASN1Construction, ASN1TagClass } = require("../dist/node/index.js");
+const convertBytesToText = require("../dist/node/utils/convertBytesToText").default;
 
 describe("The encode() method", () => {
     it("does not fail to encode a Uint8Array", () => {
@@ -54,5 +55,26 @@ describe("Decoding", () => {
         expect(() => {
             el.utcTime;
         }).not.toThrow();
+    });
+});
+
+describe("The encode() method", () => {
+    it("does not fail to encode a Uint8Array", () => {
+        expect(() => {
+            const el = new asn1.DERElement(
+                asn1.ASN1TagClass.universal,
+                asn1.ASN1Construction.primitive,
+                asn1.ASN1UniversalType.octetString,
+                new Uint8Array(8),
+            );
+        }).not.toThrow();
+    });
+});
+
+describe("convertBytesToText", () => {
+    it("does not stringify an entire buffer pool when a Buffer is passed in", () => {
+        const originalString = "AAABBBCCC";
+        const b = Buffer.from(originalString);
+        expect(convertBytesToText(b)).toBe(originalString);
     });
 });
