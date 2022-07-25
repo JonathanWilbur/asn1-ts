@@ -24,10 +24,8 @@ jobs:
           # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Lint
         run: npm run lint --if-present
-      - name: Build for Node.js
-        run: npm run build-node --if-present
-      - name: Build for Web
-        run: npm run build-web --if-present
+      - name: Build
+        run: npm run build
       - name: Run Jest Tests
         run: npm test
         env:
