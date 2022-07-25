@@ -6,7 +6,7 @@ const asn1 = require("../../dist/node/index.js");
     asn1.DERElement,
 ].forEach((CodecElement) => {
     describe(CodecElement.constructor.name, () => {
-        it("encodes Sets correctly", () => {
+        it("encodes SET OF correctly", () => {
             const el1 = new CodecElement();
             el1.integer = 5;
             const el2 = new CodecElement();
@@ -16,7 +16,7 @@ const asn1 = require("../../dist/node/index.js");
 
             const setty = new CodecElement();
             setty.encode(new Set([ el1, el2, el3, 5, null, "hey", 4.5 ]));
-            expect(setty.set.length).toEqual(7);
+            expect(setty.setOf.length).toEqual(7);
         });
     });
 });

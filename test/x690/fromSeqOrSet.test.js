@@ -6,7 +6,7 @@ const asn1 = require("../../dist/node/index.js");
     asn1.DERElement,
 ].forEach((CodecElement) => {
     describe(`${CodecElement.constructor.name}.fromSequence()`, () => {
-        it("encodes a sequence correctly", () => {
+        it("encodes a SEQUENCE correctly", () => {
             const el = CodecElement.fromSequence([
                 new CodecElement(
                     asn1.ASN1TagClass.universal,
@@ -30,8 +30,8 @@ const asn1 = require("../../dist/node/index.js");
     });
 
     describe(`${CodecElement.constructor.name}.fromSet()`, () => {
-        it("encodes a sequence correctly", () => {
-            const el = CodecElement.fromSet([
+        it("encodes a SET correctly", () => {
+            const el = CodecElement.fromSetOf([
                 new CodecElement(
                     asn1.ASN1TagClass.universal,
                     asn1.ASN1Construction.primitive,
@@ -47,9 +47,9 @@ const asn1 = require("../../dist/node/index.js");
                 ),
                 undefined,
             ]);
-            expect(el.set.length).toBe(2);
-            expect(el.set[0].boolean).toBe(false);
-            expect(el.set[1].boolean).toBe(true);
+            expect(el.setOf.length).toBe(2);
+            expect(el.setOf[0].boolean).toBe(false);
+            expect(el.setOf[1].boolean).toBe(true);
         });
     });
 });

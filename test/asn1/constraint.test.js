@@ -70,7 +70,7 @@ const asn1 = require("../../dist/node/index.js");
 
         it("validates a SET OF", () => {
             const el = new CodecElement();
-            el.set = [
+            el.setOf = [
                 new CodecElement(),
                 new CodecElement(),
                 new CodecElement(),

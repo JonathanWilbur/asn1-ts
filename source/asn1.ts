@@ -99,6 +99,10 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     abstract get sequence (): SEQUENCE<ASN1Element>;
     abstract set set (value: SET<ASN1Element>);
     abstract get set (): SET<ASN1Element>;
+    abstract set sequenceOf (value: SEQUENCE<ASN1Element>);
+    abstract get sequenceOf (): SEQUENCE<ASN1Element>;
+    abstract set setOf (value: SET<ASN1Element>);
+    abstract get setOf (): SET<ASN1Element>;
     abstract set numericString (value: NumericString);
     abstract get numericString (): NumericString;
     abstract set printableString (value: PrintableString);
@@ -198,13 +202,13 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     }
 
     public sizeConstrainedSequenceOf (min: number, max?: number): SEQUENCE<ASN1Element> {
-        const ret: SEQUENCE<ASN1Element> = this.sequence;
+        const ret: SEQUENCE<ASN1Element> = this.sequenceOf;
         this.validateSize(this.name || "SEQUENCE OF", "elements", ret.length, min, max);
         return ret;
     }
 
     public sizeConstrainedSetOf (min: number, max?: number): SET<ASN1Element> {
-        const ret: ASN1Element[] = this.set;
+        const ret: ASN1Element[] = this.setOf;
         this.validateSize(this.name || "SET OF", "elements", ret.length, min, max);
         return ret;
     }

@@ -68,6 +68,7 @@ import {
     GeneralizedTime,
     DURATION,
 } from "../macros";
+import { isUniquelyTagged } from "../utils";
 
 export default
 class DERElement extends X690Element {
@@ -176,6 +177,30 @@ class DERElement extends X690Element {
     }
 
     get set (): SET<ASN1Element> {
+        const ret = this.sequence;
+        if (!isUniquelyTagged(ret)) {
+            throw new errors.ASN1ConstructionError("Duplicate tag in SET.", this);
+        }
+        return ret;
+    }
+
+    set sequenceOf (value: SEQUENCE<ASN1Element>) {
+        this.value = encodeSequence(value);
+        this.construction = ASN1Construction.constructed;
+    }
+
+    get sequenceOf (): SEQUENCE<ASN1Element> {
+        if (this.construction !== ASN1Construction.constructed) {
+            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
+        }
+        return decodeSequence(this.value);
+    }
+
+    set setOf (value: SET<ASN1Element>) {
+        this.sequence = value;
+    }
+
+    get setOf (): SET<ASN1Element> {
         return this.sequence;
     }
 
@@ -478,6 +503,24 @@ class DERElement extends X690Element {
         return ret;
     }
 
+
+    /**
+     * A convenience method, created because `SET OF` is so common. `null`
+     * and `undefined` elements may be supplied, and will simply be filtered
+     * out.
+     *
+     * @param set The elements (or absence thereof) to encode.
+     */
+    public static fromSetOf (set: (DERElement | null | undefined)[]): DERElement {
+        const ret: DERElement = new DERElement(
+            ASN1TagClass.universal,
+            ASN1Construction.constructed,
+            ASN1UniversalType.set,
+        );
+        ret.setOf = set.filter((element) => Boolean(element)) as DERElement[];
+        return ret;
+    }
+
     get inner (): DERElement {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError(
@@ -686,7 +729,7 @@ class DERElement extends X690Element {
     }
 
     public deconstruct (): Uint8Array {
-        return this.value.subarray(0);
+        return new Uint8Array(this.value);
     }
 
     public get components (): DERElement[] {
