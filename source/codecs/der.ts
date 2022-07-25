@@ -613,7 +613,7 @@ class DERElement extends X690Element {
                 this.tagNumber <<= 7;
                 this.tagNumber |= (bytes[i] & 0x7F);
             }
-            if (this.tagNumber <= 31) {
+            if (this.tagNumber < 31) {
                 throw new errors.ASN1Error("ASN.1 tag number could have been encoded in short form.", this);
             }
         }

@@ -78,3 +78,24 @@ describe("convertBytesToText", () => {
         expect(convertBytesToText(b)).toBe(originalString);
     });
 });
+
+describe("convertBytesToText", () => {
+    it("does not stringify an entire buffer pool when a Buffer is passed in", () => {
+        const originalString = "AAABBBCCC";
+        const b = Buffer.from(originalString);
+        expect(convertBytesToText(b)).toBe(originalString);
+    });
+});
+
+
+[
+    asn1.CERElement,
+    asn1.DERElement,
+].forEach((CodecElement) => {
+    describe(`${CodecElement.constructor.name}.fromBytes()`, () => {
+        // Credits to https://github.com/Axel-EH for discovering this. Thank you!
+        const bytes = Buffer.from([ 0x5F, 0x1F, 0x02, 0x48, 0x69 ]);
+        const el = new CodecElement();
+        expect(() => el.fromBytes(bytes)).not.toThrow();
+    });
+});
