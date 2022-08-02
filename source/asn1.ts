@@ -552,12 +552,22 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
      *
      * @returns Usually a valid JSON Encoding Rules encoding of that element.
      */
-    public toJSON (): unknown {
+    public toJSON (recurse: boolean = true): unknown {
         if (this.tagClass === ASN1TagClass.universal) {
             switch (this.tagNumber) {
             case (ASN1UniversalType.endOfContent): return undefined;
             case (ASN1UniversalType.boolean): return this.boolean;
-            case (ASN1UniversalType.integer): return this.integer;
+            case (ASN1UniversalType.integer): {
+                const ret = this.integer;
+                /**
+                 * This is an exception to X.697, which makes no mention of any
+                 * way to encode big integers into JSON.
+                 */
+                if (typeof ret === "bigint") {
+                    return ret.toString();
+                }
+                return ret;
+            }
             case (ASN1UniversalType.bitString): {
                 const bits = this.bitString;
                 return {
@@ -593,8 +603,18 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.relativeOID): return this.relativeObjectIdentifier
                 .map((arc) => arc.toString()).join(".");
             case (ASN1UniversalType.time): return this.time;
-            case (ASN1UniversalType.sequence): return this.sequence.map((el) => el.toJSON());
-            case (ASN1UniversalType.set): return this.set.map((el) => el.toJSON());
+            case (ASN1UniversalType.sequence): {
+                if (!recurse) {
+                    return null;
+                }
+                return this.sequence.map((el) => el.toJSON());
+            }
+            case (ASN1UniversalType.set): {
+                if (!recurse) {
+                    return null;
+                }
+                return this.set.map((el) => el.toJSON());
+            }
             case (ASN1UniversalType.numericString): return this.numericString;
             case (ASN1UniversalType.printableString): return this.printableString;
             case (ASN1UniversalType.teletexString): return String.fromCodePoint(...Array.from(this.teletexString));
@@ -621,7 +641,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 return undefined;
             }
             }
-        } else if (this.construction === ASN1Construction.constructed) {
+        } else if ((this.construction === ASN1Construction.constructed) && recurse) {
             const inner = this.components;
             if (inner.length === 1) {
                 return inner[0].toJSON();
