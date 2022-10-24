@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.11]
+
+- Fix invalid type for `_encode_choice`
+- Fix invalid validation of `SEQUENCE` types with a trailing root component type list.
+  - This would cause an error saying `SEQUENCE '<sequence name>' had excess elements at the end.`
+
 ## [7.0.0]
 
 Make `ENUMERATED` have `number` type only. This is most just to avoid breaking

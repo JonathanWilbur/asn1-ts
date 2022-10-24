@@ -985,9 +985,9 @@ function _parse_sequence_with_trailing_rctl (
     const possibleInitialRCTL2Components: ComponentSpec[] = _get_possible_initial_components(rootComponentTypeList2);
     const rctl2EntirelyOptional: boolean = rootComponentTypeList2.every((ct) => ct.optional);
     const extensionsOnwards: ASN1Element[] = elements.slice(startOfExtensions);
-    let numberOfExtensionElements: number = extensionsOnwards
+    let numberOfExtensionElements: number = Math.max(0, extensionsOnwards
         .findIndex((e, i): boolean => possibleInitialRCTL2Components
-            .some((pirctl2c): boolean => pirctl2c.selector(i, extensionsOnwards)));
+            .some((pirctl2c): boolean => pirctl2c.selector(i, extensionsOnwards))));
     if (startOfExtensions === -1) { // We did not find RCTL2.
         if (rctl2EntirelyOptional) {
             numberOfExtensionElements = (elements.length - startOfExtensions);
@@ -1083,7 +1083,7 @@ function _parse_sequence (
     }
 }
 
-export function _encode_choice<T> (
+export function _encode_choice<T extends object> (
     choices: Record<keyof T, ASN1Encoder<T[AllUnionMemberKeys<T>]>>,
     elGetter: ASN1Encoder<T>,
 ): ASN1Encoder<T> {
