@@ -143,6 +143,7 @@ class BERElement extends X690Element {
 
     set external (value: EXTERNAL) {
         this.value = encodeExternal(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get external (): EXTERNAL {
@@ -162,6 +163,7 @@ class BERElement extends X690Element {
 
     set embeddedPDV (value: EMBEDDED_PDV) {
         this.value = encodeEmbeddedPDV(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get embeddedPDV (): EMBEDDED_PDV {
@@ -306,6 +308,7 @@ class BERElement extends X690Element {
 
     set characterString (value: CharacterString) {
         this.value = encodeCharacterString(value);
+        this.construction = ASN1Construction.constructed;
     }
 
     get characterString (): CharacterString {

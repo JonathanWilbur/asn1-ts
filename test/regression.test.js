@@ -1,6 +1,6 @@
 const asn1 = require("../dist/node/index.js");
 const asn1fn = require("../dist/node/functional");
-const { ASN1UniversalType, ASN1Construction, ASN1TagClass } = require("../dist/node/index.js");
+const { ASN1UniversalType, ASN1Construction, ASN1TagClass, ObjectIdentifier } = require("../dist/node/index.js");
 const convertBytesToText = require("../dist/node/utils/convertBytesToText").default;
 
 describe("The encode() method", () => {
@@ -97,5 +97,99 @@ describe("convertBytesToText", () => {
         const bytes = Buffer.from([ 0x5F, 0x1F, 0x02, 0x48, 0x69 ]);
         const el = new CodecElement();
         expect(() => el.fromBytes(bytes)).not.toThrow();
+    });
+});
+
+describe("ACSE RLRQ APDU", () => {
+    const $ = asn1fn;
+    const rctl1 = [
+        new $.ComponentSpec(
+            "reason",
+            true,
+            $.hasTag(ASN1TagClass.context, 0),
+            undefined,
+            undefined,
+        ),
+    ];
+    const rctl2 = [
+        new $.ComponentSpec(
+            "user-information",
+            true,
+            $.hasTag(ASN1TagClass.context, 30),
+            undefined,
+            undefined,
+        ),
+    ];
+    const eal = [
+        new $.ComponentSpec(
+            "aso-qualifier",
+            true,
+            $.hasTag(ASN1TagClass.context, 13),
+            undefined,
+            undefined,
+        ),
+        new $.ComponentSpec(
+            "asoi-identifier",
+            true,
+            $.hasTag(ASN1TagClass.context, 14),
+            undefined,
+            undefined,
+        ),
+    ];
+    it("with extensions and no trailing root component type list elements can be decoded correctly", () => {
+        /**
+         * This has an unrecognized extension that is an OCTET STRING of 10
+         * bytes.
+         */
+        const bytes = Buffer.from("620f800100040a8e44228c90526d5ad38a", "hex");
+        const el = new asn1.BERElement();
+        el.fromBytes(bytes);
+        $._parse_sequence(
+            el,
+            {},
+            rctl1,
+            eal,
+            rctl2,
+            () => { /* NOOP */ },
+        );
+    });
+
+    it("with trailing unrecognized component throws", () => {
+        const el = asn1.BERElement.fromSequence([
+            $._encode_explicit(ASN1TagClass.context, 0, () => $._encodeInteger, $.BER)(0, $.BER),
+            $._encode_explicit(ASN1TagClass.context, 30, () => $._encodeSequence, $.BER)([], $.BER),
+            $._encode_explicit(ASN1TagClass.context, 21, () => $._encodeInteger, $.BER)(6, $.BER),
+            // asn1.BERElement.fromSequence([]),
+            // $._encode_implicit(ASN1TagClass.context, 30, $.BER)($._encodeSequenceOf([], $.BER)),
+            // $._encode_explicit(ASN1TagClass.context, 8, $._encodeInteger, $.BER)($._encodeInteger(0, $.BER)),
+        ]);
+        expect(() => {
+            $._parse_sequence(
+                el,
+                {},
+                rctl1,
+                eal,
+                rctl2,
+                () => { /* NOOP */ },
+            );
+        }).toThrow();
+    });
+});
+
+
+describe("_encodeExternal", () => {
+    it("encodes correctly", () => {
+        const ext = new asn1.External(
+            new ObjectIdentifier([ 2, 5, 4, 3 ]),
+            1,
+            undefined,
+            asn1.DERElement.fromSequence([]),
+        );
+        const encoded = Buffer
+            .from(asn1fn._encodeExternal(ext, asn1fn.BER).toBytes())
+            .toString("hex")
+            .toUpperCase();
+        expect(encoded).toBe("280C0603550403020101A0023000");
+        asn1fn._decodeExternal(asn1fn._encodeExternal(ext, asn1fn.BER));
     });
 });
