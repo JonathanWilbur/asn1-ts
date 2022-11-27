@@ -985,15 +985,14 @@ function _parse_sequence_with_trailing_rctl (
     const possibleInitialRCTL2Components: ComponentSpec[] = _get_possible_initial_components(rootComponentTypeList2);
     const rctl2EntirelyOptional: boolean = rootComponentTypeList2.every((ct) => ct.optional);
     const extensionsOnwards: ASN1Element[] = elements.slice(startOfExtensions);
-    let numberOfExtensionElements: number = Math.max(0, extensionsOnwards
+    let numberOfExtensionElements: number = extensionsOnwards
         .findIndex((e, i): boolean => possibleInitialRCTL2Components
-            .some((pirctl2c): boolean => pirctl2c.selector(i, extensionsOnwards))));
-    if (startOfExtensions === -1) { // We did not find RCTL2.
-        if (rctl2EntirelyOptional) {
-            numberOfExtensionElements = (elements.length - startOfExtensions);
-        } else {
+            .some((pirctl2c): boolean => pirctl2c.selector(i, extensionsOnwards)));
+    if (numberOfExtensionElements === -1) { // We did not find RCTL2.
+        if (!rctl2EntirelyOptional) {
             throw new Error(`Trailing root component type list for SEQUENCE '${seq.name}' not found.`);
         }
+        numberOfExtensionElements = elements.length - startOfExtensions;
     }
     const startOfRCTL2: number = (startOfExtensions + numberOfExtensionElements);
     const numberOfExtensionsRead: number = _parse_component_type_list(
@@ -1012,7 +1011,7 @@ function _parse_sequence_with_trailing_rctl (
         elements.slice(startOfRCTL2),
         false,
     );
-    if ((startOfRCTL2 + numberOfRCTL2ElementsRead) !== elements.length) {
+    if (startOfRCTL2 + numberOfRCTL2ElementsRead !== elements.length) {
         throw new Error(`SEQUENCE '${seq.name}' had excess elements at the end.`);
     }
 }
