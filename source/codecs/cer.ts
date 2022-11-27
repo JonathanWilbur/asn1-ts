@@ -87,9 +87,9 @@ class CERElement extends X690Element {
             this.value = encodeSequence(Array
                 .from(splitOctetsCanonically(value))
                 .map((fragment: Uint8Array) => new CERElement(
-                    this.tagClass,
+                    ASN1TagClass.universal,
                     ASN1Construction.primitive,
-                    this.tagNumber,
+                    ASN1UniversalType.octetString,
                     new Uint8Array(fragment),
                 )),
             );
@@ -779,13 +779,13 @@ class CERElement extends X690Element {
             const appendy: Uint8Array[] = [];
             const substrings: ASN1Element[] = this.sequence;
             for (const substring of substrings) {
-                if (substring.tagClass !== this.tagClass) {
+                if (substring.tagClass !== ASN1TagClass.universal) {
                     throw new errors.ASN1ConstructionError(
-                        `Invalid tag class in recursively-encoded ${dataType}.`, this);
+                        `Invalid tag class in constructed ${dataType}. Must be UNIVERSAL`, this);
                 }
-                if (substring.tagNumber !== this.tagNumber) {
+                if (substring.tagNumber !== ASN1UniversalType.octetString) {
                     throw new errors.ASN1ConstructionError(
-                        `Invalid tag class in recursively-encoded ${dataType}.`, this);
+                        `Invalid tag number in constructed ${dataType}. Must be 4 (OCTET STRING).`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
                 const deconstructed = substring.deconstruct(dataType);
