@@ -566,9 +566,6 @@ class DERElement extends X690Element {
         if (bytes.length < 2) {
             throw new errors.ASN1TruncationError("Tried to decode a DER element that is less than two bytes.", this);
         }
-        if ((this.recursionCount + 1) > DERElement.nestingRecursionLimit) {
-            throw new errors.ASN1RecursionError();
-        }
         let cursor: number = 0;
         switch (bytes[cursor] & 0b11000000) {
         case (0b00000000): this.tagClass = ASN1TagClass.universal; break;

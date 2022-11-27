@@ -652,7 +652,10 @@ class BERElement extends X690Element {
                 let sentinel: number = cursor; // Used to track the length of the nested elements.
                 while (sentinel < bytes.length) {
                     const child: BERElement = new BERElement();
-                    child.recursionCount = (this.recursionCount + 1);
+                    /* The recursion count should NOT be incremented for calls
+                    to .fromBytes(), because the elements are not all part of
+                    one abstract value. */
+                    // child.recursionCount = (this.recursionCount + 1);
                     sentinel += child.fromBytes(bytes.slice(sentinel));
                     if (
                         child.tagClass === ASN1TagClass.universal
