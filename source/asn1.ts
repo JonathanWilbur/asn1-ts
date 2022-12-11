@@ -495,10 +495,12 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.relativeOID): return "{ " + this.relativeObjectIdentifier
                 .map((arc) => arc.toString()).join(".") + " }";
             case (ASN1UniversalType.time): return `"${this.time}"`;
-            case (ASN1UniversalType.sequence): return ("{ " + this.sequence
+            // We call sequenceOf() to mitigate any tagging ordering checks.
+            case (ASN1UniversalType.sequence): return ("{ " + this.sequenceOf
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
-            case (ASN1UniversalType.set): return ("{ " + this.set
+            // We call setOf() to mitigate any tagging uniqueness checks or value ordering checks.
+            case (ASN1UniversalType.set): return ("{ " + this.setOf
                 .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
                 .join(" , ") + " }");
             case (ASN1UniversalType.numericString): return `"${this.numericString}"`;
@@ -607,13 +609,15 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 if (!recurse) {
                     return null;
                 }
-                return this.sequence.map((el) => el.toJSON());
+                // We call sequenceOf() to mitigate any tagging ordering checks.
+                return this.sequenceOf.map((el) => el.toJSON());
             }
             case (ASN1UniversalType.set): {
                 if (!recurse) {
                     return null;
                 }
-                return this.set.map((el) => el.toJSON());
+                // We call setOf() to mitigate any tagging uniqueness checks or value ordering checks.
+                return this.setOf.map((el) => el.toJSON());
             }
             case (ASN1UniversalType.numericString): return this.numericString;
             case (ASN1UniversalType.printableString): return this.printableString;

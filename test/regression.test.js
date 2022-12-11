@@ -193,3 +193,30 @@ describe("_encodeExternal", () => {
         asn1fn._decodeExternal(asn1fn._encodeExternal(ext, asn1fn.BER));
     });
 });
+
+
+describe("ASN1Element.toString()", () => {
+    it("does not error when printing a SET OF (meaning non-unique tagging)", () => {
+        const el = asn1.BERElement.fromSetOf([
+            asn1fn._encodeInteger(5, asn1fn.BER),
+            asn1fn._encodeInteger(4, asn1fn.BER),
+            asn1fn._encodeInteger(3, asn1fn.BER),
+            asn1fn._encodeInteger(2, asn1fn.BER),
+            asn1fn._encodeInteger(1, asn1fn.BER),
+        ]);
+        expect(el.toString()).toBe("{ 5 , 4 , 3 , 2 , 1 }");
+    });
+});
+
+describe("ASN1Element.toJSON()", () => {
+    it("does not error when printing a SET OF (meaning non-unique tagging)", () => {
+        const el = asn1.BERElement.fromSetOf([
+            asn1fn._encodeInteger(5, asn1fn.BER),
+            asn1fn._encodeInteger(4, asn1fn.BER),
+            asn1fn._encodeInteger(3, asn1fn.BER),
+            asn1fn._encodeInteger(2, asn1fn.BER),
+            asn1fn._encodeInteger(1, asn1fn.BER),
+        ]);
+        expect(el.toJSON()).toEqual([ 5, 4, 3, 2, 1 ]);
+    });
+});
