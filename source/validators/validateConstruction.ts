@@ -18,7 +18,7 @@ function validateConstruction (elements: ASN1Element[], specification: Construct
             if (!spec.optional) {
                 throw new errors.ASN1ConstructionError(`Missing required element '${spec.name}'.`);
             }
-            return;
+            continue;
         }
         if (spec.choice && spec.choice.length > 0) {
             let matchingChoiceFound: boolean = false;
