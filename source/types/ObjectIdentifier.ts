@@ -1,3 +1,6 @@
+import decodeObjectIdentifier from "../codecs/x690/decoders/decodeObjectIdentifier";
+import encodeObjectIdentifier from "../codecs/x690/encoders/encodeObjectIdentifier";
+
 export default
 class ObjectIdentifier {
     public readonly _nodes: number[];
@@ -59,12 +62,20 @@ class ObjectIdentifier {
         return this.dotDelimitedNotation;
     }
 
+    public toJSON (): string {
+        return this.dotDelimitedNotation;
+    }
+
+    public toBytes (): Buffer {
+        return encodeObjectIdentifier(this);
+    }
+
     public static fromString (str: string): ObjectIdentifier {
         return new ObjectIdentifier(str.split(".").map((arc) => Number.parseInt(arc, 10)));
     }
 
-    public toJSON (): string {
-        return this.dotDelimitedNotation;
+    public static fromBytes (bytes: Uint8Array): ObjectIdentifier {
+        return decodeObjectIdentifier(bytes);
     }
 
     /**

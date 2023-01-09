@@ -3,7 +3,7 @@ import encodeBase128 from "../../../utils/encodeBase128";
 import { OBJECT_IDENTIFIER } from "../../../macros";
 
 export default
-function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Uint8Array {
+function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Buffer {
     const numbers: number[] = value.nodes;
     const pre: Uint8Array = new Uint8Array([ ((numbers[0] * 40) + numbers[1]) ]);
     const post: Uint8Array[] = numbers
