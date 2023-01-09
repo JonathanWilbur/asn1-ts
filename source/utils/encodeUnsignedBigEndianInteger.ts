@@ -23,5 +23,5 @@ function encodeUnsignedBigEndianInteger (value: number): Uint8Array {
             break;
         }
     }
-    return bytes.slice(startOfNonPadding);
+    return bytes.subarray(startOfNonPadding);
 }

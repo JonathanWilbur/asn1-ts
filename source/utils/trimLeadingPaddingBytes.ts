@@ -11,5 +11,5 @@ function trimLeadingPaddingBytes (value: Uint8Array): Uint8Array {
             break;
         }
     }
-    return value.slice(startOfNonPadding);
+    return value.subarray(startOfNonPadding);
 }

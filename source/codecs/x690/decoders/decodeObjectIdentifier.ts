@@ -30,7 +30,7 @@ function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
         return new ObjectIdentifier(nodes);
     }
     const additionalNodes: number[] = Array
-        .from(splitBytesByContinuationBit(value.slice(1)))
+        .from(splitBytesByContinuationBit(value.subarray(1)))
         .map((b) => {
             if (b.length > 1 && b[0] === 0x80) {
                 throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
@@ -41,7 +41,7 @@ function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {
          * This has to be done, because decodeBase128() does not know how many
          * leading zero bits are extraneous.
          */
-        .map((b) => ((b[0] === 0) ? b.slice(1) : b))
+        .map((b) => ((b[0] === 0) ? b.subarray(1) : b))
         .map(decodeUnsignedBigEndianInteger);
 
     nodes.push(...additionalNodes);

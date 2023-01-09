@@ -10,6 +10,8 @@ function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Uint8Array {
         .slice(2)
         .map(encodeUnsignedBigEndianInteger)
         .map(encodeBase128)
-        .map((arc: Uint8Array): Uint8Array => ((arc[0] === 0x80) ? arc.slice(1) : arc));
+        .map((arc: Uint8Array): Uint8Array => ((arc[0] === 0x80)
+            ? arc.subarray(1)
+            : arc));
     return Buffer.concat([pre, ...post]);
 }

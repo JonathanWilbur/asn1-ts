@@ -24,7 +24,7 @@ function decodeReal (value: Uint8Array): REAL {
         throw new errors.ASN1UndefinedError("Unrecognized special REAL value!");
     }
     case (0b00000000): {
-        const realString: string = convertBytesToText(value.slice(1));
+        const realString: string = convertBytesToText(value.subarray(1));
         switch (value[0] & 0b00111111) {
         case 1: { // NR1
             if (!nr1Regex.test(realString)) throw new errors.ASN1Error("Malformed NR1 Base-10 REAL");

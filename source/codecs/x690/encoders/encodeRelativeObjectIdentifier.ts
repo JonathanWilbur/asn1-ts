@@ -7,6 +7,8 @@ function encodeRelativeObjectIdentifier (value: RELATIVE_OID): Uint8Array {
     return Buffer.concat(value
         .map(encodeUnsignedBigEndianInteger)
         .map(encodeBase128)
-        .map((arc: Uint8Array): Uint8Array => ((arc[0] === 0x80) ? arc.slice(1) : arc)),
+        .map((arc: Uint8Array): Uint8Array => ((arc[0] === 0x80)
+            ? arc.subarray(1)
+            : arc)),
     );
 }

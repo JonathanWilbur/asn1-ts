@@ -46,7 +46,7 @@ function integerToBuffer (int: INTEGER): Buffer {
         } else if ((int <= 8388607) && (int >= -8388608)) {
             const buf = Buffer.allocUnsafe(4);
             buf.writeInt32BE(int);
-            return buf.slice(1);
+            return buf.subarray(1);
         } else if ((int >= MIN_SINT_32) && (int <= MAX_SINT_32)) {
             const buf = Buffer.allocUnsafe(4);
             buf.writeInt32BE(int);
@@ -75,7 +75,7 @@ function integerToBuffer (int: INTEGER): Buffer {
                 }
             }
 
-            return ret.slice(startOfNonPadding);
+            return ret.subarray(startOfNonPadding);
         }
     } else {
         let startOfNonPadding: number = 0;
@@ -126,6 +126,6 @@ function integerToBuffer (int: INTEGER): Buffer {
                 }
             }
         }
-        return ret.slice(startOfNonPadding);
+        return ret.subarray(startOfNonPadding);
     }
 }

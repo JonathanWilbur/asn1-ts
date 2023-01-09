@@ -23,7 +23,7 @@ function convertBytesToText (bytes: Uint8Array, codec: string = "utf-8"): string
         if (bytes instanceof Buffer) {
             return bytes.toString(codec as any);
         }
-        return (Buffer.from(bytes.buffer)).toString(codec as any);
+        return (Buffer.from(bytes.buffer, bytes.byteOffset, bytes.length)).toString(codec as any);
     } else if (typeof TextEncoder !== "undefined") { // Browser JavaScript
         return (new TextDecoder(codec)).decode(bytes);
     }

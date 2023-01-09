@@ -656,7 +656,7 @@ class BERElement extends X690Element {
                     to .fromBytes(), because the elements are not all part of
                     one abstract value. */
                     // child.recursionCount = (this.recursionCount + 1);
-                    sentinel += child.fromBytes(bytes.slice(sentinel));
+                    sentinel += child.fromBytes(bytes.subarray(sentinel));
                     if (
                         child.tagClass === ASN1TagClass.universal
                         && child.construction === ASN1Construction.primitive
@@ -780,7 +780,7 @@ class BERElement extends X690Element {
         let i: number = 0;
         while (i < this.value.length) {
             const next: BERElement = new BERElement();
-            i += next.fromBytes(this.value.slice(i));
+            i += next.fromBytes(this.value.subarray(i));
             encodedElements.push(next);
         }
         return encodedElements;

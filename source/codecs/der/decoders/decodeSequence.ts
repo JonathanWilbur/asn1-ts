@@ -10,7 +10,7 @@ function decodeSequence (value: Uint8Array): SEQUENCE<DERElement> {
     let i: number = 0;
     while (i < value.length) {
         const next: DERElement = new DERElement();
-        i += next.fromBytes(value.slice(i));
+        i += next.fromBytes(value.subarray(i));
         encodedElements.push(next);
     }
     return encodedElements;

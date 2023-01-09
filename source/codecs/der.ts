@@ -734,7 +734,7 @@ class DERElement extends X690Element {
         let i: number = 0;
         while (i < this.value.length) {
             const next: DERElement = new DERElement();
-            i += next.fromBytes(this.value.slice(i));
+            i += next.fromBytes(this.value.subarray(i));
             encodedElements.push(next);
         }
         return encodedElements;
