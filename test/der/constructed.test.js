@@ -120,4 +120,18 @@ describe("Distinguished Encoding Rules", function () {
         outerElement.inner = innerElement;
         expect(outerElement.inner.objectIdentifier.nodes).toEqual([ 1, 5, 7 ]);
     });
+
+    it("encodes and decodes bigint correctly", () => {
+        const r = 97667643652738057578559521121083257147774046666682127970491900554824217316829n;
+        const s = 86745322439975389435831617031515808406462304698817369857077684879273310570740n;
+        const elem = new asn1.DERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.constructed,
+            asn1.ASN1UniversalType.sequence,
+            [r, s]
+        );
+
+        expect(elem.components.at(0).integer).toEqual(r);
+        expect(elem.components.at(1).integer).toEqual(s);
+    });
 });
