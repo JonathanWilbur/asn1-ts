@@ -408,6 +408,11 @@ class BERElement extends X690Element {
             }
             break;
         }
+        case ("bigint"): {
+            this.tagNumber = ASN1UniversalType.integer;
+            this.integer = value;
+            break;
+        }
         case ("string"): {
             this.tagNumber = ASN1UniversalType.utf8String;
             this.utf8String = value;
