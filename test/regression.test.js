@@ -46,6 +46,7 @@ describe("_encodeSequenceOf<UTF8String>", () => {
 });
 
 describe("Decoding", () => {
+    // See: https://stackoverflow.com/questions/14680396/date-setmonth-causes-the-month-to-be-set-too-high-if-date-is-at-the-end-of-t
     it("does not fail to decode UTCTime from a Buffer", () => {
         const el = new asn1.DERElement();
         el.fromBytes(Buffer.concat([
@@ -218,5 +219,32 @@ describe("ASN1Element.toJSON()", () => {
             asn1fn._encodeInteger(1, asn1fn.BER),
         ]);
         expect(el.toJSON()).toEqual([ 5, 4, 3, 2, 1 ]);
+    });
+});
+
+describe("UTCTime and GeneralizedTime", () => {
+    it("do not mis-decode dates", () => {
+        const utc_str = "230628020636Z";
+        const gen_str = "20230628020636Z";
+        const u_el = new asn1.BERElement();
+        u_el.value = Buffer.from(utc_str);
+
+        const g_el = new asn1.BERElement();
+        g_el.value = Buffer.from(gen_str);
+
+        const u = u_el.utcTime;
+        const g = g_el.generalizedTime;
+        expect(u.getUTCFullYear()).toBe(2023);
+        expect(u.getUTCMonth()).toBe(5);
+        expect(u.getUTCDate()).toBe(28);
+        expect(u.getUTCHours()).toBe(2);
+        expect(u.getUTCMinutes()).toBe(6);
+        expect(u.getUTCSeconds()).toBe(36);
+        expect(g.getUTCFullYear()).toBe(2023);
+        expect(g.getUTCMonth()).toBe(5);
+        expect(g.getUTCDate()).toBe(28);
+        expect(g.getUTCHours()).toBe(2);
+        expect(g.getUTCMinutes()).toBe(6);
+        expect(g.getUTCSeconds()).toBe(36);
     });
 });

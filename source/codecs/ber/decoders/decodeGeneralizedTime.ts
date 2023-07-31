@@ -11,7 +11,6 @@ function decodeGeneralizedTime (value: Uint8Array): GeneralizedTime {
     if (match === null) {
         throw new errors.ASN1Error("Malformed GeneralizedTime string.");
     }
-    const ret: Date = new Date();
     const year: number = Number(match[1]);
     const month: number = (Number(match[2]) - 1);
     const date: number = Number(match[3]);
@@ -19,11 +18,5 @@ function decodeGeneralizedTime (value: Uint8Array): GeneralizedTime {
     const minutes: number = Number(match[5]);
     const seconds: number = Number(match[6]);
     validateDateTime("GeneralizedTime", year, month, date, hours, minutes, seconds);
-    ret.setUTCFullYear(year);
-    ret.setUTCMonth(month);
-    ret.setUTCDate(date);
-    ret.setUTCHours(hours);
-    ret.setUTCMinutes(minutes);
-    ret.setUTCSeconds(seconds);
-    return ret;
+    return new Date(Date.UTC(year, month, date, hours, minutes, seconds));
 }

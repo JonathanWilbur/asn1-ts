@@ -1,5 +1,9 @@
 # Changelog
 
+## [7.1.12]
+
+- Fix bugs in decoding `UTCTime` and `GeneralizedTime`.
+
 ## [7.0.11]
 
 - Fix invalid type for `_encode_choice`
