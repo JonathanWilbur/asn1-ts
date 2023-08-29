@@ -1,6 +1,3 @@
-const base128Length = require("../../dist/node/utils/base128Length.js").default;
-const base256Length = require("../../dist/node/utils/base256Length.js").default;
-const decodeBase128 = require("../../dist/node/utils/decodeBase128.js").default;
 const decodeIEEE754DoublePrecisionFloat = require("../../dist/node/utils/decodeIEEE754DoublePrecisionFloat.js").default;
 const decodeIEEE754SinglePrecisionFloat = require("../../dist/node/utils/decodeIEEE754SinglePrecisionFloat.js").default;
 const decodeSignedBigEndianInteger = require("../../dist/node/utils/decodeSignedBigEndianInteger.js").default;

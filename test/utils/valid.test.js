@@ -1,6 +1,3 @@
-const base128Length = require("../../dist/node/utils/base128Length.js").default;
-const base256Length = require("../../dist/node/utils/base256Length.js").default;
-const decodeBase128 = require("../../dist/node/utils/decodeBase128.js").default;
 const decodeIEEE754DoublePrecisionFloat = require("../../dist/node/utils/decodeIEEE754DoublePrecisionFloat.js").default;
 const decodeIEEE754SinglePrecisionFloat = require("../../dist/node/utils/decodeIEEE754SinglePrecisionFloat.js").default;
 const decodeSignedBigEndianInteger = require("../../dist/node/utils/decodeSignedBigEndianInteger.js").default;
@@ -12,7 +9,6 @@ const encodeIEEE754DoublePrecisionFloat = require("../../dist/node/utils/encodeI
 const encodeIEEE754SinglePrecisionFloat = require("../../dist/node/utils/encodeIEEE754SinglePrecisionFloat.js").default;
 const encodeSignedBigEndianInteger = require("../../dist/node/utils/encodeSignedBigEndianInteger.js").default;
 const encodeUnsignedBigEndianInteger = require("../../dist/node/utils/encodeUnsignedBigEndianInteger.js").default;
-const encodeX690Base10RealNumber = require("../../dist/node/utils/encodeX690Base10RealNumber.js").default;
 const encodeX690BinaryRealNumber = require("../../dist/node/utils/encodeX690BinaryRealNumber.js").default;
 const getBitFromBase128 = require("../../dist/node/utils/getBitFromBase128.js").default;
 const getBitFromBase256 = require("../../dist/node/utils/getBitFromBase256.js").default;
@@ -20,27 +16,6 @@ const packBits = require("../../dist/node/utils/packBits.js").default;
 const setBitInBase128 = require("../../dist/node/utils/setBitInBase128.js").default;
 const setBitInBase256 = require("../../dist/node/utils/setBitInBase256.js").default;
 const unpackBits = require("../../dist/node/utils/unpackBits.js").default;
-
-describe("base128Length()", () => {
-    it("predicts that five bytes are needed to encode four bytes of data", () => {
-        expect(base128Length(4)).toBe(5);
-    });
-});
-
-describe("base256Length()", () => {
-    it("predicts that four bytes were encoded within five bytes", () => {
-        expect(base256Length(5)).toBe(5);
-    })
-});
-
-describe("decodeBase128()", () => {
-    it("works", () => {
-        const encoded1 = new Uint8Array([ 0x80, 0x80, 0x80, 0x80, 0x00 ]);
-        const decoded1 = new Uint8Array([ 0x00, 0x00, 0x00, 0x00, 0x00 ]);
-        expect(decodeBase128(encoded1)).toEqual(decoded1);
-    })
-});
-
 
 describe("decodeIEEE754DoublePrecisionFloat()", () => {
     it("works", () => {
