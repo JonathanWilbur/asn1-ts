@@ -60,14 +60,22 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         }
         this._tagNumber = value;
     }
-    public value: Uint8Array = new Uint8Array(0);
+
+    abstract get value (): Uint8Array;
+    abstract set value (v: Uint8Array);
+    abstract construct (els: ASN1Element[]): void;
+    public abstract tagAndLengthBytes (): Uint8Array;
+    public abstract toBuffers (): Uint8Array[];
+
+    public toBytes (): Buffer {
+        return Buffer.concat(this.toBuffers());
+    }
 
     get length (): number {
         return this.value.length;
     }
 
     abstract fromBytes (bytes: Uint8Array): number;
-    abstract toBytes (): Uint8Array;
 
     abstract set boolean (value: BOOLEAN);
     abstract get boolean (): BOOLEAN;
@@ -296,160 +304,6 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         if (!permittedConstruction.includes(this.construction)) return -2;
         if (!permittedNumbers.includes(this.tagNumber)) return -3;
         return 0;
-    }
-
-    // Shorter aliases to make for smaller libraries
-
-    set bool (value: BOOLEAN) {
-        this.boolean = value;
-    }
-
-    get bool (): BOOLEAN {
-        return this.boolean;
-    }
-
-    set int (value: INTEGER) {
-        this.integer = value;
-    }
-
-    get int (): INTEGER {
-        return this.integer;
-    }
-
-    set bits (value: BIT_STRING) {
-        this.bitString = value;
-    }
-
-    get bits (): BIT_STRING {
-        return this.bitString;
-    }
-
-    set octs (value: OCTET_STRING) {
-        this.octetString = value;
-    }
-
-    get octs (): OCTET_STRING {
-        return this.octetString;
-    }
-
-    set oid (value: OBJECT_IDENTIFIER) {
-        this.objectIdentifier = value;
-    }
-
-    get oid (): OBJECT_IDENTIFIER {
-        return this.objectIdentifier;
-    }
-
-    set odesc (value: ObjectDescriptor) {
-        this.objectDescriptor = value;
-    }
-
-    get odesc (): ObjectDescriptor {
-        return this.objectDescriptor;
-    }
-
-    set enum (value: ENUMERATED) {
-        this.enumerated = value;
-    }
-
-    get enum (): ENUMERATED {
-        return this.enumerated;
-    }
-
-    set utf8 (value: UTF8String) {
-        this.utf8String = value;
-    }
-
-    get utf8 (): UTF8String {
-        return this.utf8String;
-    }
-
-    set roid (value: RELATIVE_OID) {
-        this.relativeObjectIdentifier = value;
-    }
-
-    get roid (): RELATIVE_OID {
-        return this.relativeObjectIdentifier;
-    }
-
-    set seq (value: SEQUENCE<ASN1Element>) {
-        this.sequence = value;
-    }
-
-    get seq (): SEQUENCE<ASN1Element> {
-        return this.sequence;
-    }
-
-    set nums (value: NumericString) {
-        this.numericString = value;
-    }
-
-    get nums (): NumericString {
-        return this.numericString;
-    }
-
-    set prints (value: PrintableString) {
-        this.printableString = value;
-    }
-
-    get prints (): PrintableString {
-        return this.printableString;
-    }
-
-    set ttex (value: TeletexString) {
-        this.teletexString = value;
-    }
-
-    get ttex (): TeletexString {
-        return this.teletexString;
-    }
-
-    set vtex (value: VideotexString) {
-        this.videotexString = value;
-    }
-
-    get vtex (): VideotexString {
-        return this.videotexString;
-    }
-
-    set ia5 (value: IA5String) {
-        this.ia5String = value;
-    }
-
-    get ia5 (): IA5String {
-        return this.ia5String;
-    }
-
-    set utc (value: UTCTime) {
-        this.utcTime = value;
-    }
-
-    get utc (): UTCTime {
-        return this.utcTime;
-    }
-
-    set gtime (value: GeneralizedTime) {
-        this.generalizedTime = value;
-    }
-
-    get gtime (): GeneralizedTime {
-        return this.generalizedTime;
-    }
-
-    set ustr (value: UniversalString) {
-        this.universalString = value;
-    }
-
-    get ustr (): UniversalString {
-        return this.universalString;
-    }
-
-    set bmp (value: BMPString) {
-        this.bmpString = value;
-    }
-
-    get bmp (): BMPString {
-        return this.bmpString;
     }
 
     abstract get inner (): ASN1Element;

@@ -72,6 +72,21 @@ import { isUniquelyTagged } from "../utils";
 
 export default
 class DERElement extends X690Element {
+    private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    get value (): Uint8Array {
+        if (this._value instanceof Uint8Array) {
+            return this._value;
+        }
+        return encodeSequence(this._value);
+    }
+    set value (v: Uint8Array) {
+        this._value = v;
+    }
+
+    public construct (els: ASN1Element[]): void {
+        this._value = els;
+    }
+
     set boolean (value: BOOLEAN) {
         this.value = encodeBoolean(value);
     }
@@ -674,7 +689,7 @@ class DERElement extends X690Element {
         }
     }
 
-    public toBytes (): Uint8Array {
+    public tagAndLengthBytes (): Uint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
         tagBytes[0] |= (this.construction << 5);
@@ -719,15 +734,19 @@ class DERElement extends X690Element {
             lengthOctets.unshift(0b10000000 | lengthOctets.length);
         }
 
-        const ret: Uint8Array = new Uint8Array(
-            tagBytes.length
-            + lengthOctets.length
-            + this.value.length,
-        );
+        const ret: Uint8Array = new Uint8Array(tagBytes.length + lengthOctets.length);
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
-        ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
+    }
+
+    public toBuffers (): Uint8Array[] {
+        return [
+            this.tagAndLengthBytes(),
+            ...(Array.isArray(this._value)
+                ? this._value.flatMap((el) => el.toBuffers())
+                : [ this._value ]),
+        ];
     }
 
     public deconstruct (): Uint8Array {

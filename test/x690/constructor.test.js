@@ -97,6 +97,7 @@ const asn1 = require("../../dist/node/index.js");
                 ],
             );
             const containedElements = el.sequence;
+            console.log(containedElements);
             expect(containedElements.length).toEqual(4);
             expect(containedElements[0].boolean).toBe(false);
         });
