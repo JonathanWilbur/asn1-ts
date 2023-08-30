@@ -1,53 +1,35 @@
 import decodeObjectIdentifier from "../codecs/x690/decoders/decodeObjectIdentifier";
 import encodeObjectIdentifier from "../codecs/x690/encoders/encodeObjectIdentifier";
 
+const PERIOD = ".".charCodeAt(0);
+
 export default
 class ObjectIdentifier {
-    public readonly _nodes: number[];
+    private _nodes: Uint32Array;
 
     constructor (nodes: number[], prefix?: ObjectIdentifier | number) {
         const _nodes: number[] = prefix
             ? typeof prefix === "number"
                 ? [ prefix, ...nodes ]
-                : [ ...prefix._nodes, ...nodes ]
+                : [ ...prefix.nodes, ...nodes ]
             : nodes.slice(0);
-
         if (_nodes.length < 2) {
             throw new Error("Cannot construct an OID with less than two nodes!");
         }
-
-        if (_nodes.length >= 1 && !(_nodes[0] in [0, 1, 2])) {
+        if ((_nodes[0] < 0) || (_nodes[0] > 2)) {
             throw new Error("OIDs first node must be 0, 1, or 2!");
         }
-
-        if (!_nodes.every((node) => Number.isSafeInteger(node))) {
-            throw new Error("OID contained a non-safe integer value.");
-        }
-
-        if (
-            ((_nodes[0] < 2) && _nodes[1] > 39)
-            || (_nodes[0] === 2 && _nodes[1] > 175)
-        ) {
+        if (((_nodes[0] < 2) && (_nodes[1] > 39)) || (_nodes[1] > 175)) {
             throw new Error(
                 "OID Node #2 cannot exceed 39 if node #1 is 0 or 1, and 175 "
                 + `if node #1 is 2. Received these nodes: ${_nodes}.`,
             );
         }
-
-        for (const node of _nodes) {
-            if (node < 0) {
-                throw new Error("OID node numbers cannot be negative!");
-            }
-            if (node > Number.MAX_SAFE_INTEGER) {
-                throw new Error("OID number was too big!");
-            }
-        }
-
-        this._nodes = _nodes;
+        this._nodes = new Uint32Array(_nodes);
     }
 
     get nodes (): number[] {
-        return this._nodes.slice(0);
+        return Array.from(this._nodes);
     }
 
     get dotDelimitedNotation (): string {
@@ -55,7 +37,7 @@ class ObjectIdentifier {
     }
 
     get asn1Notation (): string {
-        return `{ ${this._nodes.map((node) => node.toString()).join(" ")} }`;
+        return `{ ${Array.from(this._nodes).map((node) => node.toString()).join(" ")} }`;
     }
 
     public toString (): string {
@@ -71,7 +53,24 @@ class ObjectIdentifier {
     }
 
     public static fromString (str: string): ObjectIdentifier {
-        return new ObjectIdentifier(str.split(".").map((arc) => Number.parseInt(arc, 10)));
+        // return new ObjectIdentifier(str.split(".").map((arc) => Number.parseInt(arc, 10)));
+        // for (const s of str.split(".")) {
+        //     arcs.push(Number.parseInt(s, 10));
+        // }
+
+        // Benchmarking showed this to be the most performant approach.
+        const arcs: number[] = [];
+        let last = 0;
+        let i = 0;
+        while (i < str.length) {
+            if (str.charCodeAt(i) === PERIOD) {
+                const arc = Number.parseInt(str.slice(last, i - 1), 10);
+                arcs.push(arc);
+                last = i + 1;
+            }
+            i++;
+        }
+        return new ObjectIdentifier(arcs);
     }
 
     public static fromBytes (bytes: Uint8Array): ObjectIdentifier {

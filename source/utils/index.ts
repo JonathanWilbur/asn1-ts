@@ -1,13 +1,10 @@
 export { default as base128Length } from "./base128Length";
-export { default as base256Length } from "./base256Length";
-export { default as decodeBase128 } from "./decodeBase128";
 export { default as decodeIEEE754DoublePrecisionFloat } from "./decodeIEEE754DoublePrecisionFloat";
 export { default as decodeIEEE754SinglePrecisionFloat } from "./decodeIEEE754SinglePrecisionFloat";
 export { default as decodeSignedBigEndianInteger } from "./decodeSignedBigEndianInteger";
 export { default as decodeUnsignedBigEndianInteger } from "./decodeUnsignedBigEndianInteger";
 export { default as decodeX690RealNumber } from "./decodeX690RealNumber";
 export { default as dissectFloat } from "./dissectFloat";
-export { default as encodeBase128 } from "./encodeBase128";
 export { default as encodeIEEE754DoublePrecisionFloat } from "./encodeIEEE754DoublePrecisionFloat";
 export { default as encodeIEEE754SinglePrecisionFloat } from "./encodeIEEE754SinglePrecisionFloat";
 export { default as encodeSignedBigEndianInteger } from "./encodeSignedBigEndianInteger";

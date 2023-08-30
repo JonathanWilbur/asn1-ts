@@ -75,6 +75,21 @@ export default
 class BERElement extends X690Element {
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
+    private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    get value (): Uint8Array {
+        if (this._value instanceof Uint8Array) {
+            return this._value;
+        }
+        return encodeSequence(this._value);
+    }
+    set value (v: Uint8Array) {
+        this._value = v;
+    }
+
+    public construct (els: ASN1Element[]): void {
+        this._value = els;
+    }
+
     set boolean (value: BOOLEAN) {
         this.value = encodeBoolean(value);
     }
@@ -179,13 +194,16 @@ class BERElement extends X690Element {
     }
 
     set sequence (value: SEQUENCE<ASN1Element>) {
-        this.value = encodeSequence(value);
+        this.construct(value);
         this.construction = ASN1Construction.constructed;
     }
 
     get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
+        }
+        if (Array.isArray(this._value)) {
+            return this._value;
         }
         return decodeSequence(this.value);
     }
@@ -203,13 +221,16 @@ class BERElement extends X690Element {
     }
 
     set sequenceOf (value: SEQUENCE<ASN1Element>) {
-        this.value = encodeSequence(value);
+        this.construct(value);
         this.construction = ASN1Construction.constructed;
     }
 
     get sequenceOf (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
+        }
+        if (Array.isArray(this._value)) {
+            return this._value;
         }
         return decodeSequence(this.value);
     }
@@ -688,10 +709,15 @@ class BERElement extends X690Element {
         }
     }
 
-    public toBytes (): Uint8Array {
+    public tagAndLengthBytes (): Uint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
-        tagBytes[0] |= (this.construction << 5);
+        tagBytes[0] |= (
+            (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite)
+            || this.construction === ASN1Construction.constructed
+        )
+            ? (1 << 5)
+            : 0;
         if (this.tagNumber < 31) {
             tagBytes[0] |= this.tagNumber;
         } else {
@@ -744,16 +770,22 @@ class BERElement extends X690Element {
             throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!", this);
         }
 
-        const ret: Uint8Array = new Uint8Array(
-            tagBytes.length
-            + lengthOctets.length
-            + this.value.length
-            + (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite ? 2 : 0),
-        );
+        const ret: Uint8Array = new Uint8Array(tagBytes.length + lengthOctets.length);
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
-        ret.set(this.value, (tagBytes.length + lengthOctets.length));
         return ret;
+    }
+
+    public toBuffers (): Uint8Array[] {
+        return [
+            this.tagAndLengthBytes(),
+            ...(Array.isArray(this._value)
+                ? this._value.flatMap((el) => el.toBuffers())
+                : [ this._value ]),
+            ...(BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite
+                ? [ new Uint8Array(2) ]
+                : []),
+        ];
     }
 
     public deconstruct (dataType: string): Uint8Array {

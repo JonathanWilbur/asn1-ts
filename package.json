@@ -57,11 +57,10 @@
         "build": "npx tsc",
         "clean": "rm -rf dist; mkdir -p dist",
         "line-count": "npx sloc source",
-        "lint": "npx eslint --config .eslintrc.yml './source/**/*.ts' || true",
         "test": "npx jest --ci --reporters=default --reporters=jest-junit --coverage"
     },
     "types": "./dist/node/index.d.ts",
-    "version": "7.1.2",
+    "version": "8.0.0",
     "dependencies": {
         "tslib": "^2.4.1"
     }
