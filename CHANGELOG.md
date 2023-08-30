@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.0.0]
+
+- 4x faster object identifier encoding and decoding
+- Performance optimization to avoid repeatedly re-allocating byte arrays
+
+This is only a breaking change because a few functions you probably shouldn't
+use to begin with have been removed and some fields that were `public` have
+become `private`. For normal usage of this library, this should still be a
+drop-in replacement.
+
 ## [7.1.12]
 
 - Fix bugs in decoding `UTCTime` and `GeneralizedTime`.
