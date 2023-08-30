@@ -175,13 +175,16 @@ class DERElement extends X690Element {
     }
 
     set sequence (value: SEQUENCE<ASN1Element>) {
-        this.value = encodeSequence(value);
+        this.construct(value);
         this.construction = ASN1Construction.constructed;
     }
 
     get sequence (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
+        }
+        if (Array.isArray(this._value)) {
+            return this._value;
         }
         return decodeSequence(this.value);
     }
@@ -200,13 +203,16 @@ class DERElement extends X690Element {
     }
 
     set sequenceOf (value: SEQUENCE<ASN1Element>) {
-        this.value = encodeSequence(value);
+        this.construct(value);
         this.construction = ASN1Construction.constructed;
     }
 
     get sequenceOf (): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
+        }
+        if (Array.isArray(this._value)) {
+            return this._value;
         }
         return decodeSequence(this.value);
     }
