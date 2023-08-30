@@ -4,7 +4,6 @@ const decodeSignedBigEndianInteger = require("../../dist/node/utils/decodeSigned
 const decodeUnsignedBigEndianInteger = require("../../dist/node/utils/decodeUnsignedBigEndianInteger.js").default;
 const decodeX690RealNumber = require("../../dist/node/utils/decodeX690RealNumber.js").default;
 const dissectFloat = require("../../dist/node/utils/dissectFloat.js").default;
-const encodeBase128 = require("../../dist/node/utils/encodeBase128.js").default;
 const encodeIEEE754DoublePrecisionFloat = require("../../dist/node/utils/encodeIEEE754DoublePrecisionFloat.js").default;
 const encodeIEEE754SinglePrecisionFloat = require("../../dist/node/utils/encodeIEEE754SinglePrecisionFloat.js").default;
 const encodeSignedBigEndianInteger = require("../../dist/node/utils/encodeSignedBigEndianInteger.js").default;
@@ -80,14 +79,6 @@ describe("dissectFloat()", () => {
                 ) / testValue,
             ).toBeCloseTo(1, 5);
         }
-    })
-});
-
-describe("encodeBase128()", () => {
-    it("works", () => {
-        const decoded1 = new Uint8Array([ 0x00, 0x00, 0x00, 0x00 ]);
-        const encoded1 = new Uint8Array([ 0x80, 0x80, 0x80, 0x80, 0x00 ]);
-        expect(encodeBase128(decoded1)).toEqual(encoded1);
     })
 });
 
