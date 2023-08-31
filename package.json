@@ -60,7 +60,7 @@
         "test": "npx jest --ci --reporters=default --reporters=jest-junit --coverage"
     },
     "types": "./dist/node/index.d.ts",
-    "version": "8.0.0",
+    "version": "8.0.2",
     "dependencies": {
         "tslib": "^2.4.1"
     }

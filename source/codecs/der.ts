@@ -73,17 +73,22 @@ import { isUniquelyTagged } from "../utils";
 export default
 class DERElement extends X690Element {
     private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    private _currentValueLength: number | undefined;
     get value (): Uint8Array {
         if (this._value instanceof Uint8Array) {
             return this._value;
         }
-        return encodeSequence(this._value);
+        const bytes = encodeSequence(this._value);
+        this._value = bytes;
+        return bytes;
     }
     set value (v: Uint8Array) {
+        this._currentValueLength = v.length;
         this._value = v;
     }
 
     public construct (els: ASN1Element[]): void {
+        this._currentValueLength = undefined;
         this._value = els;
     }
 
@@ -547,7 +552,7 @@ class DERElement extends X690Element {
         return ret;
     }
 
-    get inner (): DERElement {
+    get inner (): ASN1Element {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoded element cannot be encoded using "
@@ -555,9 +560,18 @@ class DERElement extends X690Element {
                 this,
             );
         }
+        if (Array.isArray(this._value)) {
+            if (this._value.length !== 1) {
+                throw new errors.ASN1ConstructionError(
+                    `An explicitly-encoding element contained ${this._value.length} encoded elements.`,
+                    this,
+                );
+            }
+            return this._value[0];
+        }
         const ret: DERElement = new DERElement();
-        const readBytes: number = ret.fromBytes(this.value);
-        if (readBytes !== this.value.length) {
+        const readBytes: number = ret.fromBytes(this._value);
+        if (readBytes !== this._value.length) {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoding element contained more than one single "
                 + "encoded element. The tag number of the first decoded "
@@ -569,9 +583,9 @@ class DERElement extends X690Element {
         return ret;
     }
 
-    set inner (value: DERElement) {
+    set inner (value: ASN1Element) {
         this.construction = ASN1Construction.constructed;
-        this.value = value.toBytes();
+        this._value = [ value ];
     }
 
     constructor (
@@ -759,14 +773,58 @@ class DERElement extends X690Element {
         return new Uint8Array(this.value);
     }
 
-    public get components (): DERElement[] {
+    public get components (): ASN1Element[] {
+        if (Array.isArray(this._value)) {
+            return this._value;
+        }
         const encodedElements: DERElement[] = [];
         let i: number = 0;
-        while (i < this.value.length) {
+        while (i < this._value.length) {
             const next: DERElement = new DERElement();
             i += next.fromBytes(this.value.subarray(i));
             encodedElements.push(next);
         }
         return encodedElements;
+    }
+
+    public lengthLength(valueLength?: number): number {
+        const len = valueLength ?? this.valueLength();
+        if (len < 127) {
+            return 1;
+        }
+        let lengthOctets = [ 0, 0, 0, 0 ];
+        for (let i: number = 0; i < 4; i++) {
+            lengthOctets[i] = ((len >>> ((3 - i) << 3)) & 0xFF);
+        }
+        let startOfNonPadding: number = 0;
+        for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
+            if (lengthOctets[i] === 0x00) startOfNonPadding++;
+        }
+        return 5 - startOfNonPadding;
+    }
+
+    public valueLength(): number {
+        if (this._currentValueLength !== undefined) {
+            return this._currentValueLength;
+        }
+        if (!Array.isArray(this._value)) {
+            return this._value.length;
+        }
+        let len = 0;
+        // For loop because it is most performant.
+        for (const el of this._value) {
+            len += el.tlvLength();
+        }
+        this._currentValueLength = len;
+        return len;
+    }
+
+    public tlvLength(): number {
+        const value_len = this.valueLength();
+        return (
+            this.tagLength()
+            + this.lengthLength(value_len)
+            + value_len
+        )
     }
 }

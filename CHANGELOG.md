@@ -1,4 +1,9 @@
 # Changelog
+
+## [8.0.2]
+
+- Fixed catastrophic performance issue when serializing values
+
 ## [8.0.1]
 
 - Fixed broken `ObjectIdentifier.fromString()`.

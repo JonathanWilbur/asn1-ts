@@ -76,17 +76,23 @@ class BERElement extends X690Element {
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
     private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    private _currentValueLength: number | undefined;
     get value (): Uint8Array {
         if (this._value instanceof Uint8Array) {
             return this._value;
         }
-        return encodeSequence(this._value);
+        const bytes = encodeSequence(this._value);
+        this._value = bytes;
+        return bytes;
     }
+
     set value (v: Uint8Array) {
+        this._currentValueLength = v.length;
         this._value = v;
     }
 
     public construct (els: ASN1Element[]): void {
+        this._currentValueLength = undefined;
         this._value = els;
     }
 
@@ -540,7 +546,7 @@ class BERElement extends X690Element {
         return ret;
     }
 
-    get inner (): BERElement {
+    get inner (): ASN1Element {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoded element cannot be encoded using "
@@ -548,9 +554,18 @@ class BERElement extends X690Element {
                 this,
             );
         }
+        if (Array.isArray(this._value)) {
+            if (this._value.length !== 1) {
+                throw new errors.ASN1ConstructionError(
+                    `An explicitly-encoding element contained ${this._value.length} encoded elements.`,
+                    this,
+                );
+            }
+            return this._value[0];
+        }
         const ret: BERElement = new BERElement();
-        const readBytes: number = ret.fromBytes(this.value);
-        if (readBytes !== this.value.length) {
+        const readBytes: number = ret.fromBytes(this._value);
+        if (readBytes !== this._value.length) {
             throw new errors.ASN1ConstructionError(
                 "An explicitly-encoding element contained more than one single "
                 + "encoded element. The tag number of the first decoded "
@@ -562,9 +577,9 @@ class BERElement extends X690Element {
         return ret;
     }
 
-    set inner (value: BERElement) {
+    set inner (value: ASN1Element) {
         this.construction = ASN1Construction.constructed;
-        this.value = value.toBytes();
+        this._value = [ value ];
     }
 
     constructor (
@@ -643,7 +658,12 @@ class BERElement extends X690Element {
                 }
                 // Definite Long, if it has made it this far
                 if (numberOfLengthOctets > 4) {
-                    throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
+                    if (bytes instanceof Buffer) {
+                        console.log(bytes.toString("hex"));
+                    } else {
+                        console.log(Buffer.from(bytes).toString("hex"));
+                    }
+                    throw new errors.ASN1OverflowError(`Element length too long to decode to an integer. Content octets occupied ${numberOfLengthOctets} bytes.`, this);
                 }
                 if (cursor + numberOfLengthOctets >= bytes.length) {
                     throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
@@ -709,6 +729,54 @@ class BERElement extends X690Element {
         }
     }
 
+    public lengthLength(valueLength?: number): number {
+        if (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite) {
+            return 1;
+        }
+        const len = valueLength ?? this.valueLength();
+        if (len < 127) {
+            return 1;
+        }
+        let lengthOctets = [ 0, 0, 0, 0 ];
+        for (let i: number = 0; i < 4; i++) {
+            lengthOctets[i] = ((len >>> ((3 - i) << 3)) & 0xFF);
+        }
+        let startOfNonPadding: number = 0;
+        for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
+            if (lengthOctets[i] === 0x00) startOfNonPadding++;
+        }
+        return 5 - startOfNonPadding;
+    }
+
+    public valueLength(): number {
+        if (this._currentValueLength !== undefined) {
+            return this._currentValueLength;
+        }
+        if (!Array.isArray(this._value)) {
+            return this._value.length;
+        }
+        let len = 0;
+        // For loop because it is most performant.
+        for (const el of this._value) {
+            len += el.tlvLength();
+        }
+        this._currentValueLength = len;
+        return len;
+    }
+
+    public tlvLength(): number {
+        const eoc_bytes = (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite)
+            ? 2
+            : 0;
+        const value_len = this.valueLength();
+        return (
+            this.tagLength()
+            + this.lengthLength(value_len)
+            + value_len
+            + eoc_bytes
+        )
+    }
+
     public tagAndLengthBytes (): Uint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
@@ -743,15 +811,15 @@ class BERElement extends X690Element {
         }
 
         let lengthOctets: number[] = [ 0x00 ];
+        const value_len = this.valueLength();
         switch (BERElement.lengthEncodingPreference) {
         case (LengthEncodingPreference.definite): {
-            if (this.value.length < 127) {
-                lengthOctets[0] = this.value.length;
+            if (value_len < 127) {
+                lengthOctets[0] = value_len;
             } else {
-                const length: number = this.value.length;
                 lengthOctets = [ 0, 0, 0, 0 ];
                 for (let i: number = 0; i < 4; i++) {
-                    lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 0xFF);
+                    lengthOctets[i] = ((value_len >>> ((3 - i) << 3)) & 0xFF);
                 }
                 let startOfNonPadding: number = 0;
                 for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
@@ -790,7 +858,7 @@ class BERElement extends X690Element {
 
     public deconstruct (dataType: string): Uint8Array {
         if (this.construction === ASN1Construction.primitive) {
-            return new Uint8Array(this.value); // Clones it.
+            return this.value;
         } else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
             const appendy: Uint8Array[] = [];
@@ -812,10 +880,13 @@ class BERElement extends X690Element {
         }
     }
 
-    public get components (): BERElement[] {
+    public get components (): ASN1Element[] {
+        if (Array.isArray(this._value)) {
+            return this._value;
+        }
         const encodedElements: BERElement[] = [];
         let i: number = 0;
-        while (i < this.value.length) {
+        while (i < this._value.length) {
             const next: BERElement = new BERElement();
             i += next.fromBytes(this.value.subarray(i));
             encodedElements.push(next);

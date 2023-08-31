@@ -67,6 +67,23 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     public abstract tagAndLengthBytes (): Uint8Array;
     public abstract toBuffers (): Uint8Array[];
 
+    public tagLength(): number {
+        if (this.tagNumber < 31) {
+            return 1;
+        }
+        let n = this.tagNumber;
+        let i = 0;
+        while (n !== 0) {
+            n >>>= 7;
+            i++;
+        }
+        return i;
+    }
+
+    public abstract lengthLength (valueLength?: number): number;
+    public abstract valueLength (): number;
+    public abstract tlvLength (): number;
+
     public toBytes (): Buffer {
         return Buffer.concat(this.toBuffers());
     }
