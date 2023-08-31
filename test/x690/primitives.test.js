@@ -121,6 +121,17 @@ const asn1 = require("../../dist/node/index.js");
             el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
             expect(el.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
 
+            // iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 11591 4 11
+            const el2 = new CodecElement();
+            el2.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]);
+            const oid = el2.objectIdentifier;
+            expect(oid).toEqual(new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
+            const el3 = new CodecElement();
+            el3.objectIdentifier = oid;
+            expect(el3.objectIdentifier).toEqual(new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
+            expect(el3.objectIdentifier.toString()).toBe("1.3.6.1.4.1.11591.4.11");
+            expect(asn1.ObjectIdentifier.fromString("1.3.6.1.4.1.11591.4.11")).toEqual(oid);
+
             const sensitiveValues = [
                 0,
                 1,

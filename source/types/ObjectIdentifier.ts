@@ -64,12 +64,14 @@ class ObjectIdentifier {
         let i = 0;
         while (i < str.length) {
             if (str.charCodeAt(i) === PERIOD) {
-                const arc = Number.parseInt(str.slice(last, i - 1), 10);
+                const arc = Number.parseInt(str.slice(last, i), 10);
                 arcs.push(arc);
                 last = i + 1;
             }
             i++;
         }
+        const arc = Number.parseInt(str.slice(last, i), 10);
+        arcs.push(arc);
         return new ObjectIdentifier(arcs);
     }
 

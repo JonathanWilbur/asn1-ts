@@ -1,4 +1,7 @@
 # Changelog
+## [8.0.1]
+
+- Fixed broken `ObjectIdentifier.fromString()`.
 
 ## [8.0.0]
 
