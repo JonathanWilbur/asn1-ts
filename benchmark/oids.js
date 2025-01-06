@@ -34,9 +34,9 @@ let i = 0;
 while (i < 100) {
     i++;
     const el = new CodecElement();
-    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
+    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ]);
     const oid = el.objectIdentifier;
-    assert(oid.isEqualTo(new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ])));
+    assert(oid.isEqualTo(new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ])));
 
     for (let x = 0; x < 2; x++) {
         for (let y = 0; y < 40; y++) {
@@ -71,7 +71,7 @@ i = 0;
 while (i < 100) {
     i++;
     const el = new CodecElement();
-    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
+    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ]);
     el.objectIdentifier.toString();
 
     for (let x = 0; x < 2; x++) {

@@ -5,6 +5,8 @@ const PERIOD = ".".charCodeAt(0);
 
 export default
 class ObjectIdentifier {
+    // I experimented with storing these as a Uint8Array and it wasn't really a
+    // performance improvement for some reason.
     private _nodes: Uint32Array;
 
     constructor (nodes: number[], prefix?: ObjectIdentifier | number) {
@@ -26,6 +28,14 @@ class ObjectIdentifier {
             );
         }
         this._nodes = new Uint32Array(_nodes);
+    }
+
+    /**
+     * This returns a _reference_ to the internal `Uint32Array`, so be careful
+     * what you do with this!
+     */
+    get uint32ArrayRef (): Uint32Array {
+        return this._nodes;
     }
 
     get nodes (): number[] {

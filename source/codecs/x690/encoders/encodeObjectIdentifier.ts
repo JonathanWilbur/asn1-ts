@@ -2,7 +2,7 @@ import { OBJECT_IDENTIFIER } from "../../../macros";
 
 export default
 function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Buffer {
-    const arcs = value.nodes;
+    const arcs = value.uint32ArrayRef; // This made a big performance difference.
     const node0 = arcs[0];
     const node1 = arcs[1];
     const byte0 = (node0 * 40) + node1;
