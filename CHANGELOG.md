@@ -1,5 +1,9 @@
 # Changelog
 
+## [8.0.3]
+
+- Significant performance improvements in encoding and decoding object identifiers.
+
 ## [8.0.2]
 
 - Fixed catastrophic performance issue when serializing values
