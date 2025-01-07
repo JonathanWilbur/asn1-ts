@@ -7,21 +7,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [22.x, 23.x]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          # always-auth: true
-          # registry-url: https://registry.npmjs.org
           node-version: ${{ matrix.node-version }}
-          # scope: '@jonathanwilbur'
       - name: Install NPM Dependencies
         run: npm ci
-        # env:
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Build
         run: npm run build
       - name: Run Jest Tests
