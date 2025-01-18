@@ -248,3 +248,30 @@ describe("UTCTime and GeneralizedTime", () => {
         expect(g.getUTCSeconds()).toBe(36);
     });
 });
+
+describe("UTCTime and GeneralizedTime with Timezone Offset", () => {
+    it("do not mis-decode dates", () => {
+        const utc_str = "230628020636Z";
+        const gen_str = "20230628020636-0400";
+        const u_el = new asn1.BERElement();
+        u_el.value = Buffer.from(utc_str);
+
+        const g_el = new asn1.BERElement();
+        g_el.value = Buffer.from(gen_str);
+
+        const u = u_el.utcTime;
+        const g = g_el.generalizedTime;
+        expect(u.getUTCFullYear()).toBe(2023);
+        expect(u.getUTCMonth()).toBe(5);
+        expect(u.getUTCDate()).toBe(28);
+        expect(u.getUTCHours()).toBe(2);
+        expect(u.getUTCMinutes()).toBe(6);
+        expect(u.getUTCSeconds()).toBe(36);
+        expect(g.getUTCFullYear()).toBe(2023);
+        expect(g.getUTCMonth()).toBe(5);
+        expect(g.getUTCDate()).toBe(28);
+        expect(g.getUTCHours()).toBe(6);
+        expect(g.getUTCMinutes()).toBe(6);
+        expect(g.getUTCSeconds()).toBe(36);
+    });
+});

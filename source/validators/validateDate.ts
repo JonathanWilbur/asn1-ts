@@ -7,6 +7,15 @@ function validateDate (
     month: number,
     date: number,
 ): void {
+    if (!Number.isSafeInteger(year)) {
+        throw new errors.ASN1Error(`Invalid year in ${dataType}`);
+    }
+    if (!Number.isSafeInteger(month)) {
+        throw new errors.ASN1Error(`Invalid month in ${dataType}`);
+    }
+    if (!Number.isSafeInteger(date) || (date < 1)) {
+        throw new errors.ASN1Error(`Invalid day in ${dataType}`);
+    }
     switch (month) {
     // 31-day months
     case 0: // January
@@ -49,6 +58,6 @@ function validateDate (
         break;
     }
     default:
-        throw new errors.ASN1Error(`Month greater than 12 encountered in ${dataType}.`);
+        throw new errors.ASN1Error(`Invalid month in ${dataType}`);
     }
 }

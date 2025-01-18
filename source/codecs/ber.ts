@@ -658,11 +658,6 @@ class BERElement extends X690Element {
                 }
                 // Definite Long, if it has made it this far
                 if (numberOfLengthOctets > 4) {
-                    if (bytes instanceof Buffer) {
-                        console.log(bytes.toString("hex"));
-                    } else {
-                        console.log(Buffer.from(bytes).toString("hex"));
-                    }
                     throw new errors.ASN1OverflowError(`Element length too long to decode to an integer. Content octets occupied ${numberOfLengthOctets} bytes.`, this);
                 }
                 if (cursor + numberOfLengthOctets >= bytes.length) {
