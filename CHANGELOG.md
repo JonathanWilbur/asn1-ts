@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.0.5]
+
+- Explicitly import `Buffer`
+  - Apparently, this is required when running on Cloudflare Workers.
+  - Closes [#32](https://github.com/JonathanWilbur/asn1-ts/issues/32).
+
 ## [8.0.4]
 
 - Fix `UTCTime` and `GeneralizedTime` decoding to use the timezone offsets.
@@ -7,6 +13,8 @@
     modification. Because the DER syntax is so strict, the parsing ignores
     timezones, because they shouldn't be present at all.
   - There is now a very rigorous test suite ensuring these are correct.
+- I think `UTCTime` and `GeneralizedTime` should be a lot more performant too,
+  since I am not using regular expressions anymore.
 - Remove a `console.log()`. (Sorry! I _do_ know how to debug, but sometimes
   `console.log()` is just too dang easy.)
 
