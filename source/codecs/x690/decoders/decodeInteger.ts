@@ -1,6 +1,7 @@
 import * as errors from "../../../errors";
 import { INTEGER } from "../../../macros";
 import { bufferToInteger } from "../../../utils/bigint";
+import { Buffer } from "node:buffer";
 
 export default
 function decodeInteger (value: Uint8Array): INTEGER {

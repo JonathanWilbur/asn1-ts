@@ -1,5 +1,6 @@
 import * as errors from "../errors";
 import { MIN_UINT_32, MAX_UINT_32 } from "../values";
+import { Buffer } from "node:buffer";
 
 export default
 function encodeUnsignedBigEndianInteger (value: number): Uint8Array {
@@ -13,6 +14,7 @@ function encodeUnsignedBigEndianInteger (value: number): Uint8Array {
             `Number ${value} too big to be encoded as a big-endian unsigned integer.`,
         );
     }
+    // TODO: Could you do allocUnsafe() here?
     const bytes: Buffer = Buffer.alloc(4);
     bytes.writeUInt32BE(value);
     let startOfNonPadding: number = 0;

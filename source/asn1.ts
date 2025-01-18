@@ -41,6 +41,7 @@ import type {
     RELATIVE_OID_IRI,
 } from "./macros";
 import packBits from "./utils/packBits";
+import { Buffer } from "node:buffer";
 
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {

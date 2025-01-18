@@ -1,5 +1,6 @@
 import decodeObjectIdentifier from "../codecs/x690/decoders/decodeObjectIdentifier";
 import encodeObjectIdentifier from "../codecs/x690/encoders/encodeObjectIdentifier";
+import type { Buffer } from "node:buffer";
 
 const PERIOD = ".".charCodeAt(0);
 

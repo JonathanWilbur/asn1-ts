@@ -70,6 +70,7 @@ import {
     DURATION,
 } from "../macros";
 import { isUniquelyTagged } from "../utils";
+import { Buffer } from "node:buffer";
 
 export default
 class BERElement extends X690Element {

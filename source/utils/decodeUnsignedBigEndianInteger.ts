@@ -1,4 +1,5 @@
 import * as errors from "../errors";
+import { Buffer } from "node:buffer";
 
 export default
 function decodeUnsignedBigEndianInteger (value: Uint8Array): number {

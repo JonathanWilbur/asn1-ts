@@ -1,4 +1,5 @@
 import { ASN1Error } from "../errors";
+import { Buffer } from "node:buffer";
 
 /**
  * A function to support encoding text to bytes both in web browsers and in

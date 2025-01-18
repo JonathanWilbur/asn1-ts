@@ -1,4 +1,5 @@
 import { RELATIVE_OID } from "../../../macros";
+import { Buffer } from "node:buffer";
 
 export default
 function encodeRelativeObjectIdentifier (value: RELATIVE_OID): Uint8Array {

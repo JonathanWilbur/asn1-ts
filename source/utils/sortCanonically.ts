@@ -1,4 +1,5 @@
 import type ASN1Element from "../asn1";
+import { Buffer } from "node:buffer";
 
 export default
 function sortCanonically (elements: ASN1Element[]): ASN1Element[] {

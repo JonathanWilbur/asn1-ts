@@ -1,5 +1,6 @@
 import type { INTEGER } from "../macros";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values";
+import { Buffer } from "node:buffer";
 
 export
 function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
