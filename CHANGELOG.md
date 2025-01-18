@@ -1,5 +1,15 @@
 # Changelog
 
+## [8.0.4]
+
+- Fix `UTCTime` and `GeneralizedTime` decoding to use the timezone offsets.
+  - I think I mistakenly copied the DER decoders into the BER decoder without
+    modification. Because the DER syntax is so strict, the parsing ignores
+    timezones, because they shouldn't be present at all.
+  - There is now a very rigorous test suite ensuring these are correct.
+- Remove a `console.log()`. (Sorry! I _do_ know how to debug, but sometimes
+  `console.log()` is just too dang easy.)
+
 ## [8.0.3]
 
 - Significant performance improvements in encoding and decoding object identifiers.

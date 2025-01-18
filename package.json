@@ -47,5 +47,5 @@
         "test": "npx jest --ci --reporters=default --coverage"
     },
     "types": "./dist/node/index.d.ts",
-    "version": "8.0.3"
+    "version": "8.0.4"
 }
