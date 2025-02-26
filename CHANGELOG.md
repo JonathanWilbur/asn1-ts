@@ -1,5 +1,15 @@
 # Changelog
 
+## [9.0.0]
+
+- Compile ESM Modules: no more CommonJS
+- Compile with TypeScript's new `--erasableSyntaxOnly` option, making this
+  library directly runnable in NodeJS without transpiling to ECMAScript.
+- Stricter TypeScript Checks
+- NodeJS Test Runner
+- Deno Support
+- Bun Support
+
 ## [8.0.5]
 
 - Explicitly import `Buffer`
