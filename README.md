@@ -4,7 +4,8 @@ Feature-complete, specification-compliant TypeScript library for encoding and
 decoding ASN.1 data structures using the Basic Encoding Rules (BER),
 Canonical Encoding Rules (CER), and Distinguished Encoding Rules (DER).
 
-Install via `npm install asn1-ts`.
+Install via `npm install asn1-ts`. As of version 9.0.0 and above, this library
+is ESM only: no more CommonJS.
 
 **Table of Contents**
 
