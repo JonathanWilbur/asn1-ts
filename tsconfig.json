@@ -1,42 +1,39 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "ES2020",
-        "module": "commonjs",
-        // "lib": [],
+        "target": "ESNext",
+        "module": "NodeNext",
         "allowJs": false,
-        // "checkJs": true,
-        // "jsx": "preserve",
         "declaration": true,
         "declarationMap": false,
         "sourceMap": false,
-        // "outFile": "./",
-        "outDir": "./dist/node",
+        "outDir": "./dist",
         // "rootDir": "./",
-        // "composite": true,
         "removeComments": true,
         // "noEmit": true,
         // "downlevelIteration": true,
         // "isolatedModules": true,
         "strict": true,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "strictPropertyInitialization": true,
         "noImplicitThis": true,
         "alwaysStrict": true,
         "noUnusedLocals": true,
-        "noUnusedParameters": false,
+        "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        // "moduleResolution": "node",
+        "strictBindCallApply": true,
+        "noImplicitOverride": true,
+        "moduleResolution": "nodenext",
         // "baseUrl": "./",
         // "paths": {},
         // "rootDirs": [],
         // "typeRoots": [],
         // "types": [],
         // "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "esModuleInterop": false,
         // "preserveSymlinks": true,
         // "sourceRoot": "",
         // "mapRoot": "",
@@ -46,10 +43,6 @@
         // "emitDecoratorMetadata": true,
     },
     "include": [
-        "source/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
+        "source/**/*.mts"
     ]
 }

@@ -3,10 +3,8 @@
 ## [9.0.0]
 
 - Compile ESM Modules: no more CommonJS
-- Compile with TypeScript's new `--erasableSyntaxOnly` option, making this
-  library directly runnable in NodeJS without transpiling to ECMAScript.
 - Stricter TypeScript Checks
-- NodeJS Test Runner
+- Native NodeJS Test Runner: no more Jest
 - Deno Support
 - Bun Support
 

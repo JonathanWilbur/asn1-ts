@@ -13,7 +13,6 @@
     "description": "ASN.1 encoding and decoding, including BER, CER, and DER.",
     "devDependencies": {
         "@types/node": "^22.10.5",
-        "jest": "^29.7.0",
         "typescript": "^5.7.2"
     },
     "directories": {
@@ -33,7 +32,7 @@
         "DER"
     ],
     "license": "MIT",
-    "main": "./dist/node/index.js",
+    "main": "./dist/index.mjs",
     "name": "asn1-ts",
     "private": false,
     "repository": {
@@ -41,11 +40,13 @@
         "url": "https://github.com/JonathanWilbur/asn1-ts.git"
     },
     "scripts": {
-        "benchmark": "node ./test/benchmark.js",
+        "benchmark": "node ./test/benchmark.mjs",
         "build": "npx tsc",
+        "buntest": "bun test",
         "clean": "rm -rf dist; mkdir -p dist",
-        "test": "npx jest --ci --reporters=default --coverage"
+        "denocheck": "deno test ./denotest.mts",
+        "test": "node --test"
     },
-    "types": "./dist/node/index.d.ts",
-    "version": "8.0.5"
+    "types": "./dist/index.d.ts",
+    "version": "9.0.0"
 }
