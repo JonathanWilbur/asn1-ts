@@ -20,7 +20,7 @@
         "test": "test"
     },
     "files": [
-        "dist/node/**/*"
+        "dist/**/*"
     ],
     "homepage": "https://github.com/JonathanWilbur/asn1-ts",
     "keywords": [
