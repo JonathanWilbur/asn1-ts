@@ -1,5 +1,9 @@
 # Changelog
 
+## [9.0.1]
+
+- Fix types export
+
 ## [9.0.0]
 
 - Compile ESM Modules: no more CommonJS
