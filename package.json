@@ -47,6 +47,6 @@
         "denocheck": "deno test ./denotest.mts",
         "test": "node --test"
     },
-    "types": "./dist/index.d.ts",
-    "version": "9.0.0"
+    "types": "./dist/index.d.mts",
+    "version": "9.0.1"
 }
