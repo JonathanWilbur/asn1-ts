@@ -13,5 +13,9 @@ import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
  */
 export default
 function encodeTimeOfDay (time: TIME_OF_DAY): Uint8Array {
-    return convertTextToBytes(`${time.getHours()}${time.getMinutes()}${time.getSeconds()}`);
+    return convertTextToBytes(
+        time.getHours().toString().padStart(2, "0")
+        + time.getMinutes().toString().padStart(2, "0")
+        + time.getSeconds().toString().padStart(2, "0")
+    );
 }

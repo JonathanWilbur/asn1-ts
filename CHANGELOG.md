@@ -1,5 +1,14 @@
 # Changelog
 
+## [9.0.2]
+
+- Fix bug when encoding `DATE` values having a year less than 1000.
+- Fix bug when encoding `DATE-TIME` values having a year less than 1000.
+- Fix bug when encoding `TIME-OF-DAY` values having hours, minutes, or seconds
+  that are single-digit.
+- Fix bug when encoding `UTCTime` values having a year less than 1000.
+- Fix bug when encoding `GeneralizedTime` values having a year less than 1000.
+
 ## [9.0.1]
 
 - Fix types export

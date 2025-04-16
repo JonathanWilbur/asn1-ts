@@ -12,7 +12,7 @@ function encodeDateTime (value: DATE_TIME): Uint8Array {
     }
     // NOTE: Using .toISOString() will not work, because it is in UTC time.
     return convertTextToBytes(
-        value.getFullYear().toString()
+        value.getFullYear().toString().padStart(4, "0")
         + (value.getMonth() + 1).toString().padStart(2, "0")
         + value.getDate().toString().padStart(2, "0")
         + value.getHours().toString().padStart(2, "0")
