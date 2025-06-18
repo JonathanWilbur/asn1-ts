@@ -4,8 +4,11 @@ Feature-complete, specification-compliant TypeScript library for encoding and
 decoding ASN.1 data structures using the Basic Encoding Rules (BER),
 Canonical Encoding Rules (CER), and Distinguished Encoding Rules (DER).
 
-Install via `npm install asn1-ts`. As of version 9.0.0 and above, this library
-is ESM only: no more CommonJS. This library is also published on [jsr.io].
+This library is published on both
+[npmjs.com](https://www.npmjs.com/package/asn1-ts) and on
+[jsr.io](https://jsr.io/@wildboar/asn1). You can install it via
+`npm install asn1-ts` or `npx jsr add @wildboar/asn1`. As of version 9.0.0 and
+above, this library is ESM only: no more CommonJS.
 
 **Table of Contents**
 
@@ -294,8 +297,8 @@ NodeJS.
 ## See Also
 
 - [Libraries that use `asn1-ts`](https://github.com/Wildboar-Software/asn1-typescript-libraries)
-- [Meerkat DSA](https://wildboar-software.github.io/directory/), an application
-  that uses `asn1-ts`.
+- [Meerkat DSA](https://wildboar-software.github.io/directory/), an X.500
+  directory server that uses `asn1-ts`.
 * [X.680 - Abstract Syntax Notation One (ASN.1)](https://www.itu.int/rec/T-REC-X.680/en)
 * [X.690 - BER, CER, and DER](https://www.itu.int/rec/T-REC-X.690/en)
 * [ASN.1: Communication Between Heterogeneous Systems](https://www.oss.com/asn1/resources/books-whitepapers-pubs/dubuisson-asn1-book.PDF) by Olivier Dubuisson
