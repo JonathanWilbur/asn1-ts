@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "ESNext",
+        "target": "es2020",
         "module": "NodeNext",
         "allowJs": false,
         "declaration": true,
