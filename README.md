@@ -5,7 +5,7 @@ decoding ASN.1 data structures using the Basic Encoding Rules (BER),
 Canonical Encoding Rules (CER), and Distinguished Encoding Rules (DER).
 
 Install via `npm install asn1-ts`. As of version 9.0.0 and above, this library
-is ESM only: no more CommonJS.
+is ESM only: no more CommonJS. This library is also published on [jsr.io].
 
 **Table of Contents**
 

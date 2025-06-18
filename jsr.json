@@ -1,0 +1,9 @@
+{
+  "name": "@wildboar/asn1",
+  "version": "9.0.3",
+  "license": "MIT",
+  "exports": {
+    ".": "./source/index.mts",
+    "./functional": "./source/functional.mts"
+  }
+}
