@@ -1,5 +1,7 @@
 # ASN.1 TypeScript Library
 
+[![JSR](https://jsr.io/badges/@wildboar/asn1)](https://jsr.io/@wildboar/asn1)
+
 Feature-complete, specification-compliant TypeScript library for encoding and
 decoding ASN.1 data structures using the Basic Encoding Rules (BER),
 Canonical Encoding Rules (CER), and Distinguished Encoding Rules (DER).
