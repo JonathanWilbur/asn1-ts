@@ -1,3 +1,14 @@
+/**
+ * This module contains all of the "functional API" for this package. This was
+ * contrived because this API works better for code generated from an ASN.1
+ * module via a compiler.
+ *
+ * See
+ * [this repository](https://github.com/Wildboar-Software/asn1-typescript-libraries)
+ * for many real-world uses of this API.
+ *
+ * @module
+ */
 import {
     ASN1Element,
     BERElement,
@@ -137,7 +148,6 @@ export function tagClassName (tagClass: ASN1TagClass): string {
     }
     }
 }
-
 
 /**
  * @summary Deeply compares two values of any data type.
@@ -768,17 +778,134 @@ export const _decodeAny: ASN1Decoder<ASN1Element> = (el: ASN1Element): ASN1Eleme
 
 // CONSTRUCTED TYPE
 
+/**
+ * @classdesc A specification for a component of a `SET` or `SEQUENCE` type.
+ */
 export
 class ComponentSpec {
     constructor (
+
+        /**
+         * @summary The name of the component, such as `subjectPublicKeyInfo`
+         * @public
+         * @readonly
+         */
+
         readonly name: string,
+        /**
+         * @summary Whether the component is `OPTIONAL` or `DEFAULT`ing
+         * @public
+         * @readonly
+         */
         readonly optional: boolean,
+
+        /**
+         * @summary Selector for the tag of the component
+         * @description
+         *
+         * Use {@link hasAnyTag} to select any tag.
+         *
+         * @public
+         * @readonly
+         */
         readonly selector: TagValidator,
+
+        /**
+         * @summary The zero-based group index, if this component appears in a group.
+         * @description
+         *
+         * For an example of a group, see the definition of `TBSCertificate` in
+         * the `AuthenticationFramework` ASN.1 module. The field
+         * `subjectUniqueIdentifier` appears in group 0, and uses version number
+         * 2.
+         *
+         * @public
+         * @readonly
+         */
         readonly groupIndex?: number,
+
+        /**
+         * @summary The version number of the type in which this component is defined.
+         * @description
+         *
+         * For an example of a group, see the definition of `TBSCertificate` in
+         * the `AuthenticationFramework` ASN.1 module. The field
+         * `subjectUniqueIdentifier` appears in group 0, and uses version number
+         * 2.
+         *
+         * @public
+         * @readonly
+         */
         readonly versionNumber?: number,
     ) {}
 }
 
+/**
+ * @summary Invoke callbacks for the components of a `SET` type
+ * @description
+ *
+ * This function invokes callbacks in the `decodingCallbacks` map for elements
+ * that are recognized as components of a `SET` type. It invokes
+ * `unrecognizedExtensionHandler` for all other ASN.1-encoded elements.
+ *
+ * The specifications for a given set are passed in as `rootComponentTypeList1`,
+ * `extensionAdditionsList`, and `rootComponentTypeList2`, which correspond to
+ * the ASN.1 syntax according to which structured types are defined.
+ *
+ * For example:
+ *
+ * ```asn1
+ * Thingy ::= SET {
+ *   thingId       OBJECT IDENTIFIER OPTIONAL,
+ *   thingName     UTF8String
+ * }
+ * ```
+ *
+ * Can be parsed via:
+ *
+ * ```ts
+ * import { OPTIONAL, OBJECT_IDENTIFIER, UTF8String, ASN1Element } from "jsr:@wildboar/asn1";
+ * import * as $ from "jsr:@wildboar/asn1/functional";
+ *
+ * // ... el is an ASN1Element containing the `SET`
+ *
+ * const _rctl1_for_Thingy: $.ComponentSpec[] = [
+ *     new $.ComponentSpec("thingId", true, $.hasTag(_TagClass.universal, 6)),
+ *     new $.ComponentSpec("thingName", false, $.hasTag(_TagClass.universal, 12)),
+ * ];
+ *
+ * let thingId: OPTIONAL<OBJECT_IDENTIFIER>;
+ * let thingName!: UTF8String;
+ * let extensions: ASN1Element[] = [];
+ * const callbacks: $.DecodingMap = {
+ *     thingId: (_el: ASN1Element): void => {
+ *         objectClass = $._decode_explicit<OBJECT_IDENTIFIER>(() => $._decodeObjectIdentifier)(_el);
+ *     },
+ *     thingName: (_el: ASN1Element): void => {
+ *         criteria = $._decode_explicit<UTF8String>(() => $._decodeUTF8String)(_el);
+ *     },
+ * };
+ * const everythingElse = (ext: ASN1Element): void => { extensions.push(ext); };
+ *
+ * $._parse_set(el, callbacks, _rctl1_for_Thingy, [], [], everythingElse);
+ * const myThingy = new Thingy(thingId, thingName, extensions);
+ * ```
+ *
+ * @param set The ASN.1 value encoding the `SET`
+ * @param {Object} decodingCallbacks A map of component names to callbacks
+ * @param {ComponentSpec[]} rootComponentTypeList1 Component specifications for
+ *  the Root Component Type List 1
+ * @param {ComponentSpec[]} extensionAdditionsList Component specifications for
+ *  the Extension Additions List
+ * @param {ComponentSpec[]} rootComponentTypeList2 Component specifications for
+ *  the Root Component Type List 2
+ * @param {Function} unrecognizedExtensionHandler The callback to invoke with an
+ *  unrecognized extension
+ * @param maximumElements The maximum number of elements to parse. This is to
+ *  allow for control over denial-of-service vectors.
+ *
+ * @function
+ */
 export
 function _parse_set (
     set: ASN1Element,
@@ -890,7 +1017,7 @@ function _parse_set (
     }
 }
 
-export function _parse_component_type_list (
+function _parse_component_type_list (
     componentTypeList: ComponentSpec[],
     decodingCallbacks: DecodingMap,
     elements: ASN1Element[],
@@ -965,7 +1092,6 @@ export function _get_possible_initial_components (
  * @param extensionAdditionsList
  * @param rootComponentTypeList2
  */
-export
 function _parse_sequence_with_trailing_rctl (
     seq: ASN1Element,
     decodingCallbacks: DecodingMap,
@@ -1016,7 +1142,6 @@ function _parse_sequence_with_trailing_rctl (
     }
 }
 
-export
 function _parse_sequence_without_trailing_rctl (
     seq: ASN1Element,
     decodingCallbacks: DecodingMap,
@@ -1045,12 +1170,34 @@ function _parse_sequence_without_trailing_rctl (
 }
 
 /**
- * This might have problems when it comes to parsing componentsOf sequences. The
- * compiler will need to translate the componentsOf elements to their fields before
- * adding them to this list. The compiler will also need to handle automatic tagging.
+ * @summary Invoke callbacks for the components of a `SEQUENCE` type
+ * @description
  *
- * @param seq
- * @param specification
+ * This function invokes callbacks in the `decodingCallbacks` map for elements
+ * that are recognized as components of a `SEQUENCE` type. It invokes
+ * `unrecognizedExtensionHandler` for all other ASN.1-encoded elements.
+ *
+ * The specifications for a given set are passed in as `rootComponentTypeList1`,
+ * `extensionAdditionsList`, and `rootComponentTypeList2`, which correspond to
+ * the ASN.1 syntax according to which structured types are defined.
+ *
+ * This might have problems when it comes to parsing `COMPONENTS OF` sequences.
+ * The compiler will need to translate the `COMPONENTS OF` components to their
+ * fields before adding them to the lists. The compiler will also need to handle
+ * `AUTOMATIC TAGS`.
+ *
+ * @param seq The ASN.1 value encoding the `SEQUENCE`
+ * @param {Object} decodingCallbacks A map of component names to callbacks
+ * @param {ComponentSpec[]} rootComponentTypeList1 Component specifications for
+ *  the Root Component Type List 1
+ * @param {ComponentSpec[]} extensionAdditionsList Component specifications for
+ *  the Extension Additions List
+ * @param {ComponentSpec[]} rootComponentTypeList2 Component specifications for
+ *  the Root Component Type List 2
+ * @param {Function} unrecognizedExtensionHandler The callback to invoke with an
+ *  unrecognized extension
+ *
+ * @function
  */
 export
 function _parse_sequence (
@@ -1059,7 +1206,6 @@ function _parse_sequence (
     rootComponentTypeList1: ComponentSpec[],
     extensionAdditionsList: ComponentSpec[],
     rootComponentTypeList2: ComponentSpec[],
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     unrecognizedExtensionHandler: DecodingCallback = () => {},
 ): void {
     if (rootComponentTypeList2.length > 0) {
@@ -1082,6 +1228,13 @@ function _parse_sequence (
     }
 }
 
+/**
+ * @summary Encode a `CHOICE` type
+ * @param {Object} choices A map of choices to encoders
+ * @param {Function} elGetter Returns the element to use for encoding (e.g. `DERElement`)
+ * @returns {Function} the encoder function for the `CHOICE` as a whole
+ * @function
+ */
 export function _encode_choice<T extends object> (
     choices: Record<keyof T, ASN1Encoder<T[AllUnionMemberKeys<T>]>>,
     elGetter: ASN1Encoder<T>,
