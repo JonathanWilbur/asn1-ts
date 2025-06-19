@@ -1,6 +1,15 @@
 import * as errors from "../errors.mjs";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
 
+/**
+ * @summary Encodes a number as a signed big-endian integer
+ * @description
+ * Throws if the value is out of the 32-bit signed integer range.
+ * @param {number} value - The signed integer to encode.
+ * @returns {Uint8Array} The encoded big-endian bytes.
+ * @throws {ASN1OverflowError} If the value is out of range for a 32-bit signed integer.
+ * @function
+ */
 export default
 function encodeBigEndianSignedInteger (value: number): Uint8Array {
     if (value < MIN_SINT_32) {

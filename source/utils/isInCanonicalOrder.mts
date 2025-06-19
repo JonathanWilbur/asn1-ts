@@ -1,6 +1,14 @@
 import type ASN1Element from "../asn1.mjs";
 import { ASN1TagClass, CANONICAL_TAG_CLASS_ORDERING } from "../values.mjs";
 
+/**
+ * @summary Checks if `SET OF` ASN.1 elements is in canonical order as per ITU X.690
+ * @description
+ * Used for validating DER/CER `SET OF` encodings.
+ * @param {ASN1Element[]} elements - The ASN.1 elements to check.
+ * @returns {boolean} True if the elements are in canonical order, false otherwise.
+ * @function
+ */
 export default
 function isInCanonicalOrder (elements: ASN1Element[]): boolean {
     let previousTagClass: ASN1TagClass | null = null;

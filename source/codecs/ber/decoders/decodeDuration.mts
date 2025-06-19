@@ -2,7 +2,7 @@ import { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import * as errors from "../../../errors.mjs";
 import { DURATION_EQUIVALENT } from "../../../types/index.mjs";
-import { datetimeRegex } from "../../../values.mjs";
+import { durationRegex } from "../../../values.mjs";
 
 export default
 function decodeDuration (bytes: Uint8Array): DURATION {
@@ -46,7 +46,7 @@ function decodeDuration (bytes: Uint8Array): DURATION {
      * I don't like the idea of using regular expressions for this, but it was
      * the best solution that ensures correct ordering of DURATION components.
      */
-    const match: RegExpExecArray | null = datetimeRegex.exec(str);
+    const match: RegExpExecArray | null = durationRegex.exec(str);
     if (!match) {
         throw new errors.ASN1Error(`Malformed DURATION ${str}.`);
     }

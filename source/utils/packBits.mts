@@ -1,5 +1,13 @@
 import { BIT_STRING, FALSE_BIT } from "../macros.mjs";
 
+/**
+ * @summary Packs a `BIT STRING` into a `Uint8Array`
+ * @description
+ * Used for ASN.1 `BIT STRING` encoding.
+ * @param {BIT_STRING} bits - The bit string to pack.
+ * @returns {Uint8Array} The packed bytes.
+ * @function
+ */
 export default
 function packBits (bits: BIT_STRING): Uint8Array {
     const bytesNeeded: number = Math.ceil(bits.length / 8);

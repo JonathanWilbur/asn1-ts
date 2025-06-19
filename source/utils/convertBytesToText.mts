@@ -2,12 +2,14 @@ import { ASN1Error } from "../errors.mjs";
 import { Buffer } from "node:buffer";
 
 /**
- * A function to support decoding bytes to text both in web browsers and in
- * NodeJS.
+ * @summary Converts a byte array to a string using the specified codec, supporting both Node.js and browser environments.
+ * @description
+ * Used for decoding ASN.1 string types from their byte representation.
  *
- * @param bytes {Uint8Array} The bytes to convert to text.
- * @param codec {string} The string identifier of the codec to use, such as "utf-8".
- * @returns {string} The converted string.
+ * @param {Uint8Array} bytes - The bytes to convert to text.
+ * @param {string} [codec="utf-8"] - The codec to use (e.g., "utf-8").
+ * @returns {string} The decoded string.
+ * @function
  */
 export default
 function convertBytesToText (bytes: Uint8Array, codec: string = "utf-8"): string {

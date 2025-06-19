@@ -12,6 +12,15 @@ import convertBytesToText from "./convertBytesToText.mjs";
 import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger.mjs";
 import decodeUnsignedBigEndianInteger from "../utils/decodeUnsignedBigEndianInteger.mjs";
 
+/**
+ * @summary Decodes an ASN.1 `REAL` value from its X.690 (DER/CER/BER) encoded byte representation
+ * @description
+ * Handles special values, base-10, and binary encodings as per ITU X.690.
+ * @param {Uint8Array} bytes - The encoded REAL value bytes.
+ * @returns {number} The decoded JavaScript number.
+ * @throws {ASN1Error|ASN1TruncationError|ASN1UndefinedError} If the encoding is malformed or unsupported.
+ * @function
+ */
 export default
 function decodeX690RealNumber (bytes: Uint8Array): number {
     if (bytes.length === 0) return 0.0;

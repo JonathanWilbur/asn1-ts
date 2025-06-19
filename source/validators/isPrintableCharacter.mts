@@ -1,4 +1,9 @@
-// etaoinsrhdlucmfywgpbvkxqjzETAOINSRHDLUCMFYWGPBVKXQJZ0123456789 '()+,-./:=?
+/**
+ * @summary Checks if a character code is a valid ASN.1 `PrintableString` character
+ * @param {number} characterCode - The character code to check.
+ * @returns {boolean} True if the character is valid for `PrintableString`, false otherwise.
+ * @function
+ */
 export default
 function isPrintableCharacter (characterCode: number): boolean {
     return (

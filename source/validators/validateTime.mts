@@ -1,5 +1,15 @@
 import * as errors from "../errors.mjs";
 
+/**
+ * @summary Validates an ASN.1 time value (hour, minute, second) for correctness and range.
+ * @param {string} dataType - The ASN.1 type being validated (for error messages).
+ * @param {number} hours - The hour value (0-23).
+ * @param {number} minutes - The minute value (0-59).
+ * @param {number} seconds - The second value (0-59).
+ * @returns {void}
+ * @throws {ASN1Error} if any of the time values are invalid or out of range.
+ * @function
+ */
 export default function validateTime (
     dataType: string,
     hours: number,

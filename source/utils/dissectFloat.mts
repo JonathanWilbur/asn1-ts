@@ -1,5 +1,13 @@
 const EXPONENT_BITMASK: number = 0b0111_1111_1111_0000_0000_0000_0000_0000;
 
+/**
+ * @summary Dissects a JavaScript number into its IEEE 754 sign, exponent, and mantissa components
+ * @description
+ * Used for ASN.1 `REAL` encoding/decoding.
+ * @param {number} value - The number to dissect.
+ * @returns {Object} The float components.
+ * @function
+ */
 export default
 function dissectFloat (value: number): { negative: boolean; exponent: number; mantissa: number } {
     const float: Float64Array = new Float64Array([ value ]);

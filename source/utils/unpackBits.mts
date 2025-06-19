@@ -1,11 +1,12 @@
 import { BIT_STRING, TRUE_BIT } from "../macros.mjs";
 
 /**
- * Note that this will not be exactly the reverse of `packBits()`, because this
- * is unaware of trailing bits, and so will always return an `Uint8ClampedArray` that
- * is a multiple of eight in length.
- *
- * @param bytes
+ * @summary Unpacks a `Uint8Array` into a `BIT_STRING`
+ * @description
+ * Note: The result may be longer than the original bit string due to byte alignment.
+ * @param {Uint8Array} bytes - The bytes to unpack.
+ * @returns {BIT_STRING} The unpacked bit string.
+ * @function
  */
 export default
 function unpackBits (bytes: Uint8Array): BIT_STRING {

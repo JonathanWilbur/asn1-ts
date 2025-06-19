@@ -43,15 +43,70 @@ import type {
 import packBits from "./utils/packBits.mjs";
 import { Buffer } from "node:buffer";
 
+/**
+ * @module asn1
+ * @description
+ * This module provides the abstract base class {@link ASN1Element} for representing ASN.1 elements.
+ * ASN.1 (Abstract Syntax Notation One) is a standard interface description language for defining data structures
+ * that can be serialized and deserialized in a cross-platform way. This class is intended to be subclassed by
+ * specific ASN.1 codecs for encoding and decoding various ASN.1 types.
+ */
+/**
+ * Abstract base class for ASN.1 elements.
+ *
+ * This class defines the interface and common logic for all ASN.1 element representations.
+ * Subclasses should implement the abstract methods and properties to handle specific ASN.1 types.
+ *
+ * @abstract
+ * @implements {Byteable}
+ * @implements {Elementable}
+ * @implements {Named}
+ * @implements {Long}
+ *
+ * @property {string} name - The name of the ASN.1 element (optional, for debugging or schema purposes).
+ * @property {ASN1TagClass} tagClass - The tag class of the ASN.1 element (universal, application, context, or private).
+ * @property {ASN1Construction} construction - The construction type (primitive or constructed).
+ * @property {number} tagNumber - The tag number for the ASN.1 element.
+ * @property {number} recursionCount - Used to prevent excessive recursion in nested structures.
+ * @property {number} [nestingRecursionLimit=5] - Maximum allowed recursion depth for nesting.
+ *
+ * @remarks
+ * This class is not meant to be instantiated directly. Instead, extend it to implement concrete ASN.1 types.
+ */
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
+    /**
+     * Used to track recursion depth for nested ASN.1 elements.
+     * @type {number}
+     */
     public recursionCount: number = 0;
+    /**
+     * Maximum allowed recursion depth for ASN.1 element nesting.
+     * @type {number}
+     * @readonly
+     */
     protected static readonly nestingRecursionLimit: number = 5;
 
+    /**
+     * The name of the ASN.1 element (optional, for debugging or schema purposes).
+     * @type {string}
+     */
     public name: string = "";
+    /**
+     * The tag class of the ASN.1 element.
+     * @type {ASN1TagClass}
+     */
     public tagClass: ASN1TagClass = ASN1TagClass.universal;
+    /**
+     * The construction type (primitive or constructed).
+     * @type {ASN1Construction}
+     */
     public construction: ASN1Construction = ASN1Construction.primitive;
     private _tagNumber: number = 0;
+    /**
+     * The tag number for the ASN.1 element.
+     * @type {number}
+     */
     get tagNumber (): number {
         return this._tagNumber;
     }
@@ -62,12 +117,36 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         this._tagNumber = value;
     }
 
+    /**
+     * The value of the ASN.1 element as a Uint8Array.
+     * @type {Uint8Array}
+     * @abstract
+     */
     abstract get value (): Uint8Array;
     abstract set value (v: Uint8Array);
+    /**
+     * Construct this element from an array of ASN1Element children.
+     * @param {ASN1Element[]} els - The child elements.
+     * @abstract
+     */
     abstract construct (els: ASN1Element[]): void;
+    /**
+     * Get the tag and length bytes for this element.
+     * @returns {Uint8Array}
+     * @abstract
+     */
     public abstract tagAndLengthBytes (): Uint8Array;
+    /**
+     * Get the encoded buffers for this element.
+     * @returns {Uint8Array[]}
+     * @abstract
+     */
     public abstract toBuffers (): Uint8Array[];
 
+    /**
+     * Get the number of bytes required to encode the tag.
+     * @returns {number}
+     */
     public tagLength(): number {
         if (this.tagNumber < 31) {
             return 1;
@@ -81,18 +160,48 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         return i;
     }
 
+    /**
+     * Get the number of bytes required to encode the length field.
+     * @param {number} [valueLength] - The length of the value, if known.
+     * @returns {number}
+     * @abstract
+     */
     public abstract lengthLength (valueLength?: number): number;
+    /**
+     * Get the length of the value in bytes.
+     * @returns {number}
+     * @abstract
+     */
     public abstract valueLength (): number;
+    /**
+     * Get the total length of the TLV (Tag-Length-Value) encoding.
+     * @returns {number}
+     * @abstract
+     */
     public abstract tlvLength (): number;
 
+    /**
+     * Get the full encoding of this element as a Node.js Buffer.
+     * @returns {Buffer}
+     */
     public toBytes (): Buffer {
         return Buffer.concat(this.toBuffers());
     }
 
+    /**
+     * Get the length of the value in bytes.
+     * @type {number}
+     */
     get length (): number {
         return this.value.length;
     }
 
+    /**
+     * Parse this element from a byte array.
+     * @param {Uint8Array} bytes - The bytes to parse from.
+     * @returns {number} The number of bytes consumed.
+     * @abstract
+     */
     abstract fromBytes (bytes: Uint8Array): number;
 
     abstract set boolean (value: BOOLEAN);
@@ -167,7 +276,6 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     abstract get oidIRI (): OID_IRI;
     abstract set relativeOIDIRI (value: RELATIVE_OID_IRI);
     abstract get relativeOIDIRI (): RELATIVE_OID_IRI;
-
 
     private validateSize (name: string, units: string, actualSize: number, min: number, max?: number): void {
         const effectiveMax: number = (typeof max === "undefined" ? Infinity : max);
@@ -313,6 +421,13 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
 
     abstract deconstruct (dataType: string): Uint8Array;
 
+    /**
+     * Validate the tag of this element against permitted classes, construction, and tag numbers.
+     * @param {ASN1TagClass[]} permittedClasses - Allowed tag classes.
+     * @param {ASN1Construction[]} permittedConstruction - Allowed construction types.
+     * @param {number[]} permittedNumbers - Allowed tag numbers.
+     * @returns {number} 0 if valid, negative error code otherwise.
+     */
     public validateTag (
         permittedClasses: ASN1TagClass[],
         permittedConstruction: ASN1Construction[],
@@ -324,13 +439,31 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         return 0;
     }
 
+    /**
+     * The inner ASN.1 element (for constructed types).
+     * @type {ASN1Element}
+     * @abstract
+     */
     abstract get inner (): ASN1Element;
+    /**
+     * The component elements (for constructed types).
+     * @type {ASN1Element[]}
+     * @abstract
+     */
     abstract get components (): ASN1Element[];
 
+    /**
+     * Convert this element to an ASN1Element (identity function).
+     * @returns {ASN1Element}
+     */
     public toElement (): ASN1Element {
         return this;
     }
 
+    /**
+     * Copy the tag, construction, tag number, and value from another ASN1Element.
+     * @param {ASN1Element} el - The element to copy from.
+     */
     public fromElement (el: ASN1Element): void {
         this.tagClass = el.tagClass;
         this.construction = el.construction;
@@ -338,6 +471,10 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         this.value = new Uint8Array(el.value);
     }
 
+    /**
+     * Get a string representation of this ASN.1 element.
+     * @returns {string}
+     */
     public toString (): string {
         if (this.tagClass === ASN1TagClass.universal) {
             switch (this.tagNumber) {
@@ -418,13 +555,13 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     }
 
     /**
-     * @summary Convert this ASN.1 value to a JSON-serialized value.
-     * @description
+     * Convert this ASN.1 value to a JSON-serialized value.
      *
      * This method serializes data loosely according to the JSON Encoding Rules
      * specified in ITU Recommendation X.697.
      *
-     * @returns Usually a valid JSON Encoding Rules encoding of that element.
+     * @param {boolean} [recurse=true] - Whether to recursively serialize child elements.
+     * @returns {unknown} Usually a valid JSON Encoding Rules encoding of that element.
      */
     public toJSON (recurse: boolean = true): unknown {
         if (this.tagClass === ASN1TagClass.universal) {

@@ -1,6 +1,14 @@
 import * as errors from "../errors.mjs";
 import { INTEGER } from "../macros.mjs";
 
+/**
+ * @summary Creates a validator function for a date/time component (e.g., year, month, day, hour, etc.)
+ * @param {string} unitName - The name of the date/time unit (e.g., 'year', 'month').
+ * @param {number | bigint} min - The minimum allowed value for the unit.
+ * @param {number | bigint} max - The maximum allowed value for the unit.
+ * @returns {Function} A validator function for the unit.
+ * @function
+ */
 export default
 function datetimeComponentValidator (
     unitName: string,

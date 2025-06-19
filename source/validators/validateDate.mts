@@ -1,5 +1,15 @@
 import * as errors from "../errors.mjs";
 
+/**
+ * @summary Validates an ASN.1 date (year, month, day) for correctness and range.
+ * @param {string} dataType - The ASN.1 type being validated (for error messages).
+ * @param {number} year - The year value.
+ * @param {number} month - The month value (0-based: 0=Jan, 1=Feb, ... 11=Dec).
+ * @param {number} date - The day of the month (1-based).
+ * @returns {void}
+ * @throws {ASN1Error} if the date is invalid, out of range, or not a valid calendar date.
+ * @function
+ */
 export default
 function validateDate (
     dataType: string,

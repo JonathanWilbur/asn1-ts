@@ -2,8 +2,12 @@ import { ASN1SpecialRealValue } from "../values.mjs";
 import convertTextToBytes from "./convertTextToBytes.mjs";
 
 /**
- * Only encodes with seven digits of precision.
- * @param value
+ * @summary Encodes a JavaScript number as an ASN.1 `REAL` value using X.690 base-10 (NR3) encoding
+ * @description
+ * Handles special values as per ITU X.690.
+ * @param {number} value - The number to encode.
+ * @returns {Uint8Array} The encoded REAL value bytes.
+ * @function
  */
 export default
 function encodeX690Base10RealNumber (value: number): Uint8Array {

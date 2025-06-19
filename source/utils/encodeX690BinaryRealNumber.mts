@@ -4,6 +4,15 @@ import encodeSignedBigEndianInteger from "./encodeSignedBigEndianInteger.mjs";
 import { ASN1SpecialRealValue } from "../values.mjs";
 import * as errors from "../errors.mjs";
 
+/**
+ * @summary Encodes a JavaScript number as an ASN.1 `REAL` value using X.690 binary encoding
+ * @description
+ * Handles special values and normalization as per ITU X.690.
+ * @param {number} value - The number to encode.
+ * @returns {Uint8Array} The encoded REAL value bytes.
+ * @throws {ASN1OverflowError} If the value is too precise to encode.
+ * @function
+ */
 export default
 function encodeX690BinaryRealNumber (value: number): Uint8Array {
     if (value === 0.0) {

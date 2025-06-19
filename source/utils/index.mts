@@ -1,3 +1,7 @@
+/**
+ * Barrel file exporting ASN.1 utility functions for encoding, decoding, and manipulating ASN.1 data.
+ * Includes helpers for integer, real, bit, and byte operations as per ITU X.690.
+ */
 export { default as base128Length } from "./base128Length.mjs";
 export { default as decodeIEEE754DoublePrecisionFloat } from "./decodeIEEE754DoublePrecisionFloat.mjs";
 export { default as decodeIEEE754SinglePrecisionFloat } from "./decodeIEEE754SinglePrecisionFloat.mjs";

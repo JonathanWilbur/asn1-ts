@@ -1,5 +1,13 @@
 import type ASN1Element from "../asn1.mjs";
 
+/**
+ * @summary Checks if all ASN.1 elements in an array have unique tag class and tag number combinations
+ * @description
+ * Useful for validating ASN.1 `CHOICE` and `SET` types.
+ * @param {ASN1Element[]} elements - The ASN.1 elements to check.
+ * @returns {boolean} True if all elements are uniquely tagged, false otherwise.
+ * @function
+ */
 export default
 function isUniquelyTagged (elements: ASN1Element[]): boolean {
     const finds: Set<number> = new Set<number>([]);

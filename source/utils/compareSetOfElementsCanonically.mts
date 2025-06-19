@@ -1,8 +1,14 @@
 import type ASN1Element from "../asn1.mjs";
 
 /**
- * Compares SET OF elements according to ITU X.690-2015, Section 11.6. For use
- * with ECMAScript's `Array.prototype.sort()` function.
+ * @summary Compares two ASN.1 `SET OF` elements for canonical order as per ITU X.690-2015, Section 11.6.
+ * @description
+ * Intended for use with `Array.prototype.sort()` for DER/CER encoding.
+ *
+ * @param {ASN1Element} a - The first ASN.1 element to compare.
+ * @param {ASN1Element} b - The second ASN.1 element to compare.
+ * @returns {number} Negative if a < b, positive if a > b, zero if equal.
+ * @function
  */
 export default
 function compareSetOfElementsCanonically (a: ASN1Element, b: ASN1Element): number {

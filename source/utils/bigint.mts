@@ -2,6 +2,14 @@ import type { INTEGER } from "../macros.mjs";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
 import { Buffer } from "node:buffer";
 
+/**
+ * @summary Converts a Buffer or Uint8Array containing a big-endian integer to an ASN.1 `INTEGER` value
+ * @description
+ * Handles both positive and negative values, supporting arbitrary-length integers as per ASN.1 encoding.
+ * @param {Buffer|Uint8Array} input - The buffer or byte array containing the big-endian integer.
+ * @returns {INTEGER} The decoded ASN.1 `INTEGER` value (number or BigInt).
+ * @function
+ */
 export
 function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
     const buf: Buffer = (input instanceof Buffer)
@@ -33,6 +41,14 @@ function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
     }
 }
 
+/**
+ * @summary Encodes an ASN.1 `INTEGER` value (number or BigInt) into a Buffer in big-endian order
+ * @description
+ * Handles both positive and negative values, supporting arbitrary-length integers as per ASN.1 encoding.
+ * @param {INTEGER} int - The ASN.1 `INTEGER` value to encode.
+ * @returns {Buffer} The encoded big-endian buffer
+ * @function
+ */
 export
 function integerToBuffer (int: INTEGER): Buffer {
     if (typeof int === "number") {

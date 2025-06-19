@@ -1,6 +1,14 @@
 import type ASN1Element from "../asn1.mjs";
 import { Buffer } from "node:buffer";
 
+/**
+ * @summary Sorts ASN.1 elements in canonical order as specified by ITU X.690 (2021), Section 11.6
+ * @description
+ * Used for DER and CER encoding of `SET OF` and similar types.
+ * @param {ASN1Element[]} elements - The ASN.1 elements to sort.
+ * @returns {ASN1Element[]} The sorted array of ASN.1 elements.
+ * @function
+ */
 export default
 function sortCanonically (elements: ASN1Element[]): ASN1Element[] {
     return elements.sort((a, b): number => {
