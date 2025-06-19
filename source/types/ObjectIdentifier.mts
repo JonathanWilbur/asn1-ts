@@ -4,6 +4,15 @@ import type { Buffer } from "node:buffer";
 
 const PERIOD = ".".charCodeAt(0);
 
+/**
+ * An `ObjectIdentifier` is a constructed data type, defined
+ * in the [International Telecommunications Union](https://www.itu.int)'s
+ * [X.660](https://www.itu.int/rec/T-REC-X.660/en).
+ * 
+ * It is a sequence of unsigned integers assigned by authorities, and which
+ * can be delegated to other authorities and organizations to form a
+ * hierarchical namespace of unique identifiers.
+ */
 export default
 class ObjectIdentifier {
     // I experimented with storing these as a Uint8Array and it wasn't really a

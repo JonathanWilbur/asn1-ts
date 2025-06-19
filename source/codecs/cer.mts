@@ -73,6 +73,13 @@ import {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 
+/**
+ * @classdesc
+ * A `CERElement` is a class that represents an ASN.1 element encoded in
+ * Canonical Encoding Rules (CER).
+ * 
+ * It is used to encode and decode ASN.1 elements in CER format.
+ */
 export default
 class CERElement extends X690Element {
     private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
@@ -806,6 +813,14 @@ class CERElement extends X690Element {
         return ret;
     }
 
+    /**
+     * Instead of serializing the element, returns the encoded element in fragments that
+     * are not yet concatenated together. This is for performance optimizations, since
+     * a large number of buffers could be concatenated together in a single pass / allocation,
+     * rather than doing this for every element separately.
+     * 
+     * Basically, just concatenate all of the returned buffers to obtain the serialized element.
+     */
     public toBuffers (): Uint8Array[] {
         return [
             this.tagAndLengthBytes(),
@@ -818,6 +833,13 @@ class CERElement extends X690Element {
         ];
     }
 
+    /**
+     * Deconstruct an ASN.1 value that is constructed over several elements
+     * into a single buffer representing the content octets.
+     * 
+     * @param dataType - The name of the type of the element, used for an error message.
+     * @returns {Uint8Array} The element as a single buffer.
+     */
     public deconstruct (dataType: string): Uint8Array {
         if (this.construction === ASN1Construction.primitive) {
             return new Uint8Array(this.value); // Clones it.

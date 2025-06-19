@@ -71,10 +71,19 @@ import {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 
+/**
+ * @classdesc
+ * A `DERElement` is a class that represents an ASN.1 element encoded in
+ * Distinguished Encoding Rules (DER).
+ * 
+ * It is used to encode and decode ASN.1 elements in DER format.
+ */
 export default
 class DERElement extends X690Element {
     private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
+
+    /** Get the value octets */
     get value (): Uint8Array {
         if (this._value instanceof Uint8Array) {
             return this._value;
@@ -83,11 +92,14 @@ class DERElement extends X690Element {
         this._value = bytes;
         return bytes;
     }
+
+    /** Set the value octets */
     set value (v: Uint8Array) {
         this._currentValueLength = v.length;
         this._value = v;
     }
 
+    /** Make this element constructed from other elements */
     public construct (els: ASN1Element[]): void {
         this._currentValueLength = undefined;
         this._value = els;
@@ -420,7 +432,8 @@ class DERElement extends X690Element {
         return decodeDuration(this.value);
     }
 
-    public encode (value: any): void { // eslint-disable-line
+    /** Encode anything into an ASN.1 element. */
+    public encode (value: any): void {
         switch (typeof value) {
         case ("undefined"): {
             this.value = new Uint8Array(0);
@@ -553,6 +566,10 @@ class DERElement extends X690Element {
         return ret;
     }
 
+    /**
+     * Get the inner element, if constructed. This is a convenience method
+     * for when `EXPLICIT` tags are used.
+     */
     get inner (): ASN1Element {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError(
@@ -584,6 +601,10 @@ class DERElement extends X690Element {
         return ret;
     }
 
+    /**
+     * Set the inner element, and make this element constructed. This is a
+     * convenience method for when `EXPLICIT` tags are used.
+     */
     set inner (value: ASN1Element) {
         this.construction = ASN1Construction.constructed;
         this._value = [ value ];
@@ -602,7 +623,12 @@ class DERElement extends X690Element {
         this.tagNumber = tagNumber;
     }
 
-    // Returns the number of bytes read
+    /**
+     * Decode a DER element from a byte array.
+     * 
+     * @param bytes - The byte array to decode.
+     * @returns The number of bytes read.
+     */
     public fromBytes (bytes: Uint8Array): number {
         if (bytes.length < 2) {
             throw new errors.ASN1TruncationError("Tried to decode a DER element that is less than two bytes.", this);
@@ -710,6 +736,7 @@ class DERElement extends X690Element {
         }
     }
 
+    /** Get the tag and length bytes of the element. */
     public tagAndLengthBytes (): Uint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
@@ -761,6 +788,14 @@ class DERElement extends X690Element {
         return ret;
     }
 
+    /**
+     * Instead of serializing the element, returns the encoded element in fragments that
+     * are not yet concatenated together. This is for performance optimizations, since
+     * a large number of buffers could be concatenated together in a single pass / allocation,
+     * rather than doing this for every element separately.
+     * 
+     * Basically, just concatenate all of the returned buffers to obtain the serialized element.
+     */
     public toBuffers (): Uint8Array[] {
         return [
             this.tagAndLengthBytes(),
@@ -774,6 +809,11 @@ class DERElement extends X690Element {
         return new Uint8Array(this.value);
     }
 
+    /**
+     * Get the components of the element, if constructed.
+     * The content octets are interpreted as DER elements, regardless of
+     * the primitive / constructed status of the element.
+     */
     public get components (): ASN1Element[] {
         if (Array.isArray(this._value)) {
             return this._value;
@@ -788,6 +828,7 @@ class DERElement extends X690Element {
         return encodedElements;
     }
 
+    /** Get the length of the length octets. */
     public lengthLength(valueLength?: number): number {
         const len = valueLength ?? this.valueLength();
         if (len < 127) {
@@ -804,6 +845,7 @@ class DERElement extends X690Element {
         return 5 - startOfNonPadding;
     }
 
+    /** Get the length of the value octets. */
     public valueLength(): number {
         if (this._currentValueLength !== undefined) {
             return this._currentValueLength;
@@ -820,6 +862,7 @@ class DERElement extends X690Element {
         return len;
     }
 
+    /** Get the total length of the element when fully serialized. */
     public tlvLength(): number {
         const value_len = this.valueLength();
         return (
