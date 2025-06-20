@@ -1,0 +1,19 @@
+# Taken from https://jsr.io/docs/publishing-packages#publishing-from-github-actions
+# .github/workflows/publish.yml
+
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # The OIDC ID token is used for authentication with JSR.
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx jsr publish
