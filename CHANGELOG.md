@@ -1,5 +1,15 @@
 # Changelog
 
+## [10.0.0]
+
+- **BREAKING**: Remove some deprecated APIs.
+- Fix JSR package. See [this issue](https://github.com/jsr-io/jsr/issues/1145).
+- Add JSDoc documentation.
+
+## [9.0.3]
+
+- Build to ES2020 target. Newer ECMAScript features are not used.
+
 ## [9.0.2]
 
 - Fix bug when encoding `DATE` values having a year less than 1000.
