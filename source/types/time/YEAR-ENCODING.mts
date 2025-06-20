@@ -1,4 +1,4 @@
-import { INTEGER } from "../../macros.mjs";
+import type { INTEGER } from "../../macros.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:

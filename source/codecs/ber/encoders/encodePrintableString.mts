@@ -2,7 +2,7 @@ import isPrintableCharacter from "../../../validators/isPrintableCharacter.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
 import { printableStringCharacters } from "../../../values.mjs";
-import { PrintableString } from "../../../macros.mjs";
+import type { PrintableString } from "../../../macros.mjs";
 
 export default
 function encodeNumericString (value: PrintableString): Uint8Array {

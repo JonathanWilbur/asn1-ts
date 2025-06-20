@@ -1,4 +1,4 @@
-import { EXTERNAL } from "../../../macros.mjs";
+import type { EXTERNAL } from "../../../macros.mjs";
 import DERElement from "../../../codecs/der.mjs";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values.mjs";
 import ASN1Element from "../../../asn1.mjs";

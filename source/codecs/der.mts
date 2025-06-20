@@ -43,7 +43,7 @@ import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString.mjs
 import encodeDuration from "../codecs/x690/encoders/encodeDuration.mjs";
 import decodeDuration from "../codecs/der/decoders/decodeDuration.mjs";
 import X690Element from "../x690.mjs";
-import {
+import type {
     BOOLEAN,
     BIT_STRING,
     OCTET_STRING,
@@ -75,7 +75,7 @@ import { Buffer } from "node:buffer";
  * @classdesc
  * A `DERElement` is a class that represents an ASN.1 element encoded in
  * Distinguished Encoding Rules (DER).
- * 
+ *
  * It is used to encode and decode ASN.1 elements in DER format.
  */
 export default
@@ -625,7 +625,7 @@ class DERElement extends X690Element {
 
     /**
      * Decode a DER element from a byte array.
-     * 
+     *
      * @param bytes - The byte array to decode.
      * @returns The number of bytes read.
      */
@@ -793,7 +793,7 @@ class DERElement extends X690Element {
      * are not yet concatenated together. This is for performance optimizations, since
      * a large number of buffers could be concatenated together in a single pass / allocation,
      * rather than doing this for every element separately.
-     * 
+     *
      * Basically, just concatenate all of the returned buffers to obtain the serialized element.
      */
     public toBuffers (): Uint8Array[] {

@@ -1,5 +1,5 @@
 import * as errors from "../../../errors.mjs";
-import { BOOLEAN } from "../../../macros.mjs";
+import type { BOOLEAN } from "../../../macros.mjs";
 
 export default
 function decodeBoolean (value: Uint8Array): BOOLEAN {

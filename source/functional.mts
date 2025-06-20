@@ -6,7 +6,7 @@
  * See
  * [this repository](https://github.com/Wildboar-Software/asn1-typescript-libraries)
  * for many real-world uses of this API.
- * 
+ *
  * If you're wondering why so many functions start with an underscore, it is because
  * ASN.1 identifiers may not start with a hyphen, so when you generate code that
  * converts ASN.1 identifiers to JavaScript identifiers by converting hyphens to
@@ -24,6 +24,9 @@ import {
     ASN1Construction,
     ASN1UniversalType,
     ASN1ConstructionError,
+    CharacterString,
+} from "./index.mjs";
+import type {
     BIT_STRING,
     INTEGER,
     OBJECT_IDENTIFIER,
@@ -38,7 +41,6 @@ import {
     DATE_TIME,
     EXTERNAL,
     EMBEDDED_PDV,
-    CharacterString,
     NULL,
     ENUMERATED,
     BOOLEAN,
@@ -80,11 +82,11 @@ this issue, and hence made the necessary code changes, was `Refinement` in
 /**
  * @summary Interface for getting an ASN.1 element
  * @description
- * 
+ *
  * This interface defines a function that returns an ASN.1 element, optionally
  * taking a value parameter. It is used throughout the functional API for
  * element creation and manipulation.
- * 
+ *
  * @template T The type of the value that may be passed to the function
  */
 export interface ASN1ElementGetter<T> {
@@ -94,11 +96,11 @@ export interface ASN1ElementGetter<T> {
 /**
  * @summary Interface for encoding values to ASN.1 elements
  * @description
- * 
+ *
  * This interface defines a function that encodes a value of type T into an
  * ASN.1 element. The function takes both the value to encode and an element
  * getter function that can be used to create new ASN.1 elements.
- * 
+ *
  * @template T The type of the value to encode
  */
 export interface ASN1Encoder<T> {
@@ -108,10 +110,10 @@ export interface ASN1Encoder<T> {
 /**
  * @summary Interface for decoding ASN.1 elements to values
  * @description
- * 
+ *
  * This interface defines a function that decodes an ASN.1 element into a value
  * of type T. The function takes an ASN.1 element and returns the decoded value.
- * 
+ *
  * @template T The type of the value to decode to
  */
 export interface ASN1Decoder<T> {
@@ -121,7 +123,7 @@ export interface ASN1Decoder<T> {
 /**
  * @summary Interface for validating ASN.1 tags
  * @description
- * 
+ *
  * This interface defines a function that validates whether an ASN.1 element
  * at a given index in an array of elements matches certain criteria. It is
  * used for component selection in `SEQUENCE` and `SET` parsing.
@@ -134,10 +136,10 @@ export interface TagValidator {
 /**
  * @summary Utility type for selecting properties from a type
  * @description
- * 
+ *
  * This utility type extracts the type of a property `K` from type `T`.
  * It is used for type-safe property access in the functional API.
- * 
+ *
  * @template T The source type
  * @template K The property key
  */
@@ -147,10 +149,10 @@ export type Selection<T, K extends string> = T extends Record<K, any> ? T[K] : n
 /**
  * @summary Utility type for getting all union member keys
  * @description
- * 
+ *
  * This utility type extracts all possible keys from a union type `T`.
  * It is used for type-safe `CHOICE` handling in the functional API.
- * 
+ *
  * @template T The union type
  */
 export type AllUnionMemberKeys<T> = T extends any ? keyof T : never;
@@ -158,10 +160,10 @@ export type AllUnionMemberKeys<T> = T extends any ? keyof T : never;
 /**
  * @summary Type for inextensible `CHOICE` values
  * @description
- * 
+ *
  * This type represents a `CHOICE` value that cannot be extended with
  * additional alternatives beyond those defined in the type.
- * 
+ *
  * @template T The `CHOICE` type
  */
 export type InextensibleChoice<T> = T;
@@ -169,11 +171,11 @@ export type InextensibleChoice<T> = T;
 /**
  * @summary Type for extensible `CHOICE` values
  * @description
- * 
+ *
  * This type represents a CHOICE value that can be extended with
  * additional alternatives. It can be either the defined type `T` or
  * an ASN.1 element representing an unknown alternative.
- * 
+ *
  * @template T The `CHOICE` type
  */
 export type ExtensibleChoice<T> = (T | ASN1Element);
@@ -181,7 +183,7 @@ export type ExtensibleChoice<T> = (T | ASN1Element);
 /**
  * @summary Type for decoding callback functions
  * @description
- * 
+ *
  * This type defines a callback function that is invoked during the
  * parsing of `SEQUENCE` and `SET` types. It receives an ASN.1 element
  * and optionally the name of the component being processed.
@@ -191,7 +193,7 @@ export type DecodingCallback = (el: ASN1Element, name?: string) => void;
 /**
  * @summary Type for mapping component names to decoding callbacks
  * @description
- * 
+ *
  * This type defines a record that maps component names to their
  * corresponding decoding callback functions. It is used in the
  * parsing of `SEQUENCE` and `SET` types.
@@ -201,11 +203,11 @@ export type DecodingMap = Record<string, DecodingCallback>;
 /**
  * @summary Create a tag validator that checks for a specific tag class and number
  * @description
- * 
+ *
  * This function creates a TagValidator that returns true only when an ASN.1
  * element has the specified tag class and tag number. It is commonly used
  * for component selection in `SEQUENCE` and `SET` parsing.
- * 
+ *
  * @param {ASN1TagClass} tagClass The ASN.1 tag class to match
  * @param {number} tagNumber The ASN.1 tag number to match
  * @returns {Function} A TagValidator function that checks for the specified tag
@@ -221,11 +223,11 @@ export function hasTag (tagClass: ASN1TagClass, tagNumber: number): TagValidator
 /**
  * @summary Create a tag validator that accepts any tag
  * @description
- * 
+ *
  * This function is a `TagValidator` that always returns true, accepting
  * any ASN.1 element regardless of its tag class or number. It is useful
  * for components that can have any tag.
- * 
+ *
  * @returns A `TagValidator` function that accepts any tag
  * @function
  */
@@ -236,12 +238,12 @@ export function hasAnyTag (): boolean {
 /**
  * @summary Create a tag validator that checks for a specific tag class
  * @description
- * 
+ *
  * This function creates a `TagValidator` that returns true when an ASN.1
  * element has the specified tag class, regardless of the tag number.
  * It is useful for components that can have any tag number within a
  * specific tag class.
- * 
+ *
  * @param {ASN1TagClass} tagClass The ASN.1 tag class to match
  * @returns {Function} A `TagValidator` function that checks for the specified tag class
  * @function
@@ -255,11 +257,11 @@ export function hasTagClass (tagClass: ASN1TagClass): TagValidator {
 /**
  * @summary Create a tag validator that checks for tag numbers in a list
  * @description
- * 
+ *
  * This function creates a `TagValidator` that returns true when an ASN.1
  * element has a tag number that matches any of the numbers in the provided
  * array. It is useful for components that can have multiple valid tag numbers.
- * 
+ *
  * @param {number[]} tagNumbers An array of valid tag numbers
  * @returns {Function} A `TagValidator` function that checks for the specified tag numbers
  * @function
@@ -273,11 +275,11 @@ export function hasTagNumberIn (tagNumbers: number[]): TagValidator {
 /**
  * @summary Create a tag validator that combines multiple validators with AND logic
  * @description
- * 
+ *
  * This function creates a `TagValidator` that returns true only when all of the
  * provided tag validators return true. It implements logical AND behavior for
  * combining multiple tag validation criteria.
- * 
+ *
  * @param {Function[]} fns An array of `TagValidator` functions to combine
  * @returns {Function} A `TagValidator` function that requires all conditions to be met
  * @function
@@ -291,11 +293,11 @@ export function and (...fns: TagValidator[]): TagValidator {
 /**
  * @summary Create a tag validator that combines multiple validators with OR logic
  * @description
- * 
+ *
  * This function creates a `TagValidator` that returns true when any of the
  * provided tag validators return true. It implements logical OR behavior for
  * combining multiple tag validation criteria.
- * 
+ *
  * @param {Function[]} fns An array of `TagValidator` functions to combine
  * @returns {Function} A `TagValidator` function that requires any condition to be met
  * @function
@@ -309,11 +311,11 @@ export function or (...fns: TagValidator[]): TagValidator {
 /**
  * @summary Create a tag validator that negates another validator
  * @description
- * 
+ *
  * This function creates a `TagValidator` that returns the opposite of what
  * the provided validator returns. It implements logical NOT behavior for
  * tag validation.
- * 
+ *
  * @param {Function} fn The `TagValidator` function to negate
  * @returns {Function} A `TagValidator` function that returns the opposite result
  * @function
@@ -327,10 +329,10 @@ export function not (fn: TagValidator): TagValidator {
 /**
  * @summary Convert an ASN.1 tag class to its string representation
  * @description
- * 
+ *
  * This function converts an ASN.1 tag class enum value to its corresponding
  * string name. It is useful for error messages and debugging purposes.
- * 
+ *
  * @param tagClass The ASN.1 tag class to convert
  * @returns The string name of the tag class
  * @function
@@ -350,12 +352,12 @@ export function tagClassName (tagClass: ASN1TagClass): string {
 /**
  * @summary Deeply compares two values of any data type.
  * @description
- * 
+ *
  * This function performs a deep comparison of two values, handling various
  * data types including primitives, objects, arrays, and BigInt values.
  * It uses `JSON.stringify()` for object comparison and special handling for
  * BigInt values since they cannot be serialized to JSON.
- * 
+ *
  * @param value1 The first value to compare
  * @param value2 The second value to compare
  * @returns `true` if the two values are equal, `false` otherwise
@@ -382,12 +384,12 @@ export function deepEq (value1: unknown, value2: unknown): boolean {
 /**
  * @summary Create a function that checks if a value equals a default value
  * @description
- * 
+ *
  * This function creates a predicate function that checks whether an actual
  * value equals a specified `DEFAULT` value using deep equality comparison.
  * It is useful for determining if optional components should be omitted
  * from ASN.1 encoding.
- * 
+ *
  * @param defaultValue The default value to compare against
  * @returns A function that returns true if the actual value equals the default
  * @function
@@ -401,10 +403,10 @@ export function isDefault (defaultValue: any): (actualValue: any) => boolean {
 /**
  * @summary Check if a value is present (not undefined)
  * @description
- * 
+ *
  * This function checks whether a value is present by comparing it against
  * `undefined`, which is used for absent components.
- * 
+ *
  * @param value The value to check for presence
  * @returns `true` if the value is not undefined, `false` otherwise
  * @function
@@ -418,16 +420,16 @@ export function present (value: any): boolean {
 /**
  * @summary Create an explicit tagging encoder
  * @description
- * 
+ *
  * This function creates an encoder that applies explicit tagging to ASN.1
  * elements. Explicit tagging wraps the encoded value in a constructed
  * element with the specified tag class and number.
- * 
+ *
  * @param {ASN1TagClass | undefined} class_ The ASN.1 tag class to apply (optional)
  * @param {number | undefined} tag The ASN.1 tag number to apply (optional)
  * @param {Function} encoderGetter A function that returns the encoder for the inner value
  * @param {Function} outer A function that generates a new ASN.1 element
- * 
+ *
  * @returns {Function} An encoder function that applies explicit tagging
  * @function
  */
@@ -454,10 +456,10 @@ export function _encode_explicit (
 /**
  * @summary Create an explicit tagging decoder
  * @description
- * 
+ *
  * This function creates a decoder that handles explicit tagging by
  * extracting the inner element and applying the provided decoder to it.
- * 
+ *
  * @param {Function} decoderGetter A function that returns the decoder for the inner value
  * @returns {Function} A decoder function that handles explicit tagging
  * @function
@@ -469,11 +471,11 @@ export function _decode_explicit<T> (decoderGetter: () => (el: ASN1Element) => T
 /**
  * @summary Create an implicit tagging encoder
  * @description
- * 
+ *
  * This function creates an encoder that applies implicit tagging to ASN.1
  * elements. Implicit tagging changes the tag class and number of the
  * encoded value without wrapping it in a constructed element.
- * 
+ *
  * @param {ASN1TagClass | undefined} class_ The ASN.1 tag class to apply (optional)
  * @param {number | undefined} tag The ASN.1 tag number to apply (optional)
  * @param {Function} encoderGetter A function that returns the encoder for the value
@@ -502,10 +504,10 @@ export function _encode_implicit (
 /**
  * @summary Create an implicit tagging decoder
  * @description
- * 
+ *
  * This function creates a decoder that handles implicit tagging by
  * applying the provided decoder directly to the element.
- * 
+ *
  * @param {Function} decoderGetter A function that returns the decoder for the value
  * @returns {Function} A decoder function that handles implicit tagging
  * @function
@@ -517,10 +519,10 @@ export function _decode_implicit<T> (decoderGetter: () => (el: ASN1Element) => T
 /**
  * @summary Set the tag class of an ASN.1 element
  * @description
- * 
+ *
  * This function creates an ASN.1 element using the provided encoder getter
  * and sets its tag class to the specified value.
- * 
+ *
  * @param {ASN1TagClass} class_ The ASN.1 tag class to set
  * @param {Function} encoderGetter A function that returns an ASN.1 element
  * @returns {ASN1Element} An ASN.1 element with the specified tag class
@@ -535,10 +537,10 @@ export function _tagClass (class_: ASN1TagClass, encoderGetter: () => () => ASN1
 /**
  * @summary Set the construction type of an ASN.1 element
  * @description
- * 
+ *
  * This function creates an ASN.1 element using the provided encoder getter
  * and sets its construction type to the specified value.
- * 
+ *
  * @param {ASN1Construction} con The ASN.1 construction type to set
  * @param {Function} encoderGetter A function that returns an ASN.1 element
  * @returns {ASN1Element} An ASN.1 element with the specified construction type
@@ -553,10 +555,10 @@ export function _construction (con: ASN1Construction, encoderGetter: () => () =>
 /**
  * @summary Set the tag number of an ASN.1 element
  * @description
- * 
+ *
  * This function creates an ASN.1 element using the provided encoder getter
  * and sets its tag number to the specified value.
- * 
+ *
  * @param {number} tag The ASN.1 tag number to set
  * @param {Function} encoderGetter A function that returns an ASN.1 element
  * @returns {ASN1Element} An ASN.1 element with the specified tag number
@@ -573,10 +575,10 @@ export function _tagNumber (tag: number, encoderGetter: () => () => ASN1Element)
 /**
  * @summary BER (Basic Encoding Rules) element getter
  * @description
- * 
+ *
  * This constant provides a function that creates new BER (Basic Encoding Rules)
  * ASN.1 elements.
- * 
+ *
  * @constant
  */
 export const BER: ASN1Encoder<any> = (): ASN1Element => new BERElement();
@@ -584,10 +586,10 @@ export const BER: ASN1Encoder<any> = (): ASN1Element => new BERElement();
 /**
  * @summary CER (Canonical Encoding Rules) element getter
  * @description
- * 
+ *
  * This constant provides a function that creates new CER (Canonical Encoding Rules)
  * ASN.1 elements.
- * 
+ *
  * @constant
  */
 export const CER: ASN1Encoder<any> = (): ASN1Element => new CERElement();
@@ -595,10 +597,10 @@ export const CER: ASN1Encoder<any> = (): ASN1Element => new CERElement();
 /**
  * @summary DER (Distinguished Encoding Rules) element getter
  * @description
- * 
+ *
  * This constant provides a function that creates new DER (Distinguished Encoding Rules)
  * ASN.1 elements.
- * 
+ *
  * @constant
  */
 export const DER: ASN1Encoder<any> = (): ASN1Element => new DERElement();
@@ -2118,10 +2120,10 @@ export function _encode_choice<T extends object> (
  * @description
  * Decodes an inextensible `CHOICE` type from an ASN.1 element. Throws an error
  * if the tag is unrecognized.
- * 
+ *
  * Compare to {@link _decode_extensible_choice} for a version that supports
  * extensible `CHOICE` types.
- * 
+ *
  * @param {Object} choices A map of choices to decoders
  * @returns {Function} A decoder function for the `CHOICE` as a whole
  * @function
@@ -2160,10 +2162,10 @@ export function _decode_inextensible_choice<T> (
  * @description
  * Decodes an extensible `CHOICE` type from an ASN.1 element. Returns the element
  * if the tag is unrecognized.
- * 
+ *
  * Compare to {@link _decode_inextensible_choice} for a version that supports
  * inextensible `CHOICE` types.
- * 
+ *
  * @param {Object} choices A map of choices to decoders
  * @returns {Function} A decoder function for the `CHOICE` as a whole
  * @function
@@ -2192,7 +2194,7 @@ export type SetOfEncoder<T> = ASN1Encoder<SET_OF<T>>;
  * @summary Decode a `SEQUENCE OF` type
  * @description
  * Decodes a `SEQUENCE OF` type from an ASN.1 element.
- * 
+ *
  * @param {Function} decoderGetter A function that returns a decoder for the items of the sequence
  * @returns {Function} A decoder function for the `SEQUENCE OF` as a whole
  * @function
@@ -2267,9 +2269,9 @@ export function _encodeSetOf<T> (
  * @summary Encode a `bigint` value to an ASN.1 element
  * @description
  * Encodes a `bigint` value into an ASN.1 element with the universal tag class and integer tag number.
- * 
+ *
  * An `OCTET STRING` is used to encode the `bigint` value.
- * 
+ *
  * @param {Uint8Array} value The `bigint` value to encode
  * @param {Function} elGetter A function that creates a new ASN.1 element
  * @returns {ASN1Element} The encoded `bigint` value

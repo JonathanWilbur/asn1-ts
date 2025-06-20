@@ -1,4 +1,4 @@
-import { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
+import type { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import * as errors from "../../../errors.mjs";
 import { DURATION_EQUIVALENT } from "../../../types/index.mjs";

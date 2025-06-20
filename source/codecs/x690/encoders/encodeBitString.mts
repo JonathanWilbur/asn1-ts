@@ -1,4 +1,4 @@
-import { BIT_STRING } from "../../../macros.mjs";
+import type { BIT_STRING } from "../../../macros.mjs";
 import packBits from "../../../utils/packBits.mjs";
 
 export default

@@ -1,4 +1,4 @@
-import { OID_IRI } from "../../../macros.mjs";
+import type { OID_IRI } from "../../../macros.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 
 export default

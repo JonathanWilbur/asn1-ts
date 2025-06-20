@@ -1,7 +1,7 @@
 import isGeneralCharacter from "../../../validators/isGeneralCharacter.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
-import { GeneralString } from "../../../macros.mjs";
+import type { GeneralString } from "../../../macros.mjs";
 
 export default
 function decodeGeneralString (value: Uint8Array): GeneralString {

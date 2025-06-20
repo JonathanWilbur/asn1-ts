@@ -1,5 +1,5 @@
 import encodeX690BinaryRealNumber from "../../../utils/encodeX690BinaryRealNumber.mjs";
-import { REAL } from "../../../macros.mjs";
+import type { REAL } from "../../../macros.mjs";
 
 /**
  * Only encodes with seven digits of precision.

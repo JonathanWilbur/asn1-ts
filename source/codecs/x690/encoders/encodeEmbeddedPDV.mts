@@ -1,4 +1,4 @@
-import { EMBEDDED_PDV } from "../../../macros.mjs";
+import type { EMBEDDED_PDV } from "../../../macros.mjs";
 import DERElement from "../../../codecs/der.mjs";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values.mjs";
 import encodeSequence from "./encodeSequence.mjs";

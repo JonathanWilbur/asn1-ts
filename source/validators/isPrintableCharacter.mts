@@ -1,3 +1,4 @@
+// TODO: This could be written in WebAssembly, but could using a Set be faster?
 /**
  * @summary Checks if a character code is a valid ASN.1 `PrintableString` character
  * @param {number} characterCode - The character code to check.

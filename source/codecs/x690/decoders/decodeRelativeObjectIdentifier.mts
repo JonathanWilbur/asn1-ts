@@ -1,5 +1,5 @@
 import * as errors from "../../../errors.mjs";
-import { RELATIVE_OID } from "../../../macros.mjs";
+import type { RELATIVE_OID } from "../../../macros.mjs";
 
 export default
 function decodeRelativeObjectIdentifier (value: Uint8Array): RELATIVE_OID {

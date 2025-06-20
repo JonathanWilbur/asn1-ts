@@ -1,5 +1,5 @@
 import CERElement from "../../cer.mjs";
-import { SEQUENCE } from "../../../macros.mjs";
+import type { SEQUENCE } from "../../../macros.mjs";
 
 export default
 function decodeSequence (value: Uint8Array): SEQUENCE<CERElement> {

@@ -1,7 +1,7 @@
 import isObjectDescriptorCharacter from "../../../validators/isObjectDescriptorCharacter.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
-import { ObjectDescriptor } from "../../../macros.mjs";
+import type { ObjectDescriptor } from "../../../macros.mjs";
 
 export default
 function encodeObjectDescriptor (value: ObjectDescriptor): Uint8Array {

@@ -1,4 +1,4 @@
-import { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
+import type { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default

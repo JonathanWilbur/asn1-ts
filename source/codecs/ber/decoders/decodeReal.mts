@@ -8,7 +8,7 @@ import {
     nr3Regex,
 } from "../../../values.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
-import { REAL } from "../../../macros.mjs";
+import type { REAL } from "../../../macros.mjs";
 import decodeUnsignedBigEndianInteger from "../../../utils/decodeUnsignedBigEndianInteger.mjs";
 import decodeSignedBigEndianInteger from "../../../utils/decodeSignedBigEndianInteger.mjs";
 

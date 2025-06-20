@@ -1,4 +1,5 @@
-import { BIT_STRING, FALSE_BIT } from "../macros.mjs";
+import type { BIT_STRING } from "../macros.mjs";
+import { FALSE_BIT } from "../macros.mjs";
 
 /**
  * @summary Packs a `BIT STRING` into a `Uint8Array`

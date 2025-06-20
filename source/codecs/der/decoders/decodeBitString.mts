@@ -1,5 +1,6 @@
 import * as errors from "../../../errors.mjs";
-import { BIT_STRING, TRUE_BIT, FALSE_BIT } from "../../../macros.mjs";
+import type { BIT_STRING } from "../../../macros.mjs";
+import { TRUE_BIT, FALSE_BIT } from "../../../macros.mjs";
 
 /**
  * This assumes primitive encoding.

@@ -1,6 +1,6 @@
 import ObjectIdentifier from "../../../types/ObjectIdentifier.mjs";
 import * as errors from "../../../errors.mjs";
-import { OBJECT_IDENTIFIER } from "../../../macros.mjs";
+import type { OBJECT_IDENTIFIER } from "../../../macros.mjs";
 
 export default
 function decodeObjectIdentifier (value: Uint8Array): OBJECT_IDENTIFIER {

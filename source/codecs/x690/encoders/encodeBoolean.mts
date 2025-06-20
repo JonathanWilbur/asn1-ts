@@ -1,4 +1,4 @@
-import { BOOLEAN } from "../../../macros.mjs";
+import type { BOOLEAN } from "../../../macros.mjs";
 
 export default
 function encodeBoolean (value: BOOLEAN): Uint8Array {

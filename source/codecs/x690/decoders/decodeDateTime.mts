@@ -1,4 +1,4 @@
-import { DATE_TIME } from "../../../macros.mjs";
+import type { DATE_TIME } from "../../../macros.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import validateDateTime from "../../../validators/validateDateTime.mjs";
 

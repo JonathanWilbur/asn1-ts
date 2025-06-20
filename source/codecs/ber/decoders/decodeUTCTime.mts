@@ -1,7 +1,7 @@
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import * as errors from "../../../errors.mjs";
 import validateDateTime from "../../../validators/validateDateTime.mjs";
-import { UTCTime } from "../../../macros.mjs";
+import type { UTCTime } from "../../../macros.mjs";
 
 export default
 function decodeUTCTime (value: Uint8Array): UTCTime {

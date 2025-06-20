@@ -1,7 +1,7 @@
 import isGraphicCharacter from "../../../validators/isGraphicCharacter.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
-import { GraphicString } from "../../../macros.mjs";
+import type { GraphicString } from "../../../macros.mjs";
 
 export default
 function decodeGraphicString (value: Uint8Array): GraphicString {

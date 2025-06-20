@@ -1,4 +1,4 @@
-import { TIME_OF_DAY } from "../../../macros.mjs";
+import type { TIME_OF_DAY } from "../../../macros.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import validateTime from "../../../validators/validateTime.mjs";
 

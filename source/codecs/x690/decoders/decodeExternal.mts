@@ -3,7 +3,14 @@ import { ASN1TagClass, ASN1UniversalType } from "../../../values.mjs";
 import ASN1Element from "../../../asn1.mjs";
 import * as errors from "../../../errors.mjs";
 import decodeSequence from "../../der/decoders/decodeSequence.mjs";
-import { BIT_STRING, EXTERNAL, ObjectDescriptor, OPTIONAL, INTEGER, OBJECT_IDENTIFIER } from "../../../macros.mjs";
+import type {
+    BIT_STRING,
+    EXTERNAL,
+    ObjectDescriptor,
+    OPTIONAL,
+    INTEGER,
+    OBJECT_IDENTIFIER,
+} from "../../../macros.mjs";
 
 export default
 function decodeExternal (value: Uint8Array): EXTERNAL {

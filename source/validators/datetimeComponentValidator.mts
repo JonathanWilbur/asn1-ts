@@ -1,5 +1,5 @@
 import * as errors from "../errors.mjs";
-import { INTEGER } from "../macros.mjs";
+import type { INTEGER } from "../macros.mjs";
 
 /**
  * @summary Creates a validator function for a date/time component (e.g., year, month, day, hour, etc.)

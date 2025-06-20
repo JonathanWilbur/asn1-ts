@@ -1,4 +1,4 @@
-import { ASN1Decoder, ASN1Encoder } from "../functional.mjs";
+import type { ASN1Decoder, ASN1Encoder } from "../functional.mjs";
 import type { OBJECT_IDENTIFIER } from "../macros.mjs";
 
 /**

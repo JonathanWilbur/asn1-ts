@@ -1,7 +1,7 @@
 import * as errors from "../../../errors.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import validateDateTime from "../../../validators/validateDateTime.mjs";
-import { GeneralizedTime } from "../../../macros.mjs";
+import type { GeneralizedTime } from "../../../macros.mjs";
 
 /* All that is required is a date and hour. Not even a timezone is required. */
 const SMALLEST_CORRECT_GENERALIZED_TIME: number = "2000120123".length;

@@ -1,6 +1,6 @@
 import EmbeddedPDV from "../../../types/EmbeddedPDV.mjs";
 import decodeSequence from "../../der/decoders/decodeSequence.mjs";
-import { EMBEDDED_PDV } from "../../../macros.mjs";
+import type { EMBEDDED_PDV } from "../../../macros.mjs";
 
 export default
 function decodeEmbeddedPDV (value: Uint8Array): EMBEDDED_PDV {

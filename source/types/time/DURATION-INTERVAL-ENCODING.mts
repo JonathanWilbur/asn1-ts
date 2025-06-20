@@ -1,4 +1,4 @@
-import {
+import type {
     INTEGER,
     OPTIONAL,
 } from "../../macros.mjs";

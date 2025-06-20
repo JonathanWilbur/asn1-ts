@@ -1,4 +1,4 @@
-import { OBJECT_IDENTIFIER } from "../../../macros.mjs";
+import type { OBJECT_IDENTIFIER } from "../../../macros.mjs";
 import { Buffer } from "node:buffer";
 
 export default

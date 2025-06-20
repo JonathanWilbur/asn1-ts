@@ -1,7 +1,7 @@
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import * as errors from "../../../errors.mjs";
 import validateDateTime from "../../../validators/validateDateTime.mjs";
-import { UTCTime } from "../../../macros.mjs";
+import type { UTCTime } from "../../../macros.mjs";
 
 const DER_UTC_TIME_LENGTH = "920521000000Z".length;
 

@@ -1,5 +1,5 @@
 import ASN1Element from "../../../asn1.mjs";
-import { SEQUENCE } from "../../../macros.mjs";
+import type { SEQUENCE } from "../../../macros.mjs";
 import { Buffer } from "node:buffer";
 
 export default

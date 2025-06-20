@@ -1,5 +1,5 @@
 import * as errors from "../../../errors.mjs";
-import { INTEGER } from "../../../macros.mjs";
+import type { INTEGER } from "../../../macros.mjs";
 import { bufferToInteger } from "../../../utils/bigint.mjs";
 import { Buffer } from "node:buffer";
 

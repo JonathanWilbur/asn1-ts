@@ -1,7 +1,7 @@
 import isGraphicCharacter from "../../../validators/isGraphicCharacter.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
-import { VisibleString } from "../../../macros.mjs";
+import type { VisibleString } from "../../../macros.mjs";
 
 export default
 function encodeVisibleString (value: VisibleString): Uint8Array {

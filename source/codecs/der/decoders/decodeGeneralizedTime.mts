@@ -1,7 +1,7 @@
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import * as errors from "../../../errors.mjs";
 import validateDateTime from "../../../validators/validateDateTime.mjs";
-import { GeneralizedTime } from "../../../macros.mjs";
+import type { GeneralizedTime } from "../../../macros.mjs";
 
 export default
 function decodeGeneralizedTime (value: Uint8Array): GeneralizedTime {

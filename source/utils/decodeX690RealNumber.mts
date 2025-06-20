@@ -7,7 +7,6 @@ import {
     nr2Regex,
     nr3Regex,
 } from "../values.mjs";
-// import ASN1Element from "../asn1.mjs";
 import convertBytesToText from "./convertBytesToText.mjs";
 import decodeSignedBigEndianInteger from "../utils/decodeSignedBigEndianInteger.mjs";
 import decodeUnsignedBigEndianInteger from "../utils/decodeUnsignedBigEndianInteger.mjs";

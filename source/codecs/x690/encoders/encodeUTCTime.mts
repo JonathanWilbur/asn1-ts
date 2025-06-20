@@ -1,4 +1,4 @@
-import { UTCTime } from "../../../macros.mjs";
+import type { UTCTime } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default

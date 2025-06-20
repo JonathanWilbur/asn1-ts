@@ -1,4 +1,4 @@
-import { RELATIVE_OID } from "../../../macros.mjs";
+import type { RELATIVE_OID } from "../../../macros.mjs";
 import { Buffer } from "node:buffer";
 
 export default

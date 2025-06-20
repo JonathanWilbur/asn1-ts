@@ -1,7 +1,7 @@
 import isNumericCharacter from "../../../validators/isNumericCharacter.mjs";
 import convertBytesToText from "../../../utils/convertBytesToText.mjs";
 import { ASN1CharactersError } from "../../../errors.mjs";
-import { NumericString } from "../../../macros.mjs";
+import type { NumericString } from "../../../macros.mjs";
 
 export default
 function decodeNumericString (value: Uint8Array): NumericString {

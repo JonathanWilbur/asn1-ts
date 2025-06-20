@@ -1,4 +1,10 @@
-import { BIT_STRING, INTEGER, OBJECT_IDENTIFIER, OCTET_STRING, ObjectDescriptor } from "../macros.mjs";
+import type {
+    BIT_STRING,
+    INTEGER,
+    OBJECT_IDENTIFIER,
+    OCTET_STRING,
+    ObjectDescriptor,
+} from "../macros.mjs";
 import type ASN1Element from "../asn1.mjs";
 import packBits from "../utils/packBits.mjs";
 

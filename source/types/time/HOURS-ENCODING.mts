@@ -1,4 +1,4 @@
-import { INTEGER } from "../../macros.mjs";
+import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 
 /**

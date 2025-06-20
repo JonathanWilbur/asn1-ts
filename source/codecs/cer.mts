@@ -44,7 +44,7 @@ import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString.mjs
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString.mjs";
 import encodeDuration from "../codecs/x690/encoders/encodeDuration.mjs";
 import decodeDuration from "../codecs/der/decoders/decodeDuration.mjs";
-import {
+import type {
     BOOLEAN,
     BIT_STRING,
     OCTET_STRING,
@@ -67,9 +67,9 @@ import {
     IA5String,
     UTCTime,
     GeneralizedTime,
-    FALSE_BIT,
     DURATION,
 } from "../macros.mjs";
+import { FALSE_BIT } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 
@@ -77,7 +77,7 @@ import { Buffer } from "node:buffer";
  * @classdesc
  * A `CERElement` is a class that represents an ASN.1 element encoded in
  * Canonical Encoding Rules (CER).
- * 
+ *
  * It is used to encode and decode ASN.1 elements in CER format.
  */
 export default
@@ -818,7 +818,7 @@ class CERElement extends X690Element {
      * are not yet concatenated together. This is for performance optimizations, since
      * a large number of buffers could be concatenated together in a single pass / allocation,
      * rather than doing this for every element separately.
-     * 
+     *
      * Basically, just concatenate all of the returned buffers to obtain the serialized element.
      */
     public toBuffers (): Uint8Array[] {
@@ -836,7 +836,7 @@ class CERElement extends X690Element {
     /**
      * Deconstruct an ASN.1 value that is constructed over several elements
      * into a single buffer representing the content octets.
-     * 
+     *
      * @param dataType - The name of the type of the element, used for an error message.
      * @returns {Uint8Array} The element as a single buffer.
      */

@@ -1,4 +1,4 @@
-import { TIME } from "../../../macros.mjs";
+import type { TIME } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default

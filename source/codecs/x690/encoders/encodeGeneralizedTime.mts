@@ -1,4 +1,4 @@
-import { GeneralizedTime } from "../../../macros.mjs";
+import type { GeneralizedTime } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default

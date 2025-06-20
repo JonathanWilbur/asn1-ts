@@ -1,4 +1,4 @@
-import { INTEGER } from "../../../macros.mjs";
+import type { INTEGER } from "../../../macros.mjs";
 import { integerToBuffer } from "../../../utils/bigint.mjs";
 
 export default

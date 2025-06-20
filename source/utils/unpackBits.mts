@@ -1,4 +1,5 @@
-import { BIT_STRING, TRUE_BIT } from "../macros.mjs";
+import type { BIT_STRING } from "../macros.mjs";
+import { TRUE_BIT } from "../macros.mjs";
 
 /**
  * @summary Unpacks a `Uint8Array` into a `BIT_STRING`
