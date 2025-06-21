@@ -1860,7 +1860,7 @@ function _parse_set (
     const missingRequiredComponents: string[] = rootComponents
         .filter((c) => (!c.optional && !encounteredComponents.has(c.name)))
         .map((c) => c.name);
-    Array.from(encounteredExtensionGroups).forEach((exg) => {
+    for (const exg of encounteredExtensionGroups.values()) {
         for (const c of extensionAdditionsList) {
             if (!(
                 (c.groupIndex === exg)
@@ -1871,7 +1871,7 @@ function _parse_set (
             }
             missingRequiredComponents.push(c.name);
         }
-    });
+    }
     if (missingRequiredComponents.length > 0) {
         throw new Error(
             `SET '${set.name}' missing these required components: ${missingRequiredComponents.join(", ")}.`,
@@ -1989,9 +1989,9 @@ function _parse_sequence_with_trailing_rctl (
         true,
     );
     const endOfRecognizedExtensions: number = (startOfExtensions + numberOfExtensionsRead);
-    elements
-        .slice(endOfRecognizedExtensions, startOfRCTL2)
-        .forEach((x) => unrecognizedExtensionHandler(x));
+    for (let i = endOfRecognizedExtensions; i < startOfRCTL2; i++) {
+        unrecognizedExtensionHandler(elements[i]);
+    }
     const numberOfRCTL2ElementsRead: number = _parse_component_type_list(
         rootComponentTypeList2,
         decodingCallbacks,
@@ -2024,9 +2024,9 @@ function _parse_sequence_without_trailing_rctl (
         true,
     );
     const endOfRecognizedExtensions: number = (startOfExtensions + numberOfExtensionsRead);
-    elements
-        .slice(endOfRecognizedExtensions)
-        .forEach((x) => unrecognizedExtensionHandler(x));
+    for (let i = endOfRecognizedExtensions; i < elements.length; i++) {
+        unrecognizedExtensionHandler(elements[i]);
+    }
 }
 
 /**
@@ -2134,13 +2134,16 @@ export function _decode_inextensible_choice<T> (
         [AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]>]
     >,
 ): ASN1Decoder<InextensibleChoice<T>> {
+    const choiceMap = new Map<string, [AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]>]>(
+        Object.entries(choices),
+    );
     return function (el: ASN1Element): InextensibleChoice<T> {
-        // TODO: Re-write to use Map()
-        const result = choices[`${tagClassName(el.tagClass)} ${el.tagNumber}`];
+        const result = choiceMap.get(`${tagClassName(el.tagClass)} ${el.tagNumber}`);
         if (!result) {
-            if (choices["*"]) {
+            const star = choiceMap.get("*");
+            if (star) {
                 const ret: T = {} as T;
-                ret[choices["*"][0]] = choices["*"][1](el);
+                ret[star[0]] = star[1](el);
                 return ret;
             } else {
                 throw new Error(
@@ -2173,8 +2176,11 @@ export function _decode_inextensible_choice<T> (
 export function _decode_extensible_choice<T> (
     choices: Record<string, [ AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]> ]>,
 ): ASN1Decoder<ExtensibleChoice<T>> {
+    const choiceMap = new Map<string, [AllUnionMemberKeys<T>, ASN1Decoder<T[AllUnionMemberKeys<T>]>]>(
+        Object.entries(choices),
+    );
     return function (el: ASN1Element): ExtensibleChoice<T> {
-        const result = choices[`${tagClassName(el.tagClass)} ${el.tagNumber}`];
+        const result = choiceMap.get(`${tagClassName(el.tagClass)} ${el.tagNumber}`);
         if (!result) {
             return el;
         }
@@ -2200,8 +2206,14 @@ export type SetOfEncoder<T> = ASN1Encoder<SET_OF<T>>;
  * @function
  */
 export function _decodeSequenceOf<T> (decoderGetter: () => ASN1Decoder<T>): SequenceOfDecoder<T> {
+    const decoder = decoderGetter();
     return function (el: ASN1Element): SEQUENCE_OF<T> {
-        return el.sequence.map(decoderGetter());
+        const seq = el.sequence;
+        const result: SEQUENCE_OF<T> = new Array(seq.length);
+        for (let i = 0; i < seq.length; i++) {
+            result[i] = decoder(seq[i]);
+        }
+        return result;
     };
 }
 
@@ -2218,10 +2230,14 @@ export function _encodeSequenceOf<T> (
     encoderGetter: () => (value: T, innerElGetter: ASN1Encoder<T>) => ASN1Element,
     outerElGetter: ASN1Encoder<any>,
 ): SequenceOfEncoder<T> {
+    const encoder = encoderGetter();
     return function (value: SEQUENCE_OF<T>): ASN1Element {
         const el = outerElGetter(value, outerElGetter);
-        const encoder = encoderGetter();
-        el.sequence = value.map((v) => encoder(v, outerElGetter));
+        const seq: ASN1Element[] = new Array(value.length);
+        for (let i = 0; i < value.length; i++) {
+            seq[i] = encoder(value[i], outerElGetter);
+        }
+        el.sequence = seq;
         el.tagClass = ASN1TagClass.universal;
         el.tagNumber = ASN1UniversalType.sequence;
         return el;
@@ -2237,8 +2253,14 @@ export function _encodeSequenceOf<T> (
  * @function
  */
 export function _decodeSetOf<T> (decoderGetter: () => (el: ASN1Element) => T): SetOfDecoder<T> {
+    const decoder = decoderGetter();
     return function (el: ASN1Element): SET_OF<T> {
-        return el.setOf.map(decoderGetter());
+        const setOf: ASN1Element[] = el.setOf;
+        const result: SET_OF<T> = new Array(setOf.length);
+        for (let i = 0; i < setOf.length; i++) {
+            result[i] = decoder(setOf[i]);
+        }
+        return result;
     };
 }
 
@@ -2255,10 +2277,14 @@ export function _encodeSetOf<T> (
     encoderGetter: () => (value: T, innerElGetter: ASN1Encoder<T>) => ASN1Element,
     outerElGetter: ASN1Encoder<any>,
 ): SetOfEncoder<T> {
+    const encoder = encoderGetter();
     return function (value: SET_OF<T>): ASN1Element {
         const el = outerElGetter(value, outerElGetter);
-        const encoder = encoderGetter();
-        el.setOf = value.map((v) => encoder(v, outerElGetter));
+        const seq: ASN1Element[] = new Array(value.length);
+        for (let i = 0; i < value.length; i++) {
+            seq[i] = encoder(value[i], outerElGetter);
+        }
+        el.setOf = seq;
         el.tagClass = ASN1TagClass.universal;
         el.tagNumber = ASN1UniversalType.set;
         return el;
