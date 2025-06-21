@@ -1,5 +1,10 @@
 # Changelog
 
+## [10.0.1]
+
+- Performance improvements to string encoding
+- Performance improvements to `SET`, `SEQUENCE`, `SET OF`, `SEQUENCE OF`, and `CHOICE` parsing.
+
 ## [10.0.0]
 
 - **BREAKING**: Remove some deprecated APIs.
