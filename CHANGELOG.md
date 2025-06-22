@@ -1,5 +1,15 @@
 # Changelog
 
+## [11.0.0]
+
+- Much more performant OID implementation
+  - The constructor no longer accepts any arguments
+    - It was replaced with `ObjectIdentifier.fromParts()`.
+  - Merely finding and replacing `new ObjectIdentifier` with
+    `ObjectIdentifier.fromParts` should be sufficient to upgrade.
+- You can now construct OIDs from `ObjectIdentifier.fromBytes()` and
+  `ObjectIdentifier.fromBytesUnsafe()`.
+
 ## [10.0.1]
 
 - Performance improvements to string encoding
