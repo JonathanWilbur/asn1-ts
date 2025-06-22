@@ -16,10 +16,37 @@ const PERIOD = ".".charCodeAt(0);
  */
 export default
 class ObjectIdentifier {
+    /**
+     * The BER / CER / DER encoding of the object identifier. This approach was
+     * used because:
+     * 
+     * 1. It tolerates any size of integer.
+     * 2. It is maximally efficient with memory usage.
+     * 3. It gives the best performance for comparison of object identifiers.
+     * 4. It gives the best performance for decoding and encoding object identifiers.
+     * 
+     * This approach comes at the expense of some performance when printing
+     * object identifiers, but this is not expected to be as frequent as
+     * comparison, encoding, and decoding. This same encoding is used for
+     * the packed encoding rules and likely other encoding rules, so does not
+     * bias against the implementation of other encoding rules.
+     */
     protected encoding: Uint8Array = new Uint8Array(0);
 
-    constructor () {}
-
+    /**
+     * @summary Constructs a new object identifier from a list of OID arcs and optionally a prefix.
+     * @description
+     * 
+     * This function constructs a new object identifier from a list of OID arcs
+     * and optionally a prefix. If a prefix is provided, it will be prefixed to
+     * the new OID. If no prefix is provided, the new OID will be constructed
+     * from the provided arcs. The OID arcs are validated.
+     *
+     * @param nodes OID arcs
+     * @param prefix OID to prefix the new OID with
+     * @returns A new object identifier
+     * @function
+     */
     public static fromParts (nodes: number[], prefix?: ObjectIdentifier | number): ObjectIdentifier {
         let _nodes = typeof prefix === "number" ? [ prefix, ...nodes ] : nodes;
         if (!prefix || typeof prefix === "number") {
@@ -45,6 +72,11 @@ class ObjectIdentifier {
         return oid;
     }
 
+    /**
+     * @summary Get the the OID arcs as an array of numbers.
+     * @returns {number[]} The OID arcs
+     * @function
+     */
     get nodes (): number[] {
         const subcomponents = decodeRelativeObjectIdentifier(this.encoding);
         return [
@@ -56,26 +88,89 @@ class ObjectIdentifier {
         ];
     }
 
+    /**
+     * @summary Get the OID as a dot-delimited string.
+     * @description
+     * 
+     * This function returns the OID as a dot-delimited string.
+     * 
+     * Example output: `1.2.840.113549.1.1.1`
+     *
+     * @returns {string} The OID as a dot-delimited string
+     * @function
+     */
     get dotDelimitedNotation (): string {
         return this.nodes.join(".");
     }
 
+    /**
+     * @summary Get the OID as an ASN.1 notation string.
+     * @description
+     * 
+     * This function returns the OID as an ASN.1 notation string.
+     * 
+     * Example output: `{ 1 2 840 113549 1 1 1 }`
+     *
+     * @returns {string} The OID as an ASN.1 notation string
+     * @function
+     */
     get asn1Notation (): string {
         return `{ ${Array.from(this.nodes).map((node) => node.toString()).join(" ")} }`;
     }
 
+    /**
+     * @summary Get the OID as a dot-delimited string.
+     * @description
+     * 
+     * This function returns the OID as a dot-delimited string.
+     * 
+     * Example output: `1.2.840.113549.1.1.1`
+     *
+     * @returns {string} The OID as a dot-delimited string
+     */
     public toString (): string {
         return this.dotDelimitedNotation;
     }
 
+    /**
+     * @summary Get the OID as a dot-delimited string.
+     * @description
+     * 
+     * This function returns the OID as a dot-delimited string.
+     * 
+     * Example output: `1.2.840.113549.1.1.1`
+     *
+     * @returns {string} The OID as a dot-delimited string
+     */
     public toJSON (): string {
         return this.dotDelimitedNotation;
     }
 
+    /**
+     * @summary Get the OID as a BER / CER / DER encoded byte array.
+     * @description
+     * 
+     * This function returns the OID as a byte array.
+     * 
+     * Example output: `Buffer<55, 04, 03>` (for 2.5.4.3)
+     *
+     * @returns {Buffer} The OID as a byte array
+     */
     public toBytes (): Buffer {
         return Buffer.from(this.encoding);
     }
 
+    /**
+     * @summary Constructs a new object identifier from a dot-delimited string.
+     * @description
+     * 
+     * This function constructs a new object identifier from a dot-delimited
+     * string.
+     *
+     * @param str The OID as a dot-delimited string
+     * @returns A new object identifier
+     * @function
+     */
     public static fromString (str: string): ObjectIdentifier {
         // Benchmarking showed this to be the most performant approach.
         const arcs: number[] = [];
@@ -94,6 +189,16 @@ class ObjectIdentifier {
         return ObjectIdentifier.fromParts(arcs);
     }
 
+    /**
+     * @summary Constructs a new object identifier from a BER / CER / DER encoded byte array.
+     * @description
+     * 
+     * This function constructs a new object identifier from a BER / CER / DER encoded byte array.
+     * 
+     * @param bytes The OID as a BER / CER / DER encoded byte array
+     * @returns A new object identifier
+     * @function
+     */
     public static fromBytes (bytes: Uint8Array): ObjectIdentifier {
         if (bytes.length === 0) {
             throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
@@ -119,6 +224,17 @@ class ObjectIdentifier {
         return oid;
     }
 
+    /**
+     * @summary UNSAFELY construct a new object identifier from a BER / CER / DER encoded byte array.
+     * @description
+     * 
+     * This function constructs a new object identifier from a BER / CER / DER
+     * encoded byte array without validating the encoding.
+     * 
+     * @param bytes The OID as a BER / CER / DER encoded byte array
+     * @returns A new object identifier
+     * @function
+     */
     public static fromBytesUnsafe (bytes: Uint8Array): ObjectIdentifier {
         const oid = new ObjectIdentifier();
         oid.encoding = bytes;
@@ -144,6 +260,16 @@ class ObjectIdentifier {
         return Buffer.compare(a.encoding, b.encoding) === 0;
     }
 
+    /**
+     * @summary Compares this object identifier to another object identifier.
+     * @description
+     * 
+     * This function compares this object identifier to another object identifier.
+     * 
+     * @param other The other object identifier
+     * @returns `true` if the object identifiers match, `false` otherwise.
+     * @function
+     */
     public isEqualTo (other: ObjectIdentifier): boolean {
         return ObjectIdentifier.compare(this, other);
     }
