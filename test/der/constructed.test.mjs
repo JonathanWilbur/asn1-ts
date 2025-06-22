@@ -117,7 +117,7 @@ describe("Distinguished Encoding Rules", function () {
             asn1.ASN1TagClass.universal,
             asn1.ASN1Construction.primitive,
             asn1.ASN1UniversalType.objectIdentifier,
-            new asn1.ObjectIdentifier([ 1, 5, 7 ]),
+            asn1.ObjectIdentifier.fromParts([ 1, 5, 7 ]),
         );
         outerElement.inner = innerElement;
         assert.deepEqual(outerElement.inner.objectIdentifier.nodes, [ 1, 5, 7 ]);

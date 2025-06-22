@@ -183,7 +183,7 @@ describe("ACSE RLRQ APDU", () => {
 describe("_encodeExternal", () => {
     it("encodes correctly", () => {
         const ext = new asn1.External(
-            new ObjectIdentifier([ 2, 5, 4, 3 ]),
+            ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]),
             1,
             undefined,
             asn1.DERElement.fromSequence([]),

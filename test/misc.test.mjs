@@ -62,18 +62,18 @@ describe("The signed big-endian integer decoder", () => {
 
 describe("ObjectIdentifier with a prefix", () => {
     it("correctly uses the nodes from the prefix", () => {
-        const ds = new asn1.ObjectIdentifier([ 2, 5 ]);
-        const attributeTypes = new asn1.ObjectIdentifier([ 4 ], ds);
+        const ds = asn1.ObjectIdentifier.fromParts([ 2, 5 ]);
+        const attributeTypes = asn1.ObjectIdentifier.fromParts([ 4 ], ds);
         assert.deepEqual(attributeTypes.nodes, [ 2, 5, 4 ]);
     });
 });
 
 describe("ObjectIdentifier", () => {
     it("compares correctly", () => {
-        const oid1 = new asn1.ObjectIdentifier([ 2, 5, 4, 3 ]);
-        const oid2 = new asn1.ObjectIdentifier([ 2, 5, 4, 3 ]);
-        const oid3 = new asn1.ObjectIdentifier([ 2, 5, 4, 5 ]);
-        const oid4 = new asn1.ObjectIdentifier([ 1, 5, 4, 3 ]);
+        const oid1 = asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]);
+        const oid2 = asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]);
+        const oid3 = asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 5 ]);
+        const oid4 = asn1.ObjectIdentifier.fromParts([ 1, 5, 4, 3 ]);
         assert(asn1.ObjectIdentifier.compare(oid1, oid2));
         assert(!asn1.ObjectIdentifier.compare(oid1, oid3));
         assert(!asn1.ObjectIdentifier.compare(oid1, oid4));

@@ -30,32 +30,32 @@ let i = 0;
 while (i < 100) {
     i++;
     const el = new CodecElement();
-    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ]);
+    el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 1, 3, 4, 6, 65, 90 ]);
     const oid = el.objectIdentifier;
-    assert(oid.isEqualTo(new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ])));
+    assert(oid.isEqualTo(asn1.ObjectIdentifier.fromParts([ 1, 3, 4, 6, 65, 90 ])));
 
     for (let x = 0; x < 2; x++) {
         for (let y = 0; y < 40; y++) {
             sensitiveValues.forEach((z) => {
                 // console.log(x, y, z);
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z ]);
-                assert((el.objectIdentifier).isEqualTo(new asn1.ObjectIdentifier([ x, y, 6, 4, z ])));
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]);
-                assert(el.objectIdentifier.isEqualTo(new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ])));
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]);
-                assert(el.objectIdentifier.isEqualTo(new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ])));
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z ]);
+                assert((el.objectIdentifier).isEqualTo(asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z ])));
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 0 ]);
+                assert(el.objectIdentifier.isEqualTo(asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 0 ])));
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 1 ]);
+                assert(el.objectIdentifier.isEqualTo(asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 1 ])));
             });
         }
     }
 
     for (let y = 0; y < 175; y++) {
         sensitiveValues.forEach((z) => {
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]);
-            assert((el.objectIdentifier).isEqualTo(new asn1.ObjectIdentifier([ 2, y, 6, 4, z ])));
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]);
-            assert(el.objectIdentifier.isEqualTo(new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ])));
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]);
-            assert(el.objectIdentifier.isEqualTo(new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ])));
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z ]);
+            assert((el.objectIdentifier).isEqualTo(asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z ])));
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 0 ]);
+            assert(el.objectIdentifier.isEqualTo(asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 0 ])));
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 1 ]);
+            assert(el.objectIdentifier.isEqualTo(asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 1 ])));
         });
     }
 }
@@ -66,18 +66,18 @@ i = 0;
 while (i < 100) {
     i++;
     const el = new CodecElement();
-    el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 65, 90 ]);
+    el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 1, 3, 4, 6, 65, 90 ]);
     el.objectIdentifier.toString();
 
     for (let x = 0; x < 2; x++) {
         for (let y = 0; y < 40; y++) {
             sensitiveValues.forEach((z) => {
                 // console.log(x, y, z);
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z ]);
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z ]);
                 asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]);
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 0 ]);
                 asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
-                el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]);
+                el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 1 ]);
                 asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
             });
         }
@@ -85,11 +85,11 @@ while (i < 100) {
 
     for (let y = 0; y < 175; y++) {
         sensitiveValues.forEach((z) => {
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]);
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z ]);
             asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]);
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 0 ]);
             asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]);
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 1 ]);
             asn1.ObjectIdentifier.fromString(el.objectIdentifier.toString());
         });
     }

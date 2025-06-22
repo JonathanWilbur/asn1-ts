@@ -126,17 +126,17 @@ function areFloatsEqual(a, b) {
 
         it("encodes and decodes an OBJECT IDENTIFIER correctly", () => {
             const el = new CodecElement();
-            el.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]);
-            assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ 1, 3, 4, 6, 3665, 90 ]));
+            el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 1, 3, 4, 6, 3665, 90 ]);
+            assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ 1, 3, 4, 6, 3665, 90 ]));
 
             // iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) 11591 4 11
             const el2 = new CodecElement();
-            el2.objectIdentifier = new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]);
+            el2.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]);
             const oid = el2.objectIdentifier;
-            assert.deepEqual(oid, new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
+            assert.deepEqual(oid, asn1.ObjectIdentifier.fromParts([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
             const el3 = new CodecElement();
             el3.objectIdentifier = oid;
-            assert.deepEqual(el3.objectIdentifier, new asn1.ObjectIdentifier([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
+            assert.deepEqual(el3.objectIdentifier, asn1.ObjectIdentifier.fromParts([ 1, 3, 6, 1, 4, 1, 11591, 4, 11 ]));
             assert.equal(el3.objectIdentifier.toString(), "1.3.6.1.4.1.11591.4.11");
             assert.deepEqual(asn1.ObjectIdentifier.fromString("1.3.6.1.4.1.11591.4.11"), oid);
 
@@ -166,24 +166,24 @@ function areFloatsEqual(a, b) {
             for (let x = 0; x < 2; x++) {
                 for (let y = 0; y < 40; y++) {
                     sensitiveValues.forEach((z) => {
-                        el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z ]);
-                        assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ x, y, 6, 4, z ]));
-                        el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]);
-                        assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ x, y, 6, 4, z, 0 ]));
-                        el.objectIdentifier = new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]);
-                        assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ x, y, 6, 4, z, 1 ]));
+                        el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z ]);
+                        assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z ]));
+                        el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 0 ]);
+                        assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 0 ]));
+                        el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 1 ]);
+                        assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ x, y, 6, 4, z, 1 ]));
                     });
                 }
             }
 
             for (let y = 0; y < 175; y++) {
                 sensitiveValues.forEach((z) => {
-                    el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]);
-                    assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ 2, y, 6, 4, z ]));
-                    el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]);
-                    assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 0 ]));
-                    el.objectIdentifier = new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]);
-                    assert.deepEqual(el.objectIdentifier, new asn1.ObjectIdentifier([ 2, y, 6, 4, z, 1 ]));
+                    el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z ]);
+                    assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z ]));
+                    el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 0 ]);
+                    assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 0 ]));
+                    el.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 1 ]);
+                    assert.deepEqual(el.objectIdentifier, asn1.ObjectIdentifier.fromParts([ 2, y, 6, 4, z, 1 ]));
                 });
             }
         });

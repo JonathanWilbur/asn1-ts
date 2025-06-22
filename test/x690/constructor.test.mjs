@@ -78,7 +78,7 @@ import { strict as assert } from "node:assert";
                 asn1.ASN1TagClass.universal,
                 asn1.ASN1Construction.primitive,
                 asn1.ASN1UniversalType.objectIdentifier,
-                new asn1.ObjectIdentifier([ 2, 4, 6, 8 ]),
+                asn1.ObjectIdentifier.fromParts([ 2, 4, 6, 8 ]),
             );
             assert.deepEqual(el.objectIdentifier.nodes, [ 2, 4, 6, 8 ]);
         });
@@ -94,7 +94,7 @@ import { strict as assert } from "node:assert";
                     13,
                     [
                         new Date(2019, 10, 4),
-                        new asn1.ObjectIdentifier([ 1, 3, 5 ]),
+                        asn1.ObjectIdentifier.fromParts([ 1, 3, 5 ]),
                     ],
                 ],
             );
