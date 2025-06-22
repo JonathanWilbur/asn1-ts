@@ -62,9 +62,6 @@ abstract class X690Element extends ASN1Element {
         if (this.construction !== ASN1Construction.primitive) {
             throw new errors.ASN1ConstructionError("OBJECT IDENTIFIER cannot be constructed.", this);
         }
-        if (this.value.length === 0) {
-            throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!", this);
-        }
         return decodeObjectIdentifier(this.value);
     }
 
