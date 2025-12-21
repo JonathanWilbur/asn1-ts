@@ -1,5 +1,10 @@
 # Changelog
 
+## [11.0.4]
+
+- Fix the `Enbyteable` interface so that it returns a `Buffer` instead of a
+  `Uint8Array`
+
 ## [11.0.3]
 
 In light of
