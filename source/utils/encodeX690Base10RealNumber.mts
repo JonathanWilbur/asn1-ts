@@ -7,7 +7,7 @@ import convertTextToBytes from "./convertTextToBytes.mjs";
  * @description
  * Handles special values as per ITU X.690.
  * @param {number} value - The number to encode.
- * @returns {Uint8Array} The encoded REAL value bytes.
+ * @returns {Uint8Array<ArrayBuffer>} The encoded REAL value bytes.
  * @function
  */
 export default

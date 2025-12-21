@@ -851,7 +851,7 @@ class CERElement extends X690Element {
      * into a single buffer representing the content octets.
      *
      * @param dataType - The name of the type of the element, used for an error message.
-     * @returns {Uint8Array} The element as a single buffer.
+     * @returns {Uint8Array<ArrayBuffer>} The element as a single buffer.
      */
     public deconstruct (dataType: string): SingleThreadUint8Array {
         if (this.construction === ASN1Construction.primitive) {

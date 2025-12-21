@@ -48,7 +48,7 @@
         "test": "node --test"
     },
     "types": "./dist/index.d.mts",
-    "version": "11.0.2",
+    "version": "11.0.3",
     "exports": {
         "./functional": "./dist/functional.mjs"
     }

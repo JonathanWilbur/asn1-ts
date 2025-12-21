@@ -1,5 +1,16 @@
 # Changelog
 
+## [11.0.3]
+
+In light of
+[this](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-7.html#typedarrays-are-now-generic-over-arraybufferlike)
+very breaking TypeScript change in TypeScript 5.7, the Prisma developers came up
+with a pretty clever solution
+[here](https://github.com/prisma/prisma/pull/28139/files#diff-84a6c6d9582ac715b1e97a45de988653ae2e33d10cdb979d6b5f643777ec015d)
+so that their package can compile with versions before and after that change.
+
+This package incorporates these changes.
+
 ## [11.0.2]
 
 - Fix issue with calling `(B|C|D)ERelement.encode()` using object identifiers

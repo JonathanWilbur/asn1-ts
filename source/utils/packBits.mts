@@ -6,7 +6,7 @@ import { FALSE_BIT } from "../macros.mjs";
  * @description
  * Used for ASN.1 `BIT STRING` encoding.
  * @param {BIT_STRING} bits - The bit string to pack.
- * @returns {Uint8Array} The packed bytes.
+ * @returns {Uint8Array<ArrayBuffer>} The packed bytes.
  * @function
  */
 export default
