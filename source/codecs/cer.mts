@@ -438,6 +438,11 @@ class CERElement extends X690Element {
         return decodeDuration(this.value);
     }
 
+    /**
+     * Encode anything into an ASN.1 element.
+     *
+     * @deprecated Use type-specific methods, if possible. This can be buggy if used with bundlers.
+     **/
     public encode (value: any): void { // eslint-disable-line
         switch (typeof value) {
         case ("undefined"): {
@@ -493,7 +498,14 @@ class CERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if ((value instanceof ObjectIdentifier) || (value.constructor?.name === "ObjectIdentifier")) {
+            } else if (
+                (value instanceof ObjectIdentifier)
+                /* In some cases, there may be two versions of this module used
+                in an application. We cannot trust that they will refer to the
+                same object identifier, so we do duck-typing here. All we
+                technically need for this to work is toBytes(). */
+                || ((typeof value["fromParts"] === "function") && (typeof value["toBytes"] === "function"))
+            ) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {

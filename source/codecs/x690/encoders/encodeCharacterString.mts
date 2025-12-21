@@ -5,13 +5,14 @@ import encodeSequence from "./encodeSequence.mjs";
 
 export default
 function encodeCharacterString (value: CharacterString): Uint8Array {
+    const encoding = new DERElement(
+        ASN1TagClass.universal,
+        ASN1Construction.primitive,
+        ASN1UniversalType.octetString,
+    );
+    encoding.octetString = value.stringValue;
     return encodeSequence([
         value.identification,
-        new DERElement(
-            ASN1TagClass.universal,
-            ASN1Construction.primitive,
-            ASN1UniversalType.octetString,
-            value.stringValue,
-        ),
+        encoding,
     ]);
 }

@@ -277,3 +277,35 @@ describe("UTCTime and GeneralizedTime with Timezone Offset", () => {
         assert.equal(g.getUTCSeconds(), 36);
     });
 });
+
+describe("Encode-anything function", () => {
+    it("uses duck-typing to check for an object identifier", () => {
+        const oid = {
+            fromParts() {},
+            toBytes() {
+                return new Uint8Array([ 0x55, 4, 3 ]);
+            }
+        };
+        const b = new asn1.BERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.primitive,
+            asn1.ASN1UniversalType.objectIdentifier,
+            oid,
+        );
+        const c = new asn1.CERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.primitive,
+            asn1.ASN1UniversalType.objectIdentifier,
+            oid,
+        );
+        const d = new asn1.DERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.primitive,
+            asn1.ASN1UniversalType.objectIdentifier,
+            oid,
+        );
+        assert.deepEqual(b.value, new Uint8Array([ 0x55, 4, 3 ]));
+        assert.deepEqual(c.value, new Uint8Array([ 0x55, 4, 3 ]));
+        assert.deepEqual(d.value, new Uint8Array([ 0x55, 4, 3 ]));
+    });
+});

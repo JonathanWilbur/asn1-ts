@@ -11,8 +11,8 @@ function encodeExternal (value: EXTERNAL): Uint8Array {
             ASN1TagClass.universal,
             ASN1Construction.primitive,
             ASN1UniversalType.objectIdentifier,
-            value.directReference,
         );
+        directReferenceElement.objectIdentifier = value.directReference;
     }
 
     let indirectReferenceElement: DERElement | undefined = undefined;
@@ -21,8 +21,8 @@ function encodeExternal (value: EXTERNAL): Uint8Array {
             ASN1TagClass.universal,
             ASN1Construction.primitive,
             ASN1UniversalType.integer,
-            value.indirectReference,
         );
+        indirectReferenceElement.integer = value.indirectReference;
     }
 
     let dataValueDescriptorElement: DERElement | undefined = undefined;
@@ -41,15 +41,16 @@ function encodeExternal (value: EXTERNAL): Uint8Array {
             ASN1TagClass.context,
             ASN1Construction.constructed,
             0,
-            value.encoding,
+            // value.encoding,
         );
+        encodingElement.inner = value.encoding;
     } else if (value.encoding instanceof Uint8Array) {
         encodingElement = new DERElement(
             ASN1TagClass.context,
             ASN1Construction.primitive,
             1,
-            value.encoding,
         );
+        encodingElement.octetString = value.encoding;
     } else {
         encodingElement = new DERElement(
             ASN1TagClass.context,

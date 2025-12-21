@@ -13,7 +13,7 @@
     "description": "ASN.1 encoding and decoding, including BER, CER, and DER.",
     "devDependencies": {
         "@types/node": "^22.10.5",
-        "typescript": "^5.7.2"
+        "typescript": "^5.9"
     },
     "directories": {
         "doc": "documentation",
@@ -48,7 +48,7 @@
         "test": "node --test"
     },
     "types": "./dist/index.d.mts",
-    "version": "11.0.1",
+    "version": "11.0.2",
     "exports": {
         "./functional": "./dist/functional.mjs"
     }

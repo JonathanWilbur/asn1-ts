@@ -20,13 +20,14 @@ import encodeSequence from "./encodeSequence.mjs";
 // (WITH COMPONENTS { ... , data-value-descriptor ABSENT })`
 export default
 function encodeEmbeddedPDV (value: EMBEDDED_PDV): Uint8Array {
+    const encoding = new DERElement(
+        ASN1TagClass.universal,
+        ASN1Construction.primitive,
+        ASN1UniversalType.octetString,
+    );
+    encoding.octetString = value.dataValue;
     return encodeSequence([
         value.identification,
-        new DERElement(
-            ASN1TagClass.universal,
-            ASN1Construction.primitive,
-            ASN1UniversalType.octetString,
-            value.dataValue,
-        ),
+        encoding,
     ]);
 }

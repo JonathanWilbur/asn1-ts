@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.2]
+
+- Fix issue with calling `(B|C|D)ERelement.encode()` using object identifiers
+  when you have multiple versions of this package installed. Internally,
+  encoding of `EXTERNAL`, `EMBEDDED PDV`, and `CHARACTER STRING` now avoid this
+  less reliable code-path _and_ the less reliable code-path has been improved.
+
 ## [11.0.0]
 
 - Much more performant OID implementation
