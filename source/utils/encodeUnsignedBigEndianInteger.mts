@@ -8,7 +8,7 @@ import type { SingleThreadUint8Array } from "../macros.mjs";
  * @description
  * Throws if the value is out of the 32-bit unsigned integer range.
  * @param {number} value - The unsigned integer to encode.
- * @returns {Uint8Array} The encoded big-endian bytes.
+ * @returns {Uint8Array<ArrayBuffer>} The encoded big-endian bytes.
  * @throws {ASN1OverflowError} If the value is out of range for a 32-bit unsigned integer.
  * @function
  */

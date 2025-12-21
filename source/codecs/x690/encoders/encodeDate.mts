@@ -1,9 +1,9 @@
-import type { DATE } from "../../../macros.mjs";
+import type { DATE, SingleThreadUint8Array } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 import * as errors from "../../../errors.mjs";
 
 export default
-function encodeDate (date: DATE): Uint8Array {
+function encodeDate (date: DATE): SingleThreadUint8Array {
     if (date.getFullYear() < 1582 || date.getFullYear() > 9999) {
         throw new errors.ASN1Error(
             `The DATE ${date.toISOString()} may not be encoded, because the `

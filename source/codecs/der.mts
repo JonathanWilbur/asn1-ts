@@ -44,6 +44,7 @@ import encodeDuration from "../codecs/x690/encoders/encodeDuration.mjs";
 import decodeDuration from "../codecs/der/decoders/decodeDuration.mjs";
 import X690Element from "../x690.mjs";
 import type {
+    SingleThreadUint8Array,
     BOOLEAN,
     BIT_STRING,
     OCTET_STRING,
@@ -80,11 +81,11 @@ import { Buffer } from "node:buffer";
  */
 export default
 class DERElement extends X690Element {
-    private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
 
     /** Get the value octets */
-    get value (): Uint8Array {
+    get value (): SingleThreadUint8Array {
         if (this._value instanceof Uint8Array) {
             return this._value;
         }
@@ -94,7 +95,7 @@ class DERElement extends X690Element {
     }
 
     /** Set the value octets */
-    set value (v: Uint8Array) {
+    set value (v: SingleThreadUint8Array) {
         this._currentValueLength = v.length;
         this._value = v;
     }
@@ -357,7 +358,7 @@ class DERElement extends X690Element {
     }
 
     set universalString (value: UniversalString) {
-        const buf: Uint8Array = new Uint8Array(value.length << 2);
+        const buf = new Uint8Array(value.length << 2);
         for (let i: number = 0; i < value.length; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
             buf[(i << 2) + 1]  = value.charCodeAt(i) >>> 16;
@@ -392,7 +393,7 @@ class DERElement extends X690Element {
     }
 
     set bmpString (value: BMPString) {
-        const buf: Uint8Array = new Uint8Array(value.length << 1);
+        const buf = new Uint8Array(value.length << 1);
         for (let i: number = 0, strLen: number = value.length; i < strLen; i++) {
             buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
             buf[(i << 1) + 1]  = value.charCodeAt(i);
@@ -748,7 +749,7 @@ class DERElement extends X690Element {
     }
 
     /** Get the tag and length bytes of the element. */
-    public tagAndLengthBytes (): Uint8Array {
+    public tagAndLengthBytes (): SingleThreadUint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
         tagBytes[0] |= (this.construction << 5);
@@ -793,7 +794,7 @@ class DERElement extends X690Element {
             lengthOctets.unshift(0b10000000 | lengthOctets.length);
         }
 
-        const ret: Uint8Array = new Uint8Array(tagBytes.length + lengthOctets.length);
+        const ret = new Uint8Array(tagBytes.length + lengthOctets.length);
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         return ret;
@@ -816,7 +817,7 @@ class DERElement extends X690Element {
         ];
     }
 
-    public deconstruct (): Uint8Array {
+    public deconstruct (): SingleThreadUint8Array {
         return new Uint8Array(this.value);
     }
 

@@ -1,8 +1,8 @@
-import type { GeneralizedTime } from "../../../macros.mjs";
+import type { GeneralizedTime, SingleThreadUint8Array } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default
-function encodeGeneralizedTime (value: GeneralizedTime): Uint8Array {
+function encodeGeneralizedTime (value: GeneralizedTime): SingleThreadUint8Array {
     const year: string = value.getUTCFullYear().toString().padStart(4, "0");
     const month: string = (value.getUTCMonth() + 1).toString().padStart(2, "0");
     const day: string = value.getUTCDate().toString().padStart(2, "0");

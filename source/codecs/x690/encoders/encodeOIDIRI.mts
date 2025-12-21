@@ -1,7 +1,7 @@
-import type { OID_IRI } from "../../../macros.mjs";
+import type { OID_IRI, SingleThreadUint8Array } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default
-function encodeOIDIRI (value: OID_IRI): Uint8Array {
+function encodeOIDIRI (value: OID_IRI): SingleThreadUint8Array {
     return convertTextToBytes(value);
 }

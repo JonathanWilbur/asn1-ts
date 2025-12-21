@@ -1,4 +1,4 @@
-import type { BIT_STRING } from "../macros.mjs";
+import type { BIT_STRING, SingleThreadUint8Array } from "../macros.mjs";
 import { FALSE_BIT } from "../macros.mjs";
 
 /**
@@ -10,9 +10,9 @@ import { FALSE_BIT } from "../macros.mjs";
  * @function
  */
 export default
-function packBits (bits: BIT_STRING): Uint8Array {
+function packBits (bits: BIT_STRING): SingleThreadUint8Array {
     const bytesNeeded: number = Math.ceil(bits.length / 8);
-    const ret: Uint8Array = new Uint8Array(bytesNeeded);
+    const ret = new Uint8Array(bytesNeeded);
     let byte = -1;
     for (let bit: number = 0; bit < bits.length; bit++) {
         const bitMod8 = bit % 8;

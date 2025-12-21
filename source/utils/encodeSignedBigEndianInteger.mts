@@ -1,4 +1,5 @@
 import * as errors from "../errors.mjs";
+import type { SingleThreadUint8Array } from "../macros.mjs";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
 
 /**
@@ -6,12 +7,12 @@ import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
  * @description
  * Throws if the value is out of the 32-bit signed integer range.
  * @param {number} value - The signed integer to encode.
- * @returns {Uint8Array} The encoded big-endian bytes.
+ * @returns {Uint8Array<ArrayBuffer>} The encoded big-endian bytes.
  * @throws {ASN1OverflowError} If the value is out of range for a 32-bit signed integer.
  * @function
  */
 export default
-function encodeBigEndianSignedInteger (value: number): Uint8Array {
+function encodeBigEndianSignedInteger (value: number): SingleThreadUint8Array {
     if (value < MIN_SINT_32) {
         throw new errors.ASN1OverflowError(
             `Number ${value} too small to be encoded as a big-endian signed integer.`,

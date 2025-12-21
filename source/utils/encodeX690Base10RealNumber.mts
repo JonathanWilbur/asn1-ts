@@ -1,3 +1,4 @@
+import type { SingleThreadUint8Array } from "../macros.mjs";
 import { ASN1SpecialRealValue } from "../values.mjs";
 import convertTextToBytes from "./convertTextToBytes.mjs";
 
@@ -10,7 +11,7 @@ import convertTextToBytes from "./convertTextToBytes.mjs";
  * @function
  */
 export default
-function encodeX690Base10RealNumber (value: number): Uint8Array {
+function encodeX690Base10RealNumber (value: number): SingleThreadUint8Array {
     if (value === 0.0) {
         return new Uint8Array(0);
     } else if (Number.isNaN(value)) {

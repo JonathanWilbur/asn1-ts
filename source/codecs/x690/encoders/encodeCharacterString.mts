@@ -2,9 +2,10 @@ import CharacterString from "../../../types/CharacterString.mjs";
 import DERElement from "../../../codecs/der.mjs";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values.mjs";
 import encodeSequence from "./encodeSequence.mjs";
+import type { SingleThreadUint8Array } from "../../../macros.mjs";
 
 export default
-function encodeCharacterString (value: CharacterString): Uint8Array {
+function encodeCharacterString (value: CharacterString): SingleThreadUint8Array {
     const encoding = new DERElement(
         ASN1TagClass.universal,
         ASN1Construction.primitive,

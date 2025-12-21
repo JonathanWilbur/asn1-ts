@@ -67,6 +67,7 @@ import type {
     UTCTime,
     GeneralizedTime,
     DURATION,
+    SingleThreadUint8Array,
 } from "../macros.mjs";
 import { FALSE_BIT } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
@@ -83,11 +84,11 @@ export default
 class BERElement extends X690Element {
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
-    private _value: Uint8Array | ASN1Element[] = new Uint8Array(0);
+    private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
 
     /** Get the value octets */
-    get value (): Uint8Array {
+    get value (): SingleThreadUint8Array {
         if (this._value instanceof Uint8Array) {
             return this._value;
         }
@@ -97,7 +98,7 @@ class BERElement extends X690Element {
     }
 
     /** Set the value octets */
-    set value (v: Uint8Array) {
+    set value (v: SingleThreadUint8Array) {
         this._currentValueLength = v.length;
         this._value = v;
     }
@@ -355,7 +356,7 @@ class BERElement extends X690Element {
     }
 
     set universalString (value: UniversalString) {
-        const buf: Uint8Array = new Uint8Array(value.length << 2);
+        const buf = new Uint8Array(value.length << 2);
         for (let i: number = 0; i < value.length; i++) {
             buf[(i << 2)]      = value.charCodeAt(i) >>> 24;
             buf[(i << 2) + 1]  = value.charCodeAt(i) >>> 16;
@@ -388,7 +389,7 @@ class BERElement extends X690Element {
     }
 
     set bmpString (value: BMPString) {
-        const buf: Uint8Array = new Uint8Array(value.length << 1);
+        const buf = new Uint8Array(value.length << 1);
         for (let i: number = 0, strLen: number = value.length; i < strLen; i++) {
             buf[(i << 1)]      = value.charCodeAt(i) >>> 8;
             buf[(i << 1) + 1]  = value.charCodeAt(i);
@@ -814,7 +815,7 @@ class BERElement extends X690Element {
     }
 
     /** Get the tag and length bytes of the element. */
-    public tagAndLengthBytes (): Uint8Array {
+    public tagAndLengthBytes (): SingleThreadUint8Array {
         const tagBytes: number[] = [ 0x00 ];
         tagBytes[0] |= (this.tagClass << 6);
         tagBytes[0] |= (
@@ -875,7 +876,7 @@ class BERElement extends X690Element {
             throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!", this);
         }
 
-        const ret: Uint8Array = new Uint8Array(tagBytes.length + lengthOctets.length);
+        const ret = new Uint8Array(tagBytes.length + lengthOctets.length);
         ret.set(tagBytes, 0);
         ret.set(lengthOctets, tagBytes.length);
         return ret;
@@ -908,7 +909,7 @@ class BERElement extends X690Element {
      * @param {string} dataType - The name of the type of the element, used for an error message.
      * @returns {Uint8Array} The element as a single buffer.
      */
-    public deconstruct (dataType: string): Uint8Array {
+    public deconstruct (dataType: string): SingleThreadUint8Array {
         if (this.construction === ASN1Construction.primitive) {
             return this.value;
         } else {

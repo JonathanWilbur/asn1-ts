@@ -1,4 +1,4 @@
-import type { TIME_OF_DAY } from "../../../macros.mjs";
+import type { SingleThreadUint8Array, TIME_OF_DAY } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 /**
@@ -12,7 +12,7 @@ import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
  * @param time {TIME_OF_DAY} The time to be encoded.
  */
 export default
-function encodeTimeOfDay (time: TIME_OF_DAY): Uint8Array {
+function encodeTimeOfDay (time: TIME_OF_DAY): SingleThreadUint8Array {
     return convertTextToBytes(
         time.getHours().toString().padStart(2, "0")
         + time.getMinutes().toString().padStart(2, "0")

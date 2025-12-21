@@ -1,8 +1,8 @@
-import type { RELATIVE_OID } from "../../../macros.mjs";
+import type { RELATIVE_OID, SingleThreadUint8Array } from "../../../macros.mjs";
 import { Buffer } from "node:buffer";
 
 export default
-function encodeRelativeObjectIdentifier (value: RELATIVE_OID): Uint8Array {
+function encodeRelativeObjectIdentifier (value: RELATIVE_OID): SingleThreadUint8Array {
     const ret: number[] = [];
     for (const arc of value) {
         if (arc < 128) {

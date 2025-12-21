@@ -5,7 +5,7 @@
  * @function
  */
 export default
-function trimLeadingPaddingBytes (value: Uint8Array): Uint8Array {
+function trimLeadingPaddingBytes (value: Uint8Array): ReturnType<Uint8Array["subarray"]> {
     if (value.length <= 1) {
         return value;
     }

@@ -1,4 +1,4 @@
-import type { EMBEDDED_PDV } from "../../../macros.mjs";
+import type { EMBEDDED_PDV, SingleThreadUint8Array } from "../../../macros.mjs";
 import DERElement from "../../../codecs/der.mjs";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values.mjs";
 import encodeSequence from "./encodeSequence.mjs";
@@ -19,7 +19,7 @@ import encodeSequence from "./encodeSequence.mjs";
 //     data-value OCTET STRING }
 // (WITH COMPONENTS { ... , data-value-descriptor ABSENT })`
 export default
-function encodeEmbeddedPDV (value: EMBEDDED_PDV): Uint8Array {
+function encodeEmbeddedPDV (value: EMBEDDED_PDV): SingleThreadUint8Array {
     const encoding = new DERElement(
         ASN1TagClass.universal,
         ASN1Construction.primitive,

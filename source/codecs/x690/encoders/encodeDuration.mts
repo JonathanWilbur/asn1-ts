@@ -1,8 +1,8 @@
-import type { DURATION, INTEGER, OPTIONAL } from "../../../macros.mjs";
+import type { DURATION, INTEGER, OPTIONAL, SingleThreadUint8Array } from "../../../macros.mjs";
 import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
 
 export default
-function encodeDuration (value: DURATION): Uint8Array {
+function encodeDuration (value: DURATION): SingleThreadUint8Array {
     if (value.weeks) {
         if (!value.fractional_part) {
             return convertTextToBytes(`${value.weeks}W`);
