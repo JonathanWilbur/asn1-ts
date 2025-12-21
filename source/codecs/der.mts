@@ -406,7 +406,7 @@ class DERElement extends X690Element {
         }
         if (this.value.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
         if (typeof Buffer !== "undefined") { // NodeJS
-            const swappedEndianness: Buffer = Buffer.allocUnsafe(this.value.length);
+            const swappedEndianness = Buffer.allocUnsafe(this.value.length);
             for (let i: number = 0; i < this.value.length; i += 2) {
                 swappedEndianness[i] = this.value[i + 1];
                 swappedEndianness[i + 1] = this.value[i];

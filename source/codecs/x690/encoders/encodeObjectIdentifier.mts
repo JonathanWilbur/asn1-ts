@@ -1,7 +1,6 @@
-import type { OBJECT_IDENTIFIER } from "../../../macros.mjs";
-import { Buffer } from "node:buffer";
+import type { OBJECT_IDENTIFIER, SingleThreadBuffer } from "../../../macros.mjs";
 
 export default
-function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): Buffer {
+function encodeObjectIdentifier (value: OBJECT_IDENTIFIER): SingleThreadBuffer {
     return value.toBytes();
 }

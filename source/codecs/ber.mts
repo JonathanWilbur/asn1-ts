@@ -400,7 +400,7 @@ class BERElement extends X690Element {
         const valueBytes: Uint8Array = this.deconstruct("BMPString");
         if (valueBytes.length % 2) throw new errors.ASN1Error("BMPString encoded on non-mulitple of two bytes.", this);
         if (typeof Buffer !== "undefined") { // NodeJS
-            const swappedEndianness: Buffer = Buffer.allocUnsafe(valueBytes.length);
+            const swappedEndianness = Buffer.allocUnsafe(valueBytes.length);
             for (let i: number = 0; i < valueBytes.length; i += 2) {
                 swappedEndianness[i] = valueBytes[i + 1];
                 swappedEndianness[i + 1] = valueBytes[i];

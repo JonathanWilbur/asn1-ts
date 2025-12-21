@@ -1,6 +1,7 @@
 import * as errors from "../errors.mjs";
 import { MIN_UINT_32, MAX_UINT_32 } from "../values.mjs";
 import { Buffer } from "node:buffer";
+import type { SingleThreadUint8Array } from "../macros.mjs";
 
 /**
  * @summary Encodes a number as an unsigned big-endian integer
@@ -12,7 +13,7 @@ import { Buffer } from "node:buffer";
  * @function
  */
 export default
-function encodeUnsignedBigEndianInteger (value: number): Uint8Array {
+function encodeUnsignedBigEndianInteger (value: number): SingleThreadUint8Array {
     if (value < MIN_UINT_32) {
         throw new errors.ASN1OverflowError(
             `Number ${value} too small to be encoded as a big-endian unsigned integer.`,
@@ -24,7 +25,7 @@ function encodeUnsignedBigEndianInteger (value: number): Uint8Array {
         );
     }
     // TODO: Could you do allocUnsafe() here?
-    const bytes: Buffer = Buffer.alloc(4);
+    const bytes = Buffer.alloc(4);
     bytes.writeUInt32BE(value);
     let startOfNonPadding: number = 0;
     for (let i: number = 0; i < bytes.length - 1; i++) {

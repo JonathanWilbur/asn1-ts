@@ -1,4 +1,4 @@
-import type { INTEGER } from "../macros.mjs";
+import type { INTEGER, SingleThreadBuffer } from "../macros.mjs";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
 import { Buffer } from "node:buffer";
 
@@ -12,7 +12,7 @@ import { Buffer } from "node:buffer";
  */
 export
 function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
-    const buf: Buffer = (input instanceof Buffer)
+    const buf = (input instanceof Buffer)
         ? input
         : Buffer.from(input.buffer);
     switch (buf.length) {
@@ -50,7 +50,7 @@ function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
  * @function
  */
 export
-function integerToBuffer (int: INTEGER): Buffer {
+function integerToBuffer (int: INTEGER): SingleThreadBuffer {
     if (typeof int === "number") {
         if ((int <= 127) && (int >= -128)) {
             const buf = Buffer.allocUnsafe(1);

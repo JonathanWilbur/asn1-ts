@@ -2,6 +2,7 @@ import encodeRelativeObjectIdentifier from "../codecs/x690/encoders/encodeRelati
 import decodeRelativeObjectIdentifier from "../codecs/x690/decoders/decodeRelativeObjectIdentifier.mjs";
 import { Buffer } from "node:buffer";
 import * as errors from "../errors.mjs";
+import type { SingleThreadBuffer } from "../macros.mjs";
 
 const PERIOD = ".".charCodeAt(0);
 
@@ -9,7 +10,7 @@ const PERIOD = ".".charCodeAt(0);
  * An `ObjectIdentifier` is a constructed data type, defined
  * in the [International Telecommunications Union](https://www.itu.int)'s
  * [X.660](https://www.itu.int/rec/T-REC-X.660/en).
- * 
+ *
  * It is a sequence of unsigned integers assigned by authorities, and which
  * can be delegated to other authorities and organizations to form a
  * hierarchical namespace of unique identifiers.
@@ -19,12 +20,12 @@ class ObjectIdentifier {
     /**
      * The BER / CER / DER encoding of the object identifier. This approach was
      * used because:
-     * 
+     *
      * 1. It tolerates any size of integer.
      * 2. It is maximally efficient with memory usage.
      * 3. It gives the best performance for comparison of object identifiers.
      * 4. It gives the best performance for decoding and encoding object identifiers.
-     * 
+     *
      * This approach comes at the expense of some performance when printing
      * object identifiers, but this is not expected to be as frequent as
      * comparison, encoding, and decoding. This same encoding is used for
@@ -36,7 +37,7 @@ class ObjectIdentifier {
     /**
      * @summary Constructs a new object identifier from a list of OID arcs and optionally a prefix.
      * @description
-     * 
+     *
      * This function constructs a new object identifier from a list of OID arcs
      * and optionally a prefix. If a prefix is provided, it will be prefixed to
      * the new OID. If no prefix is provided, the new OID will be constructed
@@ -91,9 +92,9 @@ class ObjectIdentifier {
     /**
      * @summary Get the OID as a dot-delimited string.
      * @description
-     * 
+     *
      * This function returns the OID as a dot-delimited string.
-     * 
+     *
      * Example output: `1.2.840.113549.1.1.1`
      *
      * @returns {string} The OID as a dot-delimited string
@@ -106,9 +107,9 @@ class ObjectIdentifier {
     /**
      * @summary Get the OID as an ASN.1 notation string.
      * @description
-     * 
+     *
      * This function returns the OID as an ASN.1 notation string.
-     * 
+     *
      * Example output: `{ 1 2 840 113549 1 1 1 }`
      *
      * @returns {string} The OID as an ASN.1 notation string
@@ -121,9 +122,9 @@ class ObjectIdentifier {
     /**
      * @summary Get the OID as a dot-delimited string.
      * @description
-     * 
+     *
      * This function returns the OID as a dot-delimited string.
-     * 
+     *
      * Example output: `1.2.840.113549.1.1.1`
      *
      * @returns {string} The OID as a dot-delimited string
@@ -135,9 +136,9 @@ class ObjectIdentifier {
     /**
      * @summary Get the OID as a dot-delimited string.
      * @description
-     * 
+     *
      * This function returns the OID as a dot-delimited string.
-     * 
+     *
      * Example output: `1.2.840.113549.1.1.1`
      *
      * @returns {string} The OID as a dot-delimited string
@@ -149,21 +150,21 @@ class ObjectIdentifier {
     /**
      * @summary Get the OID as a BER / CER / DER encoded byte array.
      * @description
-     * 
+     *
      * This function returns the OID as a byte array.
-     * 
+     *
      * Example output: `Buffer<55, 04, 03>` (for 2.5.4.3)
      *
      * @returns {Buffer} The OID as a byte array
      */
-    public toBytes (): Buffer {
+    public toBytes (): SingleThreadBuffer {
         return Buffer.from(this.encoding);
     }
 
     /**
      * @summary Constructs a new object identifier from a dot-delimited string.
      * @description
-     * 
+     *
      * This function constructs a new object identifier from a dot-delimited
      * string.
      *
@@ -192,9 +193,9 @@ class ObjectIdentifier {
     /**
      * @summary Constructs a new object identifier from a BER / CER / DER encoded byte array.
      * @description
-     * 
+     *
      * This function constructs a new object identifier from a BER / CER / DER encoded byte array.
-     * 
+     *
      * @param bytes The OID as a BER / CER / DER encoded byte array
      * @returns A new object identifier
      * @function
@@ -206,7 +207,7 @@ class ObjectIdentifier {
         if (bytes[bytes.length - 1] & 0b10000000) {
             throw new errors.ASN1TruncationError("OID was truncated.");
         }
-    
+
         let current_node: number = 0;
         for (let i = 1; i < bytes.length; i++) {
             const byte = bytes[i];
@@ -227,10 +228,10 @@ class ObjectIdentifier {
     /**
      * @summary UNSAFELY construct a new object identifier from a BER / CER / DER encoded byte array.
      * @description
-     * 
+     *
      * This function constructs a new object identifier from a BER / CER / DER
      * encoded byte array without validating the encoding.
-     * 
+     *
      * @param bytes The OID as a BER / CER / DER encoded byte array
      * @returns A new object identifier
      * @function
@@ -263,9 +264,9 @@ class ObjectIdentifier {
     /**
      * @summary Compares this object identifier to another object identifier.
      * @description
-     * 
+     *
      * This function compares this object identifier to another object identifier.
-     * 
+     *
      * @param other The other object identifier
      * @returns `true` if the object identifiers match, `false` otherwise.
      * @function

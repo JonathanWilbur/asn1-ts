@@ -6,6 +6,7 @@ import type Long from "./interfaces/Long.mjs";
 import type CharacterString from "./types/CharacterString.mjs";
 import type Elementable from "./interfaces/Elementable.mjs";
 import type {
+    SingleThreadBuffer,
     BOOLEAN,
     INTEGER,
     BIT_STRING,
@@ -184,7 +185,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
      * Get the full encoding of this element as a Node.js Buffer.
      * @returns {Buffer}
      */
-    public toBytes (): Buffer {
+    public toBytes (): SingleThreadBuffer {
         return Buffer.concat(this.toBuffers());
     }
 

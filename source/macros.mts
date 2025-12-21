@@ -3,6 +3,26 @@ import type EmbeddedPDV from "./types/EmbeddedPDV.mjs";
 import type External from "./types/External.mjs";
 import type DURATION_EQUIVALENT from "./types/time/DURATION-EQUIVALENT.mjs";
 
+/**
+ * In light of
+ * [this](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-7.html#typedarrays-are-now-generic-over-arraybufferlike)
+ * very breaking TypeScript change, the Prisma developers came up with a pretty
+ * clever solution [here](https://github.com/prisma/prisma/pull/28139/files#diff-84a6c6d9582ac715b1e97a45de988653ae2e33d10cdb979d6b5f643777ec015d).
+ *
+ * Equivalent to `Uint8Array` before TypeScript 5.7, and
+ * `Uint8Array<ArrayBuffer>` in TypeScript 5.7 and beyond.
+ */
+export type SingleThreadUint8Array = ReturnType<Uint8Array['slice']>;
+
+/**
+ * This is the `Buffer` equivalent of {@link SingleThreadUint8Array}. See it's
+ * documentation for more details.
+ *
+ * Equivalent to `Buffer` before TypeScript 5.7, and `Buffer<ArrayBuffer>` in
+ * TypeScript 5.7 and beyond.
+ */
+export type SingleThreadBuffer = ReturnType<Buffer["filter"]>;
+
 export type COMPONENTS_OF<T> = T;
 export type OPTIONAL<T> = T | undefined;
 export type BOOLEAN = boolean;
