@@ -50,6 +50,8 @@
     "types": "./dist/index.d.mts",
     "version": "11.0.4",
     "exports": {
+        ".": "./dist/index.mjs",
         "./functional": "./dist/functional.mjs"
     }
 }
+
