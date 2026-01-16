@@ -12,6 +12,10 @@ This library is published on both
 `npm install asn1-ts` or `npx jsr add @wildboar/asn1`. As of version 9.0.0 and
 above, this library is ESM only: no more CommonJS.
 
+This library should work on NodeJS, Bun, and Deno, and it should compile with
+any reasonably new TypeScript version. If it does not work for you in these
+cases, please let me know!
+
 **Table of Contents**
 
 - [Library Usage](#library-usage)
