@@ -1,5 +1,5 @@
 {
-  "version": "4",
+  "version": "5",
   "specifiers": {
     "jsr:@std/assert@*": "1.0.11",
     "jsr:@std/internal@^1.0.5": "1.0.5"
@@ -19,7 +19,7 @@
     "packageJson": {
       "dependencies": [
         "npm:@types/node@^22.10.5",
-        "npm:typescript@^5.7.2"
+        "npm:typescript@^5.9.0"
       ]
     }
   }

@@ -48,10 +48,15 @@
         "test": "node --test"
     },
     "types": "./dist/index.d.mts",
-    "version": "11.0.4",
+    "version": "11.0.5",
     "exports": {
-        ".": "./dist/index.mjs",
-        "./functional": "./dist/functional.mjs"
+        ".": {
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.mts"
+        },
+        "./functional": {
+            "import": "./dist/functional.mjs",
+            "types": "./dist/functional.d.mts"
+        }
     }
 }
-

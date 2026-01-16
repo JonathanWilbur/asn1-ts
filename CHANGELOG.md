@@ -1,5 +1,11 @@
 # Changelog
 
+## [11.0.5]
+
+- Fix an [issue](https://github.com/JonathanWilbur/asn1-ts/pull/35) with imports
+  - Thank you [`@hayes-mysten`](https://github.com/hayes-mysten)!
+- Add missing type import
+
 ## [11.0.4]
 
 - Fix the `Enbyteable` interface so that it returns a `Buffer` instead of a
