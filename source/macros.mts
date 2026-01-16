@@ -2,6 +2,7 @@ import type ObjectIdentifier from "./types/ObjectIdentifier.mjs";
 import type EmbeddedPDV from "./types/EmbeddedPDV.mjs";
 import type External from "./types/External.mjs";
 import type DURATION_EQUIVALENT from "./types/time/DURATION-EQUIVALENT.mjs";
+import type { Buffer } from "node:buffer";
 
 /**
  * In light of
