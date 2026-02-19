@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.0.6]
+
+- Fix an issue where, in some cases, decoding an integer can contain the entire
+  underlying `ArrayBuffer`. To be clear, this is a security vulnerability and
+  you should update this package to this version as soon as possible. (Sorry!)
+  - This seems to have been a problem since version 7.0.4, starting with commit
+    `a46d307b5094b706059f40df2afd044cbb81d4a1`.
+
 ## [11.0.5]
 
 - Fix an [issue](https://github.com/JonathanWilbur/asn1-ts/pull/35) with imports

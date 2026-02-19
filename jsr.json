@@ -1,9 +1,16 @@
 {
-  "name": "@wildboar/asn1",
-  "version": "11.0.5",
-  "license": "MIT",
-  "exports": {
-    ".": "./source/index.mts",
-    "./functional": "./source/functional.mts"
-  }
+    "name": "@wildboar/asn1",
+    "version": "11.0.6",
+    "license": "MIT",
+    "exports": {
+        ".": "./source/index.mts",
+        "./functional": "./source/functional.mts"
+    },
+    "publish": {
+        "include": [
+            "LICENSE.txt",
+            "README.md",
+            "source/**/*.mts"
+        ]
+    }
 }

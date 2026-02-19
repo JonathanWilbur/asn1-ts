@@ -14,7 +14,7 @@ export
 function bufferToInteger (input: Buffer | Uint8Array): INTEGER {
     const buf = (input instanceof Buffer)
         ? input
-        : Buffer.from(input.buffer);
+        : Buffer.from(input.buffer, input.byteOffset, input.byteLength);
     switch (buf.length) {
     case (0): return 0;
     case (1): return buf.readInt8();
