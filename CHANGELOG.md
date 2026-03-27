@@ -1,5 +1,17 @@
 # Changelog
 
+## [11.1.0]
+
+- Add `ObjectIdentifier.byteLength()` - Returns the length of the X.690
+  encoding's content octets
+- Add `ObjectIdentifier.toBytesUnsafe()` - Obtains a reference to the underlying
+  encoding that you pinky-promise not to modify. (Avoids an unnecessary
+  allocation in cases where you are just reading the bytes.)
+- Cache value returned from `ObjectIdentifier.dotDelimitedNotation`,
+  `ObjectIdentifier.toString()`, and `ObjectIdentifier.toJSON()`.
+- Removed some function call indirection in the functional API for small
+  performance gains.
+
 ## [11.0.6]
 
 - Fix an issue where, in some cases, decoding an integer can contain the entire
