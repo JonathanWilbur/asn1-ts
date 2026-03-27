@@ -35,6 +35,46 @@ class ObjectIdentifier {
     protected encoding: Uint8Array = new Uint8Array(0);
 
     /**
+     * @summary Get a read-only copy of the underlying X.690 encoding
+     * @description
+     *
+     * **DO NOT MODIFY THE RETURN VALUE**
+     *
+     * In the interest of high performance, you may want to avoid allocating a
+     * new bytes array when you want to obtain the X.690 encoding of this
+     * object identifier. This method allows you to obtain a reference to the
+     * underlying `Uint8Array` on which the encoding is stored, which means no
+     * allocation.
+     *
+     * However, this returned `Uint8Array` **MUST NOT** be modified. Doing so
+     * risks cached data being invalidated currently, and could break more
+     * things in the future, since the immutability of this bytes is a design
+     * assumption.
+     *
+     * @returns {Uint8Array} A copy of the underlying x.690 encoding
+     */
+    public toBytesUnsafe(): Uint8Array {
+        return this.encoding;
+    }
+
+    /**
+     * @summary Get the number of bytes in the X.690 encoding
+     * @description
+     *
+     * Return the byte length of the BER / CER / DER encoding of this object
+     * identifier, which does not include the tag or length octets: just the
+     * content octets.
+     *
+     * Example: for the `commonName` object identifier (`2.5.4.3`) this returns
+     * `3` because the object identifier is encoded on three bytes: `0xFF0403`.
+     *
+     * @returns The number of bytes of the X.690-encoded object identifier
+     */
+    public byteLength(): number {
+        return this.encoding.length;
+    }
+
+    /**summary
      * @summary Constructs a new object identifier from a list of OID arcs and optionally a prefix.
      * @description
      *
