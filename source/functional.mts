@@ -25,6 +25,7 @@ import {
     ASN1UniversalType,
     ASN1ConstructionError,
     CharacterString,
+    ObjectIdentifier,
 } from "./index.mjs";
 import type {
     BIT_STRING,
@@ -67,6 +68,8 @@ import type {
     SET,
     SET_OF,
 } from "./index.mjs";
+import decodeInteger from "./codecs/x690/decoders/decodeInteger.mjs";
+import encodeInteger from "./codecs/x690/encoders/encodeInteger.mjs";
 
 /*
 You may notice that several exports in this file use an `encoderGetter` or
@@ -881,7 +884,7 @@ export const _decodeInstanceOf: ASN1Decoder<INSTANCE_OF> = (el: ASN1Element): IN
 export const _encodeInteger: ASN1Encoder<INTEGER>
 = (value: INTEGER, elGetter: ASN1Encoder<INTEGER>) => {
     const el: ASN1Element = elGetter(value, elGetter);
-    el.integer = value;
+    el.value = encodeInteger(value);
     el.tagClass = ASN1TagClass.universal;
     el.tagNumber = ASN1UniversalType.integer;
     return el;
@@ -894,7 +897,7 @@ export const _encodeInteger: ASN1Encoder<INTEGER>
  * @function
  */
 export const _decodeInteger: ASN1Decoder<INTEGER> = (el: ASN1Element): INTEGER => {
-    return el.integer;
+    return decodeInteger(el.value);
 }
 
 /**
@@ -958,7 +961,7 @@ export const _decodeNull: ASN1Decoder<NULL> = (): NULL => {
 export const _encodeObjectIdentifier: ASN1Encoder<OBJECT_IDENTIFIER>
 = (value: OBJECT_IDENTIFIER, elGetter: ASN1Encoder<OBJECT_IDENTIFIER>) => {
     const el: ASN1Element = elGetter(value, elGetter);
-    el.objectIdentifier = value;
+    el.value = value.toBytes();
     el.tagClass = ASN1TagClass.universal;
     el.tagNumber = ASN1UniversalType.objectIdentifier;
     return el;
@@ -971,7 +974,7 @@ export const _encodeObjectIdentifier: ASN1Encoder<OBJECT_IDENTIFIER>
  * @function
  */
 export const _decodeObjectIdentifier: ASN1Decoder<OBJECT_IDENTIFIER> = (el: ASN1Element): OBJECT_IDENTIFIER => {
-    return el.objectIdentifier;
+    return ObjectIdentifier.fromBytes(el.value);
 }
 
 /**
