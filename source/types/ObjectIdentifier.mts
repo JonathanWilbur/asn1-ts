@@ -129,6 +129,8 @@ class ObjectIdentifier {
         ];
     }
 
+    private dotDelimitedNotationCached: string | null = null;
+
     /**
      * @summary Get the OID as a dot-delimited string.
      * @description
@@ -137,11 +139,20 @@ class ObjectIdentifier {
      *
      * Example output: `1.2.840.113549.1.1.1`
      *
+     * The output is cached between calls, because this string is often used to
+     * index object identifiers in a `Set` or `Map`. This string could become
+     * invalid if you somehow modify the underlying bytes for this type.
+     *
      * @returns {string} The OID as a dot-delimited string
      * @function
      */
     get dotDelimitedNotation (): string {
-        return this.nodes.join(".");
+        if (this.dotDelimitedNotationCached) {
+            return this.dotDelimitedNotationCached;
+        }
+        const ret = this.nodes.join(".");
+        this.dotDelimitedNotationCached = ret;
+        return ret;
     }
 
     /**
