@@ -3,25 +3,90 @@ import type { RELATIVE_OID } from "../../../macros.mjs";
 
 export default
 function decodeRelativeObjectIdentifier (value: Uint8Array): RELATIVE_OID {
-    if (value.length === 0) {
+    const len: number = value.length;
+    if (len === 0) {
         return [];
     }
-    if (value.length > 1 && value[value.length - 1] & 0b10000000) {
-        throw new errors.ASN1TruncationError("Relative OID was truncated.");
-    }
-    const nodes: number[] = [];
-    let current_node: number = 0;
-    for (let i = 0; i < value.length; i++) {
-        const byte = value[i];
-        if ((byte === 0x80) && (current_node === 0)) {
+    if (len === 1) {
+        const b0: number = value[0];
+        if (b0 < 0x80) {
+            return [ b0 ];
+        }
+        if (b0 === 0x80) {
             throw new errors.ASN1PaddingError("Prohibited padding on RELATIVE-OID node.");
         }
-        current_node <<= 7;
-        current_node += (byte & 0b0111_1111);
-        if ((byte & 0b1000_0000) === 0) {
-            nodes.push(current_node);
-            current_node = 0;
+        return [];
+    }
+    if (value[len - 1] >= 0x80) {
+        throw new errors.ASN1TruncationError("Relative OID was truncated.");
+    }
+
+    let nodeCount: number = 0;
+    for (let j: number = 0; j < len; j++) {
+        if (value[j] < 0x80) {
+            nodeCount++;
         }
+    }
+    const nodes: number[] = new Array(nodeCount);
+    if (nodeCount === len) {
+        for (let j: number = 0; j < len; j++) {
+            nodes[j] = value[j];
+        }
+        return nodes;
+    }
+
+    let n: number = 0;
+    let i: number = 0;
+    decode: while (i < len) {
+        const b0: number = value[i];
+        if (b0 < 0x80) {
+            nodes[n++] = b0;
+            i++;
+            continue;
+        }
+        if (b0 === 0x80) {
+            throw new errors.ASN1PaddingError("Prohibited padding on RELATIVE-OID node.");
+        }
+        const b1: number = value[++i];
+        if (b1 < 0x80) {
+            nodes[n++] = ((b0 & 0x7F) << 7) | b1;
+            i++;
+            continue;
+        }
+        const b2: number = value[++i];
+        if (b2 < 0x80) {
+            nodes[n++] = ((b0 & 0x7F) << 14) | ((b1 & 0x7F) << 7) | b2;
+            i++;
+            continue;
+        }
+        const b3: number = value[++i];
+        if (b3 < 0x80) {
+            nodes[n++] = ((b0 & 0x7F) << 21) | ((b1 & 0x7F) << 14) | ((b2 & 0x7F) << 7) | b3;
+            i++;
+            continue;
+        }
+        // 4 bytes already consumed (28 bits). At most 4 more reach 56 bits,
+        // which is enough for Number.MAX_SAFE_INTEGER (53 bits).
+        let current_node: number = ((b0 & 0x7F) << 21)
+            | ((b1 & 0x7F) << 14)
+            | ((b2 & 0x7F) << 7)
+            | (b3 & 0x7F);
+        for (let extra: number = 0; extra < 4; extra++) {
+            if (++i >= len) {
+                throw new errors.ASN1TruncationError("Relative OID was truncated.");
+            }
+            const byte: number = value[i];
+            current_node = (current_node * 128) + (byte & 0x7F);
+            if (byte < 0x80) {
+                if (current_node > Number.MAX_SAFE_INTEGER) {
+                    throw new errors.ASN1OverflowError("RELATIVE-OID node too large to decode.");
+                }
+                nodes[n++] = current_node;
+                i++;
+                continue decode;
+            }
+        }
+        throw new errors.ASN1OverflowError("RELATIVE-OID node too large to decode.");
     }
     return nodes;
 }

@@ -341,6 +341,8 @@ function areFloatsEqual(a, b) {
                 65536,
                 2147483646,
                 2147483647,
+                4294967296,
+                Number.MAX_SAFE_INTEGER,
             ];
 
             sensitiveValues.forEach((z) => {

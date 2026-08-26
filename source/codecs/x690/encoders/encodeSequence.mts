@@ -4,5 +4,15 @@ import { Buffer } from "node:buffer";
 
 export default
 function encodeSequence (value: SEQUENCE<ASN1Element>): SingleThreadUint8Array {
-    return Buffer.concat(value.map((v) => v.toBytes()));
+    let len: number = 0;
+    const n: number = value.length;
+    for (let i: number = 0; i < n; i++) {
+        len += value[i].tlvLength();
+    }
+    const buf = Buffer.allocUnsafe(len);
+    let offset: number = 0;
+    for (let i: number = 0; i < n; i++) {
+        offset = value[i].encodeInto(buf, offset);
+    }
+    return buf;
 }

@@ -5,11 +5,12 @@ import type { ObjectDescriptor } from "../../../macros.mjs";
 
 export default
 function decodeObjectDescriptor (value: Uint8Array): ObjectDescriptor {
-    for (const char of value) {
-        if (!isObjectDescriptorCharacter(char)) {
+    for (let i = 0; i < value.length; i++) {
+        const c = value[i];
+        if (!isObjectDescriptorCharacter(c)) {
             throw new ASN1CharactersError(
                 "ObjectDescriptor can only contain characters between 0x20 and 0x7E. "
-                + `Encountered character code ${char}.`,
+                + `Encountered character code ${c}.`,
             );
         }
     }

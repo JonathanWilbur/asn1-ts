@@ -42,6 +42,7 @@ import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString.mjs
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString.mjs";
 import encodeDuration from "../codecs/x690/encoders/encodeDuration.mjs";
 import decodeDuration from "../codecs/der/decoders/decodeDuration.mjs";
+import writeTagAndLength, { definiteLengthLength, encodeX690Into } from "./x690/encoders/writeTagAndLength.mjs";
 import X690Element from "../x690.mjs";
 import type {
     SingleThreadUint8Array,
@@ -629,6 +630,7 @@ class DERElement extends X690Element {
      */
     set inner (value: ASN1Element) {
         this.construction = ASN1Construction.constructed;
+        this._currentValueLength = undefined;
         this._value = [ value ];
     }
 
@@ -763,71 +765,53 @@ class DERElement extends X690Element {
 
     /** Get the tag and length bytes of the element. */
     public tagAndLengthBytes (): SingleThreadUint8Array {
-        const tagBytes: number[] = [ 0x00 ];
-        tagBytes[0] |= (this.tagClass << 6);
-        tagBytes[0] |= (this.construction << 5);
-        if (this.tagNumber < 31) {
-            tagBytes[0] |= this.tagNumber;
-        } else {
-            /*
-                Per section 8.1.2.4 of X.690:
-                The last five bits of the first byte being set indicate that
-                the tag number is encoded in base-128 on the subsequent octets,
-                using the first bit of each subsequent octet to indicate if the
-                encoding continues on the next octet, just like how the
-                individual numbers of OBJECT IDENTIFIER and RELATIVE OBJECT
-                IDENTIFIER are encoded.
-            */
-            tagBytes[0] |= 0b00011111;
-            let number: number = this.tagNumber; // We do not want to modify by reference.
-            const encodedNumber: number[] = [];
-            while (number !== 0) {
-                encodedNumber.unshift(number & 0x7F);
-                number >>>= 7;
-                encodedNumber[0] |= 0b10000000;
-            }
-            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
-            tagBytes.push(...encodedNumber);
-        }
-
-        let lengthOctets: number[] = [ 0x00 ];
-        if (this.value.length < 127) {
-            lengthOctets[0] = this.value.length;
-        } else {
-            const length: number = this.value.length;
-            lengthOctets = [ 0, 0, 0, 0 ];
-            for (let i: number = 0; i < 4; i++) {
-                lengthOctets[i] = ((length >>> ((3 - i) << 3)) & 0xFF);
-            }
-            let startOfNonPadding: number = 0;
-            for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
-                if (lengthOctets[i] === 0x00) startOfNonPadding++;
-            }
-            lengthOctets = lengthOctets.slice(startOfNonPadding);
-            lengthOctets.unshift(0b10000000 | lengthOctets.length);
-        }
-
-        const ret = new Uint8Array(tagBytes.length + lengthOctets.length);
-        ret.set(tagBytes, 0);
-        ret.set(lengthOctets, tagBytes.length);
+        const valueLen: number = this.valueLength();
+        const constructed: boolean = this.construction === ASN1Construction.constructed;
+        const ret = new Uint8Array(this.tagLength() + this.lengthLength(valueLen));
+        writeTagAndLength(
+            ret,
+            0,
+            this.tagClass,
+            constructed,
+            this.tagNumber,
+            valueLen,
+            false,
+        );
         return ret;
     }
 
     /**
-     * Instead of serializing the element, returns the encoded element in fragments that
-     * are not yet concatenated together. This is for performance optimizations, since
-     * a large number of buffers could be concatenated together in a single pass / allocation,
-     * rather than doing this for every element separately.
+     * Write this element's DER encoding into `destination` starting at `offset`.
      *
-     * Basically, just concatenate all of the returned buffers to obtain the serialized element.
+     * @returns The offset immediately after the last written octet.
      */
-    public toBuffers (): Uint8Array[] {
-        return [
-            this.tagAndLengthBytes(),
-            ...(Array.isArray(this._value)
-                ? this._value.flatMap((el) => el.toBuffers())
-                : [ this._value ]),
-        ];
+    public encodeInto (destination: Uint8Array, offset: number = 0): number {
+        return encodeX690Into(
+            destination,
+            offset,
+            this.tagClass,
+            this.construction === ASN1Construction.constructed,
+            this.tagNumber,
+            this._value,
+            this.valueLength(),
+            false,
+        );
+    }
+
+    /**
+     * Append this element's DER encoding as buffer fragments to `into`.
+     * Concatenating the fragments yields the same encoding as {@link toBytes}.
+     */
+    public appendBuffers (into: Uint8Array[]): void {
+        into.push(this.tagAndLengthBytes());
+        if (Array.isArray(this._value)) {
+            const children: ASN1Element[] = this._value;
+            for (let i: number = 0; i < children.length; i++) {
+                children[i].appendBuffers(into);
+            }
+        } else {
+            into.push(this._value);
+        }
     }
 
     public deconstruct (): SingleThreadUint8Array {
@@ -855,19 +839,7 @@ class DERElement extends X690Element {
 
     /** Get the length of the length octets. */
     public lengthLength(valueLength?: number): number {
-        const len = valueLength ?? this.valueLength();
-        if (len < 127) {
-            return 1;
-        }
-        let lengthOctets = [ 0, 0, 0, 0 ];
-        for (let i: number = 0; i < 4; i++) {
-            lengthOctets[i] = ((len >>> ((3 - i) << 3)) & 0xFF);
-        }
-        let startOfNonPadding: number = 0;
-        for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
-            if (lengthOctets[i] === 0x00) startOfNonPadding++;
-        }
-        return 5 - startOfNonPadding;
+        return definiteLengthLength(valueLength ?? this.valueLength());
     }
 
     /** Get the length of the value octets. */
@@ -880,8 +852,8 @@ class DERElement extends X690Element {
         }
         let len = 0;
         // For loop because it is most performant.
-        for (const el of this._value) {
-            len += el.tlvLength();
+        for (let i = 0; i < this._value.length; i++) {
+            len += this._value[i].tlvLength();
         }
         this._currentValueLength = len;
         return len;

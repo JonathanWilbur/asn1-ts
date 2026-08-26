@@ -1865,7 +1865,8 @@ function _parse_set (
 
     { // Check the entire set for duplicate tags.
         const encounteredTags: Set<string> = new Set<string>([]);
-        for (const e of elements) {
+        for (let i = 0; i < elements.length; i++) {
+            const e = elements[i];
             const tag: string = `${e.tagClass} ${e.tagNumber}`;
             if (encounteredTags.has(tag)) {
                 throw new Error(
@@ -1912,7 +1913,8 @@ function _parse_set (
         .filter((c) => (!c.optional && !encounteredComponents.has(c.name)))
         .map((c) => c.name);
     for (const exg of encounteredExtensionGroups.values()) {
-        for (const c of extensionAdditionsList) {
+        for (let i = 0; i < extensionAdditionsList.length; i++) {
+            const c = extensionAdditionsList[i];
             if (!(
                 (c.groupIndex === exg)
                 && !c.optional

@@ -1,5 +1,8 @@
-import encodeRelativeObjectIdentifier from "../codecs/x690/encoders/encodeRelativeObjectIdentifier.mjs";
 import decodeRelativeObjectIdentifier from "../codecs/x690/decoders/decodeRelativeObjectIdentifier.mjs";
+import {
+    encodeRelativeObjectIdentifierWithPrefix,
+    encodeObjectIdentifierFromArcs,
+} from "../codecs/x690/encoders/encodeRelativeObjectIdentifier.mjs";
 import { Buffer } from "node:buffer";
 import * as errors from "../errors.mjs";
 import type { SingleThreadBuffer } from "../macros.mjs";
@@ -89,27 +92,27 @@ class ObjectIdentifier {
      * @function
      */
     public static fromParts (nodes: number[], prefix?: ObjectIdentifier | number): ObjectIdentifier {
-        let _nodes = typeof prefix === "number" ? [ prefix, ...nodes ] : nodes;
-        if (!prefix || typeof prefix === "number") {
-            if (_nodes.length < 2) {
-                throw new Error("Cannot construct an OID with less than two nodes!");
-            }
-            if ((_nodes[0] < 0) || (_nodes[0] > 2)) {
-                throw new Error("OIDs first node must be 0, 1, or 2!");
-            }
-            if (((_nodes[0] < 2) && (_nodes[1] > 39))) {
-                throw new Error(`OID Node #2 cannot exceed 39 if node #1 is 0 or 1. Received these nodes: ${_nodes}.`);
-            }
-        }
         const oid = new ObjectIdentifier();
-        if (prefix && typeof prefix !== "number") {
-            oid.encoding = Buffer.concat([ prefix.encoding, encodeRelativeObjectIdentifier(_nodes) ]);
-        } else {
-            oid.encoding = encodeRelativeObjectIdentifier([
-                (_nodes[0] * 40) + _nodes[1],
-                ..._nodes.slice(2),
-            ]);
+        if (prefix !== undefined && typeof prefix !== "number") {
+            oid.encoding = encodeRelativeObjectIdentifierWithPrefix(prefix.encoding, nodes);
+            return oid;
         }
+        const first: number = (typeof prefix === "number") ? prefix : nodes[0];
+        const second: number = (typeof prefix === "number") ? nodes[0] : nodes[1];
+        const restStart: number = (typeof prefix === "number") ? 1 : 2;
+        const arcCount: number = (typeof prefix === "number") ? (nodes.length + 1) : nodes.length;
+        if (arcCount < 2) {
+            throw new Error("Cannot construct an OID with less than two nodes!");
+        }
+        if ((first < 0) || (first > 2)) {
+            throw new Error("OIDs first node must be 0, 1, or 2!");
+        }
+        if ((first < 2) && (second > 39)) {
+            throw new Error(`OID Node #2 cannot exceed 39 if node #1 is 0 or 1. Received these nodes: ${
+                (typeof prefix === "number") ? [ prefix, ...nodes ] : nodes
+            }.`);
+        }
+        oid.encoding = encodeObjectIdentifierFromArcs(first, second, nodes, restStart);
         return oid;
     }
 
@@ -119,14 +122,17 @@ class ObjectIdentifier {
      * @function
      */
     get nodes (): number[] {
-        const subcomponents = decodeRelativeObjectIdentifier(this.encoding);
-        return [
-            Math.min(2, Math.floor(subcomponents[0] / 40)),
-            ((subcomponents[0] >= 80)
-                ? (subcomponents[0] - 80)
-                : (subcomponents[0] % 40)),
-            ...subcomponents.slice(1),
-        ];
+        const subcomponents: number[] = decodeRelativeObjectIdentifier(this.encoding);
+        const first: number = subcomponents[0];
+        const nodes: number[] = new Array(subcomponents.length + 1);
+        nodes[0] = Math.min(2, Math.floor(first / 40));
+        nodes[1] = (first >= 80)
+            ? (first - 80)
+            : (first % 40);
+        for (let i: number = 1; i < subcomponents.length; i++) {
+            nodes[i + 1] = subcomponents[i];
+        }
+        return nodes;
     }
 
     private dotDelimitedNotationCached: string | null = null;
@@ -252,23 +258,29 @@ class ObjectIdentifier {
      * @function
      */
     public static fromBytes (bytes: Uint8Array): ObjectIdentifier {
-        if (bytes.length === 0) {
+        const len: number = bytes.length;
+        if (len === 0) {
             throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
         }
-        if (bytes[bytes.length - 1] & 0b10000000) {
+        if (bytes[len - 1] >= 0x80) {
             throw new errors.ASN1TruncationError("OID was truncated.");
         }
-
-        let current_node: number = 0;
-        for (let i = 1; i < bytes.length; i++) {
-            const byte = bytes[i];
-            if ((current_node === 0) && (byte === 0x80)) {
+        if (len >= 2 && bytes[1] === 0x80) {
+            throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
+        }
+        let continuations: number = (bytes[0] >= 0x80) ? 1 : 0;
+        for (let i: number = 1; i < len; i++) {
+            const byte: number = bytes[i];
+            if (i >= 2 && byte === 0x80 && bytes[i - 1] < 0x80) {
                 throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
             }
-            if (byte < 0x80) {
-                current_node = 0;
+            if (byte >= 0x80) {
+                continuations++;
+                if (continuations >= 8) {
+                    throw new errors.ASN1OverflowError("OBJECT IDENTIFIER node too large to decode.");
+                }
             } else {
-                current_node++;
+                continuations = 0;
             }
         }
         const oid = new ObjectIdentifier();

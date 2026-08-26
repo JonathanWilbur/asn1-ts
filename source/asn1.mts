@@ -138,11 +138,39 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
      */
     public abstract tagAndLengthBytes (): Uint8Array;
     /**
-     * Get the encoded buffers for this element.
-     * @returns {Uint8Array[]}
+     * Write this element's TLV encoding into `destination` starting at `offset`.
+     *
+     * Prefer this over {@link toBytes} when you already have a buffer of size
+     * {@link tlvLength}, so encoding does not allocate an intermediate result.
+     *
+     * @param {Uint8Array} destination - Buffer to write into.
+     * @param {number} [offset=0] - Index of the first octet to write.
+     * @returns {number} The offset immediately after the last written octet.
      * @abstract
      */
-    public abstract toBuffers (): Uint8Array[];
+    public abstract encodeInto (destination: Uint8Array, offset?: number): number;
+    /**
+     * Append this element's TLV encoding as buffer fragments to `into`.
+     * Concatenating the fragments yields the same encoding as {@link toBytes}.
+     *
+     * @param {Uint8Array[]} into - Array that receives encoding fragments.
+     * @abstract
+     */
+    public abstract appendBuffers (into: Uint8Array[]): void;
+    /**
+     * Get the encoded buffers for this element.
+     *
+     * Concatenate all of the returned buffers to obtain the serialized element.
+     * For a single contiguous encoding, {@link toBytes} or {@link encodeInto}
+     * is faster.
+     *
+     * @returns {Uint8Array[]}
+     */
+    public toBuffers (): Uint8Array[] {
+        const out: Uint8Array[] = [];
+        this.appendBuffers(out);
+        return out;
+    }
 
     /**
      * Get the number of bytes required to encode the tag.
@@ -153,7 +181,8 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             return 1;
         }
         let n = this.tagNumber;
-        let i = 0;
+        // Count the first identifier octet plus each subsequent tag-number octet.
+        let i = 1;
         while (n !== 0) {
             n >>>= 7;
             i++;
@@ -183,10 +212,16 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
 
     /**
      * Get the full encoding of this element as a Node.js Buffer.
+     *
+     * Allocates a single buffer of {@link tlvLength} bytes and writes the
+     * encoding into it, avoiding intermediate concatenations.
+     *
      * @returns {Buffer}
      */
     public toBytes (): SingleThreadBuffer {
-        return Buffer.concat(this.toBuffers());
+        const buf = Buffer.allocUnsafe(this.tlvLength());
+        this.encodeInto(buf, 0);
+        return buf;
     }
 
     /**

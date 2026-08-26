@@ -5,11 +5,12 @@ import type { GraphicString } from "../../../macros.mjs";
 
 export default
 function decodeGraphicString (value: Uint8Array): GraphicString {
-    for (const char of value) {
-        if (!isGraphicCharacter(char)) {
+    for (let i = 0; i < value.length; i++) {
+        const c = value[i];
+        if (!isGraphicCharacter(c)) {
             throw new ASN1CharactersError(
                 "GraphicString can only contain characters between 0x20 and 0x7E. "
-                + `Encountered character code ${char}.`,
+                + `Encountered character code ${c}.`,
             );
         }
     }

@@ -5,11 +5,12 @@ import type { GeneralString } from "../../../macros.mjs";
 
 export default
 function decodeGeneralString (value: Uint8Array): GeneralString {
-    for (const char of value) {
-        if (!isGeneralCharacter(char)) {
+    for (let i = 0; i < value.length; i++) {
+        const c = value[i];
+        if (!isGeneralCharacter(c)) {
             throw new ASN1CharactersError(
                 "GeneralString can only contain ASCII characters."
-                + `Encountered character code ${char}.`,
+                + `Encountered character code ${c}.`,
             );
         }
     }

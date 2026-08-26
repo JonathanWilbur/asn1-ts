@@ -43,6 +43,7 @@ import decodeVisibleString from "../codecs/x690/decoders/decodeVisibleString.mjs
 import decodeGeneralString from "../codecs/x690/decoders/decodeGeneralString.mjs";
 import encodeDuration from "../codecs/x690/encoders/encodeDuration.mjs";
 import decodeDuration from "../codecs/ber/decoders/decodeDuration.mjs";
+import writeTagAndLength, { definiteLengthLength, encodeX690Into } from "./x690/encoders/writeTagAndLength.mjs";
 import type {
     BOOLEAN,
     BIT_STRING,
@@ -133,7 +134,8 @@ class BERElement extends X690Element {
         }
         const appendy: boolean[] = [];
         const substrings: ASN1Element[] = this.sequence;
-        for (const substring of substrings.slice(0, (substrings.length - 1))) {
+        for (let i = 0; i < substrings.length - 1; i++) {
+            const substring = substrings[i];
             if (
                 substring.construction === ASN1Construction.primitive
                 && substring.value.length > 0
@@ -145,7 +147,8 @@ class BERElement extends X690Element {
                 );
             }
         }
-        for (const substring of substrings) {
+        for (let i = 0; i < substrings.length; i++) {
+            const substring = substrings[i];
             if (substring.tagClass !== this.tagClass) {
                 throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
             }
@@ -622,6 +625,7 @@ class BERElement extends X690Element {
      */
     set inner (value: ASN1Element) {
         this.construction = ASN1Construction.constructed;
+        this._currentValueLength = undefined;
         this._value = [ value ];
     }
 
@@ -779,19 +783,7 @@ class BERElement extends X690Element {
         if (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite) {
             return 1;
         }
-        const len = valueLength ?? this.valueLength();
-        if (len < 127) {
-            return 1;
-        }
-        let lengthOctets = [ 0, 0, 0, 0 ];
-        for (let i: number = 0; i < 4; i++) {
-            lengthOctets[i] = ((len >>> ((3 - i) << 3)) & 0xFF);
-        }
-        let startOfNonPadding: number = 0;
-        for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
-            if (lengthOctets[i] === 0x00) startOfNonPadding++;
-        }
-        return 5 - startOfNonPadding;
+        return definiteLengthLength(valueLength ?? this.valueLength());
     }
 
     /** Get the length of the content octets. */
@@ -804,8 +796,8 @@ class BERElement extends X690Element {
         }
         let len = 0;
         // For loop because it is most performant.
-        for (const el of this._value) {
-            len += el.tlvLength();
+        for (let i = 0; i < this._value.length; i++) {
+            len += this._value[i].tlvLength();
         }
         this._currentValueLength = len;
         return len;
@@ -827,90 +819,58 @@ class BERElement extends X690Element {
 
     /** Get the tag and length bytes of the element. */
     public tagAndLengthBytes (): SingleThreadUint8Array {
-        const tagBytes: number[] = [ 0x00 ];
-        tagBytes[0] |= (this.tagClass << 6);
-        tagBytes[0] |= (
-            (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite)
-            || this.construction === ASN1Construction.constructed
-        )
-            ? (1 << 5)
-            : 0;
-        if (this.tagNumber < 31) {
-            tagBytes[0] |= this.tagNumber;
-        } else {
-            /*
-                Per section 8.1.2.4 of X.690:
-                The last five bits of the first byte being set indicate that
-                the tag number is encoded in base-128 on the subsequent octets,
-                using the first bit of each subsequent octet to indicate if the
-                encoding continues on the next octet, just like how the
-                individual numbers of OBJECT IDENTIFIER and RELATIVE OBJECT
-                IDENTIFIER are encoded.
-            */
-            tagBytes[0] |= 0b00011111;
-            let number: number = this.tagNumber; // We do not want to modify by reference.
-            const encodedNumber: number[] = [];
-            while (number !== 0) {
-                encodedNumber.unshift(number & 0x7F);
-                number >>>= 7;
-                encodedNumber[0] |= 0b10000000;
-            }
-            encodedNumber[encodedNumber.length - 1] &= 0b01111111;
-            tagBytes.push(...encodedNumber);
-        }
-
-        let lengthOctets: number[] = [ 0x00 ];
-        const value_len = this.valueLength();
-        switch (BERElement.lengthEncodingPreference) {
-        case (LengthEncodingPreference.definite): {
-            if (value_len < 127) {
-                lengthOctets[0] = value_len;
-            } else {
-                lengthOctets = [ 0, 0, 0, 0 ];
-                for (let i: number = 0; i < 4; i++) {
-                    lengthOctets[i] = ((value_len >>> ((3 - i) << 3)) & 0xFF);
-                }
-                let startOfNonPadding: number = 0;
-                for (let i: number = 0; i < (lengthOctets.length - 1); i++) {
-                    if (lengthOctets[i] === 0x00) startOfNonPadding++;
-                }
-                lengthOctets = lengthOctets.slice(startOfNonPadding);
-                lengthOctets.unshift(0b10000000 | lengthOctets.length);
-            }
-            break;
-        }
-        case (LengthEncodingPreference.indefinite): {
-            lengthOctets = [ 0b10000000 ];
-            break;
-        }
-        default:
-            throw new errors.ASN1UndefinedError("Invalid LengthEncodingPreference encountered!", this);
-        }
-
-        const ret = new Uint8Array(tagBytes.length + lengthOctets.length);
-        ret.set(tagBytes, 0);
-        ret.set(lengthOctets, tagBytes.length);
+        const indefinite: boolean = BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite;
+        const valueLen: number = this.valueLength();
+        const constructedIdent: boolean = indefinite || (this.construction === ASN1Construction.constructed);
+        const ret = new Uint8Array(this.tagLength() + this.lengthLength(valueLen));
+        writeTagAndLength(
+            ret,
+            0,
+            this.tagClass,
+            constructedIdent,
+            this.tagNumber,
+            valueLen,
+            indefinite,
+        );
         return ret;
     }
 
     /**
-     * Instead of serializing the element, returns the encoded element in fragments that
-     * are not yet concatenated together. This is for performance optimizations, since
-     * a large number of buffers could be concatenated together in a single pass / allocation,
-     * rather than doing this for every element separately.
+     * Write this element's BER encoding into `destination` starting at `offset`.
      *
-     * Basically, just concatenate all of the returned buffers to obtain the serialized element.
+     * @returns The offset immediately after the last written octet.
      */
-    public toBuffers (): Uint8Array[] {
-        return [
-            this.tagAndLengthBytes(),
-            ...(Array.isArray(this._value)
-                ? this._value.flatMap((el) => el.toBuffers())
-                : [ this._value ]),
-            ...(BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite
-                ? [ new Uint8Array(2) ]
-                : []),
-        ];
+    public encodeInto (destination: Uint8Array, offset: number = 0): number {
+        const indefinite: boolean = BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite;
+        return encodeX690Into(
+            destination,
+            offset,
+            this.tagClass,
+            indefinite || (this.construction === ASN1Construction.constructed),
+            this.tagNumber,
+            this._value,
+            this.valueLength(),
+            indefinite,
+        );
+    }
+
+    /**
+     * Append this element's BER encoding as buffer fragments to `into`.
+     * Concatenating the fragments yields the same encoding as {@link toBytes}.
+     */
+    public appendBuffers (into: Uint8Array[]): void {
+        into.push(this.tagAndLengthBytes());
+        if (Array.isArray(this._value)) {
+            const children: ASN1Element[] = this._value;
+            for (let i: number = 0; i < children.length; i++) {
+                children[i].appendBuffers(into);
+            }
+        } else {
+            into.push(this._value);
+        }
+        if (BERElement.lengthEncodingPreference === LengthEncodingPreference.indefinite) {
+            into.push(new Uint8Array(2));
+        }
     }
 
     /**
@@ -927,7 +887,8 @@ class BERElement extends X690Element {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
             const appendy: Uint8Array[] = [];
             const substrings: ASN1Element[] = this.sequence;
-            for (const substring of substrings) {
+            for (let i = 0; i < substrings.length; i++) {
+                const substring = substrings[i];
                 if (substring.tagClass !== ASN1TagClass.universal) {
                     throw new errors.ASN1ConstructionError(
                         `Invalid tag class in constructed ${dataType}. Must be UNIVERSAL`, this);
