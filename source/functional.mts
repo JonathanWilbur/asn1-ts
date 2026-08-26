@@ -1086,6 +1086,28 @@ export const _decodeRelativeOID: ASN1Decoder<RELATIVE_OID> = (el: ASN1Element): 
 }
 
 /**
+ * Decode constructed SEQUENCE-like contents from an element.
+ * @internal
+ */
+function _sequenceElements (el: ASN1Element, zeroCopy: boolean): SEQUENCE<ASN1Element> {
+    if (el instanceof DERElement || el instanceof BERElement || el instanceof CERElement) {
+        return el.sequenceElements(zeroCopy);
+    }
+    return el.sequence;
+}
+
+/**
+ * Decode constructed SET contents from an element.
+ * @internal
+ */
+function _setElements (el: ASN1Element, zeroCopy: boolean): SET<ASN1Element> {
+    if (el instanceof DERElement || el instanceof BERElement || el instanceof CERElement) {
+        return el.setElements(zeroCopy);
+    }
+    return el.set;
+}
+
+/**
  * @summary Encode a `SEQUENCE` value to an ASN.1 element
  * @param value The `SEQUENCE` value to encode
  * @param elGetter A function that creates a new ASN.1 element
@@ -1103,12 +1125,25 @@ export const _encodeSequence: ASN1Encoder<SEQUENCE<ASN1Element>>
 
 /**
  * @summary Decode a `SEQUENCE` value from an ASN.1 element
+ * @description
+ * Child element values alias the parent content octets (zero-copy). Prefer
+ * {@link _decodeSequenceCloned} if you need independently owned buffers.
  * @param el The ASN.1 element containing the `SEQUENCE`
  * @returns The decoded `SEQUENCE` value
  * @function
  */
 export const _decodeSequence: ASN1Decoder<SEQUENCE<ASN1Element>> = (el: ASN1Element): SEQUENCE<ASN1Element> => {
-    return el.sequence;
+    return _sequenceElements(el, true);
+}
+
+/**
+ * @summary Decode a `SEQUENCE` value, copying each child's content octets
+ * @param el The ASN.1 element containing the `SEQUENCE`
+ * @returns The decoded `SEQUENCE` value
+ * @function
+ */
+export const _decodeSequenceCloned: ASN1Decoder<SEQUENCE<ASN1Element>> = (el: ASN1Element): SEQUENCE<ASN1Element> => {
+    return _sequenceElements(el, false);
 }
 
 /**
@@ -1129,12 +1164,25 @@ export const _encodeSet: ASN1Encoder<SET<ASN1Element>>
 
 /**
  * @summary Decode a `SET` value from an ASN.1 element
+ * @description
+ * Child element values alias the parent content octets (zero-copy). Prefer
+ * {@link _decodeSetCloned} if you need independently owned buffers.
  * @param el The ASN.1 element containing the `SET`
  * @returns The decoded `SET` value
  * @function
  */
 export const _decodeSet: ASN1Decoder<SET<ASN1Element>> = (el: ASN1Element): SET<ASN1Element> => {
-    return el.set;
+    return _setElements(el, true);
+}
+
+/**
+ * @summary Decode a `SET` value, copying each child's content octets
+ * @param el The ASN.1 element containing the `SET`
+ * @returns The decoded `SET` value
+ * @function
+ */
+export const _decodeSetCloned: ASN1Decoder<SET<ASN1Element>> = (el: ASN1Element): SET<ASN1Element> => {
+    return _setElements(el, false);
 }
 
 /**
@@ -1784,7 +1832,7 @@ function _parse_set (
 ): void {
     const rootComponents: ComponentSpec[] = rootComponentTypeList1.concat(rootComponentTypeList2);
     const components: ComponentSpec[] = rootComponents.concat(extensionAdditionsList);
-    const elements: ASN1Element[] = set.set;
+    const elements: ASN1Element[] = _setElements(set, true);
 
     /**
      * We check the length of the SET first, to detect and prevent denial-of-service
@@ -1965,7 +2013,7 @@ function _parse_sequence_with_trailing_rctl (
     rootComponentTypeList2: ComponentSpec[],
     unrecognizedExtensionHandler: DecodingCallback = () => {},
 ): void {
-    const elements: ASN1Element[] = seq.sequence;
+    const elements: ASN1Element[] = _sequenceElements(seq, true);
     const startOfExtensions: number = _parse_component_type_list(
         rootComponentTypeList1,
         decodingCallbacks,
@@ -2013,7 +2061,7 @@ function _parse_sequence_without_trailing_rctl (
     extensionAdditionsList: ComponentSpec[],
     unrecognizedExtensionHandler: DecodingCallback = () => {},
 ): void {
-    const elements: ASN1Element[] = seq.sequence;
+    const elements: ASN1Element[] = _sequenceElements(seq, true);
     const startOfExtensions: number = _parse_component_type_list(
         rootComponentTypeList1,
         decodingCallbacks,
@@ -2202,7 +2250,8 @@ export type SetOfEncoder<T> = ASN1Encoder<SET_OF<T>>;
 /**
  * @summary Decode a `SEQUENCE OF` type
  * @description
- * Decodes a `SEQUENCE OF` type from an ASN.1 element.
+ * Decodes a `SEQUENCE OF` type from an ASN.1 element using zero-copy child
+ * buffers. Prefer {@link _decodeSequenceOfCloned} for independently owned buffers.
  *
  * @param {Function} decoderGetter A function that returns a decoder for the items of the sequence
  * @returns {Function} A decoder function for the `SEQUENCE OF` as a whole
@@ -2211,7 +2260,25 @@ export type SetOfEncoder<T> = ASN1Encoder<SET_OF<T>>;
 export function _decodeSequenceOf<T> (decoderGetter: () => ASN1Decoder<T>): SequenceOfDecoder<T> {
     const decoder = decoderGetter();
     return function (el: ASN1Element): SEQUENCE_OF<T> {
-        const seq = el.sequence;
+        const seq = _sequenceElements(el, true);
+        const result: SEQUENCE_OF<T> = new Array(seq.length);
+        for (let i = 0; i < seq.length; i++) {
+            result[i] = decoder(seq[i]);
+        }
+        return result;
+    };
+}
+
+/**
+ * @summary Decode a `SEQUENCE OF` type, copying each child's content octets
+ * @param {Function} decoderGetter A function that returns a decoder for the items of the sequence
+ * @returns {Function} A decoder function for the `SEQUENCE OF` as a whole
+ * @function
+ */
+export function _decodeSequenceOfCloned<T> (decoderGetter: () => ASN1Decoder<T>): SequenceOfDecoder<T> {
+    const decoder = decoderGetter();
+    return function (el: ASN1Element): SEQUENCE_OF<T> {
+        const seq = _sequenceElements(el, false);
         const result: SEQUENCE_OF<T> = new Array(seq.length);
         for (let i = 0; i < seq.length; i++) {
             result[i] = decoder(seq[i]);
@@ -2250,7 +2317,8 @@ export function _encodeSequenceOf<T> (
 /**
  * @summary Decode a `SET OF` type
  * @description
- * Decodes a `SET OF` type from an ASN.1 element.
+ * Decodes a `SET OF` type from an ASN.1 element using zero-copy child buffers.
+ * Prefer {@link _decodeSetOfCloned} for independently owned buffers.
  * @param {Function} decoderGetter A function that returns a decoder for the items of the set
  * @returns {Function} A decoder function for the `SET OF` as a whole
  * @function
@@ -2258,7 +2326,25 @@ export function _encodeSequenceOf<T> (
 export function _decodeSetOf<T> (decoderGetter: () => (el: ASN1Element) => T): SetOfDecoder<T> {
     const decoder = decoderGetter();
     return function (el: ASN1Element): SET_OF<T> {
-        const setOf: ASN1Element[] = el.setOf;
+        const setOf: ASN1Element[] = _sequenceElements(el, true);
+        const result: SET_OF<T> = new Array(setOf.length);
+        for (let i = 0; i < setOf.length; i++) {
+            result[i] = decoder(setOf[i]);
+        }
+        return result;
+    };
+}
+
+/**
+ * @summary Decode a `SET OF` type, copying each child's content octets
+ * @param {Function} decoderGetter A function that returns a decoder for the items of the set
+ * @returns {Function} A decoder function for the `SET OF` as a whole
+ * @function
+ */
+export function _decodeSetOfCloned<T> (decoderGetter: () => (el: ASN1Element) => T): SetOfDecoder<T> {
+    const decoder = decoderGetter();
+    return function (el: ASN1Element): SET_OF<T> {
+        const setOf: ASN1Element[] = _sequenceElements(el, false);
         const result: SET_OF<T> = new Array(setOf.length);
         for (let i = 0; i < setOf.length; i++) {
             result[i] = decoder(setOf[i]);

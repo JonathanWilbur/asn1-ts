@@ -200,10 +200,13 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     /**
      * Parse this element from a byte array.
      * @param {Uint8Array} bytes - The bytes to parse from.
+     * @param {boolean} [zeroCopy=false] - If true, `value` is a view into `bytes`
+     *        rather than a copy. The caller must keep `bytes` immutable for the
+     *        lifetime of this element (and any nested elements decoded from it).
      * @returns {number} The number of bytes consumed.
      * @abstract
      */
-    abstract fromBytes (bytes: Uint8Array): number;
+    abstract fromBytes (bytes: Uint8Array, zeroCopy?: boolean): number;
 
     abstract set boolean (value: BOOLEAN);
     abstract get boolean (): BOOLEAN;

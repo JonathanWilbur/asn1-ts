@@ -1,5 +1,4 @@
 import type { BIT_STRING } from "../macros.mjs";
-import { TRUE_BIT } from "../macros.mjs";
 
 /**
  * @summary Unpacks a `Uint8Array` into a `BIT_STRING`
@@ -11,13 +10,19 @@ import { TRUE_BIT } from "../macros.mjs";
  */
 export default
 function unpackBits (bytes: Uint8Array): BIT_STRING {
-    const ret: Uint8ClampedArray = new Uint8ClampedArray(bytes.length << 3);
-    for (let byte: number = 0; byte < bytes.length; byte++) {
-        for (let bit: number = 0; bit < 8; bit++) {
-            if (bytes[byte] & (0x01 << (7 - bit))) {
-                ret[(byte << 3) + bit] = TRUE_BIT;
-            }
-        }
+    const len: number = bytes.length;
+    const ret: Uint8ClampedArray = new Uint8ClampedArray(len << 3);
+    let j: number = 0;
+    for (let i: number = 0; i < len; i++, j += 8) {
+        const b: number = bytes[i];
+        ret[j]     = b >> 7;
+        ret[j + 1] = (b >> 6) & 1;
+        ret[j + 2] = (b >> 5) & 1;
+        ret[j + 3] = (b >> 4) & 1;
+        ret[j + 4] = (b >> 3) & 1;
+        ret[j + 5] = (b >> 2) & 1;
+        ret[j + 6] = (b >> 1) & 1;
+        ret[j + 7] = b & 1;
     }
     return ret;
 }

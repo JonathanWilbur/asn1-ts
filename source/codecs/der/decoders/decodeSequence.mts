@@ -2,7 +2,7 @@ import DERElement from "../../der.mjs";
 import type { SEQUENCE } from "../../../macros.mjs";
 
 export default
-function decodeSequence (value: Uint8Array): SEQUENCE<DERElement> {
+function decodeSequence (value: Uint8Array, zeroCopy: boolean = false): SEQUENCE<DERElement> {
     if (value.length === 0) {
         return [];
     }
@@ -10,7 +10,7 @@ function decodeSequence (value: Uint8Array): SEQUENCE<DERElement> {
     let i: number = 0;
     while (i < value.length) {
         const next: DERElement = new DERElement();
-        i += next.fromBytes(value.subarray(i));
+        i += next.fromBytes(value.subarray(i), zeroCopy);
         encodedElements.push(next);
     }
     return encodedElements;

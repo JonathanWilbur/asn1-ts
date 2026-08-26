@@ -1,5 +1,6 @@
 import * as errors from "../errors.mjs";
-import type { SingleThreadUint8Array } from "../macros.mjs";
+import { Buffer } from "node:buffer";
+import type { SingleThreadBuffer } from "../macros.mjs";
 import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
 
 /**
@@ -7,12 +8,12 @@ import { MIN_SINT_32, MAX_SINT_32 } from "../values.mjs";
  * @description
  * Throws if the value is out of the 32-bit signed integer range.
  * @param {number} value - The signed integer to encode.
- * @returns {Uint8Array<ArrayBuffer>} The encoded big-endian bytes.
+ * @returns {Buffer<ArrayBuffer>} The encoded big-endian bytes.
  * @throws {ASN1OverflowError} If the value is out of range for a 32-bit signed integer.
  * @function
  */
 export default
-function encodeBigEndianSignedInteger (value: number): SingleThreadUint8Array {
+function encodeBigEndianSignedInteger (value: number): SingleThreadBuffer {
     if (value < MIN_SINT_32) {
         throw new errors.ASN1OverflowError(
             `Number ${value} too small to be encoded as a big-endian signed integer.`,
@@ -25,26 +26,26 @@ function encodeBigEndianSignedInteger (value: number): SingleThreadUint8Array {
     }
 
     if (value <= 127 && value >= -128) {
-        return new Uint8Array([
-            (value & 255),
-        ]);
+        const bytes = Buffer.allocUnsafe(1);
+        bytes[0] = value;
+        return bytes;
     } else if (value <= 32767 && value >= -32768) {
-        return new Uint8Array([
-            ((value >> 8) & 255),
-            (value & 255),
-        ]);
+        const bytes = Buffer.allocUnsafe(2);
+        bytes[0] = value >> 8;
+        bytes[1] = value;
+        return bytes;
     } else if (value <= 8388607 && value >= -8388608) {
-        return new Uint8Array([
-            ((value >> 16) & 255),
-            ((value >> 8) & 255),
-            (value & 255),
-        ]);
+        const bytes = Buffer.allocUnsafe(3);
+        bytes[0] = value >> 16;
+        bytes[1] = value >> 8;
+        bytes[2] = value;
+        return bytes;
     } else {
-        return new Uint8Array([
-            ((value >> 24) & 255),
-            ((value >> 16) & 255),
-            ((value >> 8) & 255),
-            (value & 255),
-        ]);
+        const bytes = Buffer.allocUnsafe(4);
+        bytes[0] = value >> 24;
+        bytes[1] = value >> 16;
+        bytes[2] = value >> 8;
+        bytes[3] = value;
+        return bytes;
     }
 }

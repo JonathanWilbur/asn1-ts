@@ -199,13 +199,21 @@ class DERElement extends X690Element {
     }
 
     get sequence (): SEQUENCE<ASN1Element> {
+        return this.sequenceElements(false);
+    }
+
+    /**
+     * Decode this element's constructed contents as a SEQUENCE of elements.
+     * @param zeroCopy If true, child `value` buffers alias this element's value.
+     */
+    public sequenceElements (zeroCopy: boolean = false): SEQUENCE<ASN1Element> {
         if (this.construction !== ASN1Construction.constructed) {
             throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
         }
         if (Array.isArray(this._value)) {
             return this._value;
         }
-        return decodeSequence(this.value);
+        return decodeSequence(this.value, zeroCopy);
     }
 
     set set (value: SET<ASN1Element>) {
@@ -214,7 +222,15 @@ class DERElement extends X690Element {
     }
 
     get set (): SET<ASN1Element> {
-        const ret = this.sequence;
+        return this.setElements(false);
+    }
+
+    /**
+     * Decode this element's constructed contents as a SET of elements.
+     * @param zeroCopy If true, child `value` buffers alias this element's value.
+     */
+    public setElements (zeroCopy: boolean = false): SET<ASN1Element> {
+        const ret = this.sequenceElements(zeroCopy);
         if (!isUniquelyTagged(ret)) {
             throw new errors.ASN1ConstructionError("Duplicate tag in SET.", this);
         }
@@ -227,13 +243,7 @@ class DERElement extends X690Element {
     }
 
     get sequenceOf (): SEQUENCE<ASN1Element> {
-        if (this.construction !== ASN1Construction.constructed) {
-            throw new errors.ASN1ConstructionError("SET or SEQUENCE cannot be primitively constructed.", this);
-        }
-        if (Array.isArray(this._value)) {
-            return this._value;
-        }
-        return decodeSequence(this.value);
+        return this.sequenceElements(false);
     }
 
     set setOf (value: SET<ASN1Element>) {
@@ -639,25 +649,22 @@ class DERElement extends X690Element {
      * Decode a DER element from a byte array.
      *
      * @param bytes - The byte array to decode.
+     * @param zeroCopy - If true, `value` aliases `bytes` instead of copying.
      * @returns The number of bytes read.
      */
-    public fromBytes (bytes: Uint8Array): number {
-        if (bytes.length < 2) {
+    public fromBytes (bytes: Uint8Array, zeroCopy: boolean = false): number {
+        const bytesLen: number = bytes.length;
+        if (bytesLen < 2) {
             throw new errors.ASN1TruncationError("Tried to decode a DER element that is less than two bytes.", this);
         }
-        let cursor: number = 0;
-        switch (bytes[cursor] & 0b11000000) {
-        case (0b00000000): this.tagClass = ASN1TagClass.universal; break;
-        case (0b01000000): this.tagClass = ASN1TagClass.application; break;
-        case (0b10000000): this.tagClass = ASN1TagClass.context; break;
-        case (0b11000000): this.tagClass = ASN1TagClass.private; break;
-        default: this.tagClass = ASN1TagClass.universal;
-        }
-        this.construction = ((bytes[cursor] & 0b00100000)
-            ? ASN1Construction.constructed : ASN1Construction.primitive);
-        this.tagNumber = (bytes[cursor] & 0b00011111);
-        cursor++;
-        if (this.tagNumber >= 31) {
+        const first: number = bytes[0];
+        // ASN1TagClass / ASN1Construction enum values match these bit fields.
+        this.tagClass = first >>> 6;
+        this.construction = (first >>> 5) & 1;
+        let cursor: number = 1;
+        if ((first & 0x1F) !== 0x1F) {
+            this.tagNumber = first & 0x1F;
+        } else {
             /* NOTE:
                 Section 8.1.2.4.2, point C of the International
                 Telecommunications Union's X.690 specification says:
@@ -674,7 +681,7 @@ class DERElement extends X690Element {
             }
             this.tagNumber = 0;
             // This loop looks for the end of the encoded tag number.
-            const limit: number = (((bytes.length - 1) >= 4) ? 4 : (bytes.length - 1));
+            const limit: number = (((bytesLen - 1) >= 4) ? 4 : (bytesLen - 1));
             while (cursor < limit) {
                 if (!(bytes[cursor++] & 0b10000000)) break;
             }
@@ -695,57 +702,63 @@ class DERElement extends X690Element {
         }
 
         // Length
-        if ((bytes[cursor] & 0b10000000) === 0b10000000) {
-            const numberOfLengthOctets: number = (bytes[cursor] & 0x7F);
-            if (numberOfLengthOctets === 0b01111111) { // Reserved
-                throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
-            }
-            // Definite Long, if it has made it this far
-            if (numberOfLengthOctets > 4) {
-                throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
-            }
-            if (cursor + numberOfLengthOctets >= bytes.length) {
-                throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
-            }
+        const lengthByte: number = bytes[cursor];
+        if ((lengthByte & 0x80) === 0) { // Definite Short (common case)
+            const length: number = lengthByte;
             cursor++;
-            const lengthNumberOctets: Uint8Array = new Uint8Array(4);
-            for (let i: number = numberOfLengthOctets; i > 0; i--) {
-                lengthNumberOctets[(4 - i)] = bytes[(cursor + numberOfLengthOctets - i)];
-            }
-            let length: number = 0;
-            for (const octet of lengthNumberOctets) {
-                length <<= 8;
-                length += octet;
-            }
-            if ((cursor + length) < cursor) { // This catches an overflow.
-                throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
-            }
-            cursor += (numberOfLengthOctets);
-            if ((cursor + length) > bytes.length) {
-                throw new errors.ASN1TruncationError("ASN.1 element truncated.", this);
-            }
-
-            if (
-                ((length <= 127 && length >= -128) && numberOfLengthOctets > 1)
-                || ((length <= 32767 && length >= -32768) && numberOfLengthOctets > 2)
-                || ((length <= 8388607 && length >= -8388608) && numberOfLengthOctets > 3)
-            ) {
-                throw new errors.ASN1PaddingError(
-                    "DER-encoded long-form length encoded on more octets than necessary",
-                    this,
-                );
-            }
-
-            this.value = bytes.slice(cursor, (cursor + length));
-            return (cursor + length);
-        } else { // Definite Short
-            const length: number = (bytes[cursor++] & 0x7F);
-            if ((cursor + length) > bytes.length) {
+            const end: number = cursor + length;
+            if (end > bytesLen) {
                 throw new errors.ASN1TruncationError("ASN.1 element was truncated.", this);
             }
-            this.value = bytes.slice(cursor, (cursor + length));
-            return (cursor + length);
+            this.value = (zeroCopy
+                ? bytes.subarray(cursor, end)
+                : bytes.slice(cursor, end)) as SingleThreadUint8Array;
+            return end;
         }
+
+        const numberOfLengthOctets: number = (lengthByte & 0x7F);
+        if (numberOfLengthOctets === 0x7F) { // Reserved
+            throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
+        }
+        // Definite Long
+        if (numberOfLengthOctets > 4) {
+            throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);
+        }
+        if (cursor + numberOfLengthOctets >= bytesLen) {
+            throw new errors.ASN1TruncationError("Element length bytes appear to have been truncated.", this);
+        }
+        cursor++;
+        let length: number = 0;
+        for (let i: number = 0; i < numberOfLengthOctets; i++) {
+            length = (length << 8) | bytes[cursor++];
+        }
+        const end: number = cursor + length;
+        if (end < cursor) { // This catches an overflow.
+            throw new errors.ASN1OverflowError("ASN.1 element too large.", this);
+        }
+        if (end > bytesLen) {
+            throw new errors.ASN1TruncationError("ASN.1 element truncated.", this);
+        }
+
+        // Length is unsigned; reject encodings that could fit in fewer octets.
+        // One long-form content octet with length ≤ 127 must use short form;
+        // otherwise each content octet is a full unsigned byte (MSB is not a sign bit).
+        if (
+            (numberOfLengthOctets === 1 && length <= 0x7F)
+            || (numberOfLengthOctets > 1 && length <= 0xFF)
+            || (numberOfLengthOctets > 2 && length <= 0xFFFF)
+            || (numberOfLengthOctets > 3 && length <= 0xFFFFFF)
+        ) {
+            throw new errors.ASN1PaddingError(
+                "DER-encoded long-form length encoded on more octets than necessary",
+                this,
+            );
+        }
+
+        this.value = (zeroCopy
+            ? bytes.subarray(cursor, end)
+            : bytes.slice(cursor, end)) as SingleThreadUint8Array;
+        return end;
     }
 
     /** Get the tag and length bytes of the element. */

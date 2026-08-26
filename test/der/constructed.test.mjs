@@ -38,13 +38,13 @@ describe("Distinguished Encoding Rules", function () {
     });
 
     it("encodes and decodes a constructed BIT STRING correctly", function () {
-        const data = [
+        const data = new Uint8Array([
             0x23, 0x0E,
             0x03, 0x02, 0x00, 0x0F,
             0x23, 0x04,
             0x03, 0x02, 0x00, 0x0F,
             0x03, 0x02, 0x05, 0xF0,
-        ];
+        ]);
 
         const element = new asn1.DERElement();
         element.fromBytes(data);

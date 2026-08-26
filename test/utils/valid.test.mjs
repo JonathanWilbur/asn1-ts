@@ -112,14 +112,14 @@ describe("encodeIEEE754SinglePrecisionFloat()", () => {
 
 describe("encodeSignedBigEndianInteger()", () => {
     it("works", () => {
-        assert.deepEqual(encodeSignedBigEndianInteger(0), new Uint8Array([ 0x00 ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(1), new Uint8Array([ 0x01 ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(-1), new Uint8Array([ 0xFF ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(127), new Uint8Array([ 0x7F ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(-128), new Uint8Array([ 0x80 ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(511), new Uint8Array([ 0x01, 0xFF ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(32767), new Uint8Array([ 0x7F, 0xFF ]));
-        assert.deepEqual(encodeSignedBigEndianInteger(-32768), new Uint8Array([ 0x80, 0x00 ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(0), Buffer.from([ 0x00 ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(1), Buffer.from([ 0x01 ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(-1), Buffer.from([ 0xFF ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(127), Buffer.from([ 0x7F ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(-128), Buffer.from([ 0x80 ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(511), Buffer.from([ 0x01, 0xFF ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(32767), Buffer.from([ 0x7F, 0xFF ]));
+        assert.deepEqual(encodeSignedBigEndianInteger(-32768), Buffer.from([ 0x80, 0x00 ]));
     });
 });
 
@@ -186,7 +186,15 @@ describe("packBits()", () => {
 
         const bits2 = new Uint8ClampedArray([ 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00 ]);
         assert.deepEqual(packBits(bits2), new Uint8Array([ 0xAF, 0xA0 ]));
-    })
+    });
+
+    it("packs into an existing buffer at an offset", () => {
+        const bits = new Uint8ClampedArray([ 0x01, 0x00, 0x01, 0x00 ]);
+        const dest = new Uint8Array([ 0xFF, 0x00, 0xEE ]);
+        const result = packBits(bits, dest, 1);
+        assert.equal(result, dest);
+        assert.deepEqual(dest, new Uint8Array([ 0xFF, 0xA0, 0xEE ]));
+    });
 });
 
 describe("setBitInBase128()", () => {
