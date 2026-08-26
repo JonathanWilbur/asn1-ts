@@ -24,3 +24,4 @@ export { default as setBitInBase128 } from "./setBitInBase128.mjs";
 export { default as setBitInBase256 } from "./setBitInBase256.mjs";
 export { default as trimLeadingPaddingBytes } from "./trimLeadingPaddingBytes.mjs";
 export { default as unpackBits } from "./unpackBits.mjs";
+export { default as canEncodeAsBMPString } from "./canEncodeAsBMPString.mjs";
