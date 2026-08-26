@@ -1,77 +1,110 @@
 import type { DURATION, INTEGER, OPTIONAL, SingleThreadUint8Array } from "../../../macros.mjs";
-import convertTextToBytes from "../../../utils/convertTextToBytes.mjs";
+
+function toNumber (value: INTEGER | undefined): number | undefined {
+    if (value === undefined) {
+        return undefined;
+    }
+    return (typeof value === "bigint") ? Number(value) : value;
+}
+
+function appendUnsigned (out: number[], value: number): void {
+    const n: number = Math.floor(value);
+    if (n >= 10) {
+        appendUnsigned(out, Math.floor(n / 10));
+    }
+    out.push(0x30 + (n % 10));
+}
+
+function appendFraction (
+    out: number[],
+    fractional_part: { number_of_digits: INTEGER; fractional_value: INTEGER },
+): void {
+    const digits: number = Number(fractional_part.number_of_digits);
+    const frac: number = Number(fractional_part.fractional_value);
+    out.push(0x2E);
+    let remaining: number = digits;
+    let tmp: number = Math.floor(frac);
+    if (tmp === 0) {
+        remaining--;
+    } else {
+        while (tmp > 0) {
+            remaining--;
+            tmp = Math.floor(tmp / 10);
+        }
+    }
+    while (remaining > 0) {
+        out.push(0x30);
+        remaining--;
+    }
+    appendUnsigned(out, frac);
+}
+
+function appendComponent (
+    out: number[],
+    value: number | undefined,
+    unit: number,
+    fractional_part: OPTIONAL<{ number_of_digits: INTEGER; fractional_value: INTEGER }>,
+): void {
+    if (fractional_part) {
+        appendUnsigned(out, value ?? 0);
+        appendFraction(out, fractional_part);
+        out.push(unit);
+        return;
+    }
+    if (!value) {
+        return;
+    }
+    appendUnsigned(out, value);
+    out.push(unit);
+}
 
 export default
 function encodeDuration (value: DURATION): SingleThreadUint8Array {
-    if (value.weeks) {
-        if (!value.fractional_part) {
-            return convertTextToBytes(`${value.weeks}W`);
-        } else {
-            const integralAmount: INTEGER = value.weeks;
-            const fractional_value: number = (typeof value.fractional_part.fractional_value === "bigint")
-                ? Number(value.fractional_part.fractional_value)
-                : value.fractional_part.fractional_value;
-            const number_of_digits: number = (typeof value.fractional_part.number_of_digits === "bigint")
-                ? Number(value.fractional_part.number_of_digits)
-                : value.fractional_part.number_of_digits;
-            const fraction: INTEGER = (fractional_value / Math.pow(10, number_of_digits));
-            return convertTextToBytes(
-                integralAmount.toString()
-                + fraction.toString().slice(1) // slice(1) gets rid of the leading 0.
-                + "W",
-            );
+    const weeks: number | undefined = toNumber(value.weeks);
+    if (weeks) {
+        const out: number[] = [];
+        appendUnsigned(out, weeks);
+        if (value.fractional_part) {
+            appendFraction(out, value.fractional_part);
         }
+        out.push(0x57);
+        return Uint8Array.from(out);
     }
 
-    let years: OPTIONAL<number> = (typeof value.years === "bigint")
-        ? Number(value.years)
-        : value.years;
-    let months: OPTIONAL<number> = (typeof value.months === "bigint")
-        ? Number(value.months)
-        : value.months;
-    let days: OPTIONAL<number> = (typeof value.days === "bigint")
-        ? Number(value.days)
-        : value.days;
-    let hours: OPTIONAL<number> = (typeof value.hours === "bigint")
-        ? Number(value.hours)
-        : value.hours;
-    let minutes: OPTIONAL<number> = (typeof value.minutes === "bigint")
-        ? Number(value.minutes)
-        : value.minutes;
-    let seconds: OPTIONAL<number> = (typeof value.seconds === "bigint")
-        ? Number(value.seconds)
-        : value.seconds;
+    const years: number | undefined = toNumber(value.years);
+    const months: number | undefined = toNumber(value.months);
+    const days: number | undefined = toNumber(value.days);
+    const hours: number | undefined = toNumber(value.hours);
+    const minutes: number | undefined = toNumber(value.minutes);
+    const seconds: number | undefined = toNumber(value.seconds);
+    const frac = value.fractional_part;
+    const fracOnSeconds: boolean = Boolean(frac) && (seconds !== undefined);
+    const fracOnMinutes: boolean = Boolean(frac) && !fracOnSeconds && (minutes !== undefined);
+    const fracOnHours: boolean = Boolean(frac) && !fracOnSeconds && !fracOnMinutes && (hours !== undefined);
+    const fracOnDays: boolean = Boolean(frac) && !fracOnSeconds && !fracOnMinutes && !fracOnHours && (days !== undefined);
+    const fracOnMonths: boolean = Boolean(frac)
+        && !fracOnSeconds && !fracOnMinutes && !fracOnHours && !fracOnDays
+        && (months !== undefined);
+    const fracOnYears: boolean = Boolean(frac)
+        && !fracOnSeconds && !fracOnMinutes && !fracOnHours && !fracOnDays && !fracOnMonths
+        && (years !== undefined);
 
-    if (value.fractional_part) {
-        const fractional_value: number = (typeof value.fractional_part.fractional_value === "bigint")
-            ? Number(value.fractional_part.fractional_value)
-            : value.fractional_part.fractional_value;
-        const number_of_digits: number = (typeof value.fractional_part.number_of_digits === "bigint")
-            ? Number(value.fractional_part.number_of_digits)
-            : value.fractional_part.number_of_digits;
-        const fraction: number = fractional_value / Math.pow(10, number_of_digits);
-        if (seconds !== undefined) {
-            seconds += fraction;
-        } else if (minutes !== undefined) {
-            minutes += fraction;
-        } else if (hours !== undefined) {
-            hours += fraction;
-        } else if (days !== undefined) {
-            days += fraction;
-        } else if (months !== undefined) {
-            months += fraction;
-        } else if (years !== undefined) {
-            years += fraction;
-        }
+    const out: number[] = [];
+    appendComponent(out, years, 0x59, fracOnYears ? frac : undefined);
+    appendComponent(out, months, 0x4D, fracOnMonths ? frac : undefined);
+    appendComponent(out, days, 0x44, fracOnDays ? frac : undefined);
+    if (
+        hours
+        || minutes
+        || seconds
+        || fracOnHours
+        || fracOnMinutes
+        || fracOnSeconds
+    ) {
+        out.push(0x54);
     }
-
-    return convertTextToBytes(
-        (years ? `${years}Y` : "")
-        + (months ? `${months}M` : "")
-        + (days ? `${days}D` : "")
-        + ((hours || minutes || seconds) ? "T" : "")
-        + (hours ? `${hours}H` : "")
-        + (minutes ? `${minutes}M` : "")
-        + (seconds ? `${seconds}S` : ""),
-    );
+    appendComponent(out, hours, 0x48, fracOnHours ? frac : undefined);
+    appendComponent(out, minutes, 0x4D, fracOnMinutes ? frac : undefined);
+    appendComponent(out, seconds, 0x53, fracOnSeconds ? frac : undefined);
+    return Uint8Array.from(out);
 }

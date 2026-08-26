@@ -154,3 +154,75 @@ import { strict as assert } from "node:assert";
         });
     });
 });
+
+[
+    asn1.CERElement,
+    asn1.DERElement,
+].forEach((CodecElement) => {
+    describe(`${CodecElement.constructor.name} DURATION canonical rules`, () => {
+        it("Throws when decoding a DURATION with a zeroed date component", () => {
+            const el = new CodecElement();
+            el.value = new Uint8Array([
+                0x31, "Y".charCodeAt(0),
+                0x30, "M".charCodeAt(0),
+                0x31, "D".charCodeAt(0),
+            ]);
+            assert.throws(() => el.duration);
+        });
+
+        it("Throws when decoding a DURATION with a zeroed time component", () => {
+            const el = new CodecElement();
+            el.value = new Uint8Array([
+                "T".charCodeAt(0),
+                0x31, "H".charCodeAt(0),
+                0x30, "M".charCodeAt(0),
+                0x31, "S".charCodeAt(0),
+            ]);
+            assert.throws(() => el.duration);
+        });
+
+        it("Throws when decoding a DURATION of zero weeks", () => {
+            const el = new CodecElement();
+            el.value = new Uint8Array([ 0x30, "W".charCodeAt(0) ]);
+            assert.throws(() => el.duration);
+        });
+
+        it("Throws when decoding a DURATION of 0S", () => {
+            const el = new CodecElement();
+            el.value = new Uint8Array([
+                "T".charCodeAt(0),
+                0x30, "S".charCodeAt(0),
+            ]);
+            assert.throws(() => el.duration);
+        });
+
+        it("Still decodes a non-zero fractional component that starts with 0", () => {
+            const el = new CodecElement();
+            el.value = new Uint8Array([
+                "T".charCodeAt(0),
+                0x30, ".".charCodeAt(0), 0x35, "S".charCodeAt(0),
+            ]);
+            const output = el.duration;
+            assert.equal(output.seconds, 0);
+            assert.deepEqual(output.fractional_part, {
+                number_of_digits: 1,
+                fractional_value: 5,
+            });
+        });
+    });
+});
+
+describe("BERElement DURATION", () => {
+    it("Allows zeroed components", () => {
+        const el = new asn1.BERElement();
+        el.value = new Uint8Array([
+            0x31, "Y".charCodeAt(0),
+            0x30, "M".charCodeAt(0),
+            0x31, "D".charCodeAt(0),
+        ]);
+        const output = el.duration;
+        assert.equal(output.years, 1);
+        assert.equal(output.months, 0);
+        assert.equal(output.days, 1);
+    });
+});
