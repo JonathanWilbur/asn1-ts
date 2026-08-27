@@ -885,8 +885,8 @@ class BERElement extends X690Element {
             return this.value;
         } else {
             if ((this.recursionCount + 1) > BERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
-            const appendy: Uint8Array[] = [];
             const substrings: ASN1Element[] = this.sequence;
+            const appendy: Uint8Array[] = new Array(substrings.length);
             for (let i = 0; i < substrings.length; i++) {
                 const substring = substrings[i];
                 if (substring.tagClass !== ASN1TagClass.universal) {
@@ -898,8 +898,7 @@ class BERElement extends X690Element {
                         `Invalid tag number in constructed ${dataType}. Must be 4 (OCTET STRING).`, this);
                 }
                 substring.recursionCount = (this.recursionCount + 1);
-                const deconstructed = substring.deconstruct(dataType);
-                appendy.push(deconstructed);
+                appendy[i] = substring.deconstruct(dataType);
             }
             return Buffer.concat(appendy);
         }
