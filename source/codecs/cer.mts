@@ -732,10 +732,7 @@ class CERElement extends X690Element {
             let sentinel: number = cursor; // Used to track the length of the nested elements.
             while (sentinel < bytesLen) {
                 const child: CERElement = new CERElement();
-                /* The recursion count should NOT be incremented for calls
-                to .fromBytes(), because the elements are not all part of
-                one abstract value. */
-                // child.recursionCount = (this.recursionCount + 1);
+                child.recursionCount = (this.recursionCount + 1);
                 sentinel += child.fromBytes(bytes.subarray(sentinel), zeroCopy);
                 if (
                     child.tagClass === ASN1TagClass.universal
@@ -743,6 +740,9 @@ class CERElement extends X690Element {
                     && child.tagNumber === ASN1UniversalType.endOfContent
                     && child.value.length === 0
                 ) break;
+                // Reset after decoding to prevent subsequent deconstructing of
+                // constructed values from being counted against the recursion limit.
+                child.recursionCount = 0;
             }
             if (sentinel === bytesLen && (bytes[sentinel - 1] !== 0x00 || bytes[sentinel - 2] !== 0x00)) {
                 throw new errors.ASN1TruncationError(

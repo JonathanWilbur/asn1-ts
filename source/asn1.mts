@@ -77,12 +77,19 @@ import { Buffer } from "node:buffer";
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     /**
-     * Used to track recursion depth for nested ASN.1 elements.
+     * Used to track recursion depth for ASN.1 indefinite-length
+     * determination and for deconstruction of constructed values.
+     * 
+     * If this number exceeds {@link nestingRecursionLimit}, an exception
+     * will be thrown.
+     *
      * @type {number}
      */
     public recursionCount: number = 0;
     /**
-     * Maximum allowed recursion depth for ASN.1 element nesting.
+     * Maximum allowed recursion depth for ASN.1 indefinite-length
+     * determination and for deconstruction of constructed values.
+     *
      * @type {number}
      * @readonly
      */

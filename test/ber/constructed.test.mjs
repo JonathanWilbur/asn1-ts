@@ -18,8 +18,7 @@ describe("Basic Encoding Rules", () => {
             data = data.concat([ 0x00, 0x00 ]);
         }
         const el = new asn1.BERElement();
-        el.fromBytes(new Uint8Array(data));
-        assert.throws(() => el.utf8String);
+        assert.throws(() => el.fromBytes(new Uint8Array(data)));
     });
 
     /**
@@ -27,17 +26,17 @@ describe("Basic Encoding Rules", () => {
      * The real purpose for using a string type is to pick a type that calls
      * deconstruct(), which recurses automatically, whether the subelements
      * are of definite-length or indefinite-length encoding.
-     *
-     * Update: This test has been skipped, because I realized it is incorrect
-     * behavior to check the recursion limit when decoding using .fromBytes().
      */
-    it.skip("throws an exception when decoding excessively nested definite-length elements", () => {
+    it("throws an exception when decoding excessively nested definite-length elements", () => {
         let data = [ 0x0C, 0x02, "H".charCodeAt(0), "i".charCodeAt(0) ];
         for (let i = 0; i < (asn1.BERElement.nestingRecursionLimit + 2); i++) {
             data = ([ 0x2C, data.length ]).concat(data);
         }
         const el = new asn1.BERElement();
-        el.fromBytes(new Uint8Array(data));
+        el.tagClass = asn1.ASN1TagClass.universal;
+        el.construction = asn1.ASN1Construction.constructed;
+        el.tagNumber = asn1.ASN1UniversalType.utf8String;
+        el.value = new Uint8Array(data);
         assert.throws(() => el.utf8String);
     });
 

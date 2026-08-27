@@ -10,7 +10,8 @@ This library is published on both
 [npmjs.com](https://www.npmjs.com/package/asn1-ts) and on
 [jsr.io](https://jsr.io/@wildboar/asn1). You can install it via
 `npm install asn1-ts` or `npx jsr add @wildboar/asn1`. As of version 9.0.0 and
-above, this library is ESM only: no more CommonJS.
+above, this library is ESM only: no more CommonJS. There are no runtime
+dependencies.
 
 This library should work on NodeJS, Bun, and Deno, and it should compile with
 any reasonably new TypeScript version. If it does not work for you in these
@@ -299,6 +300,12 @@ string representations (e.g. `2.5.4.3`) using `toString()` and
 You can build this library by running `npm run build`.
 The outputs will all be in `dist`. `dist/node/index.js` is the root for usage in
 NodeJS.
+
+## AI Usage Statement
+
+The vast majority of code in this package was written by a human, but AI re-wrote
+some functions to improve performance, and added unit tests and benchmarks. A
+small amount of Cursor's tab completion AI contributed to this codebase.
 
 ## See Also
 
