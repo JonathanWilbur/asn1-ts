@@ -722,6 +722,9 @@ class DERElement extends X690Element {
         if (numberOfLengthOctets === 0x7F) { // Reserved
             throw new errors.ASN1UndefinedError("Length byte with undefined meaning encountered.", this);
         }
+        if (numberOfLengthOctets === 0) {
+            throw new errors.ASN1Error("Indefinite length used in DER encoding.", this);
+        }
         // Definite Long
         if (numberOfLengthOctets > 4) {
             throw new errors.ASN1OverflowError("Element length too long to decode to an integer.", this);

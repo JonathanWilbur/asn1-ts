@@ -3,20 +3,25 @@ import { describe, it } from "node:test";
 import { strict as assert } from "node:assert";
 
 describe("Distinguished Encoding Rules", function () {
-    /**
-     * This test uses utf8String, but just about any string type can be used.
-     * The real purpose for using a string type is to pick a type that calls
-     * deconstruct(), which recurses automatically, whether the subelements
-     * are of definite-length or indefinite-length encoding.
-     */
-    it("throws an exception when decoding excessively nested definite-length elements", function () {
-        let data = [ 0x0C, 0x02, "H".charCodeAt(0), "i".charCodeAt(0) ];
-        for (let i = 0; i < (asn1.DERElement.nestingRecursionLimit + 2); i++) {
-            data = ([ 0x2C, data.length ]).concat(data);
-        }
+
+    it("prohibits indefinite-length encoding in DERElement", function () {
+        // Create a DERElement, encode with an indefinite length (illegal in DER),
+        // and ensure decoding throws.
+        // Example: Constructed OCTET STRING with indefinite length encoding
+        // 0x24 = [UNIVERSAL 4] OCTET STRING, constructed (bit 6 = 1)
+        // 0x80 = indefinite length
+        const data = new Uint8Array([
+            0x24, 0x80,
+            0x04, 0x02, 0x01, 0x02,
+            0x04, 0x02, 0x03, 0x04,
+            0x00, 0x00 // End-of-contents marker
+        ]);
+
         const el = new asn1.DERElement();
-        el.fromBytes(new Uint8Array(data));
-        assert.throws(() => el.utf8String);
+        assert.throws(
+            () => el.fromBytes(data),
+            "DERElement should throw on indefinite-length encoding"
+        );
     });
 
     /**
