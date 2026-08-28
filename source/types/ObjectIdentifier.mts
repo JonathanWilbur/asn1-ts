@@ -262,25 +262,16 @@ class ObjectIdentifier {
         if (len === 0) {
             throw new errors.ASN1TruncationError("Encoded value was too short to be an OBJECT IDENTIFIER!");
         }
+        if (bytes[0] === 0x80) {
+            throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
+        }
         if (bytes[len - 1] >= 0x80) {
             throw new errors.ASN1TruncationError("OID was truncated.");
         }
-        if (len >= 2 && bytes[1] === 0x80) {
-            throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
-        }
-        let continuations: number = (bytes[0] >= 0x80) ? 1 : 0;
         for (let i: number = 1; i < len; i++) {
             const byte: number = bytes[i];
-            if (i >= 2 && byte === 0x80 && bytes[i - 1] < 0x80) {
+            if (byte === 0x80 && bytes[i - 1] < 0x80) {
                 throw new errors.ASN1PaddingError("Prohibited padding on OBJECT IDENTIFIER node.");
-            }
-            if (byte >= 0x80) {
-                continuations++;
-                if (continuations >= 8) {
-                    throw new errors.ASN1OverflowError("OBJECT IDENTIFIER node too large to decode.");
-                }
-            } else {
-                continuations = 0;
             }
         }
         const oid = new ObjectIdentifier();
