@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+- Bound `toString()` / `toJSON()` recursion for `SEQUENCE`, `SET`, `EXTERNAL`,
+  `EMBEDDED PDV`, and `CHARACTER STRING` by threading the `toStringEx` /
+  `toJSONEx` TTL into nested values instead of restarting at 100.
+- Print `EXTERNAL`, `EMBEDDED PDV`, and `CHARACTER STRING` in ASN.1 value
+  notation from `ASN1Element.toString()`.
+
 ## [11.1.0]
 
 - Add `ObjectIdentifier.byteLength()` - Returns the length of the X.690

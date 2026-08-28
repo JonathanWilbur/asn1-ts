@@ -1,4 +1,5 @@
 import type ASN1Element from "../asn1.mjs";
+import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
 
 /**
  * A `CharacterString`, is a constructed data type, defined
@@ -33,18 +34,41 @@ class CharacterString {
     ) {}
 
     public toString (): string {
+        return this.toStringEx(100);
+    }
+
+    /**
+     * ASN.1 value notation for this `CHARACTER STRING`, with a recursion budget
+     * for the `identification` CHOICE.
+     */
+    public toStringEx (recursionTTL: number): string {
+        if (recursionTTL <= 0) {
+            return "[...]";
+        }
         return (
-            "CHARACTER STRING { "
-            + `identification ${this.identification.toString()} `
-            + `dataValue ${Array.from(this.stringValue).map((byte) => byte.toString(16)).join("")} `
-            + "}"
+            "CHARACTER STRING { identification "
+            + stringifyIdentification(this.identification, recursionTTL - 1)
+            + " , string-value "
+            + formatOctetStringValue(this.stringValue)
+            + " }"
         );
     }
 
     public toJSON (): unknown {
-        return {
-            identification: this.identification.toJSON(),
-            dataValue: Array.from(this.stringValue).map((byte) => byte.toString(16)).join(""),
+        return this.toJSONEx(100);
+    }
+
+    /**
+     * JSON representation of this `CHARACTER STRING`, with a recursion budget
+     * for the `identification` CHOICE.
+     */
+    public toJSONEx (recursionTTL: number): unknown {
+        if (recursionTTL <= 0) {
+            return undefined;
         }
+        return {
+            identification: identificationToJSON(this.identification, recursionTTL - 1),
+            dataValue: Array.from(this.stringValue).map((byte) => byte.toString(16)).join(""),
+        };
     }
 }
