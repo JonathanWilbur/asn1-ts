@@ -557,21 +557,25 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.nill): return "NULL";
             case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.asn1Notation;
             case (ASN1UniversalType.objectDescriptor): return `"${this.objectDescriptor}"`;
-            case (ASN1UniversalType.external): return "EXTERNAL";
+            case (ASN1UniversalType.external): return this.external.toStringEx(recursionTTL - 1);
             case (ASN1UniversalType.realNumber): return this.real.toString();
             case (ASN1UniversalType.enumerated): return this.enumerated.toString();
-            case (ASN1UniversalType.embeddedPDV): return "EMBEDDED PDV";
+            case (ASN1UniversalType.embeddedPDV): return this.embeddedPDV.toStringEx(recursionTTL - 1);
             case (ASN1UniversalType.utf8String): return `"${this.utf8String}"`;
             case (ASN1UniversalType.relativeOID): return "{ " + this.relativeObjectIdentifier
                 .map((arc) => arc.toString()).join(".") + " }";
             case (ASN1UniversalType.time): return `"${this.time}"`;
             // We call sequenceOf() to mitigate any tagging ordering checks.
             case (ASN1UniversalType.sequence): return ("{ " + this.sequenceOf
-                .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
+                .map((el) => (el.name.length
+                    ? `${el.name} ${el.toStringEx(recursionTTL - 1)}`
+                    : el.toStringEx(recursionTTL - 1)))
                 .join(" , ") + " }");
             // We call setOf() to mitigate any tagging uniqueness checks or value ordering checks.
             case (ASN1UniversalType.set): return ("{ " + this.setOf
-                .map((el) => (el.name.length ? `${el.name} ${el.toString()}` : el.toString()))
+                .map((el) => (el.name.length
+                    ? `${el.name} ${el.toStringEx(recursionTTL - 1)}`
+                    : el.toStringEx(recursionTTL - 1)))
                 .join(" , ") + " }");
             case (ASN1UniversalType.numericString): return `"${this.numericString}"`;
             case (ASN1UniversalType.printableString): return `"${this.printableString}"`;
@@ -584,7 +588,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.visibleString): return `"${this.visibleString}"`;
             case (ASN1UniversalType.generalString): return `"${this.generalString}"`;
             case (ASN1UniversalType.universalString): return `"${this.universalString}"`;
-            case (ASN1UniversalType.characterString): return "CHARACTER STRING";
+            case (ASN1UniversalType.characterString): return this.characterString.toStringEx(recursionTTL - 1);
             case (ASN1UniversalType.bmpString): return `"${this.bmpString}"`;
             case (ASN1UniversalType.date): return `"${this.date.toISOString()}"`;
             case (ASN1UniversalType.timeOfDay): {
@@ -670,7 +674,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.nill): return null;
             case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.toJSON();
             case (ASN1UniversalType.objectDescriptor): return this.objectDescriptor;
-            case (ASN1UniversalType.external): return this.external.toJSON();
+            case (ASN1UniversalType.external): return this.external.toJSONEx(recursionTTL - 1);
             case (ASN1UniversalType.realNumber): {
                 const r = this.real;
                 if (Object.is(r, -0)) {
@@ -688,7 +692,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 return r.toString();
             }
             case (ASN1UniversalType.enumerated): return this.enumerated.toString();
-            case (ASN1UniversalType.embeddedPDV): return this.embeddedPDV.toJSON();
+            case (ASN1UniversalType.embeddedPDV): return this.embeddedPDV.toJSONEx(recursionTTL - 1);
             case (ASN1UniversalType.utf8String): return this.utf8String;
             case (ASN1UniversalType.relativeOID): return this.relativeObjectIdentifier
                 .map((arc) => arc.toString()).join(".");
@@ -718,7 +722,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.visibleString): return this.visibleString;
             case (ASN1UniversalType.generalString): return this.generalString;
             case (ASN1UniversalType.universalString): return this.universalString;
-            case (ASN1UniversalType.characterString): return this.characterString.toJSON();
+            case (ASN1UniversalType.characterString): return this.characterString.toJSONEx(recursionTTL - 1);
             case (ASN1UniversalType.bmpString): return this.bmpString;
             case (ASN1UniversalType.date): return this.date.toISOString();
             case (ASN1UniversalType.timeOfDay): {

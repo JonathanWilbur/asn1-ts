@@ -7,6 +7,7 @@ import type {
 } from "../macros.mjs";
 import type ASN1Element from "../asn1.mjs";
 import packBits from "../utils/packBits.mjs";
+import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1ValueNotation.mjs";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:
@@ -32,28 +33,49 @@ class External {
     ) {}
 
     public toString (): string {
-        let ret: string = "EXTERNAL { ";
-        if (this.directReference) {
-            ret += `directReference ${this.directReference.toString()} `;
+        return this.toStringEx(100);
+    }
+
+    /**
+     * ASN.1 value notation for this `EXTERNAL`, with a recursion budget for
+     * the `single-ASN1-type` alternative.
+     */
+    public toStringEx (recursionTTL: number): string {
+        if (recursionTTL <= 0) {
+            return "[...]";
         }
-        if (this.indirectReference) {
-            ret += `indirectReference ${this.indirectReference.toString()} `;
+        const parts: string[] = [];
+        if (this.directReference) {
+            parts.push(`direct-reference ${this.directReference.asn1Notation}`);
+        }
+        if (this.indirectReference !== undefined) {
+            parts.push(`indirect-reference ${this.indirectReference.toString()}`);
         }
         if (this.dataValueDescriptor) {
-            ret += `dataValueDescriptor "${this.dataValueDescriptor}"`;
+            parts.push(`data-value-descriptor "${this.dataValueDescriptor}"`);
         }
         if (this.encoding instanceof Uint8Array) {
-            ret += `octet-aligned ${Array.from(this.encoding).map((byte) => byte.toString(16)).join("")} `;
+            parts.push(`encoding octet-aligned : ${formatOctetStringValue(this.encoding)}`);
         } else if (this.encoding instanceof Uint8ClampedArray) {
-            ret += `arbitrary ${this.encoding.toString()} `;
+            parts.push(`encoding arbitrary : ${formatBitStringValue(this.encoding)}`);
         } else {
-            ret += `single-ASN1-type ${this.encoding.toString()} `;
+            parts.push(`encoding single-ASN1-type : ${this.encoding.toStringEx(recursionTTL - 1)}`);
         }
-        ret += "}";
-        return ret;
+        return `EXTERNAL { ${parts.join(" , ")} }`;
     }
 
     public toJSON (): unknown {
+        return this.toJSONEx(100);
+    }
+
+    /**
+     * JSON representation of this `EXTERNAL`, with a recursion budget for
+     * the `single-ASN1-type` alternative.
+     */
+    public toJSONEx (recursionTTL: number): unknown {
+        if (recursionTTL <= 0) {
+            return undefined;
+        }
         return {
             directReference: this.directReference,
             indirectReference: this.indirectReference,
@@ -68,9 +90,9 @@ class External {
                         value: Array.from(packBits(bits)).map((byte) => byte.toString(16)).join(""),
                     };
                 } else {
-                    return this.encoding.toJSON();
+                    return this.encoding.toJSONEx(recursionTTL - 1);
                 }
             })(),
-        }
+        };
     }
 }

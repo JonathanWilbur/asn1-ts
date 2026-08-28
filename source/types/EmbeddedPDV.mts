@@ -1,4 +1,5 @@
 import type ASN1Element from "../asn1.mjs";
+import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
 
 /**
  * An `EmbeddedPDV` is a constructed data type, defined in
@@ -96,18 +97,41 @@ class EmbeddedPDV {
     ) {}
 
     public toString (): string {
+        return this.toStringEx(100);
+    }
+
+    /**
+     * ASN.1 value notation for this `EMBEDDED PDV`, with a recursion budget
+     * for the `identification` CHOICE.
+     */
+    public toStringEx (recursionTTL: number): string {
+        if (recursionTTL <= 0) {
+            return "[...]";
+        }
         return (
-            "EMBEDDED PDV { "
-            + `identification ${this.identification.toString()} `
-            + `dataValue ${Array.from(this.dataValue).map((byte) => byte.toString(16)).join("")} `
-            + "}"
+            "EMBEDDED PDV { identification "
+            + stringifyIdentification(this.identification, recursionTTL - 1)
+            + " , data-value "
+            + formatOctetStringValue(this.dataValue)
+            + " }"
         );
     }
 
     public toJSON (): unknown {
-        return {
-            identification: this.identification.toJSON(),
-            dataValue: Array.from(this.dataValue).map((byte) => byte.toString(16)).join(""),
+        return this.toJSONEx(100);
+    }
+
+    /**
+     * JSON representation of this `EMBEDDED PDV`, with a recursion budget for
+     * the `identification` CHOICE.
+     */
+    public toJSONEx (recursionTTL: number): unknown {
+        if (recursionTTL <= 0) {
+            return undefined;
         }
+        return {
+            identification: identificationToJSON(this.identification, recursionTTL - 1),
+            dataValue: Array.from(this.dataValue).map((byte) => byte.toString(16)).join(""),
+        };
     }
 }
