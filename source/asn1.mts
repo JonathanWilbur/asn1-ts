@@ -465,7 +465,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         return ret;
     }
 
-    abstract deconstruct (dataType: string): Uint8Array;
+    abstract deconstruct (dataType: string, fragmentTagNumber?: number): Uint8Array;
 
     /**
      * Validate the tag of this element against permitted classes, construction, and tag numbers.
@@ -519,9 +519,24 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
 
     /**
      * Get a string representation of this ASN.1 element.
-     * @returns {string}
+     * @returns {string} A string representation of this ASN.1 element.
      */
     public toString (): string {
+        return this.toStringEx(100);
+    }
+
+    /**
+     * Get a string representation of this ASN.1 element.
+     * 
+     * This function gives you explicit control over the recursion depth.
+     *
+     * @param {number} recursionTTL Recursion TTL.
+     * @returns {string} A string representation of this ASN.1 element.
+     */
+    public toStringEx (recursionTTL: number): string {
+        if (recursionTTL <= 0) {
+            return "[...]";
+        }
         if (this.tagClass === ASN1TagClass.universal) {
             switch (this.tagNumber) {
             case (ASN1UniversalType.endOfContent): return "END-OF-CONTENT";
@@ -587,9 +602,9 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         } else if (this.construction === ASN1Construction.constructed) {
             const inner = this.components;
             if (inner.length === 1) {
-                return inner[0].toString();
+                return inner[0].toStringEx(recursionTTL - 1);
             } else {
-                return "{ " + inner.map((el) => el.toString()).join(", ") + " }";
+                return "{ " + inner.map((el) => el.toStringEx(recursionTTL - 1)).join(", ") + " }";
             }
         } else if (this.tagClass === ASN1TagClass.context) {
             return `[CTXT ${this.tagNumber}]: ${this.value.toString()}`;
@@ -609,7 +624,25 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
      * @param {boolean} [recurse=true] - Whether to recursively serialize child elements.
      * @returns {unknown} Usually a valid JSON Encoding Rules encoding of that element.
      */
-    public toJSON (recurse: boolean = true): unknown {
+    public toJSON (): unknown {
+        return this.toJSONEx(100);
+    }
+
+    /**
+     * Convert this ASN.1 value to a JSON-serialized value.
+     *
+     * This method serializes data loosely according to the JSON Encoding Rules
+     * specified in ITU Recommendation X.697.
+     * 
+     * This function gives you explicit control over the recursion depth.
+     *
+     * @param {number} recursionTTL Recursion TTL.
+     * @returns {unknown} Usually a valid JSON Encoding Rules encoding of that element.
+     */
+    public toJSONEx (recursionTTL: number): unknown {
+        if (recursionTTL <= 0) {
+            return undefined;
+        }
         if (this.tagClass === ASN1TagClass.universal) {
             switch (this.tagNumber) {
             case (ASN1UniversalType.endOfContent): return undefined;
@@ -661,18 +694,18 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 .map((arc) => arc.toString()).join(".");
             case (ASN1UniversalType.time): return this.time;
             case (ASN1UniversalType.sequence): {
-                if (!recurse) {
-                    return null;
+                if (recursionTTL <= 0) {
+                    return undefined;
                 }
                 // We call sequenceOf() to mitigate any tagging ordering checks.
-                return this.sequenceOf.map((el) => el.toJSON());
+                return this.sequenceOf.map((el) => el.toJSONEx(recursionTTL - 1));
             }
             case (ASN1UniversalType.set): {
-                if (!recurse) {
-                    return null;
+                if (recursionTTL <= 0) {
+                    return undefined;
                 }
                 // We call setOf() to mitigate any tagging uniqueness checks or value ordering checks.
-                return this.setOf.map((el) => el.toJSON());
+                return this.setOf.map((el) => el.toJSONEx(recursionTTL - 1));
             }
             case (ASN1UniversalType.numericString): return this.numericString;
             case (ASN1UniversalType.printableString): return this.printableString;
@@ -700,12 +733,15 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 return undefined;
             }
             }
-        } else if ((this.construction === ASN1Construction.constructed) && recurse) {
+        } else if ((this.construction === ASN1Construction.constructed)) {
+            if (recursionTTL <= 0) {
+                return undefined;
+            }
             const inner = this.components;
             if (inner.length === 1) {
-                return inner[0].toJSON();
+                return inner[0].toJSONEx(recursionTTL - 1);
             } else {
-                return inner.map((el) => el.toJSON());
+                return inner.map((el) => el.toJSONEx(recursionTTL - 1));
             }
         } else {
             return undefined;

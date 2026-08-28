@@ -71,9 +71,50 @@ import type {
     GeneralizedTime,
     DURATION,
 } from "../macros.mjs";
-import { FALSE_BIT } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
+
+const CER_STRING_FRAGMENT_SIZE: number = 1000;
+
+/**
+ * Combine primitive BIT STRING encodings into one primitive encoding.
+ * Each fragment's unused-bits octet is dropped; the last fragment's unused-bits
+ * octet is used as the unused-bits count of the result.
+ *
+ * CER requires primitive fragments of 1000 contents octets (except the last,
+ * which must have 1 to 1000 contents octets).
+ */
+function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element): SingleThreadUint8Array {
+    if (fragments.length === 0) {
+        throw new errors.ASN1Error("CER constructed BIT STRING must contain at least one fragment.", el);
+    }
+    const pieces: Uint8Array[] = new Array(fragments.length + 1);
+    for (let i = 0; i < fragments.length; i++) {
+        const fragment = fragments[i];
+        const last: boolean = (i === fragments.length - 1);
+        if (last) {
+            if (fragment.length < 1 || fragment.length > CER_STRING_FRAGMENT_SIZE) {
+                throw new errors.ASN1Error(
+                    "The last fragment of a CER constructed BIT STRING must have between 1 and 1000 contents octets.",
+                    el,
+                );
+            }
+        } else if (fragment.length !== CER_STRING_FRAGMENT_SIZE) {
+            throw new errors.ASN1Error(
+                "Each non-last fragment of a CER constructed BIT STRING must have 1000 contents octets.",
+                el,
+            );
+        } else if (fragment[0] !== 0x00) {
+            throw new errors.ASN1Error(
+                "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
+                el,
+            );
+        }
+        pieces[i + 1] = fragment.subarray(1);
+    }
+    pieces[0] = fragments[fragments.length - 1].subarray(0, 1);
+    return Buffer.concat(pieces);
+}
 
 /**
  * @classdesc
@@ -109,7 +150,7 @@ class CERElement extends X690Element {
     }
 
     set unfragmentedValue (value: SingleThreadUint8Array) {
-        if (value.length <= 1000) {
+        if (value.length <= CER_STRING_FRAGMENT_SIZE) {
             this.construction = ASN1Construction.primitive;
             this.value = value;
         } else {
@@ -138,43 +179,40 @@ class CERElement extends X690Element {
     }
 
     set bitString (value: BIT_STRING) {
-        this.unfragmentedValue = encodeBitString(value);
+        const encoded: SingleThreadUint8Array = encodeBitString(value);
+        if (encoded.length <= CER_STRING_FRAGMENT_SIZE) {
+            this.construction = ASN1Construction.primitive;
+            this.value = encoded;
+            return;
+        }
+        // Non-last fragments have 1000 contents octets: unused-bits (0) + 999 data octets.
+        const unusedBits: number = encoded[0];
+        const data: Uint8Array = encoded.subarray(1);
+        const nonLastDataLength: number = CER_STRING_FRAGMENT_SIZE - 1;
+        const fragments: ASN1Element[] = [];
+        let offset: number = 0;
+        while (offset < data.length) {
+            const remaining: number = data.length - offset;
+            const last: boolean = (remaining <= nonLastDataLength);
+            const dataLength: number = last ? remaining : nonLastDataLength;
+            const contents: SingleThreadUint8Array = new Uint8Array(1 + dataLength);
+            contents[0] = last ? unusedBits : 0x00;
+            contents.set(data.subarray(offset, offset + dataLength), 1);
+            const fragment: CERElement = new CERElement(
+                ASN1TagClass.universal,
+                ASN1Construction.primitive,
+                ASN1UniversalType.bitString,
+            );
+            fragment.value = contents;
+            fragments.push(fragment);
+            offset += dataLength;
+        }
+        this.construct(fragments);
+        this.construction = ASN1Construction.constructed;
     }
 
     get bitString (): BIT_STRING {
-        if (this.construction === ASN1Construction.primitive) {
-            return decodeBitString(this.value);
-        }
-        if ((this.recursionCount + 1) > CERElement.nestingRecursionLimit) {
-            throw new errors.ASN1RecursionError();
-        }
-        const appendy: boolean[] = [];
-        const substrings: ASN1Element[] = this.sequence;
-        for (let i = 0; i < substrings.length - 1; i++) {
-            const substring = substrings[i];
-            if (
-                substring.construction === ASN1Construction.primitive
-                && substring.value.length > 0
-                && substring.value[0] !== 0x00
-            ) {
-                throw new errors.ASN1Error(
-                    "Only the last subelement of a constructed BIT STRING may have a non-zero first value byte.",
-                    this,
-                );
-            }
-        }
-        for (let i = 0; i < substrings.length; i++) {
-            const substring = substrings[i];
-            if (substring.tagClass !== this.tagClass) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
-            }
-            if (substring.tagNumber !== this.tagNumber) {
-                throw new errors.ASN1ConstructionError("Invalid tag class in recursively-encoded BIT STRING.", this);
-            }
-            substring.recursionCount = (this.recursionCount + 1);
-            appendy.push(...Array.from(substring.bitString).map((b) => b !== FALSE_BIT));
-        }
-        return new Uint8ClampedArray(appendy.map((b) => (b ? 1 : 0)));
+        return decodeBitString(this.deconstruct("BIT STRING", ASN1UniversalType.bitString));
     }
 
     set octetString (value: OCTET_STRING) {
@@ -842,28 +880,54 @@ class CERElement extends X690Element {
      * Deconstruct an ASN.1 value that is constructed over several elements
      * into a single buffer representing the content octets.
      *
-     * @param dataType - The name of the type of the element, used for an error message.
+     * For `BIT STRING`, each primitive fragment begins with an unused-bits
+     * count. Those octets are discarded except for the last fragment's, which
+     * becomes the unused-bits count of the combined primitive encoding.
+     *
+     * CER requires each fragment to be primitive, with 1000 contents octets
+     * except possibly the last (1 to 1000 contents octets).
+     *
+     * @param {string} dataType - The name of the type of the element, used for an error message.
+     * @param {number} fragmentTagNumber - Universal tag number expected on each fragment.
      * @returns {Uint8Array<ArrayBuffer>} The element as a single buffer.
      */
-    public deconstruct (dataType: string): SingleThreadUint8Array {
+    public deconstruct (
+        dataType: string,
+        fragmentTagNumber: number = ASN1UniversalType.octetString,
+    ): SingleThreadUint8Array {
         if (this.construction === ASN1Construction.primitive) {
             return new Uint8Array(this.value); // Clones it.
         } else {
             if ((this.recursionCount + 1) > CERElement.nestingRecursionLimit) throw new errors.ASN1RecursionError();
             const substrings: ASN1Element[] = this.sequence;
             const appendy: Uint8Array[] = new Array(substrings.length);
+            const isBitString: boolean = (fragmentTagNumber === ASN1UniversalType.bitString);
             for (let i: number = 0; i < substrings.length; i++) {
                 const substring = substrings[i];
                 if (substring.tagClass !== ASN1TagClass.universal) {
                     throw new errors.ASN1ConstructionError(
                         `Invalid tag class in constructed ${dataType}. Must be UNIVERSAL`, this);
                 }
-                if (substring.tagNumber !== ASN1UniversalType.octetString) {
+                if (substring.tagNumber !== fragmentTagNumber) {
                     throw new errors.ASN1ConstructionError(
-                        `Invalid tag number in constructed ${dataType}. Must be 4 (OCTET STRING).`, this);
+                        isBitString
+                            ? `Invalid tag number in constructed ${dataType}. Must be 3 (BIT STRING).`
+                            : `Invalid tag number in constructed ${dataType}. Must be 4 (OCTET STRING).`,
+                        this);
                 }
-                substring.recursionCount = (this.recursionCount + 1);
-                appendy[i] = substring.deconstruct(dataType);
+                if (isBitString) {
+                    if (substring.construction !== ASN1Construction.primitive) {
+                        throw new errors.ASN1ConstructionError(
+                            "CER constructed BIT STRING fragments must be primitively encoded.", this);
+                    }
+                    appendy[i] = substring.value;
+                } else {
+                    substring.recursionCount = (this.recursionCount + 1);
+                    appendy[i] = substring.deconstruct(dataType, fragmentTagNumber);
+                }
+            }
+            if (isBitString) {
+                return concatenateBitStringFragments(appendy, this);
             }
             return Buffer.concat(appendy);
         }

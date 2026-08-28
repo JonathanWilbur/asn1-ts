@@ -83,22 +83,135 @@ describe("Basic Encoding Rules", () => {
         assert.throws(() => el.utf8String);
     });
 
-    it("encodes and decodes a constructed BIT STRING correctly", () => {
-        const data = new Uint8Array([
-            0x23, 0x0E,
-            0x03, 0x02, 0x00, 0x0F,
-            0x23, 0x04,
-            0x03, 0x02, 0x00, 0x0F,
-            0x03, 0x02, 0x05, 0xF0,
-        ]);
+    describe("constructed BIT STRING", () => {
+        it("concatenates primitive fragments and keeps unused bits from the last fragment", () => {
+            const data = new Uint8Array([
+                0x23, 0x08,
+                0x03, 0x02, 0x00, 0x0F, // unused=0, bits 00001111
+                0x03, 0x02, 0x05, 0xF0, // unused=5, bits 111
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                0, 0, 0, 0, 1, 1, 1, 1,
+                1, 1, 1,
+            ]));
+        });
 
-        const element = new asn1.BERElement();
-        element.fromBytes(data);
-        assert.deepEqual(element.bitString, new Uint8ClampedArray([
-            0, 0, 0, 0, 1, 1, 1, 1,
-            0, 0, 0, 0, 1, 1, 1, 1,
-            1, 1, 1,
-        ]));
+        it("deconstructs to a single primitive encoding whose unused-bits octet comes from the last fragment", () => {
+            const data = new Uint8Array([
+                0x23, 0x08,
+                0x03, 0x02, 0x00, 0x0F,
+                0x03, 0x02, 0x05, 0xF0,
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(
+                element.deconstruct("BIT STRING", asn1.ASN1UniversalType.bitString),
+                Buffer.from([ 0x05, 0x0F, 0xF0 ]),
+            );
+        });
+
+        it("concatenates recursively nested constructed fragments", () => {
+            const data = new Uint8Array([
+                0x23, 0x0E,
+                0x03, 0x02, 0x00, 0x0F,
+                0x23, 0x04,
+                0x03, 0x02, 0x00, 0x0F,
+                0x03, 0x02, 0x05, 0xF0,
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                0, 0, 0, 0, 1, 1, 1, 1,
+                0, 0, 0, 0, 1, 1, 1, 1,
+                1, 1, 1,
+            ]));
+            assert.deepEqual(
+                element.deconstruct("BIT STRING", asn1.ASN1UniversalType.bitString),
+                Buffer.from([ 0x05, 0x0F, 0x0F, 0xF0 ]),
+            );
+        });
+
+        it("uses unused bits from the last nested primitive when the last child is constructed", () => {
+            const data = new Uint8Array([
+                0x23, 0x0A,
+                0x03, 0x02, 0x00, 0xAA, // 10101010
+                0x23, 0x04,
+                0x03, 0x02, 0x04, 0xF0, // unused=4, bits 1111
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                1, 0, 1, 0, 1, 0, 1, 0,
+                1, 1, 1, 1,
+            ]));
+        });
+
+        it("decodes a constructed BIT STRING with a single primitive child", () => {
+            const data = new Uint8Array([
+                0x23, 0x04,
+                0x03, 0x02, 0x00, 0xA5,
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                1, 0, 1, 0, 0, 1, 0, 1,
+            ]));
+        });
+
+        it("decodes an empty constructed BIT STRING as an empty bit string", () => {
+            const data = new Uint8Array([ 0x23, 0x00 ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([]));
+        });
+
+        it("concatenates in-memory constructed fragments", () => {
+            const first = new asn1.BERElement();
+            first.tagNumber = asn1.ASN1UniversalType.bitString;
+            first.bitString = new Uint8ClampedArray([ 1, 0, 1, 0, 1, 0, 1, 0 ]);
+
+            const second = new asn1.BERElement();
+            second.tagNumber = asn1.ASN1UniversalType.bitString;
+            second.bitString = new Uint8ClampedArray([ 1, 1, 0 ]);
+
+            const element = new asn1.BERElement();
+            element.tagNumber = asn1.ASN1UniversalType.bitString;
+            element.sequence = [ first, second ];
+
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                1, 0, 1, 0, 1, 0, 1, 0,
+                1, 1, 0,
+            ]));
+        });
+
+        it("decodes an indefinite-length constructed BIT STRING", () => {
+            const data = new Uint8Array([
+                0x23, 0x80,
+                0x03, 0x02, 0x00, 0x0F,
+                0x03, 0x02, 0x05, 0xF0,
+                0x00, 0x00,
+            ]);
+            const element = new asn1.BERElement();
+            element.fromBytes(data);
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                0, 0, 0, 0, 1, 1, 1, 1,
+                1, 1, 1,
+            ]));
+        });
+
+        it("decodes constructed BIT STRING nested up to the recursion limit", () => {
+            let data = [ 0x03, 0x02, 0x00, 0x0F ];
+            for (let i = 0; i < asn1.BERElement.nestingRecursionLimit; i++) {
+                data = [ 0x23, data.length ].concat(data);
+            }
+            const element = new asn1.BERElement();
+            element.fromBytes(new Uint8Array(data));
+            assert.deepEqual(element.bitString, new Uint8ClampedArray([
+                0, 0, 0, 0, 1, 1, 1, 1,
+            ]));
+        });
     });
 
     it("encodes and decodes a constructed OCTET STRING correctly", () => {

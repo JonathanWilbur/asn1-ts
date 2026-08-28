@@ -33,4 +33,57 @@ describe("Basic Encoding Rules", () => {
         element.fromBytes(data);
         assert.throws(() => element.bitString);
     });
+
+    it("throws when a non-last nested constructed BIT STRING has unused bits", () => {
+        const data = new Uint8Array([
+            0x23, 0x08,
+            0x23, 0x04,
+            0x03, 0x02, 0x03, 0xF0, // unused=3; this constructed child is not last.
+            0x03, 0x02, 0x00, 0x0F,
+        ]);
+        const element = new asn1.BERElement();
+        element.fromBytes(data);
+        assert.throws(() => element.bitString);
+    });
+
+    it("throws when a constructed BIT STRING contains a child of the wrong tag class", () => {
+        const data = new Uint8Array([
+            0x23, 0x04,
+            0x83, 0x02, 0x00, 0x0F, // [CONTEXT 3]
+        ]);
+        const element = new asn1.BERElement();
+        element.fromBytes(data);
+        assert.throws(() => element.bitString);
+    });
+
+    it("throws when a constructed BIT STRING contains a child of the wrong tag number", () => {
+        const data = new Uint8Array([
+            0x23, 0x04,
+            0x04, 0x02, 0x00, 0x0F, // OCTET STRING
+        ]);
+        const element = new asn1.BERElement();
+        element.fromBytes(data);
+        assert.throws(() => element.bitString);
+    });
+
+    it("throws when a constructed BIT STRING contains an empty primitive fragment", () => {
+        const data = new Uint8Array([
+            0x23, 0x06,
+            0x03, 0x00,             // empty primitive BIT STRING
+            0x03, 0x02, 0x00, 0x0F,
+        ]);
+        const element = new asn1.BERElement();
+        element.fromBytes(data);
+        assert.throws(() => element.bitString);
+    });
+
+    it("throws when constructed BIT STRING nesting exceeds the recursion limit", () => {
+        let data = [ 0x03, 0x02, 0x00, 0x0F ];
+        for (let i = 0; i < (asn1.BERElement.nestingRecursionLimit + 1); i++) {
+            data = [ 0x23, data.length ].concat(data);
+        }
+        const element = new asn1.BERElement();
+        element.fromBytes(new Uint8Array(data));
+        assert.throws(() => element.bitString);
+    });
 });
