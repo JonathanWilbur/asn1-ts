@@ -1,4 +1,4 @@
-import * as asn1 from "../dist/index.mjs";
+import * as asn1 from "../../dist/index.mjs";
 import { describe, it } from "node:test";
 import { strict as assert } from "node:assert";
 
