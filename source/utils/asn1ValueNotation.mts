@@ -1,14 +1,15 @@
 import type ASN1Element from "../asn1.mjs";
-import { ASN1TagClass } from "../values.mjs";
+import { Buffer } from "node:buffer";
+import { ASN1Construction, ASN1TagClass } from "../values.mjs";
 
 /**
  * Format an OCTET STRING in ASN.1 value notation (`'…'H`).
  */
 export function formatOctetStringValue (bytes: Uint8Array): string {
-    let hex: string = "";
-    for (let i: number = 0; i < bytes.length; i++) {
-        hex += bytes[i].toString(16).padStart(2, "0");
-    }
+    const hex: string = (bytes instanceof Buffer
+        ? bytes
+        : Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+    ).toString("hex");
     return `'${hex}'H`;
 }
 
@@ -23,20 +24,25 @@ export function formatBitStringValue (bits: Uint8ClampedArray): string {
     return `'${bin}'B`;
 }
 
-function oidValue (el: ASN1Element): string {
-    try {
-        return el.objectIdentifier.asn1Notation;
-    } catch {
-        return el.inner.objectIdentifier.asn1Notation;
+/**
+ * AUTOMATIC TAGS encode `[n] IMPLICIT OBJECT IDENTIFIER` as a primitive
+ * context-specific element. EXPLICIT TAGS wrap a universal OID in a
+ * constructed inner element. Do not decode the outer value as an OID in the
+ * constructed case.
+ */
+function oidFromElement (el: ASN1Element) {
+    if (el.construction === ASN1Construction.primitive) {
+        return el.objectIdentifier;
     }
+    return el.inner.objectIdentifier;
+}
+
+function oidValue (el: ASN1Element): string {
+    return oidFromElement(el).asn1Notation;
 }
 
 function oidJSON (el: ASN1Element): string {
-    try {
-        return el.objectIdentifier.toJSON();
-    } catch {
-        return el.inner.objectIdentifier.toJSON();
-    }
+    return oidFromElement(el).toJSON();
 }
 
 /**
