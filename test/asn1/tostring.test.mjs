@@ -148,6 +148,25 @@ describe("EMBEDDED PDV toString", () => {
             "EMBEDDED PDV { identification fixed : NULL , data-value '00'H }",
         );
     });
+
+    it("prints an EXPLICIT-tagged syntax OBJECT IDENTIFIER", () => {
+        const oid = new asn1.BERElement();
+        oid.objectIdentifier = asn1.ObjectIdentifier.fromParts([ 1, 2, 840 ]);
+        oid.tagNumber = asn1.ASN1UniversalType.objectIdentifier;
+        const ident = new asn1.BERElement();
+        ident.tagClass = asn1.ASN1TagClass.context;
+        ident.tagNumber = 1;
+        ident.inner = oid;
+        const pdv = new asn1.EmbeddedPDV(ident, new Uint8Array([ 0xab, 0xcd ]));
+        assert.equal(
+            pdv.toString(),
+            "EMBEDDED PDV { identification syntax : { 1 2 840 } , data-value 'abcd'H }",
+        );
+        assert.deepEqual(pdv.toJSON(), {
+            identification: { syntax: "1.2.840" },
+            dataValue: "abcd",
+        });
+    });
 });
 
 describe("CHARACTER STRING toString", () => {
@@ -166,5 +185,15 @@ describe("CHARACTER STRING toString", () => {
         el.characterString = cs;
         el.tagNumber = asn1.ASN1UniversalType.characterString;
         assert.equal(el.toString(), cs.toString());
+    });
+});
+
+describe("formatOctetStringValue", () => {
+    it("hex-encodes only the view, not the underlying ArrayBuffer", () => {
+        const backing = new Uint8Array([ 0x00, 0x00, 0xab, 0xcd, 0xff, 0xff ]);
+        const view = backing.subarray(2, 4);
+        assert.equal(asn1.formatOctetStringValue(view), "'abcd'H");
+        assert.equal(asn1.formatOctetStringValue(Buffer.from([ 0x0a, 0x0b ])), "'0a0b'H");
+        assert.equal(asn1.formatOctetStringValue(new Uint8Array(0)), "''H");
     });
 });
