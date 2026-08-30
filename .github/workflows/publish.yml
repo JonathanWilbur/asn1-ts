@@ -4,16 +4,48 @@
 name: Publish
 
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  # The OIDC ID token is used for authentication with JSR and NPM.
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write # The OIDC ID token is used for authentication with JSR.
     steps:
-      - uses: actions/checkout@v6
-      - run: npx jsr publish
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Deno
+        uses: denoland/setup-deno@ff4860f9d7236f320afa0f82b7e6457384805d05 # v2.0.4
+        with:
+          deno-version: 2.7.14
+      - name: Install Dependencies
+        run: deno install --frozen
+      - name: Publish to JSR
+        run: npx jsr publish
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '26.x'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false  # never use caching in release builds
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      # Separately tested on every commit.
+      - name: Run Tests
+        run: npm run test
+      # This works with no credentials because I have configured trusted
+      # publishers in npmjs.com under this package's settings.
+      - name: Publish to NPM
+        run: npm publish --provenance

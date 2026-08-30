@@ -1,12 +1,39 @@
 # Changelog
 
-## [Unreleased]
+## [11.2.0]
 
-- Bound `toString()` / `toJSON()` recursion for `SEQUENCE`, `SET`, `EXTERNAL`,
-  `EMBEDDED PDV`, and `CHARACTER STRING` by threading the `toStringEx` /
-  `toJSONEx` TTL into nested values instead of restarting at 100.
-- Print `EXTERNAL`, `EMBEDDED PDV`, and `CHARACTER STRING` in ASN.1 value
+- Huge performance improvements: `INTEGER` and `BIT STRING` encode/decode,
+  BOOLEAN encode, DATE and other time-type codecs, OID encode/decode, string
+  validation, constructed deconstruction, and TLV encoding.
+- Add ISO 8601 display and parsing on the X.696 TIME encoding types:
+  `fromISOString()` / `fromString()`, `toISOString()` / `toString()` /
+  `toJSON()`. `DURATION_EQUIVALENT` gained `toISOString()`.
+- Add `ObjectIdentifier.fromStringWithBigArcs()` and `nodesBigAndSmall` so OID
+  arcs larger than `Number.MAX_SAFE_INTEGER` can be constructed and inspected
+  exactly. `toString()` falls back to this path when `nodes` would overflow.
+- Export whole-string validators: `isGraphicString`, `isNumericString`,
+  `isPrintableString`, `isVisibleString`, `isTimeString`, and `isTimeCharacter`.
+- Add `canEncodeAsBMPString()`.
+- Add `toStringEx()` / `toJSONEx()` so recursion depth can be controlled.
+  Print `EXTERNAL`, `EMBEDDED PDV`, and `CHARACTER STRING` in ASN.1 value
   notation from `ASN1Element.toString()`.
+- Bound `toString()` / `toJSON()` recursion for `SEQUENCE`, `SET`, `EXTERNAL`,
+  `EMBEDDED PDV`, and `CHARACTER STRING` by threading the TTL into nested
+  values instead of restarting at 100.
+- Decode BER / CER / DER with optional zero-copy (`fromBytes(bytes, zeroCopy)`).
+  Functional `_decodeSequence`, `_decodeSet`, `_decodeSequenceOf`, and
+  `_decodeSetOf` now alias the parent content octets. Use the new
+  `_decodeSequenceCloned`, `_decodeSetCloned`, `_decodeSequenceOfCloned`, and
+  `_decodeSetOfCloned` (or `sequence` / `set` getters) when you need
+  independently owned buffers.
+- Fix `ObjectIdentifier.fromBytes()` treating a leading `0x80` as a missing
+  first arc instead of prohibited padding. Large arcs no longer throw
+  overflow during `fromBytes()`; they can be decoded via the big-arc APIs.
+- Fix constructed `BIT STRING` deconstruction so only the last fragment's
+  unused-bits octet is kept.
+- Fix recursion handling when determining indefinite-length encodings.
+- Decode `EXTERNAL` / `EMBEDDED PDV` / `CHARACTER STRING` identification OIDs
+  by primitive vs constructed encoding instead of try/catch.
 
 ## [11.1.0]
 
