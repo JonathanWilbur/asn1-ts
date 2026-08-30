@@ -11,7 +11,7 @@ This library is published on both
 [jsr.io](https://jsr.io/@wildboar/asn1). You can install it via
 `npm install asn1-ts` or `npx jsr add @wildboar/asn1`. As of version 9.0.0 and
 above, this library is ESM only: no more CommonJS. There are no runtime
-dependencies.
+dependencies. It is licensed under the MIT License.
 
 This library should work on NodeJS, Bun, and Deno, and it should compile with
 any reasonably new TypeScript version. If it does not work for you in these
@@ -33,7 +33,7 @@ cases, please let me know!
 ### Data Types
 
 In this library, all ASN.1 data types are represented as aliases to TypeScript /
-JavaScript types in `source/macros.ts`. For your convenience these aliases are
+JavaScript types in `source/macros.mts`. For your convenience these aliases are
 copied here:
 
 ```typescript
@@ -68,8 +68,7 @@ export type UniversalString = string;
 export type VideotexString = Uint8Array;
 export type BMPString = string;
 export type IA5String = string;
-// export type CharacterString = CharacterString;
-export { default as CharacterString } from "./types/CharacterString";
+export { default as CharacterString } from "./types/CharacterString.mjs";
 export type UTCTime = Date;
 export type GeneralizedTime = Date;
 export type TIME = string;
@@ -80,6 +79,9 @@ export type DURATION = DURATION_EQUIVALENT;
 export type OID_IRI = string;
 export type RELATIVE_OID_IRI = string;
 ```
+
+`INTEGER` is `number | bigint`. Use `bigint` for values that do not fit in a
+JavaScript safe integer; getters return `bigint` in that case as well.
 
 Native ASN.1 types that don't have an obvious corollary to a native JavaScript
 type have an implementation in the `types` folder. This includes these types:
@@ -104,6 +106,15 @@ Here is a TypeScript example of encoding with Basic Encoding Rules, using the
 `BERElement` class.
 
 ```typescript
+import {
+    ASN1Construction,
+    ASN1TagClass,
+    ASN1UniversalType,
+    BERElement,
+    DERElement,
+    ObjectIdentifier,
+} from "asn1-ts";
+
 let el: BERElement = new BERElement();
 el.tagClass = ASN1TagClass.universal; // Not technically necessary.
 el.construction = ASN1Construction.primitive; // Not technically necessary.
@@ -132,14 +143,13 @@ The tag class can be read and written via the `tagClass` property using the
 `ASN1TagClass` enum. The construction (whether it is constructed or primitive)
 of the element can be read and written via the `construction` property using the
 `ASN1Construction` enum. The tag number can be set using the `tagNumber`
-property. For your convenience, the `ASN1UniveralType` enum contains the tag
+property. For your convenience, the `ASN1UniversalType` enum contains the tag
 numbers of the `UNIVERSAL` tags by the data type.
 
-Generic "bytes" are represented with the `Buffer` class. You can convert ASN.1
-elements to and from bytes using `toBytes()` and `fromBytes()`. `fromBytes()`
-returns an integer indicating the number of bytes read from the `Uint8Array`.
-Here is an example of how you would decode multiple back-to-back encoded ASN.1
-elements from a buffer:
+Encoded values are `Uint8Array`s. You can convert ASN.1 elements to and from
+bytes using `toBytes()` and `fromBytes()`. `fromBytes()` returns an integer
+indicating the number of bytes read from the `Uint8Array`. Here is an example
+of how you would decode multiple back-to-back encoded ASN.1 elements:
 
 ```typescript
 const encodedElements: BERElement[] = [];
@@ -151,91 +161,61 @@ while (i < value.length) {
 }
 ```
 
-Here are the properties available for you to get and set ASN.1 values:
+Most structured values are `SEQUENCE` or `SET`. `fromSequence` and `fromSet`
+build those from child elements; `null` and `undefined` children are omitted,
+which is how `OPTIONAL` fields are left out. Read children back with the
+`sequence` and `set` accessors.
 
 ```typescript
-set boolean (value: BOOLEAN);
-get boolean (): BOOLEAN;
-set integer (value: INTEGER);
-get integer (): INTEGER;
-set bitString (value: BIT_STRING);
-get bitString (): BIT_STRING;
-set octetString (value: OCTET_STRING);
-get octetString (): OCTET_STRING;
-set objectIdentifier (value: OBJECT_IDENTIFIER);
-get objectIdentifier (): OBJECT_IDENTIFIER;
-set objectDescriptor (value: ObjectDescriptor);
-get objectDescriptor (): ObjectDescriptor;
-set external (value: EXTERNAL);
-get external (): EXTERNAL;
-set real (value: REAL);
-get real (): REAL;
-set enumerated (value: ENUMERATED);
-get enumerated (): ENUMERATED;
-set embeddedPDV (value: EMBEDDED_PDV);
-get embeddedPDV (): EMBEDDED_PDV;
-set utf8String (value: UTF8String);
-get utf8String (): UTF8String;
-set relativeObjectIdentifier (value: RELATIVE_OID);
-get relativeObjectIdentifier (): RELATIVE_OID;
-set time (value: TIME);
-get time (): TIME;
-set sequence (value: SEQUENCE<ASN1Element>);
-get sequence (): SEQUENCE<ASN1Element>;
-set set (value: SET<ASN1Element>);
-get set (): SET<ASN1Element>;
-set numericString (value: NumericString);
-get numericString (): NumericString;
-set printableString (value: PrintableString);
-get printableString (): PrintableString;
-set teletexString (value: TeletexString);
-get teletexString (): TeletexString;
-set videotexString (value: VideotexString);
-get videotexString (): VideotexString;
-set ia5String (value: IA5String);
-get ia5String (): IA5String;
-set utcTime (value: UTCTime);
-get utcTime (): UTCTime;
-set generalizedTime (value: GeneralizedTime);
-get generalizedTime (): GeneralizedTime;
-set graphicString (value: GraphicString);
-get graphicString (): GraphicString;
-set visibleString (value: VisibleString);
-get visibleString (): VisibleString;
-set generalString (value: GeneralString);
-get generalString (): GeneralString;
-set universalString (value: UniversalString);
-get universalString (): UniversalString;
-set characterString (value: CharacterString);
-get characterString (): CharacterString;
-set bmpString (value: BMPString);
-get bmpString (): BMPString;
-set date (value: DATE);
-get date (): DATE;
-set timeOfDay (value: TIME_OF_DAY);
-get timeOfDay (): TIME_OF_DAY;
-set dateTime (value: DATE_TIME);
-get dateTime (): DATE_TIME;
-set duration (value: DURATION);
-get duration (): DURATION;
-set oidIRI (value: OID_IRI);
-get oidIRI (): OID_IRI;
-set relativeOIDIRI (value: RELATIVE_OID_IRI);
-get relativeOIDIRI (): RELATIVE_OID_IRI;
+const seq = DERElement.fromSequence([
+    new DERElement(
+        ASN1TagClass.universal,
+        ASN1Construction.primitive,
+        ASN1UniversalType.integer,
+        1433,
+    ),
+    undefined, // omitted OPTIONAL
+]);
+console.log(seq.sequence[0].integer); // Logs 1433
 ```
 
-There are shorthand equivalents of the getters and setters above (created to
-make source files more concise), but these will be removed in a future version.
+IMPLICIT tagging is a context-specific (or application / private) tag on the
+value itself. EXPLICIT tagging wraps another element; use the `inner` accessor.
+
+```typescript
+// IMPLICIT INTEGER [0]
+const implicit = new DERElement();
+implicit.tagClass = ASN1TagClass.context;
+implicit.tagNumber = 0;
+implicit.integer = 1433;
+
+// EXPLICIT INTEGER [0]
+const inner = new DERElement();
+inner.tagNumber = ASN1UniversalType.integer;
+inner.integer = 1433;
+const explicit = new DERElement();
+explicit.tagClass = ASN1TagClass.context;
+explicit.tagNumber = 0;
+explicit.inner = inner;
+console.log(explicit.inner.integer); // Logs 1433
+```
+
+Value accessors are named after the ASN.1 type (`boolean`, `integer`,
+`bitString`, `octetString`, `objectIdentifier`, `utf8String`, `sequence`,
+`set`, `utcTime`, and so on). There are shorthand equivalents of those getters
+and setters (created to make source files more concise), but these will be
+removed in a future version.
 
 ASN.1 elements (`BERElement`, `CERElement`, and `DERElement`) support the
-`toString()` and `toJSON()` properties. **In general**, `toString()` encodes the
+`toString()` and `toJSON()` methods. **In general**, `toString()` encodes the
 elements according to how their values would be represented in an ASN.1 file.
 **In general**, `toJSON()` encodes the elements according to the JSON Encoding
 Rules (JER).
 
-Finally, there are functional equivalents of the codecs above in `functional.ts`
-such as `_decodeUTF8String`. These will not be documented (for now). They were
-implemented to support [Wildboar Software](https://wildboarsoftware.com/en)'s
+Finally, there are functional equivalents of the codecs above in
+`asn1-ts/functional` (for example `_decodeUTF8String`). These will not be
+documented (for now). They were implemented to support
+[Wildboar Software](https://wildboarsoftware.com/en)'s
 [ASN.1 Compiler](https://wildboarsoftware.com/en/asn1-compilation). You can look
 at the source code for the NPM package `@wildboar/x500` for an example for how
 it works.
@@ -293,13 +273,69 @@ respectively.
 
 You can encode and decode object identifiers to and from their dot-delimited
 string representations (e.g. `2.5.4.3`) using `toString()` and
-`ObjectIdentifier.fromString()` (the latter is a static method.)
+`ObjectIdentifier.fromString()` (the latter is a static method.) You can also
+construct them from arcs (as `number`s) or from arcs and a prefix using
+`fromParts`.
+
+An overview:
+
+- `byteLength()` - Get the length of the encoded OID in bytes.
+- `toBytes()` - Encode the OID onto bytes. This copies into a new `Uint8Array`
+  which is safe to mutate.
+- `toBytesUnsafe()` - Obtain the OID's internal bytes. Mutating these bytes
+  results in undefined behavior, but this is zero-copy, so it is an order of
+  magnitude faster. Only for use by smart bois.
+- `dotDelimitedNotation` (getter) - Get the OID as a dot-delimited string (e.g. `2.5.4.3`)
+- `asn1Notation` (getter) - Get the OID as ASN.1 notation (e.g. `{ 2 5 4 3 }`)
+- `fromString(string)` (static) - Construct from a dot-delimited numeric string
+- `fromBytes(Uint8Array)` (static) - Construct from BER / DER encoding (content octets only)
+- `fromBytesUnsafe(Uint8Array)` (static) - Same as `fromBytes` but no validation.
+  Less safe, but faster.
+- `isEqualTo(ObjectIdentifier)` - Compare two OIDs, returning `true` if same.
+- `toString()` - Convert this OID to a dot-delimited string (e.g. `2.5.4.3`)
+- `toJSON()` - Convert this OID to a dot-delimited string (e.g. `2.5.4.3`)
+
+There are now some functions in `ObjectIdentifier` for handling large arcs:
+
+- `(static) fromStringWithBigArcs(s: string)` - Can parse strings with huge
+  arcs, but at the expense of performance.
+- `nodesBigAndSmall` (getter) - Get arcs as `(number | bigint)[]`. Comes at the expense of
+  performance. Use `nodes`, which returns `number[]` unless you need this.
+
+### TIME Types
+
+ITU-T Recommendation X.696 defines several `SEQUENCE` types that describe how
+various `TIME` subtypes are encoded according to the Octet Encoding Rules (OER).
+These types are defined as `class` types and exported from this module. Almost
+all of them have `toString()` and `fromString()` implemented, which generally
+displays and parses them to and from ISO 8601 strings. They don't do much else.
+
+These types are:
+
+- `HOURS_MINUTES_ENCODING`
+- `YEAR_ENCODING`
+- `HOURS_DIFF_ENCODING`
+- `DURATION_EQUIVALENT`
+- `TIME_OF_DAY_FRACTION_ENCODING`
+- `TIME_OF_DAY_DIFF_ENCODING`
+- `DURATION_INTERVAL_ENCODING`
+- `DATE_ENCODING`
+- `HOURS_ENCODING`
+- `YEAR_MONTH_ENCODING`
+- `HOURS_MINUTES_DIFF_ENCODING`
+- `TIME_OF_DAY_FRACTION_DIFF_ENCODING`
+- `TIME_OF_DAY_ENCODING`
 
 ## Building
 
 You can build this library by running `npm run build`.
-The outputs will all be in `dist`. `dist/node/index.js` is the root for usage in
-NodeJS.
+The outputs will all be in `dist`. The public entry is `dist/index.mjs`;
+`asn1-ts/functional` maps to `dist/functional.mjs`.
+
+## Other Types
+
+This package defines types `CharacterString`, `EmbeddedPDV`, and `External`,
+which don't really have much functionality other than `toString()` and `toJSON()`.
 
 ## AI Usage Statement
 

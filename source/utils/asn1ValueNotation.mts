@@ -4,17 +4,24 @@ import { ASN1Construction, ASN1TagClass } from "../values.mjs";
 
 /**
  * Format an OCTET STRING in ASN.1 value notation (`'…'H`).
+ *
+ * Only the typed-array view is encoded. `Buffer.from(bytes.buffer)` (or any
+ * other use of the backing `ArrayBuffer` without `byteOffset`/`byteLength`)
+ * would hex-dump neighbouring memory, including Node.js Buffer-pool contents.
+ * 
+ * @internal
+ * @author Cursor Grok 4.6
  */
 export function formatOctetStringValue (bytes: Uint8Array): string {
-    const hex: string = (bytes instanceof Buffer
-        ? bytes
-        : Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength)
-    ).toString("hex");
+    const hex: string = Buffer.from(bytes.slice()).toString("hex");
     return `'${hex}'H`;
 }
 
 /**
  * Format a BIT STRING in ASN.1 value notation (`'…'B`).
+ * 
+ * @internal
+ * @author Cursor Grok 4.6
  */
 export function formatBitStringValue (bits: Uint8ClampedArray): string {
     let bin: string = "";
@@ -29,6 +36,9 @@ export function formatBitStringValue (bits: Uint8ClampedArray): string {
  * context-specific element. EXPLICIT TAGS wrap a universal OID in a
  * constructed inner element. Do not decode the outer value as an OID in the
  * constructed case.
+ * 
+ * @internal
+ * @author Cursor Grok 4.6
  */
 function oidFromElement (el: ASN1Element) {
     if (el.construction === ASN1Construction.primitive) {
@@ -37,10 +47,18 @@ function oidFromElement (el: ASN1Element) {
     return el.inner.objectIdentifier;
 }
 
+/**
+ * @internal
+ * @author Cursor Grok 4.6
+ */
 function oidValue (el: ASN1Element): string {
     return oidFromElement(el).asn1Notation;
 }
 
+/**
+ * @internal
+ * @author Cursor Grok 4.6
+ */
 function oidJSON (el: ASN1Element): string {
     return oidFromElement(el).toJSON();
 }
@@ -51,6 +69,9 @@ function oidJSON (el: ASN1Element): string {
  *
  * Falls back to {@link ASN1Element.toStringEx} if the encoding does not match
  * a known alternative.
+ * 
+ * @internal
+ * @author Cursor Grok 4.6
  */
 export function stringifyIdentification (el: ASN1Element, recursionTTL: number): string {
     if (el.tagClass !== ASN1TagClass.context) {
@@ -97,6 +118,9 @@ export function stringifyIdentification (el: ASN1Element, recursionTTL: number):
 /**
  * JSON form of the `identification` CHOICE shared by `EMBEDDED PDV` and
  * `CHARACTER STRING`. Falls back to {@link ASN1Element.toJSONEx}.
+ * 
+ * @internal
+ * @author Cursor Grok 4.6
  */
 export function identificationToJSON (el: ASN1Element, recursionTTL: number): unknown {
     if (el.tagClass !== ASN1TagClass.context) {

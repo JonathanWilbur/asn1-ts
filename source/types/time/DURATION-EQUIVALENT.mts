@@ -4,6 +4,7 @@ import type {
 } from "../../macros.mjs";
 import * as errors from "../../errors.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
+import durationToISOString from "../../utils/durationToISOString.mjs";
 
 /**
  * Note that this is equivalent to `DURATION-INTERVAL-ENCODING` defined in
@@ -96,6 +97,10 @@ class DURATION_EQUIVALENT {
         }
         ret += "}";
         return ret;
+    }
+
+    public toISOString (): string {
+        return durationToISOString(this);
     }
 
     public toJSON (): unknown {

@@ -25,9 +25,4 @@ export { default as setBitInBase256 } from "./setBitInBase256.mjs";
 export { default as trimLeadingPaddingBytes } from "./trimLeadingPaddingBytes.mjs";
 export { default as unpackBits } from "./unpackBits.mjs";
 export { default as canEncodeAsBMPString } from "./canEncodeAsBMPString.mjs";
-export {
-    formatOctetStringValue,
-    formatBitStringValue,
-    stringifyIdentification,
-    identificationToJSON,
-} from "./asn1ValueNotation.mjs";
+export { formatOctetStringValue } from "./asn1ValueNotation.mjs";
