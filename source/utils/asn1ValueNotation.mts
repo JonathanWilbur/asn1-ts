@@ -1,6 +1,6 @@
 import type ASN1Element from "../asn1.mjs";
-import { Buffer } from "node:buffer";
 import { ASN1Construction, ASN1TagClass } from "../values.mjs";
+import bytesToHex from "./bytesToHex.mjs";
 
 /**
  * Format an OCTET STRING in ASN.1 value notation (`'…'H`).
@@ -13,8 +13,7 @@ import { ASN1Construction, ASN1TagClass } from "../values.mjs";
  * @author Cursor Grok 4.6
  */
 export function formatOctetStringValue (bytes: Uint8Array): string {
-    const hex: string = Buffer.from(bytes.slice()).toString("hex");
-    return `'${hex}'H`;
+    return `'${bytesToHex(bytes)}'H`;
 }
 
 /**

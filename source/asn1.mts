@@ -42,6 +42,7 @@ import type {
     RELATIVE_OID_IRI,
 } from "./macros.mjs";
 import packBits from "./utils/packBits.mjs";
+import bytesToHex from "./utils/bytesToHex.mjs";
 import { Buffer } from "node:buffer";
 
 /**
@@ -549,11 +550,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                     .join("")
                 }'B`;
             case (ASN1UniversalType.octetString):
-                return `'${Array
-                    .from(this.octetString)
-                    .map((byte) => byte.toString(16).padStart(2, "0"))
-                    .join("")
-                }'H`;
+                return `'${bytesToHex(this.octetString)}'H`;
             case (ASN1UniversalType.nill): return "NULL";
             case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.asn1Notation;
             case (ASN1UniversalType.objectDescriptor): return `"${this.objectDescriptor}"`;
@@ -666,11 +663,10 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 const bits = this.bitString;
                 return {
                     length: bits.length,
-                    value: Array.from(packBits(bits)).map((byte) => byte.toString(16)).join(""),
+                    value: bytesToHex(packBits(bits)),
                 };
             }
-            case (ASN1UniversalType.octetString): return Array.from(this.octetString)
-                .map((byte) => byte.toString(16)).join("");
+            case (ASN1UniversalType.octetString): return bytesToHex(this.octetString);
             case (ASN1UniversalType.nill): return null;
             case (ASN1UniversalType.objectIdentifier): return this.objectIdentifier.toJSON();
             case (ASN1UniversalType.objectDescriptor): return this.objectDescriptor;

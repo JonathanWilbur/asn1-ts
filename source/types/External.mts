@@ -7,6 +7,7 @@ import type {
 } from "../macros.mjs";
 import type ASN1Element from "../asn1.mjs";
 import packBits from "../utils/packBits.mjs";
+import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1ValueNotation.mjs";
 
 /**
@@ -82,12 +83,12 @@ class External {
             dataValueDescriptor: this.dataValueDescriptor,
             encoding: ((): unknown => {
                 if (this.encoding instanceof Uint8Array) {
-                    return Array.from(this.encoding).map((byte) => byte.toString(16)).join("");
+                    return bytesToHex(this.encoding);
                 } else if (this.encoding instanceof Uint8ClampedArray) {
                     const bits = this.encoding;
                     return {
                         length: bits.length,
-                        value: Array.from(packBits(bits)).map((byte) => byte.toString(16)).join(""),
+                        value: bytesToHex(packBits(bits)),
                     };
                 } else {
                     return this.encoding.toJSONEx(recursionTTL - 1);
