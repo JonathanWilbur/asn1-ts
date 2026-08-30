@@ -1,4 +1,5 @@
 import type ASN1Element from "../asn1.mjs";
+import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
 
 /**
@@ -68,7 +69,7 @@ class CharacterString {
         }
         return {
             identification: identificationToJSON(this.identification, recursionTTL - 1),
-            dataValue: Array.from(this.stringValue).map((byte) => byte.toString(16)).join(""),
+            dataValue: bytesToHex(this.stringValue),
         };
     }
 }

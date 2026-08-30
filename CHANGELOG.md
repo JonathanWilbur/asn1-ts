@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+- Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
+  bytes to two characters per octet. Hex conversion uses only the typed-array
+  view so it does not dump the backing `ArrayBuffer`.
+
 ## [11.2.1]
 
 - Fix jsr deployment

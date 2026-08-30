@@ -83,6 +83,11 @@ describe("EXTERNAL toString", () => {
             bits.toString(),
             "EXTERNAL { indirect-reference 1 , encoding arbitrary : '1011'B }",
         );
+        assert.equal(octets.toJSON().encoding, "0a0b");
+        assert.deepEqual(bits.toJSON().encoding, { length: 4, value: "b0" });
+        const backing = new Uint8Array([ 0xff, 0xff, 0x0a, 0x0b, 0xee, 0xee ]);
+        const sliced = new asn1.External(oid, undefined, undefined, backing.subarray(2, 4));
+        assert.equal(sliced.toJSON().encoding, "0a0b");
     });
 
     it("includes an indirect-reference of zero", () => {
@@ -166,6 +171,17 @@ describe("EMBEDDED PDV toString", () => {
             identification: { syntax: "1.2.840" },
             dataValue: "abcd",
         });
+        const padded = new asn1.EmbeddedPDV(ident, new Uint8Array([ 0x0a, 0x0b ]));
+        assert.deepEqual(padded.toJSON(), {
+            identification: { syntax: "1.2.840" },
+            dataValue: "0a0b",
+        });
+        const backing = new Uint8Array([ 0xff, 0xff, 0x0a, 0x0b, 0xee, 0xee ]);
+        const sliced = new asn1.EmbeddedPDV(ident, backing.subarray(2, 4));
+        assert.deepEqual(sliced.toJSON(), {
+            identification: { syntax: "1.2.840" },
+            dataValue: "0a0b",
+        });
     });
 });
 
@@ -185,6 +201,15 @@ describe("CHARACTER STRING toString", () => {
         el.characterString = cs;
         el.tagNumber = asn1.ASN1UniversalType.characterString;
         assert.equal(el.toString(), cs.toString());
+        assert.deepEqual(cs.toJSON(), {
+            identification: { syntax: "2.1.1" },
+            dataValue: "4869",
+        });
+        const padded = new asn1.CharacterString(ident, new Uint8Array([ 0x0a, 0x0b ]));
+        assert.equal(padded.toJSON().dataValue, "0a0b");
+        const backing = new Uint8Array([ 0xff, 0xff, 0x0a, 0x0b, 0xee, 0xee ]);
+        const sliced = new asn1.CharacterString(ident, backing.subarray(2, 4));
+        assert.equal(sliced.toJSON().dataValue, "0a0b");
     });
 });
 
@@ -195,5 +220,13 @@ describe("formatOctetStringValue", () => {
         assert.equal(asn1.formatOctetStringValue(view), "'abcd'H");
         assert.equal(asn1.formatOctetStringValue(Buffer.from([ 0x0a, 0x0b ])), "'0a0b'H");
         assert.equal(asn1.formatOctetStringValue(new Uint8Array(0)), "''H");
+        const pooled = Buffer.alloc(8);
+        pooled[0] = 0xde;
+        pooled[1] = 0xad;
+        pooled[2] = 0x0a;
+        pooled[3] = 0x0b;
+        pooled[4] = 0xbe;
+        pooled[5] = 0xef;
+        assert.equal(asn1.formatOctetStringValue(pooled.subarray(2, 4)), "'0a0b'H");
     });
 });
