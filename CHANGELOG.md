@@ -1,5 +1,10 @@
 # Changelog
 
+## [11.2.1]
+
+- Fix jsr deployment
+- Update `SECURITY.md`
+
 ## [11.2.0]
 
 - Huge performance improvements: `INTEGER` and `BIT STRING` encode/decode,

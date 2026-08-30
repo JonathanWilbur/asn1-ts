@@ -1,9 +1,9 @@
 # Reporting Security Issues
 
-For security issues--and security issues **only**--you may directly email
-[Jonathan M. Wilbur](mailto:jonathan@wilbur.space) (jonathan@wilbur.space).
-If you would like, you may also create an issue on the GitHub issues page,
-**as long as you do not mention any details about the vulnerability.**
+For security issues directly email
+[Jonathan M. Wilbur](mailto:jonathan@wilbur.space) (jonathan@wilbur.space). If
+you would like, you may also create an issue on the GitHub issues page, **as
+long as you do not mention any details about the vulnerability.**
 
 If you do not hear back from him in a few days, and if the issue is of low
 severity, you may create an issue on GitHub, or add the details as to what
