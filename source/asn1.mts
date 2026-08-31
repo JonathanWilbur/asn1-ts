@@ -83,11 +83,15 @@ import {
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     /**
-     * `true` for elements from this copy or another copy of the package, and
-     * for structural stand-ins that older copies can produce. See
-     * {@link isASN1ElementLike}.
+     * `true` if `value` is an ASN.1 element from this copy or another copy of
+     * the package, or a structural stand-in that older copies can produce.
+     *
+     * Use this instead of `instanceof ASN1Element` when the value may have
+     * come from a duplicate install of this package.
+     *
+     * @param value The value to test
      */
-    static [Symbol.hasInstance] (value: unknown): boolean {
+    static isElement (value: unknown): value is ASN1Element {
         return isASN1ElementLike(value);
     }
 

@@ -309,13 +309,11 @@ describe("Encode-anything function", () => {
         assert.deepEqual(d.value, new Uint8Array([ 0x55, 4, 3 ]));
     });
 
-    it("encodes a foreign OID that only has toBytes and isEqualTo", () => {
+    it("encodes a foreign OID that has dotDelimitedNotation and toBytes", () => {
         const oid = {
+            dotDelimitedNotation: "2.5.4.3",
             toBytes () {
                 return new Uint8Array([ 0x55, 4, 3 ]);
-            },
-            isEqualTo () {
-                return false;
             },
         };
         const d = new asn1.DERElement(

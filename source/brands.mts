@@ -7,11 +7,10 @@
  * came from the other copy.
  *
  * {@link Symbol.for} brands are interned in the realm-wide symbol registry, so
- * every copy that uses the same key observes the same symbol. Stamping that
- * symbol on the prototype, and consulting it from {@link Symbol.hasInstance},
- * makes `instanceof` succeed across copies.
- *
- * Duck-typing covers older copies that do not stamp a brand yet.
+ * every copy that uses the same key observes the same symbol. Prefer the type
+ * guards {@link ASN1Element.isElement} and {@link ObjectIdentifier.isOID}, which
+ * consult these brands and a structural fallback for older copies that do not
+ * stamp a brand yet.
  *
  * @module
  */
@@ -25,24 +24,6 @@ function isObject (value: unknown): value is object {
  * elements). Shared across copies of this package via {@link Symbol.for}.
  */
 export const ASN1_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.ASN1Element");
-
-/**
- * Brand stamped on {@link DERElement} only. Used so
- * `value instanceof DERElement` does not inherit the looser
- * {@link ASN1Element} {@link Symbol.hasInstance} (which would make every
- * element appear to be a `DERElement`).
- */
-export const DER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.DERElement");
-
-/**
- * Brand stamped on {@link BERElement} only. See {@link DER_ELEMENT_BRAND}.
- */
-export const BER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.BERElement");
-
-/**
- * Brand stamped on {@link CERElement} only. See {@link DER_ELEMENT_BRAND}.
- */
-export const CER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.CERElement");
 
 /**
  * Brand stamped on every {@link ObjectIdentifier}. Shared across copies of this
@@ -93,8 +74,11 @@ export function isASN1ElementLike (value: unknown): boolean {
 
 /**
  * `true` if `value` is an object identifier from this copy or another copy of
- * the package, or a structural stand-in with the instance API (`toBytes` and
- * `isEqualTo`).
+ * the package, or a structural stand-in with `dotDelimitedNotation` and
+ * `toBytes`.
+ *
+ * `dotDelimitedNotation` is checked with `in` so the getter is not invoked
+ * (it can throw {@link ASN1OverflowError} for oversized arcs).
  *
  * Do not test for instance `fromParts`: that method is static, so a real OID
  * from another copy never has it.
@@ -110,30 +94,7 @@ export function isObjectIdentifierLike (value: unknown): boolean {
     }
     const candidate = value as Record<string, unknown>;
     return (
-        typeof candidate["toBytes"] === "function"
-        && typeof candidate["isEqualTo"] === "function"
-    );
-}
-
-/**
- * Legacy `encode()` duck-type plus {@link isObjectIdentifierLike}.
- *
- * `fromParts` is static on {@link ObjectIdentifier}, so this extra clause never
- * matched a real instance. It is kept so user-built `{ fromParts, toBytes }`
- * objects that the previous `encode()` accepted still encode as OIDs.
- *
- * @param value The value to test
- */
-export function encodeValueIsObjectIdentifier (value: unknown): boolean {
-    if (isObjectIdentifierLike(value)) {
-        return true;
-    }
-    if (!isObject(value)) {
-        return false;
-    }
-    const candidate = value as Record<string, unknown>;
-    return (
-        typeof candidate["fromParts"] === "function"
+        ("dotDelimitedNotation" in value)
         && typeof candidate["toBytes"] === "function"
     );
 }

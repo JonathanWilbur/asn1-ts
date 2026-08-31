@@ -224,11 +224,16 @@ function encodeObjectIdentifierFromBigArcs (arcs: bigint[]): Uint8Array {
 export default
 class ObjectIdentifier {
     /**
-     * `true` for object identifiers from this copy or another copy of the
-     * package, and for structural stand-ins with `toBytes` and `isEqualTo`.
-     * See {@link isObjectIdentifierLike}.
+     * `true` if `value` is an object identifier from this copy or another copy
+     * of the package, or a structural stand-in with `dotDelimitedNotation` and
+     * `toBytes`.
+     *
+     * Use this instead of `instanceof ObjectIdentifier` when the value may have
+     * come from a duplicate install of this package.
+     *
+     * @param value The value to test
      */
-    static [Symbol.hasInstance] (value: unknown): boolean {
+    static isOID (value: unknown): value is ObjectIdentifier {
         return isObjectIdentifierLike(value);
     }
 

@@ -2,7 +2,6 @@ import type { BIT_STRING, EXTERNAL, SingleThreadUint8Array } from "../../../macr
 import type ASN1Element from "../../../asn1.mjs";
 import DERElement from "../../../codecs/der.mjs";
 import { ASN1TagClass, ASN1UniversalType, ASN1Construction } from "../../../values.mjs";
-import { isASN1ElementLike } from "../../../brands.mjs";
 
 export default
 function encodeExternal (value: EXTERNAL): SingleThreadUint8Array {
@@ -37,28 +36,27 @@ function encodeExternal (value: EXTERNAL): SingleThreadUint8Array {
     }
 
     let encodingElement: DERElement | undefined = undefined;
-    if (isASN1ElementLike(value.encoding)) {
-        encodingElement = new DERElement(
-            ASN1TagClass.context,
-            ASN1Construction.constructed,
-            0,
-            // value.encoding,
-        );
-        encodingElement.inner = value.encoding as ASN1Element;
-    } else if (value.encoding instanceof Uint8Array) {
+    if (value.encoding instanceof Uint8Array) {
         encodingElement = new DERElement(
             ASN1TagClass.context,
             ASN1Construction.primitive,
             1,
         );
         encodingElement.octetString = value.encoding;
-    } else {
+    } else if (value.encoding instanceof Uint8ClampedArray) {
         encodingElement = new DERElement(
             ASN1TagClass.context,
             ASN1Construction.primitive,
             2,
         );
         encodingElement.bitString = value.encoding as BIT_STRING;
+    } else {
+        encodingElement = new DERElement(
+            ASN1TagClass.context,
+            ASN1Construction.constructed,
+            0,
+        );
+        encodingElement.inner = value.encoding as ASN1Element;
     }
 
     const ret: DERElement = DERElement.fromSequence([
