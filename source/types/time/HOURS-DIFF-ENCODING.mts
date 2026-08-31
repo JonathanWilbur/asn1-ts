@@ -2,6 +2,11 @@ import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import hoursDiffToISOString from "../../utils/hoursDiffToISOString.mjs";
 import { matchISO, parseISOOffset, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
+import {
+    HOURS_DIFF_ENCODING_BRAND,
+    isHOURS_DIFF_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -13,6 +18,16 @@ import { matchISO, parseISOOffset, parseISOTwoDigit } from "../../utils/parseISO
  */
 export default
 class HOURS_DIFF_ENCODING {
+    /**
+     * `true` if `value` is an `HOURS-DIFF-ENCODING` from this copy or another
+     * copy of the package.
+     *
+     * @param value The value to test
+     */
+    static isHOURS_DIFF_ENCODING (value: unknown): value is HOURS_DIFF_ENCODING {
+        return isHOURS_DIFF_ENCODINGLike(value);
+    }
+
     constructor (
         readonly hours: INTEGER,
         readonly minutes_diff: INTEGER,
@@ -72,3 +87,5 @@ class HOURS_DIFF_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(HOURS_DIFF_ENCODING.prototype, HOURS_DIFF_ENCODING_BRAND);

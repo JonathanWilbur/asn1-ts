@@ -73,6 +73,11 @@ import type {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
+import {
+    CER_ELEMENT_BRAND,
+    isCERElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 const CER_STRING_FRAGMENT_SIZE: number = 1000;
 
@@ -125,6 +130,18 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
  */
 export default
 class CERElement extends X690Element {
+    /**
+     * `true` if `value` is a `CERElement` from this copy or another copy of
+     * the package. BER / CER / DER instances are not distinguishable by
+     * structure, so older copies without a brand are not recognized here;
+     * use {@link X690Element.isX690} for that.
+     *
+     * @param value The value to test
+     */
+    static isCER (value: unknown): value is CERElement {
+        return isCERElementLike(value);
+    }
+
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
     get value (): SingleThreadUint8Array {
@@ -982,3 +999,5 @@ class CERElement extends X690Element {
         )
     }
 }
+
+stampBrand(CERElement.prototype, CER_ELEMENT_BRAND);

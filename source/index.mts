@@ -30,12 +30,33 @@
  */
 
 export { default as ASN1Element } from "./asn1.mjs";
+export { default as X690Element } from "./x690.mjs";
 export { default as BERElement } from "./codecs/ber.mjs";
 export { default as CERElement } from "./codecs/cer.mjs";
 export { default as DERElement } from "./codecs/der.mjs";
 export {
     ASN1_ELEMENT_BRAND,
+    X690_ELEMENT_BRAND,
+    BER_ELEMENT_BRAND,
+    CER_ELEMENT_BRAND,
+    DER_ELEMENT_BRAND,
     OBJECT_IDENTIFIER_BRAND,
+    EXTERNAL_BRAND,
+    EMBEDDED_PDV_BRAND,
+    CHARACTER_STRING_BRAND,
+    DATE_ENCODING_BRAND,
+    YEAR_ENCODING_BRAND,
+    YEAR_MONTH_ENCODING_BRAND,
+    HOURS_ENCODING_BRAND,
+    HOURS_DIFF_ENCODING_BRAND,
+    HOURS_MINUTES_ENCODING_BRAND,
+    HOURS_MINUTES_DIFF_ENCODING_BRAND,
+    TIME_OF_DAY_ENCODING_BRAND,
+    TIME_OF_DAY_DIFF_ENCODING_BRAND,
+    TIME_OF_DAY_FRACTION_ENCODING_BRAND,
+    TIME_OF_DAY_FRACTION_DIFF_ENCODING_BRAND,
+    DURATION_EQUIVALENT_BRAND,
+    DURATION_INTERVAL_ENCODING_BRAND,
 } from "./brands.mjs";
 export { default as sortCanonically } from "./utils/sortCanonically.mjs";
 export { default as compareSetOfElementsCanonically } from "./utils/compareSetOfElementsCanonically.mjs";

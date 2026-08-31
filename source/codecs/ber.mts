@@ -72,6 +72,11 @@ import type {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
+import {
+    BER_ELEMENT_BRAND,
+    isBERElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * Combine primitive BIT STRING encodings into one primitive encoding.
@@ -109,6 +114,18 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
  */
 export default
 class BERElement extends X690Element {
+    /**
+     * `true` if `value` is a `BERElement` from this copy or another copy of
+     * the package. BER / CER / DER instances are not distinguishable by
+     * structure, so older copies without a brand are not recognized here;
+     * use {@link X690Element.isX690} for that.
+     *
+     * @param value The value to test
+     */
+    static isBER (value: unknown): value is BERElement {
+        return isBERElementLike(value);
+    }
+
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
@@ -930,3 +947,5 @@ class BERElement extends X690Element {
         return encodedElements;
     }
 }
+
+stampBrand(BERElement.prototype, BER_ELEMENT_BRAND);

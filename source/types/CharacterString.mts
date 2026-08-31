@@ -1,6 +1,11 @@
 import type ASN1Element from "../asn1.mjs";
 import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
+import {
+    CHARACTER_STRING_BRAND,
+    isCharacterStringLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * A `CharacterString`, is a constructed data type, defined
@@ -29,6 +34,17 @@ import { formatOctetStringValue, identificationToJSON, stringifyIdentification }
  */
 export default
 class CharacterString {
+    /**
+     * `true` if `value` is a `CHARACTER STRING` from this copy or another copy
+     * of the package, or a structural stand-in with `identification` and
+     * `stringValue`.
+     *
+     * @param value The value to test
+     */
+    static isCharacterString (value: unknown): value is CharacterString {
+        return isCharacterStringLike(value);
+    }
+
     constructor (
         readonly identification: ASN1Element,
         readonly stringValue: Uint8Array,
@@ -73,3 +89,5 @@ class CharacterString {
         };
     }
 }
+
+stampBrand(CharacterString.prototype, CHARACTER_STRING_BRAND);

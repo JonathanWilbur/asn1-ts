@@ -72,6 +72,11 @@ import type {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
+import {
+    DER_ELEMENT_BRAND,
+    isDERElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * @classdesc
@@ -82,6 +87,18 @@ import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
  */
 export default
 class DERElement extends X690Element {
+    /**
+     * `true` if `value` is a `DERElement` from this copy or another copy of
+     * the package. BER / CER / DER instances are not distinguishable by
+     * structure, so older copies without a brand are not recognized here;
+     * use {@link X690Element.isX690} for that.
+     *
+     * @param value The value to test
+     */
+    static isDER (value: unknown): value is DERElement {
+        return isDERElementLike(value);
+    }
+
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
 
@@ -871,3 +888,5 @@ class DERElement extends X690Element {
         )
     }
 }
+
+stampBrand(DERElement.prototype, DER_ELEMENT_BRAND);

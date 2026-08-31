@@ -1,6 +1,11 @@
 import type ASN1Element from "../asn1.mjs";
 import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
+import {
+    EMBEDDED_PDV_BRAND,
+    isEmbeddedPDVLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * An `EmbeddedPDV` is a constructed data type, defined in
@@ -92,6 +97,17 @@ import { formatOctetStringValue, identificationToJSON, stringifyIdentification }
 */
 export default
 class EmbeddedPDV {
+    /**
+     * `true` if `value` is an `EMBEDDED PDV` from this copy or another copy of
+     * the package, or a structural stand-in with `identification` and
+     * `dataValue`.
+     *
+     * @param value The value to test
+     */
+    static isEmbeddedPDV (value: unknown): value is EmbeddedPDV {
+        return isEmbeddedPDVLike(value);
+    }
+
     constructor (
         readonly identification: ASN1Element,
         readonly dataValue: Uint8Array,
@@ -136,3 +152,5 @@ class EmbeddedPDV {
         };
     }
 }
+
+stampBrand(EmbeddedPDV.prototype, EMBEDDED_PDV_BRAND);

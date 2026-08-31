@@ -31,9 +31,24 @@ import type {
     OID_IRI,
     RELATIVE_OID_IRI,
 } from "./macros.mjs";
+import {
+    X690_ELEMENT_BRAND,
+    isX690ElementLike,
+    stampBrand,
+} from "./brands.mjs";
 
 export default
 abstract class X690Element extends ASN1Element {
+    /**
+     * `true` if `value` is an X.690 (BER / CER / DER) element from this copy
+     * or another copy of the package.
+     *
+     * @param value The value to test
+     */
+    static isX690 (value: unknown): value is X690Element {
+        return isX690ElementLike(value);
+    }
+
     /**
      * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
      * JavaScript's bitshift operators treat all integers as though they were
@@ -132,3 +147,5 @@ abstract class X690Element extends ASN1Element {
         return decodeRelativeOIDIRI(this.value);
     }
 }
+
+stampBrand(X690Element.prototype, X690_ELEMENT_BRAND);

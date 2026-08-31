@@ -4,6 +4,11 @@ import type {
 } from "../../macros.mjs";
 import * as errors from "../../errors.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
+import {
+    DURATION_INTERVAL_ENCODING_BRAND,
+    isDURATION_INTERVAL_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -27,6 +32,17 @@ import datetimeComponentValidator from "../../validators/datetimeComponentValida
  */
 export default
 class DURATION_INTERVAL_ENCODING {
+    /**
+     * `true` if `value` is a `DURATION-INTERVAL-ENCODING` from this copy or
+     * another copy of the package. Distinguished from {@link DURATION_EQUIVALENT}
+     * for unbranded values by the absence of `toISOString`.
+     *
+     * @param value The value to test
+     */
+    static isDURATION_INTERVAL_ENCODING (value: unknown): value is DURATION_INTERVAL_ENCODING {
+        return isDURATION_INTERVAL_ENCODINGLike(value);
+    }
+
     constructor (
         readonly years: OPTIONAL<INTEGER>,
         readonly months: OPTIONAL<INTEGER>,
@@ -74,3 +90,5 @@ class DURATION_INTERVAL_ENCODING {
         }
     }
 }
+
+stampBrand(DURATION_INTERVAL_ENCODING.prototype, DURATION_INTERVAL_ENCODING_BRAND);

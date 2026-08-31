@@ -9,6 +9,11 @@ import type ASN1Element from "../asn1.mjs";
 import packBits from "../utils/packBits.mjs";
 import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1ValueNotation.mjs";
+import {
+    EXTERNAL_BRAND,
+    isExternalLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:
@@ -26,6 +31,17 @@ import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1Value
  */
 export default
 class External {
+    /**
+     * `true` if `value` is an `EXTERNAL` from this copy or another copy of
+     * the package, or a structural stand-in with `encoding` and
+     * `directReference`.
+     *
+     * @param value The value to test
+     */
+    static isExternal (value: unknown): value is External {
+        return isExternalLike(value);
+    }
+
     constructor (
         readonly directReference: OBJECT_IDENTIFIER | undefined,
         readonly indirectReference: INTEGER | undefined,
@@ -97,3 +113,5 @@ class External {
         };
     }
 }
+
+stampBrand(External.prototype, EXTERNAL_BRAND);

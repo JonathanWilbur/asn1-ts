@@ -1,6 +1,11 @@
 import type { INTEGER } from "../../macros.mjs";
 import yearToISOString from "../../utils/yearToISOString.mjs";
 import { matchISO, parseISOYear } from "../../utils/parseISOTime.mjs";
+import {
+    YEAR_ENCODING_BRAND,
+    isYEAR_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -11,6 +16,16 @@ import { matchISO, parseISOYear } from "../../utils/parseISOTime.mjs";
  */
 export default
 class YEAR_ENCODING {
+    /**
+     * `true` if `value` is a `YEAR-ENCODING` from this copy or another copy of
+     * the package.
+     *
+     * @param value The value to test
+     */
+    static isYEAR_ENCODING (value: unknown): value is YEAR_ENCODING {
+        return isYEAR_ENCODINGLike(value);
+    }
+
     constructor (
         readonly year: INTEGER,
     ) {}
@@ -63,3 +78,5 @@ class YEAR_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(YEAR_ENCODING.prototype, YEAR_ENCODING_BRAND);

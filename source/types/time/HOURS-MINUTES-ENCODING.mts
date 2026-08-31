@@ -2,6 +2,11 @@ import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import hoursMinutesToISOString from "../../utils/hoursMinutesToISOString.mjs";
 import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
+import {
+    HOURS_MINUTES_ENCODING_BRAND,
+    isHOURS_MINUTES_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -13,6 +18,16 @@ import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
  */
 export default
 class HOURS_MINUTES_ENCODING {
+    /**
+     * `true` if `value` is an `HOURS-MINUTES-ENCODING` from this copy or
+     * another copy of the package.
+     *
+     * @param value The value to test
+     */
+    static isHOURS_MINUTES_ENCODING (value: unknown): value is HOURS_MINUTES_ENCODING {
+        return isHOURS_MINUTES_ENCODINGLike(value);
+    }
+
     constructor (
         readonly hours: INTEGER,
         readonly minutes: INTEGER,
@@ -72,3 +87,5 @@ class HOURS_MINUTES_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(HOURS_MINUTES_ENCODING.prototype, HOURS_MINUTES_ENCODING_BRAND);

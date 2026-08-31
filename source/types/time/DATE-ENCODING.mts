@@ -2,6 +2,11 @@ import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import dateToISOString from "../../utils/dateToISOString.mjs";
 import { matchISO, parseISOTwoDigit, parseISOYear } from "../../utils/parseISOTime.mjs";
+import {
+    DATE_ENCODING_BRAND,
+    isDATE_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -14,6 +19,16 @@ import { matchISO, parseISOTwoDigit, parseISOYear } from "../../utils/parseISOTi
  */
 export default
 class DATE_ENCODING {
+    /**
+     * `true` if `value` is a `DATE-ENCODING` from this copy or another copy of
+     * the package.
+     *
+     * @param value The value to test
+     */
+    static isDATE_ENCODING (value: unknown): value is DATE_ENCODING {
+        return isDATE_ENCODINGLike(value);
+    }
+
     constructor (
         readonly year: INTEGER,
         readonly month: INTEGER,
@@ -75,3 +90,5 @@ class DATE_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(DATE_ENCODING.prototype, DATE_ENCODING_BRAND);
