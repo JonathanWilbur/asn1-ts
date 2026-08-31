@@ -24,7 +24,7 @@ class YEAR_MONTH_ENCODING {
      *
      * @param value The value to test
      */
-    static isYEAR_MONTH_ENCODING (value: unknown): value is YEAR_MONTH_ENCODING {
+    static isClassOf (value: unknown): value is YEAR_MONTH_ENCODING {
         return isYEAR_MONTH_ENCODINGLike(value);
     }
 

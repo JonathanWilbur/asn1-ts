@@ -22,7 +22,7 @@ class YEAR_ENCODING {
      *
      * @param value The value to test
      */
-    static isYEAR_ENCODING (value: unknown): value is YEAR_ENCODING {
+    static isClassOf (value: unknown): value is YEAR_ENCODING {
         return isYEAR_ENCODINGLike(value);
     }
 

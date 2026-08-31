@@ -45,7 +45,7 @@ abstract class X690Element extends ASN1Element {
      *
      * @param value The value to test
      */
-    static isX690 (value: unknown): value is X690Element {
+    static override isElement (value: unknown): value is X690Element {
         return isX690ElementLike(value);
     }
 

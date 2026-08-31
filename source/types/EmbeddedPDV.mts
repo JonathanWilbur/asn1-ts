@@ -104,7 +104,7 @@ class EmbeddedPDV {
      *
      * @param value The value to test
      */
-    static isEmbeddedPDV (value: unknown): value is EmbeddedPDV {
+    static isClassOf (value: unknown): value is EmbeddedPDV {
         return isEmbeddedPDVLike(value);
     }
 

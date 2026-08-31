@@ -134,11 +134,11 @@ class CERElement extends X690Element {
      * `true` if `value` is a `CERElement` from this copy or another copy of
      * the package. BER / CER / DER instances are not distinguishable by
      * structure, so older copies without a brand are not recognized here;
-     * use {@link X690Element.isX690} for that.
+     * use {@link X690Element.isElement} for that.
      *
      * @param value The value to test
      */
-    static isCER (value: unknown): value is CERElement {
+    static override isElement (value: unknown): value is CERElement {
         return isCERElementLike(value);
     }
 

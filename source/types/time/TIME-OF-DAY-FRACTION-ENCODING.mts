@@ -26,7 +26,7 @@ class TIME_OF_DAY_FRACTION_ENCODING {
      *
      * @param value The value to test
      */
-    static isTIME_OF_DAY_FRACTION_ENCODING (value: unknown): value is TIME_OF_DAY_FRACTION_ENCODING {
+    static isClassOf (value: unknown): value is TIME_OF_DAY_FRACTION_ENCODING {
         return isTIME_OF_DAY_FRACTION_ENCODINGLike(value);
     }
 

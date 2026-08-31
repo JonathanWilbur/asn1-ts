@@ -39,7 +39,7 @@ class DURATION_INTERVAL_ENCODING {
      *
      * @param value The value to test
      */
-    static isDURATION_INTERVAL_ENCODING (value: unknown): value is DURATION_INTERVAL_ENCODING {
+    static isClassOf (value: unknown): value is DURATION_INTERVAL_ENCODING {
         return isDURATION_INTERVAL_ENCODINGLike(value);
     }
 

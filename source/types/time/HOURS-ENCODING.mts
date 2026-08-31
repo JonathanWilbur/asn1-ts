@@ -23,7 +23,7 @@ class HOURS_ENCODING {
      *
      * @param value The value to test
      */
-    static isHOURS_ENCODING (value: unknown): value is HOURS_ENCODING {
+    static isClassOf (value: unknown): value is HOURS_ENCODING {
         return isHOURS_ENCODINGLike(value);
     }
 

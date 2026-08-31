@@ -7,12 +7,12 @@ describe("codec type guards", () => {
         const ber = new asn1.BERElement();
         const cer = new asn1.CERElement();
         const der = new asn1.DERElement();
-        assert(asn1.X690Element.isX690(ber));
-        assert(asn1.X690Element.isX690(cer));
-        assert(asn1.X690Element.isX690(der));
-        assert(asn1.BERElement.isBER(ber));
-        assert(asn1.CERElement.isCER(cer));
-        assert(asn1.DERElement.isDER(der));
+        assert(asn1.X690Element.isElement(ber));
+        assert(asn1.X690Element.isElement(cer));
+        assert(asn1.X690Element.isElement(der));
+        assert(asn1.BERElement.isElement(ber));
+        assert(asn1.CERElement.isElement(cer));
+        assert(asn1.DERElement.isElement(der));
         assert(asn1.ASN1Element.isElement(ber));
     });
 
@@ -20,12 +20,12 @@ describe("codec type guards", () => {
         const ber = new asn1.BERElement();
         const cer = new asn1.CERElement();
         const der = new asn1.DERElement();
-        assert(!asn1.BERElement.isBER(der));
-        assert(!asn1.BERElement.isBER(cer));
-        assert(!asn1.CERElement.isCER(der));
-        assert(!asn1.CERElement.isCER(ber));
-        assert(!asn1.DERElement.isDER(ber));
-        assert(!asn1.DERElement.isDER(cer));
+        assert(!asn1.BERElement.isElement(der));
+        assert(!asn1.BERElement.isElement(cer));
+        assert(!asn1.CERElement.isElement(der));
+        assert(!asn1.CERElement.isElement(ber));
+        assert(!asn1.DERElement.isElement(ber));
+        assert(!asn1.DERElement.isElement(cer));
     });
 
     it("recognizes an unbranded X.690 stand-in via sequenceElements", () => {
@@ -40,17 +40,17 @@ describe("codec type guards", () => {
                 return [];
             },
         };
-        assert(asn1.X690Element.isX690(standIn));
-        assert(!asn1.BERElement.isBER(standIn));
-        assert(!asn1.DERElement.isDER(standIn));
+        assert(asn1.X690Element.isElement(standIn));
+        assert(!asn1.BERElement.isElement(standIn));
+        assert(!asn1.DERElement.isElement(standIn));
         assert(!(standIn instanceof asn1.X690Element));
     });
 
     it("recognizes branded codec objects from another copy", () => {
         const brandedBer = { [asn1.BER_ELEMENT_BRAND]: true };
         const brandedX690 = { [asn1.X690_ELEMENT_BRAND]: true };
-        assert(asn1.BERElement.isBER(brandedBer));
-        assert(asn1.X690Element.isX690(brandedX690));
+        assert(asn1.BERElement.isElement(brandedBer));
+        assert(asn1.X690Element.isElement(brandedX690));
         assert(!(brandedBer instanceof asn1.BERElement));
     });
 });
@@ -68,23 +68,23 @@ describe("External, EmbeddedPDV, and CharacterString type guards", () => {
         );
         const pdv = new asn1.EmbeddedPDV(ident, new Uint8Array([ 4, 5 ]));
         const cs = new asn1.CharacterString(ident, new Uint8Array([ 6, 7 ]));
-        assert(asn1.External.isExternal(ext));
-        assert(asn1.EmbeddedPDV.isEmbeddedPDV(pdv));
-        assert(asn1.CharacterString.isCharacterString(cs));
-        assert(!asn1.External.isExternal(pdv));
-        assert(!asn1.EmbeddedPDV.isEmbeddedPDV(cs));
-        assert(!asn1.CharacterString.isCharacterString(ext));
+        assert(asn1.External.isClassOf(ext));
+        assert(asn1.EmbeddedPDV.isClassOf(pdv));
+        assert(asn1.CharacterString.isClassOf(cs));
+        assert(!asn1.External.isClassOf(pdv));
+        assert(!asn1.EmbeddedPDV.isClassOf(cs));
+        assert(!asn1.CharacterString.isClassOf(ext));
     });
 
     it("recognizes structural stand-ins from another copy", () => {
         const ext = { encoding: new Uint8Array(0), directReference: undefined };
         const pdv = { identification: ident, dataValue: new Uint8Array(0) };
         const cs = { identification: ident, stringValue: new Uint8Array(0) };
-        assert(asn1.External.isExternal(ext));
-        assert(asn1.EmbeddedPDV.isEmbeddedPDV(pdv));
-        assert(asn1.CharacterString.isCharacterString(cs));
-        assert(!asn1.EmbeddedPDV.isEmbeddedPDV(cs));
-        assert(!asn1.CharacterString.isCharacterString(pdv));
+        assert(asn1.External.isClassOf(ext));
+        assert(asn1.EmbeddedPDV.isClassOf(pdv));
+        assert(asn1.CharacterString.isClassOf(cs));
+        assert(!asn1.EmbeddedPDV.isClassOf(cs));
+        assert(!asn1.CharacterString.isClassOf(pdv));
         assert(!(ext instanceof asn1.External));
     });
 });
@@ -105,37 +105,37 @@ describe("X.696 time type guards", () => {
         const duration = new asn1.DURATION_EQUIVALENT(1);
         const interval = new asn1.DURATION_INTERVAL_ENCODING(1);
 
-        assert(asn1.YEAR_ENCODING.isYEAR_ENCODING(year));
-        assert(asn1.YEAR_MONTH_ENCODING.isYEAR_MONTH_ENCODING(yearMonth));
-        assert(asn1.DATE_ENCODING.isDATE_ENCODING(date));
-        assert(asn1.HOURS_ENCODING.isHOURS_ENCODING(hours));
-        assert(asn1.HOURS_DIFF_ENCODING.isHOURS_DIFF_ENCODING(hoursDiff));
-        assert(asn1.HOURS_MINUTES_ENCODING.isHOURS_MINUTES_ENCODING(hoursMinutes));
-        assert(asn1.HOURS_MINUTES_DIFF_ENCODING.isHOURS_MINUTES_DIFF_ENCODING(hoursMinutesDiff));
-        assert(asn1.TIME_OF_DAY_ENCODING.isTIME_OF_DAY_ENCODING(tod));
-        assert(asn1.TIME_OF_DAY_DIFF_ENCODING.isTIME_OF_DAY_DIFF_ENCODING(todDiff));
-        assert(asn1.TIME_OF_DAY_FRACTION_ENCODING.isTIME_OF_DAY_FRACTION_ENCODING(todFrac));
-        assert(asn1.TIME_OF_DAY_FRACTION_DIFF_ENCODING.isTIME_OF_DAY_FRACTION_DIFF_ENCODING(todFracDiff));
-        assert(asn1.DURATION_EQUIVALENT.isDURATION_EQUIVALENT(duration));
-        assert(asn1.DURATION_INTERVAL_ENCODING.isDURATION_INTERVAL_ENCODING(interval));
+        assert(asn1.YEAR_ENCODING.isClassOf(year));
+        assert(asn1.YEAR_MONTH_ENCODING.isClassOf(yearMonth));
+        assert(asn1.DATE_ENCODING.isClassOf(date));
+        assert(asn1.HOURS_ENCODING.isClassOf(hours));
+        assert(asn1.HOURS_DIFF_ENCODING.isClassOf(hoursDiff));
+        assert(asn1.HOURS_MINUTES_ENCODING.isClassOf(hoursMinutes));
+        assert(asn1.HOURS_MINUTES_DIFF_ENCODING.isClassOf(hoursMinutesDiff));
+        assert(asn1.TIME_OF_DAY_ENCODING.isClassOf(tod));
+        assert(asn1.TIME_OF_DAY_DIFF_ENCODING.isClassOf(todDiff));
+        assert(asn1.TIME_OF_DAY_FRACTION_ENCODING.isClassOf(todFrac));
+        assert(asn1.TIME_OF_DAY_FRACTION_DIFF_ENCODING.isClassOf(todFracDiff));
+        assert(asn1.DURATION_EQUIVALENT.isClassOf(duration));
+        assert(asn1.DURATION_INTERVAL_ENCODING.isClassOf(interval));
 
-        assert(!asn1.YEAR_ENCODING.isYEAR_ENCODING(yearMonth));
-        assert(!asn1.YEAR_MONTH_ENCODING.isYEAR_MONTH_ENCODING(date));
-        assert(!asn1.DATE_ENCODING.isDATE_ENCODING(year));
-        assert(!asn1.HOURS_ENCODING.isHOURS_ENCODING(hoursDiff));
-        assert(!asn1.HOURS_DIFF_ENCODING.isHOURS_DIFF_ENCODING(hoursMinutesDiff));
-        assert(!asn1.HOURS_MINUTES_ENCODING.isHOURS_MINUTES_ENCODING(tod));
-        assert(!asn1.TIME_OF_DAY_ENCODING.isTIME_OF_DAY_ENCODING(todDiff));
-        assert(!asn1.TIME_OF_DAY_FRACTION_ENCODING.isTIME_OF_DAY_FRACTION_ENCODING(todFracDiff));
-        assert(!asn1.DURATION_EQUIVALENT.isDURATION_EQUIVALENT(interval));
-        assert(!asn1.DURATION_INTERVAL_ENCODING.isDURATION_INTERVAL_ENCODING(duration));
+        assert(!asn1.YEAR_ENCODING.isClassOf(yearMonth));
+        assert(!asn1.YEAR_MONTH_ENCODING.isClassOf(date));
+        assert(!asn1.DATE_ENCODING.isClassOf(year));
+        assert(!asn1.HOURS_ENCODING.isClassOf(hoursDiff));
+        assert(!asn1.HOURS_DIFF_ENCODING.isClassOf(hoursMinutesDiff));
+        assert(!asn1.HOURS_MINUTES_ENCODING.isClassOf(tod));
+        assert(!asn1.TIME_OF_DAY_ENCODING.isClassOf(todDiff));
+        assert(!asn1.TIME_OF_DAY_FRACTION_ENCODING.isClassOf(todFracDiff));
+        assert(!asn1.DURATION_EQUIVALENT.isClassOf(interval));
+        assert(!asn1.DURATION_INTERVAL_ENCODING.isClassOf(duration));
     });
 
     it("recognizes structural stand-ins from another copy", () => {
-        assert(asn1.DATE_ENCODING.isDATE_ENCODING({ year: 2020, month: 3, day: 7 }));
-        assert(asn1.YEAR_ENCODING.isYEAR_ENCODING({ year: 2020 }));
-        assert(asn1.HOURS_DIFF_ENCODING.isHOURS_DIFF_ENCODING({ hours: 15, minutes_diff: 0 }));
-        assert(asn1.TIME_OF_DAY_FRACTION_ENCODING.isTIME_OF_DAY_FRACTION_ENCODING({
+        assert(asn1.DATE_ENCODING.isClassOf({ year: 2020, month: 3, day: 7 }));
+        assert(asn1.YEAR_ENCODING.isClassOf({ year: 2020 }));
+        assert(asn1.HOURS_DIFF_ENCODING.isClassOf({ hours: 15, minutes_diff: 0 }));
+        assert(asn1.TIME_OF_DAY_FRACTION_ENCODING.isClassOf({
             hours: 15,
             minutes: 58,
             seconds: 23,

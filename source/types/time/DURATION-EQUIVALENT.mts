@@ -37,7 +37,7 @@ class DURATION_EQUIVALENT {
      *
      * @param value The value to test
      */
-    static isDURATION_EQUIVALENT (value: unknown): value is DURATION_EQUIVALENT {
+    static isClassOf (value: unknown): value is DURATION_EQUIVALENT {
         return isDURATION_EQUIVALENTLike(value);
     }
 

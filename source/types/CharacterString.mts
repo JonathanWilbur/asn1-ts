@@ -41,7 +41,7 @@ class CharacterString {
      *
      * @param value The value to test
      */
-    static isCharacterString (value: unknown): value is CharacterString {
+    static isClassOf (value: unknown): value is CharacterString {
         return isCharacterStringLike(value);
     }
 

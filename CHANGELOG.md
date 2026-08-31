@@ -18,13 +18,12 @@
   `instanceof DERElement` (so zero-copy still works for a foreign element).
 - Export `X690Element` and the `Symbol.for` brand constants used by the type
   guards.
-- Add type guards `X690Element.isX690()`, `BERElement.isBER()`,
-  `CERElement.isCER()`, `DERElement.isDER()`, `External.isExternal()`,
-  `EmbeddedPDV.isEmbeddedPDV()`, `CharacterString.isCharacterString()`, and
-  `is*` on every X.696 time encoding class in `source/types/time`. Codec-specific
-  BER/CER/DER checks are brand-only (those classes are not distinguishable by
-  structure); `isX690` still recognizes an unbranded BER/CER/DER via
-  `sequenceElements`.
+- Add `isElement()` on `X690Element`, `BERElement`, `CERElement`, and
+  `DERElement`. Codec-specific BER/CER/DER checks are brand-only (those
+  classes are not distinguishable by structure); `X690Element.isElement()`
+  still recognizes an unbranded BER/CER/DER via `sequenceElements`.
+- Add `isClassOf()` on `External`, `EmbeddedPDV`, `CharacterString`, and every
+  X.696 time encoding class in `source/types/time`.
 - Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
   bytes to two characters per octet. Hex conversion uses only the typed-array
   view so it does not dump the backing `ArrayBuffer`.

@@ -38,7 +38,7 @@ class External {
      *
      * @param value The value to test
      */
-    static isExternal (value: unknown): value is External {
+    static isClassOf (value: unknown): value is External {
         return isExternalLike(value);
     }
 

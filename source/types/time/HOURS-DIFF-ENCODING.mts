@@ -24,7 +24,7 @@ class HOURS_DIFF_ENCODING {
      *
      * @param value The value to test
      */
-    static isHOURS_DIFF_ENCODING (value: unknown): value is HOURS_DIFF_ENCODING {
+    static isClassOf (value: unknown): value is HOURS_DIFF_ENCODING {
         return isHOURS_DIFF_ENCODINGLike(value);
     }
 

@@ -26,7 +26,7 @@ class TIME_OF_DAY_DIFF_ENCODING {
      *
      * @param value The value to test
      */
-    static isTIME_OF_DAY_DIFF_ENCODING (value: unknown): value is TIME_OF_DAY_DIFF_ENCODING {
+    static isClassOf (value: unknown): value is TIME_OF_DAY_DIFF_ENCODING {
         return isTIME_OF_DAY_DIFF_ENCODINGLike(value);
     }
 

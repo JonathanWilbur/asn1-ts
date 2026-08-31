@@ -25,7 +25,7 @@ class DATE_ENCODING {
      *
      * @param value The value to test
      */
-    static isDATE_ENCODING (value: unknown): value is DATE_ENCODING {
+    static isClassOf (value: unknown): value is DATE_ENCODING {
         return isDATE_ENCODINGLike(value);
     }
 
