@@ -189,9 +189,17 @@ describe("encodeExternal with a foreign element", () => {
             construction: asn1.ASN1Construction.primitive,
             bytes: new Uint8Array([ 0x02, 0x01, 0x05 ]),
         });
-        const ext = new asn1.External(undefined, undefined, undefined, inner);
+        const ext = new asn1.External(
+            asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]),
+            undefined,
+            undefined,
+            inner,
+        );
         const el = new asn1.DERElement();
         el.external = ext;
+        const hex = Buffer.from(el.toBytes()).toString("hex").toUpperCase();
+        assert.match(hex, /A0/);
+        assert.doesNotMatch(hex, /82/);
         const decoded = el.external;
         assert.equal(decoded.encoding.tagClass, asn1.ASN1TagClass.universal);
         assert.equal(decoded.encoding.tagNumber, asn1.ASN1UniversalType.integer);
