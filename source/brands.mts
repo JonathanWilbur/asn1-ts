@@ -96,6 +96,18 @@ export const DURATION_INTERVAL_ENCODING_BRAND: symbol = Symbol.for(
     "@wildboar/asn1.DURATION_INTERVAL_ENCODING",
 );
 
+/**
+ * @summary Determine whether a value looks like an ASN.1 element
+ * @description
+ *
+ * Consults the `ASN1Element` `Symbol.for` brand and, for unbranded values,
+ * `tagClass`, `tagNumber`, `construction`, and `toBytes`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like an ASN.1 element
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isASN1ElementLike (value: unknown): boolean {
     return brandedOr(value, ASN1_ELEMENT_BRAND, (obj) => {
         const candidate = obj as Record<string, unknown>;
@@ -108,6 +120,18 @@ export function isASN1ElementLike (value: unknown): boolean {
     });
 }
 
+/**
+ * @summary Determine whether a value looks like an object identifier
+ * @description
+ *
+ * Consults the `ObjectIdentifier` `Symbol.for` brand and, for unbranded
+ * values, `dotDelimitedNotation` and `toBytes`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like an object identifier
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isObjectIdentifierLike (value: unknown): boolean {
     return brandedOr(value, OBJECT_IDENTIFIER_BRAND, (obj) => {
         const candidate = obj as Record<string, unknown>;
@@ -115,24 +139,81 @@ export function isObjectIdentifierLike (value: unknown): boolean {
     });
 }
 
+/**
+ * @summary Determine whether a value looks like an X.690 element
+ * @description
+ *
+ * Consults the `X690Element` `Symbol.for` brand and, for unbranded values,
+ * requires an ASN.1 element shape plus `sequenceElements`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like an X.690 element
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isX690ElementLike (value: unknown): boolean {
     return brandedOr(value, X690_ELEMENT_BRAND, (obj) => (
         isASN1ElementLike(obj) && hasSequenceElements(obj)
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `BERElement`
+ * @description
+ *
+ * Brand-only. BER, CER, and DER instances are not distinguishable by structure.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` carries the `BERElement` brand
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isBERElementLike (value: unknown): boolean {
     return brandedOr(value, BER_ELEMENT_BRAND, () => false);
 }
 
+/**
+ * @summary Determine whether a value looks like a `CERElement`
+ * @description
+ *
+ * Brand-only. BER, CER, and DER instances are not distinguishable by structure.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` carries the `CERElement` brand
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isCERElementLike (value: unknown): boolean {
     return brandedOr(value, CER_ELEMENT_BRAND, () => false);
 }
 
+/**
+ * @summary Determine whether a value looks like a `DERElement`
+ * @description
+ *
+ * Brand-only. BER, CER, and DER instances are not distinguishable by structure.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` carries the `DERElement` brand
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isDERElementLike (value: unknown): boolean {
     return brandedOr(value, DER_ELEMENT_BRAND, () => false);
 }
 
+/**
+ * @summary Determine whether a value looks like an `EXTERNAL`
+ * @description
+ *
+ * Consults the `External` `Symbol.for` brand and, for unbranded values,
+ * `encoding` and `directReference`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like an `EXTERNAL`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isExternalLike (value: unknown): boolean {
     return brandedOr(value, EXTERNAL_BRAND, (obj) => (
         hasAllKeys(obj, [ "encoding", "directReference" ])
@@ -140,6 +221,18 @@ export function isExternalLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like an `EMBEDDED PDV`
+ * @description
+ *
+ * Consults the `EmbeddedPDV` `Symbol.for` brand and, for unbranded values,
+ * `identification` and `dataValue`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like an `EMBEDDED PDV`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isEmbeddedPDVLike (value: unknown): boolean {
     return brandedOr(value, EMBEDDED_PDV_BRAND, (obj) => (
         hasAllKeys(obj, [ "identification", "dataValue" ])
@@ -147,6 +240,18 @@ export function isEmbeddedPDVLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `CHARACTER STRING`
+ * @description
+ *
+ * Consults the `CharacterString` `Symbol.for` brand and, for unbranded values,
+ * `identification` and `stringValue`.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `CHARACTER STRING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isCharacterStringLike (value: unknown): boolean {
     return brandedOr(value, CHARACTER_STRING_BRAND, (obj) => (
         hasAllKeys(obj, [ "identification", "stringValue" ])
@@ -154,6 +259,18 @@ export function isCharacterStringLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `YEAR-ENCODING`
+ * @description
+ *
+ * Consults the `YEAR-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `YEAR-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isYEAR_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, YEAR_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "year" ])
@@ -161,6 +278,18 @@ export function isYEAR_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `YEAR-MONTH-ENCODING`
+ * @description
+ *
+ * Consults the `YEAR-MONTH-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `YEAR-MONTH-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isYEAR_MONTH_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, YEAR_MONTH_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "year", "month" ])
@@ -168,6 +297,18 @@ export function isYEAR_MONTH_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `DATE-ENCODING`
+ * @description
+ *
+ * Consults the `DATE-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `DATE-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isDATE_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, DATE_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "year", "month", "day" ])
@@ -175,6 +316,18 @@ export function isDATE_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `HOURS-ENCODING`
+ * @description
+ *
+ * Consults the `HOURS-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `HOURS-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isHOURS_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, HOURS_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours" ])
@@ -182,6 +335,18 @@ export function isHOURS_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `HOURS-DIFF-ENCODING`
+ * @description
+ *
+ * Consults the `HOURS-DIFF-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `HOURS-DIFF-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isHOURS_DIFF_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, HOURS_DIFF_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours", "minutes_diff" ])
@@ -189,6 +354,18 @@ export function isHOURS_DIFF_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `HOURS-MINUTES-ENCODING`
+ * @description
+ *
+ * Consults the `HOURS-MINUTES-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `HOURS-MINUTES-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isHOURS_MINUTES_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, HOURS_MINUTES_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours", "minutes" ])
@@ -196,6 +373,18 @@ export function isHOURS_MINUTES_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `HOURS-MINUTES-DIFF-ENCODING`
+ * @description
+ *
+ * Consults the `HOURS-MINUTES-DIFF-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `HOURS-MINUTES-DIFF-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isHOURS_MINUTES_DIFF_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, HOURS_MINUTES_DIFF_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours", "minutes", "minutes_diff" ])
@@ -203,6 +392,18 @@ export function isHOURS_MINUTES_DIFF_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `TIME-OF-DAY-ENCODING`
+ * @description
+ *
+ * Consults the `TIME-OF-DAY-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isTIME_OF_DAY_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, TIME_OF_DAY_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours", "minutes", "seconds" ])
@@ -210,6 +411,18 @@ export function isTIME_OF_DAY_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `TIME-OF-DAY-DIFF-ENCODING`
+ * @description
+ *
+ * Consults the `TIME-OF-DAY-DIFF-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-DIFF-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isTIME_OF_DAY_DIFF_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, TIME_OF_DAY_DIFF_ENCODING_BRAND, (obj) => (
         hasAllKeys(obj, [ "hours", "minutes", "seconds", "minutes_diff" ])
@@ -217,6 +430,18 @@ export function isTIME_OF_DAY_DIFF_ENCODINGLike (value: unknown): boolean {
     ));
 }
 
+/**
+ * @summary Determine whether a value looks like a `TIME-OF-DAY-FRACTION-ENCODING`
+ * @description
+ *
+ * Consults the `TIME-OF-DAY-FRACTION-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-FRACTION-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isTIME_OF_DAY_FRACTION_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, TIME_OF_DAY_FRACTION_ENCODING_BRAND, (obj) => {
         const fractional = (obj as Record<string, unknown>)["fractional_part"];
@@ -228,6 +453,18 @@ export function isTIME_OF_DAY_FRACTION_ENCODINGLike (value: unknown): boolean {
     });
 }
 
+/**
+ * @summary Determine whether a value looks like a `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
+ * @description
+ *
+ * Consults the `TIME-OF-DAY-FRACTION-DIFF-ENCODING` `Symbol.for` brand and, for unbranded values,
+ * a structural check of the encoding fields.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isTIME_OF_DAY_FRACTION_DIFF_ENCODINGLike (value: unknown): boolean {
     return brandedOr(value, TIME_OF_DAY_FRACTION_DIFF_ENCODING_BRAND, (obj) => {
         const fractional = (obj as Record<string, unknown>)["fractional_part"];
@@ -239,22 +476,36 @@ export function isTIME_OF_DAY_FRACTION_DIFF_ENCODINGLike (value: unknown): boole
     });
 }
 
-function isDurationShape (obj: object): boolean {
-    return hasAllKeys(obj, [ "years", "months", "weeks", "days", "hours", "minutes", "seconds" ]);
-}
-
+/**
+ * @summary Determine whether a value looks like a `DURATION-EQUIVALENT`
+ * @description
+ *
+ * `DURATION-EQUIVALENT` and `DURATION-INTERVAL-ENCODING` share the same
+ * fields, so this check is brand-only. Presence of `toISOString` is not used.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` carries the `DURATION-EQUIVALENT` brand
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isDURATION_EQUIVALENTLike (value: unknown): boolean {
-    return brandedOr(value, DURATION_EQUIVALENT_BRAND, (obj) => (
-        isDurationShape(obj)
-        && typeof (obj as Record<string, unknown>)["toISOString"] === "function"
-    ));
+    return brandedOr(value, DURATION_EQUIVALENT_BRAND, () => false);
 }
 
+/**
+ * @summary Determine whether a value looks like a `DURATION-INTERVAL-ENCODING`
+ * @description
+ *
+ * `DURATION-EQUIVALENT` and `DURATION-INTERVAL-ENCODING` share the same
+ * fields, so this check is brand-only. Presence of `toISOString` is not used.
+ *
+ * @param {unknown} value The value to test
+ * @return {boolean} `true` if `value` carries the `DURATION-INTERVAL-ENCODING` brand
+ * @function
+ * @author Cursor Grok 4.6
+ */
 export function isDURATION_INTERVAL_ENCODINGLike (value: unknown): boolean {
-    return brandedOr(value, DURATION_INTERVAL_ENCODING_BRAND, (obj) => (
-        isDurationShape(obj)
-        && typeof (obj as Record<string, unknown>)["toISOString"] !== "function"
-    ));
+    return brandedOr(value, DURATION_INTERVAL_ENCODING_BRAND, () => false);
 }
 
 export function hasSequenceElements (

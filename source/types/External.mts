@@ -32,11 +32,18 @@ import {
 export default
 class External {
     /**
-     * `true` if `value` is an `EXTERNAL` from this copy or another copy of
-     * the package, or a structural stand-in with `encoding` and
+     * @summary Determine whether a value is an `EXTERNAL`
+     * @description
+     *
+     * Returns `true` if `value` is an `EXTERNAL` from this copy or another copy
+     * of the package, or a structural stand-in with `encoding` and
      * `directReference`.
      *
-     * @param value The value to test
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `EXTERNAL`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is External {
         return isExternalLike(value);

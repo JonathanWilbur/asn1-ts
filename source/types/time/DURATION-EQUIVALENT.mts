@@ -31,11 +31,19 @@ import {
 export default
 class DURATION_EQUIVALENT {
     /**
-     * `true` if `value` is a `DURATION-EQUIVALENT` from this copy or another
-     * copy of the package. Distinguished from {@link DURATION_INTERVAL_ENCODING}
-     * for unbranded values by the presence of `toISOString`.
+     * @summary Determine whether a value is a `DURATION-EQUIVALENT`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `DURATION-EQUIVALENT` from this copy or
+     * another copy of the package. `DURATION-EQUIVALENT` and
+     * `DURATION-INTERVAL-ENCODING` share the same fields, so this check is
+     * brand-only. Older copies without a brand are not recognized.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `DURATION-EQUIVALENT`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is DURATION_EQUIVALENT {
         return isDURATION_EQUIVALENTLike(value);

@@ -33,11 +33,19 @@ import {
 export default
 class DURATION_INTERVAL_ENCODING {
     /**
-     * `true` if `value` is a `DURATION-INTERVAL-ENCODING` from this copy or
-     * another copy of the package. Distinguished from {@link DURATION_EQUIVALENT}
-     * for unbranded values by the absence of `toISOString`.
+     * @summary Determine whether a value is a `DURATION-INTERVAL-ENCODING`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `DURATION-INTERVAL-ENCODING` from this
+     * copy or another copy of the package. `DURATION-EQUIVALENT` and
+     * `DURATION-INTERVAL-ENCODING` share the same fields, so this check is
+     * brand-only. Older copies without a brand are not recognized.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `DURATION-INTERVAL-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is DURATION_INTERVAL_ENCODING {
         return isDURATION_INTERVAL_ENCODINGLike(value);

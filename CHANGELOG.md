@@ -24,6 +24,9 @@
   still recognizes an unbranded BER/CER/DER via `sequenceElements`.
 - Add `isClassOf()` on `External`, `EmbeddedPDV`, `CharacterString`, and every
   X.696 time encoding class in `source/types/time`.
+- `DURATION_EQUIVALENT.isClassOf()` and `DURATION_INTERVAL_ENCODING.isClassOf()`
+  are brand-only. Those types share the same fields, so `toISOString` is not
+  used to tell them apart.
 - Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
   bytes to two characters per octet. Hex conversion uses only the typed-array
   view so it does not dump the backing `ArrayBuffer`.

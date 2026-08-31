@@ -131,12 +131,19 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
 export default
 class CERElement extends X690Element {
     /**
-     * `true` if `value` is a `CERElement` from this copy or another copy of
-     * the package. BER / CER / DER instances are not distinguishable by
-     * structure, so older copies without a brand are not recognized here;
-     * use {@link X690Element.isElement} for that.
+     * @summary Determine whether a value is a `CERElement`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `CERElement` from this copy or another
+     * copy of the package. BER, CER, and DER instances are not distinguishable
+     * by structure, so this check is brand-only. Older copies without a brand
+     * are not recognized here; use {@link X690Element.isElement} for that.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `CERElement`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static override isElement (value: unknown): value is CERElement {
         return isCERElementLike(value);

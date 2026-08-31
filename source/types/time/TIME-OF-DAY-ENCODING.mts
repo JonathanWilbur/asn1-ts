@@ -20,10 +20,18 @@ import {
 export default
 class TIME_OF_DAY_ENCODING {
     /**
-     * `true` if `value` is a `TIME-OF-DAY-ENCODING` from this copy or another
-     * copy of the package.
+     * @summary Determine whether a value is a `TIME-OF-DAY-ENCODING`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `TIME-OF-DAY-ENCODING` from this copy or
+     * another copy of the package. Consults a `Symbol.for` brand and, for
+     * older copies without a brand, a structural check of the encoding fields.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `TIME-OF-DAY-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is TIME_OF_DAY_ENCODING {
         return isTIME_OF_DAY_ENCODINGLike(value);

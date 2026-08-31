@@ -88,12 +88,19 @@ import {
 export default
 class DERElement extends X690Element {
     /**
-     * `true` if `value` is a `DERElement` from this copy or another copy of
-     * the package. BER / CER / DER instances are not distinguishable by
-     * structure, so older copies without a brand are not recognized here;
-     * use {@link X690Element.isElement} for that.
+     * @summary Determine whether a value is a `DERElement`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `DERElement` from this copy or another
+     * copy of the package. BER, CER, and DER instances are not distinguishable
+     * by structure, so this check is brand-only. Older copies without a brand
+     * are not recognized here; use {@link X690Element.isElement} for that.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `DERElement`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static override isElement (value: unknown): value is DERElement {
         return isDERElementLike(value);

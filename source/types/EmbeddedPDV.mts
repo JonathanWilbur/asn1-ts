@@ -98,11 +98,18 @@ import {
 export default
 class EmbeddedPDV {
     /**
-     * `true` if `value` is an `EMBEDDED PDV` from this copy or another copy of
-     * the package, or a structural stand-in with `identification` and
+     * @summary Determine whether a value is an `EMBEDDED PDV`
+     * @description
+     *
+     * Returns `true` if `value` is an `EMBEDDED PDV` from this copy or another
+     * copy of the package, or a structural stand-in with `identification` and
      * `dataValue`.
      *
-     * @param value The value to test
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `EMBEDDED PDV`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is EmbeddedPDV {
         return isEmbeddedPDVLike(value);

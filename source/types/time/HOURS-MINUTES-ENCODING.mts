@@ -19,10 +19,18 @@ import {
 export default
 class HOURS_MINUTES_ENCODING {
     /**
-     * `true` if `value` is an `HOURS-MINUTES-ENCODING` from this copy or
-     * another copy of the package.
+     * @summary Determine whether a value is an `HOURS-MINUTES-ENCODING`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is an `HOURS-MINUTES-ENCODING` from this copy or
+     * another copy of the package. Consults a `Symbol.for` brand and, for
+     * older copies without a brand, a structural check of the encoding fields.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `HOURS-MINUTES-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is HOURS_MINUTES_ENCODING {
         return isHOURS_MINUTES_ENCODINGLike(value);

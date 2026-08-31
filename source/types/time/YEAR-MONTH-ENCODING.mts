@@ -19,10 +19,18 @@ import {
 export default
 class YEAR_MONTH_ENCODING {
     /**
-     * `true` if `value` is a `YEAR-MONTH-ENCODING` from this copy or another
-     * copy of the package.
+     * @summary Determine whether a value is a `YEAR-MONTH-ENCODING`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `YEAR-MONTH-ENCODING` from this copy or
+     * another copy of the package. Consults a `Symbol.for` brand and, for
+     * older copies without a brand, a structural check of the encoding fields.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `YEAR-MONTH-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is YEAR_MONTH_ENCODING {
         return isYEAR_MONTH_ENCODINGLike(value);

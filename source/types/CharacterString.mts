@@ -35,11 +35,18 @@ import {
 export default
 class CharacterString {
     /**
-     * `true` if `value` is a `CHARACTER STRING` from this copy or another copy
-     * of the package, or a structural stand-in with `identification` and
-     * `stringValue`.
+     * @summary Determine whether a value is a `CHARACTER STRING`
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is a `CHARACTER STRING` from this copy or
+     * another copy of the package, or a structural stand-in with
+     * `identification` and `stringValue`.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `CHARACTER STRING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isClassOf (value: unknown): value is CharacterString {
         return isCharacterStringLike(value);

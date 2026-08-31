@@ -40,10 +40,19 @@ import {
 export default
 abstract class X690Element extends ASN1Element {
     /**
-     * `true` if `value` is an X.690 (BER / CER / DER) element from this copy
-     * or another copy of the package.
+     * @summary Determine whether a value is an X.690 element
+     * @description
      *
-     * @param value The value to test
+     * Returns `true` if `value` is an X.690 (BER / CER / DER) element from this
+     * copy or another copy of the package. Consults a `Symbol.for` brand and,
+     * for older copies without a brand, requires an ASN.1 element shape plus
+     * `sequenceElements`.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an X.690 element
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static override isElement (value: unknown): value is X690Element {
         return isX690ElementLike(value);

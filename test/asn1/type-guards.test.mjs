@@ -143,4 +143,25 @@ describe("X.696 time type guards", () => {
         }));
         assert(!( { year: 2020, month: 3, day: 7 } instanceof asn1.DATE_ENCODING));
     });
+
+    it("does not treat an unbranded duration-shaped object as either duration class", () => {
+        const standIn = {
+            years: 1,
+            months: undefined,
+            weeks: undefined,
+            days: undefined,
+            hours: undefined,
+            minutes: undefined,
+            seconds: undefined,
+            toISOString () {
+                return "P1Y";
+            },
+        };
+        assert(!asn1.DURATION_EQUIVALENT.isClassOf(standIn));
+        assert(!asn1.DURATION_INTERVAL_ENCODING.isClassOf(standIn));
+        assert(asn1.DURATION_EQUIVALENT.isClassOf({ [asn1.DURATION_EQUIVALENT_BRAND]: true }));
+        assert(asn1.DURATION_INTERVAL_ENCODING.isClassOf({
+            [asn1.DURATION_INTERVAL_ENCODING_BRAND]: true,
+        }));
+    });
 });

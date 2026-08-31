@@ -224,14 +224,21 @@ function encodeObjectIdentifierFromBigArcs (arcs: bigint[]): Uint8Array {
 export default
 class ObjectIdentifier {
     /**
-     * `true` if `value` is an object identifier from this copy or another copy
-     * of the package, or a structural stand-in with `dotDelimitedNotation` and
-     * `toBytes`.
+     * @summary Determine whether a value is an object identifier
+     * @description
      *
-     * Use this instead of `instanceof ObjectIdentifier` when the value may have
-     * come from a duplicate install of this package.
+     * Returns `true` if `value` is an object identifier from this copy or
+     * another copy of the package, or a structural stand-in with
+     * `dotDelimitedNotation` and `toBytes`.
      *
-     * @param value The value to test
+     * Use this instead of `instanceof ObjectIdentifier` when the value may
+     * have come from a duplicate install of this package.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an object identifier
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isOID (value: unknown): value is ObjectIdentifier {
         return isObjectIdentifierLike(value);
