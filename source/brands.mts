@@ -106,6 +106,7 @@ export const DURATION_INTERVAL_ENCODING_BRAND: symbol = Symbol.for(
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like an ASN.1 element
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isASN1ElementLike (value: unknown): boolean {
@@ -130,6 +131,7 @@ export function isASN1ElementLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like an object identifier
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isObjectIdentifierLike (value: unknown): boolean {
@@ -149,6 +151,7 @@ export function isObjectIdentifierLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like an X.690 element
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isX690ElementLike (value: unknown): boolean {
@@ -166,6 +169,7 @@ export function isX690ElementLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` carries the `BERElement` brand
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isBERElementLike (value: unknown): boolean {
@@ -181,6 +185,7 @@ export function isBERElementLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` carries the `CERElement` brand
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isCERElementLike (value: unknown): boolean {
@@ -196,6 +201,7 @@ export function isCERElementLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` carries the `DERElement` brand
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isDERElementLike (value: unknown): boolean {
@@ -212,6 +218,7 @@ export function isDERElementLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like an `EXTERNAL`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isExternalLike (value: unknown): boolean {
@@ -231,6 +238,7 @@ export function isExternalLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like an `EMBEDDED PDV`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isEmbeddedPDVLike (value: unknown): boolean {
@@ -250,6 +258,7 @@ export function isEmbeddedPDVLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `CHARACTER STRING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isCharacterStringLike (value: unknown): boolean {
@@ -269,6 +278,7 @@ export function isCharacterStringLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `YEAR-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isYEAR_ENCODINGLike (value: unknown): boolean {
@@ -288,6 +298,7 @@ export function isYEAR_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `YEAR-MONTH-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isYEAR_MONTH_ENCODINGLike (value: unknown): boolean {
@@ -307,6 +318,7 @@ export function isYEAR_MONTH_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `DATE-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isDATE_ENCODINGLike (value: unknown): boolean {
@@ -326,6 +338,7 @@ export function isDATE_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `HOURS-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isHOURS_ENCODINGLike (value: unknown): boolean {
@@ -345,6 +358,7 @@ export function isHOURS_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `HOURS-DIFF-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isHOURS_DIFF_ENCODINGLike (value: unknown): boolean {
@@ -364,6 +378,7 @@ export function isHOURS_DIFF_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `HOURS-MINUTES-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isHOURS_MINUTES_ENCODINGLike (value: unknown): boolean {
@@ -383,6 +398,7 @@ export function isHOURS_MINUTES_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `HOURS-MINUTES-DIFF-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isHOURS_MINUTES_DIFF_ENCODINGLike (value: unknown): boolean {
@@ -402,6 +418,7 @@ export function isHOURS_MINUTES_DIFF_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isTIME_OF_DAY_ENCODINGLike (value: unknown): boolean {
@@ -421,6 +438,7 @@ export function isTIME_OF_DAY_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-DIFF-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isTIME_OF_DAY_DIFF_ENCODINGLike (value: unknown): boolean {
@@ -440,6 +458,7 @@ export function isTIME_OF_DAY_DIFF_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-FRACTION-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isTIME_OF_DAY_FRACTION_ENCODINGLike (value: unknown): boolean {
@@ -463,6 +482,7 @@ export function isTIME_OF_DAY_FRACTION_ENCODINGLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` looks like a `TIME-OF-DAY-FRACTION-DIFF-ENCODING`
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isTIME_OF_DAY_FRACTION_DIFF_ENCODINGLike (value: unknown): boolean {
@@ -486,6 +506,7 @@ export function isTIME_OF_DAY_FRACTION_DIFF_ENCODINGLike (value: unknown): boole
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` carries the `DURATION-EQUIVALENT` brand
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isDURATION_EQUIVALENTLike (value: unknown): boolean {
@@ -502,6 +523,7 @@ export function isDURATION_EQUIVALENTLike (value: unknown): boolean {
  * @param {unknown} value The value to test
  * @return {boolean} `true` if `value` carries the `DURATION-INTERVAL-ENCODING` brand
  * @function
+ * @internal
  * @author Cursor Grok 4.6
  */
 export function isDURATION_INTERVAL_ENCODINGLike (value: unknown): boolean {
