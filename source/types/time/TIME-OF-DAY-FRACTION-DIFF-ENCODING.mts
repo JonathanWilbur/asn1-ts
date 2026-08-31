@@ -46,6 +46,21 @@ class TIME_OF_DAY_FRACTION_DIFF_ENCODING {
         return isTIME_OF_DAY_FRACTION_DIFF_ENCODINGLike(value);
     }
 
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link TIME_OF_DAY_FRACTION_DIFF_ENCODING.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = TIME_OF_DAY_FRACTION_DIFF_ENCODING_BRAND;
+
     constructor (
         readonly hours: INTEGER,
         readonly minutes: INTEGER,

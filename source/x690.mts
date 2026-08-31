@@ -59,6 +59,21 @@ abstract class X690Element extends ASN1Element {
     }
 
     /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link X690Element.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = X690_ELEMENT_BRAND;
+
+    /**
      * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
      * JavaScript's bitshift operators treat all integers as though they were
      * 32-bit integers, even though they are stored in the 53 mantissa bits of

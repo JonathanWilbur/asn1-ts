@@ -149,6 +149,21 @@ class CERElement extends X690Element {
         return isCERElementLike(value);
     }
 
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link CERElement.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = CER_ELEMENT_BRAND;
+
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
     get value (): SingleThreadUint8Array {

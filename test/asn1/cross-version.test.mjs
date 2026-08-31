@@ -110,13 +110,13 @@ describe("ASN1Element.isElement and ObjectIdentifier.isOID", () => {
 
     it("recognizes another copy's branded objects via Symbol.for", () => {
         const brandedOid = {
-            [asn1.OBJECT_IDENTIFIER_BRAND]: true,
+            [asn1.ObjectIdentifier.brand]: true,
             toBytes () {
                 return new Uint8Array([ 0x55, 0x04, 0x03 ]);
             },
         };
         const brandedEl = {
-            [asn1.ASN1_ELEMENT_BRAND]: true,
+            [asn1.ASN1Element.brand]: true,
         };
         assert(asn1.ObjectIdentifier.isOID(brandedOid));
         assert(asn1.ASN1Element.isElement(brandedEl));

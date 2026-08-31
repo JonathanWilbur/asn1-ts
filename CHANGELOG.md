@@ -16,8 +16,8 @@
 - Functional `_decodeSequence` / `_decodeSet` (and the `*Of` variants) call
   `sequenceElements` / `setElements` when present instead of using
   `instanceof DERElement` (so zero-copy still works for a foreign element).
-- Export `X690Element` and the `Symbol.for` brand constants used by the type
-  guards.
+- Export `X690Element`. Brand symbols stay `@internal` on each class as
+  `static brand` rather than as package-level exports.
 - Add `isElement()` on `X690Element`, `BERElement`, `CERElement`, and
   `DERElement`. Codec-specific BER/CER/DER checks are brand-only (those
   classes are not distinguishable by structure); `X690Element.isElement()`

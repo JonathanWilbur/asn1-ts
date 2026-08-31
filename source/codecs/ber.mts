@@ -133,6 +133,21 @@ class BERElement extends X690Element {
         return isBERElementLike(value);
     }
 
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link BERElement.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = BER_ELEMENT_BRAND;
+
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);

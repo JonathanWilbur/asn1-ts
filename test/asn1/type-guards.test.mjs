@@ -47,8 +47,8 @@ describe("codec type guards", () => {
     });
 
     it("recognizes branded codec objects from another copy", () => {
-        const brandedBer = { [asn1.BER_ELEMENT_BRAND]: true };
-        const brandedX690 = { [asn1.X690_ELEMENT_BRAND]: true };
+        const brandedBer = { [asn1.BERElement.brand]: true };
+        const brandedX690 = { [asn1.X690Element.brand]: true };
         assert(asn1.BERElement.isElement(brandedBer));
         assert(asn1.X690Element.isElement(brandedX690));
         assert(!(brandedBer instanceof asn1.BERElement));
@@ -159,9 +159,9 @@ describe("X.696 time type guards", () => {
         };
         assert(!asn1.DURATION_EQUIVALENT.isClassOf(standIn));
         assert(!asn1.DURATION_INTERVAL_ENCODING.isClassOf(standIn));
-        assert(asn1.DURATION_EQUIVALENT.isClassOf({ [asn1.DURATION_EQUIVALENT_BRAND]: true }));
+        assert(asn1.DURATION_EQUIVALENT.isClassOf({ [asn1.DURATION_EQUIVALENT.brand]: true }));
         assert(asn1.DURATION_INTERVAL_ENCODING.isClassOf({
-            [asn1.DURATION_INTERVAL_ENCODING_BRAND]: true,
+            [asn1.DURATION_INTERVAL_ENCODING.brand]: true,
         }));
     });
 });

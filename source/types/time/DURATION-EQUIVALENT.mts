@@ -49,6 +49,21 @@ class DURATION_EQUIVALENT {
         return isDURATION_EQUIVALENTLike(value);
     }
 
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link DURATION_EQUIVALENT.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = DURATION_EQUIVALENT_BRAND;
+
     constructor (
         readonly years: OPTIONAL<INTEGER>,
         readonly months: OPTIONAL<INTEGER>,

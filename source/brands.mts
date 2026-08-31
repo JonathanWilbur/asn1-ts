@@ -13,6 +13,7 @@
  * fallback for older copies that do not stamp a brand yet.
  *
  * @module
+ * @internal
  */
 
 function isObject (value: unknown): value is object {
@@ -67,31 +68,53 @@ export function stampBrand (prototype: object, brand: symbol): void {
     });
 }
 
+/** @internal */
 export const ASN1_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.ASN1Element");
+/** @internal */
 export const X690_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.X690Element");
+/** @internal */
 export const BER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.BERElement");
+/** @internal */
 export const CER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.CERElement");
+/** @internal */
 export const DER_ELEMENT_BRAND: symbol = Symbol.for("@wildboar/asn1.DERElement");
+/** @internal */
 export const OBJECT_IDENTIFIER_BRAND: symbol = Symbol.for("@wildboar/asn1.ObjectIdentifier");
+/** @internal */
 export const EXTERNAL_BRAND: symbol = Symbol.for("@wildboar/asn1.External");
+/** @internal */
 export const EMBEDDED_PDV_BRAND: symbol = Symbol.for("@wildboar/asn1.EmbeddedPDV");
+/** @internal */
 export const CHARACTER_STRING_BRAND: symbol = Symbol.for("@wildboar/asn1.CharacterString");
+/** @internal */
 export const DATE_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.DATE_ENCODING");
+/** @internal */
 export const YEAR_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.YEAR_ENCODING");
+/** @internal */
 export const YEAR_MONTH_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.YEAR_MONTH_ENCODING");
+/** @internal */
 export const HOURS_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.HOURS_ENCODING");
+/** @internal */
 export const HOURS_DIFF_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.HOURS_DIFF_ENCODING");
+/** @internal */
 export const HOURS_MINUTES_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.HOURS_MINUTES_ENCODING");
+/** @internal */
 export const HOURS_MINUTES_DIFF_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.HOURS_MINUTES_DIFF_ENCODING");
+/** @internal */
 export const TIME_OF_DAY_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.TIME_OF_DAY_ENCODING");
+/** @internal */
 export const TIME_OF_DAY_DIFF_ENCODING_BRAND: symbol = Symbol.for("@wildboar/asn1.TIME_OF_DAY_DIFF_ENCODING");
+/** @internal */
 export const TIME_OF_DAY_FRACTION_ENCODING_BRAND: symbol = Symbol.for(
     "@wildboar/asn1.TIME_OF_DAY_FRACTION_ENCODING",
 );
+/** @internal */
 export const TIME_OF_DAY_FRACTION_DIFF_ENCODING_BRAND: symbol = Symbol.for(
     "@wildboar/asn1.TIME_OF_DAY_FRACTION_DIFF_ENCODING",
 );
+/** @internal */
 export const DURATION_EQUIVALENT_BRAND: symbol = Symbol.for("@wildboar/asn1.DURATION_EQUIVALENT");
+/** @internal */
 export const DURATION_INTERVAL_ENCODING_BRAND: symbol = Symbol.for(
     "@wildboar/asn1.DURATION_INTERVAL_ENCODING",
 );

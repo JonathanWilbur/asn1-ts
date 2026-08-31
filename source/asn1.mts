@@ -105,6 +105,21 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     }
 
     /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link ASN1Element.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = ASN1_ELEMENT_BRAND;
+
+    /**
      * Used to track recursion depth for ASN.1 indefinite-length
      * determination and for deconstruction of constructed values.
      * 
