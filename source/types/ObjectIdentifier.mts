@@ -6,6 +6,11 @@ import {
 import { Buffer } from "node:buffer";
 import * as errors from "../errors.mjs";
 import type { SingleThreadBuffer } from "../macros.mjs";
+import {
+    OBJECT_IDENTIFIER_BRAND,
+    isObjectIdentifierLike,
+    stampBrand,
+} from "../brands.mjs";
 
 const PERIOD = ".".charCodeAt(0);
 
@@ -219,6 +224,15 @@ function encodeObjectIdentifierFromBigArcs (arcs: bigint[]): Uint8Array {
 export default
 class ObjectIdentifier {
     /**
+     * `true` for object identifiers from this copy or another copy of the
+     * package, and for structural stand-ins with `toBytes` and `isEqualTo`.
+     * See {@link isObjectIdentifierLike}.
+     */
+    static [Symbol.hasInstance] (value: unknown): boolean {
+        return isObjectIdentifierLike(value);
+    }
+
+    /**
      * The BER / CER / DER encoding of the object identifier. This approach was
      * used because:
      *
@@ -430,7 +444,10 @@ class ObjectIdentifier {
         try {
             return this.dotDelimitedNotation;
         } catch (e) {
-            if (e instanceof errors.ASN1OverflowError) {
+            if (
+                e instanceof errors.ASN1OverflowError
+                || (typeof e === "object" && e !== null && (e as Error).name === "ASN1OverflowError")
+            ) {
                 const ret = this.nodesBigAndSmall.join(".");
                 this.dotDelimitedNotationCached = ret;
                 return ret;
@@ -635,3 +652,5 @@ class ObjectIdentifier {
         return ObjectIdentifier.compare(this, other);
     }
 }
+
+stampBrand(ObjectIdentifier.prototype, OBJECT_IDENTIFIER_BRAND);

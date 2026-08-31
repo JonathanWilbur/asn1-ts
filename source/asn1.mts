@@ -44,6 +44,11 @@ import type {
 import packBits from "./utils/packBits.mjs";
 import bytesToHex from "./utils/bytesToHex.mjs";
 import { Buffer } from "node:buffer";
+import {
+    ASN1_ELEMENT_BRAND,
+    isASN1ElementLike,
+    stampBrand,
+} from "./brands.mjs";
 
 /**
  * @module asn1
@@ -77,6 +82,15 @@ import { Buffer } from "node:buffer";
  */
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
+    /**
+     * `true` for elements from this copy or another copy of the package, and
+     * for structural stand-ins that older copies can produce. See
+     * {@link isASN1ElementLike}.
+     */
+    static [Symbol.hasInstance] (value: unknown): boolean {
+        return isASN1ElementLike(value);
+    }
+
     /**
      * Used to track recursion depth for ASN.1 indefinite-length
      * determination and for deconstruction of constructed values.
@@ -748,3 +762,5 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
         }
     }
 }
+
+stampBrand(ASN1Element.prototype, ASN1_ELEMENT_BRAND);

@@ -16,7 +16,6 @@
  * @module
  */
 import {
-    ASN1Element,
     BERElement,
     CERElement,
     DERElement,
@@ -27,6 +26,12 @@ import {
     CharacterString,
     ObjectIdentifier,
 } from "./index.mjs";
+import type { ASN1Element } from "./index.mjs";
+import {
+    hasSequenceElements,
+    hasSetElements,
+    isASN1ElementLike,
+} from "./brands.mjs";
 import type {
     BIT_STRING,
     INTEGER,
@@ -1090,8 +1095,8 @@ export const _decodeRelativeOID: ASN1Decoder<RELATIVE_OID> = (el: ASN1Element): 
  * @internal
  */
 function _sequenceElements (el: ASN1Element, zeroCopy: boolean): SEQUENCE<ASN1Element> {
-    if (el instanceof DERElement || el instanceof BERElement || el instanceof CERElement) {
-        return el.sequenceElements(zeroCopy);
+    if (hasSequenceElements(el)) {
+        return el.sequenceElements(zeroCopy) as SEQUENCE<ASN1Element>;
     }
     return el.sequence;
 }
@@ -1101,8 +1106,8 @@ function _sequenceElements (el: ASN1Element, zeroCopy: boolean): SEQUENCE<ASN1El
  * @internal
  */
 function _setElements (el: ASN1Element, zeroCopy: boolean): SET<ASN1Element> {
-    if (el instanceof DERElement || el instanceof BERElement || el instanceof CERElement) {
-        return el.setElements(zeroCopy);
+    if (hasSetElements(el)) {
+        return el.setElements(zeroCopy) as SET<ASN1Element>;
     }
     return el.set;
 }
@@ -2153,8 +2158,8 @@ export function _encode_choice<T extends object> (
     elGetter: ASN1Encoder<T>,
 ): ASN1Encoder<T> {
     return function (value: T): ASN1Element {
-        if (value instanceof ASN1Element) {
-            return value;
+        if (isASN1ElementLike(value)) {
+            return value as ASN1Element;
         }
         const key: keyof T | undefined = (Object.keys(value) as (keyof T | undefined)[])[0];
         if (!key) {
