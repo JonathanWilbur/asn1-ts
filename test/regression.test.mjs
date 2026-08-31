@@ -308,4 +308,22 @@ describe("Encode-anything function", () => {
         assert.deepEqual(c.value, new Uint8Array([ 0x55, 4, 3 ]));
         assert.deepEqual(d.value, new Uint8Array([ 0x55, 4, 3 ]));
     });
+
+    it("encodes a foreign OID that only has toBytes and isEqualTo", () => {
+        const oid = {
+            toBytes () {
+                return new Uint8Array([ 0x55, 4, 3 ]);
+            },
+            isEqualTo () {
+                return false;
+            },
+        };
+        const d = new asn1.DERElement(
+            asn1.ASN1TagClass.universal,
+            asn1.ASN1Construction.primitive,
+            asn1.ASN1UniversalType.objectIdentifier,
+            oid,
+        );
+        assert.deepEqual(d.value, new Uint8Array([ 0x55, 4, 3 ]));
+    });
 });

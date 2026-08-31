@@ -10,7 +10,6 @@ import X690Element from "../x690.mjs";
 import CharacterString from "../types/CharacterString.mjs";
 import convertBytesToText from "../utils/convertBytesToText.mjs";
 import convertTextToBytes from "../utils/convertTextToBytes.mjs";
-import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
 import encodeBoolean from "./x690/encoders/encodeBoolean.mjs";
 import decodeBoolean from "./ber/decoders/decodeBoolean.mjs";
 import encodeBitString from "./x690/encoders/encodeBitString.mjs";
@@ -72,6 +71,12 @@ import type {
 } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
+import {
+    BER_ELEMENT_BRAND,
+    encodeValueIsObjectIdentifier,
+    isASN1ElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * Combine primitive BIT STRING encodings into one primitive encoding.
@@ -109,6 +114,14 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
  */
 export default
 class BERElement extends X690Element {
+    /**
+     * Overrides {@link ASN1Element}'s duck-typed {@link Symbol.hasInstance} so
+     * that a CER or DER element is not reported as a `BERElement`.
+     */
+    static override [Symbol.hasInstance] (value: unknown): boolean {
+        return typeof value === "object" && value !== null && BER_ELEMENT_BRAND in value;
+    }
+
     public static lengthEncodingPreference: LengthEncodingPreference = LengthEncodingPreference.definite;
 
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
@@ -480,13 +493,13 @@ class BERElement extends X690Element {
             } else if (value instanceof Uint8ClampedArray) {
                 this.tagNumber = ASN1UniversalType.bitString;
                 this.bitString = value;
-            } else if (value instanceof ASN1Element) {
+            } else if (isASN1ElementLike(value)) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as BERElement ];
             } else if (value instanceof Set) {
                 this.construction = ASN1Construction.constructed;
                 this.set = Array.from(value).map((v: any) => {
-                    if (typeof v === "object" && v instanceof ASN1Element) {
+                    if (typeof v === "object" && isASN1ElementLike(v)) {
                         return v;
                     } else {
                         const e = new BERElement();
@@ -494,14 +507,7 @@ class BERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if (
-                (value instanceof ObjectIdentifier)
-                /* In some cases, there may be two versions of this module used
-                in an application. We cannot trust that they will refer to the
-                same object identifier, so we do duck-typing here. All we
-                technically need for this to work is toBytes(). */
-                || ((typeof value["fromParts"] === "function") && (typeof value["toBytes"] === "function"))
-            ) {
+            } else if (encodeValueIsObjectIdentifier(value)) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {
@@ -931,3 +937,5 @@ class BERElement extends X690Element {
         return encodedElements;
     }
 }
+
+stampBrand(BERElement.prototype, BER_ELEMENT_BRAND);

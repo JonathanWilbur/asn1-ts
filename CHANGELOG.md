@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Make `instanceof ASN1Element` and `instanceof ObjectIdentifier` work across
+  duplicate installs of this package by stamping `Symbol.for` brands and
+  implementing `Symbol.hasInstance`. Codec classes override `hasInstance` so
+  `el instanceof DERElement` stays false for BER/CER elements.
+- `encode()`, `encodeExternal`, and `_encode_choice` now recognize elements and
+  OIDs from another copy (or older copies that have no brand) by structure:
+  elements via `tagClass` / `tagNumber` / `construction` / `toBytes`, OIDs via
+  `toBytes` / `isEqualTo`. The previous OID duck-type checked instance
+  `fromParts`, which is static and never matched a real foreign OID.
+- Functional `_decodeSequence` / `_decodeSet` (and the `*Of` variants) call
+  `sequenceElements` / `setElements` when present instead of using
+  `instanceof DERElement` (so zero-copy still works for a foreign element).
+- Export `ASN1_ELEMENT_BRAND`, `BER_ELEMENT_BRAND`, `CER_ELEMENT_BRAND`,
+  `DER_ELEMENT_BRAND`, `OBJECT_IDENTIFIER_BRAND`, `isASN1ElementLike`, and
+  `isObjectIdentifierLike`.
 - Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
   bytes to two characters per octet. Hex conversion uses only the typed-array
   view so it does not dump the backing `ArrayBuffer`.
