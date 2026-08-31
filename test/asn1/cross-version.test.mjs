@@ -5,16 +5,14 @@ import { strict as assert } from "node:assert";
 
 /**
  * A stand-in for an `ObjectIdentifier` produced by another copy of this
- * package: the real instance API (`toBytes`, `isEqualTo`) and no `fromParts`
- * (that method is static).
+ * package: the real instance API (`dotDelimitedNotation`, `toBytes`) and no
+ * `fromParts` (that method is static).
  */
-function foreignOid (bytes) {
+function foreignOid (bytes, dotted = "2.5.4.3") {
     return {
+        dotDelimitedNotation: dotted,
         toBytes () {
             return bytes;
-        },
-        isEqualTo () {
-            return false;
         },
     };
 }
@@ -41,22 +39,21 @@ function foreignElement ({ tagClass, tagNumber, construction, bytes }) {
     };
 }
 
-describe("Symbol.hasInstance across package copies", () => {
-    it("treats same-copy elements and OIDs as instances of their classes", () => {
+describe("ASN1Element.isElement and ObjectIdentifier.isOID", () => {
+    it("recognizes same-copy elements and OIDs", () => {
         const der = new asn1.DERElement();
         const ber = new asn1.BERElement();
         const cer = new asn1.CERElement();
         const oid = asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]);
+        assert(asn1.ASN1Element.isElement(der));
+        assert(asn1.ASN1Element.isElement(ber));
+        assert(asn1.ASN1Element.isElement(cer));
+        assert(asn1.ObjectIdentifier.isOID(oid));
         assert(der instanceof asn1.ASN1Element);
-        assert(ber instanceof asn1.ASN1Element);
-        assert(cer instanceof asn1.ASN1Element);
-        assert(der instanceof asn1.DERElement);
-        assert(ber instanceof asn1.BERElement);
-        assert(cer instanceof asn1.CERElement);
         assert(oid instanceof asn1.ObjectIdentifier);
     });
 
-    it("does not report a BER or CER element as a DERElement", () => {
+    it("does not change instanceof across codec classes", () => {
         const ber = new asn1.BERElement();
         const cer = new asn1.CERElement();
         const der = new asn1.DERElement();
@@ -68,14 +65,26 @@ describe("Symbol.hasInstance across package copies", () => {
         assert(!(cer instanceof asn1.BERElement));
     });
 
-    it("recognizes a foreign OID that only has toBytes and isEqualTo", () => {
+    it("recognizes a foreign OID by dotDelimitedNotation and toBytes", () => {
         const oid = foreignOid(new Uint8Array([ 0x55, 0x04, 0x03 ]));
-        assert(oid instanceof asn1.ObjectIdentifier);
-        assert(asn1.isObjectIdentifierLike(oid));
-        assert(!(oid instanceof asn1.ASN1Element));
+        assert(asn1.ObjectIdentifier.isOID(oid));
+        assert(!asn1.ASN1Element.isElement(oid));
+        assert(!(oid instanceof asn1.ObjectIdentifier));
     });
 
-    it("does not treat the legacy { fromParts, toBytes } bag as an OID instance", () => {
+    it("does not treat toBytes plus isEqualTo alone as an OID", () => {
+        const oid = {
+            toBytes () {
+                return new Uint8Array([ 0x55, 0x04, 0x03 ]);
+            },
+            isEqualTo () {
+                return false;
+            },
+        };
+        assert(!asn1.ObjectIdentifier.isOID(oid));
+    });
+
+    it("does not treat the legacy { fromParts, toBytes } bag as an OID", () => {
         const oid = {
             fromParts () {},
             toBytes () {
@@ -83,7 +92,7 @@ describe("Symbol.hasInstance across package copies", () => {
             },
         };
         assert(!(oid instanceof asn1.ObjectIdentifier));
-        assert(!asn1.isObjectIdentifierLike(oid));
+        assert(!asn1.ObjectIdentifier.isOID(oid));
     });
 
     it("recognizes a foreign element by tag fields and toBytes", () => {
@@ -93,10 +102,10 @@ describe("Symbol.hasInstance across package copies", () => {
             construction: asn1.ASN1Construction.primitive,
             bytes: new Uint8Array([ 0x02, 0x01, 0x05 ]),
         });
-        assert(el instanceof asn1.ASN1Element);
-        assert(asn1.isASN1ElementLike(el));
+        assert(asn1.ASN1Element.isElement(el));
+        assert(!(el instanceof asn1.ASN1Element));
         assert(!(el instanceof asn1.DERElement));
-        assert(!(el instanceof asn1.ObjectIdentifier));
+        assert(!asn1.ObjectIdentifier.isOID(el));
     });
 
     it("recognizes another copy's branded objects via Symbol.for", () => {
@@ -108,31 +117,20 @@ describe("Symbol.hasInstance across package copies", () => {
         };
         const brandedEl = {
             [asn1.ASN1_ELEMENT_BRAND]: true,
-            tagClass: 0,
-            tagNumber: 2,
-            construction: 0,
-            toBytes () {
-                return new Uint8Array([ 0x02, 0x01, 0x05 ]);
-            },
         };
-        const brandedDer = {
-            [asn1.ASN1_ELEMENT_BRAND]: true,
-            [asn1.DER_ELEMENT_BRAND]: true,
-        };
-        assert(brandedOid instanceof asn1.ObjectIdentifier);
-        assert(brandedEl instanceof asn1.ASN1Element);
-        assert(brandedDer instanceof asn1.DERElement);
-        assert(brandedDer instanceof asn1.ASN1Element);
-        assert(!(brandedEl instanceof asn1.DERElement));
+        assert(asn1.ObjectIdentifier.isOID(brandedOid));
+        assert(asn1.ASN1Element.isElement(brandedEl));
+        assert(!(brandedOid instanceof asn1.ObjectIdentifier));
+        assert(!(brandedEl instanceof asn1.ASN1Element));
     });
 
     it("does not match unrelated objects", () => {
-        assert(!({} instanceof asn1.ASN1Element));
-        assert(!({} instanceof asn1.ObjectIdentifier));
-        assert(!(new Date() instanceof asn1.ASN1Element));
-        assert(!(new Uint8Array(0) instanceof asn1.ASN1Element));
-        assert(!asn1.isASN1ElementLike(null));
-        assert(!asn1.isObjectIdentifierLike(undefined));
+        assert(!asn1.ASN1Element.isElement({}));
+        assert(!asn1.ObjectIdentifier.isOID({}));
+        assert(!asn1.ASN1Element.isElement(new Date()));
+        assert(!asn1.ASN1Element.isElement(new Uint8Array(0)));
+        assert(!asn1.ASN1Element.isElement(null));
+        assert(!asn1.ObjectIdentifier.isOID(undefined));
     });
 });
 
@@ -171,7 +169,7 @@ describe("encode() with values from another copy", () => {
                     construction: asn1.ASN1Construction.primitive,
                     bytes: new Uint8Array([ 0x02, 0x01, 0x05 ]),
                 });
-                inner.isEqualTo = () => false;
+                inner.dotDelimitedNotation = "2.5.4.3";
                 const el = new CodecElement();
                 el.encode(inner);
                 assert.notEqual(el.tagNumber, asn1.ASN1UniversalType.objectIdentifier);
@@ -204,6 +202,20 @@ describe("encodeExternal with a foreign element", () => {
         assert.equal(decoded.encoding.tagClass, asn1.ASN1TagClass.universal);
         assert.equal(decoded.encoding.tagNumber, asn1.ASN1UniversalType.integer);
         assert.equal(decoded.encoding.integer, 5);
+    });
+
+    it("still encodes a BIT STRING as the arbitrary alternative", () => {
+        const ext = new asn1.External(
+            asn1.ObjectIdentifier.fromParts([ 2, 5, 4, 3 ]),
+            undefined,
+            undefined,
+            new Uint8ClampedArray([ 1, 0, 1 ]),
+        );
+        const el = new asn1.DERElement();
+        el.external = ext;
+        const hex = Buffer.from(el.toBytes()).toString("hex").toUpperCase();
+        assert.match(hex, /82/);
+        assert.doesNotMatch(hex, /A0/);
     });
 });
 

@@ -71,12 +71,7 @@ import type {
 } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
-import {
-    DER_ELEMENT_BRAND,
-    encodeValueIsObjectIdentifier,
-    isASN1ElementLike,
-    stampBrand,
-} from "../brands.mjs";
+import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
 
 /**
  * @classdesc
@@ -87,14 +82,6 @@ import {
  */
 export default
 class DERElement extends X690Element {
-    /**
-     * Overrides {@link ASN1Element}'s duck-typed {@link Symbol.hasInstance} so
-     * that a BER or CER element is not reported as a `DERElement`.
-     */
-    static override [Symbol.hasInstance] (value: unknown): boolean {
-        return typeof value === "object" && value !== null && DER_ELEMENT_BRAND in value;
-    }
-
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
 
@@ -503,13 +490,13 @@ class DERElement extends X690Element {
             } else if (value instanceof Uint8ClampedArray) {
                 this.tagNumber = ASN1UniversalType.bitString;
                 this.bitString = value;
-            } else if (isASN1ElementLike(value)) {
+            } else if (ASN1Element.isElement(value)) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as DERElement ];
             } else if (value instanceof Set) {
                 this.construction = ASN1Construction.constructed;
                 this.set = Array.from(value).map((v: any) => {
-                    if (typeof v === "object" && isASN1ElementLike(v)) {
+                    if (typeof v === "object" && ASN1Element.isElement(v)) {
                         return v;
                     } else {
                         const e = new DERElement();
@@ -517,7 +504,13 @@ class DERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if (encodeValueIsObjectIdentifier(value)) {
+            } else if (
+                ObjectIdentifier.isOID(value)
+                || (
+                    (typeof value["fromParts"] === "function")
+                    && (typeof value["toBytes"] === "function")
+                )
+            ) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {
@@ -878,5 +871,3 @@ class DERElement extends X690Element {
         )
     }
 }
-
-stampBrand(DERElement.prototype, DER_ELEMENT_BRAND);

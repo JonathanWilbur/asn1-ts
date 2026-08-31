@@ -72,12 +72,7 @@ import type {
 } from "../macros.mjs";
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
-import {
-    CER_ELEMENT_BRAND,
-    encodeValueIsObjectIdentifier,
-    isASN1ElementLike,
-    stampBrand,
-} from "../brands.mjs";
+import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
 
 const CER_STRING_FRAGMENT_SIZE: number = 1000;
 
@@ -130,14 +125,6 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
  */
 export default
 class CERElement extends X690Element {
-    /**
-     * Overrides {@link ASN1Element}'s duck-typed {@link Symbol.hasInstance} so
-     * that a BER or DER element is not reported as a `CERElement`.
-     */
-    static override [Symbol.hasInstance] (value: unknown): boolean {
-        return typeof value === "object" && value !== null && CER_ELEMENT_BRAND in value;
-    }
-
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
     get value (): SingleThreadUint8Array {
@@ -549,13 +536,13 @@ class CERElement extends X690Element {
             } else if (value instanceof Uint8ClampedArray) {
                 this.tagNumber = ASN1UniversalType.bitString;
                 this.bitString = value;
-            } else if (isASN1ElementLike(value)) {
+            } else if (ASN1Element.isElement(value)) {
                 this.construction = ASN1Construction.constructed;
                 this.sequence = [ value as CERElement ];
             } else if (value instanceof Set) {
                 this.construction = ASN1Construction.constructed;
                 this.set = Array.from(value).map((v: any) => {
-                    if (typeof v === "object" && isASN1ElementLike(v)) {
+                    if (typeof v === "object" && ASN1Element.isElement(v)) {
                         return v;
                     } else {
                         const e = new CERElement();
@@ -563,7 +550,13 @@ class CERElement extends X690Element {
                         return e;
                     }
                 });
-            } else if (encodeValueIsObjectIdentifier(value)) {
+            } else if (
+                ObjectIdentifier.isOID(value)
+                || (
+                    (typeof value["fromParts"] === "function")
+                    && (typeof value["toBytes"] === "function")
+                )
+            ) {
                 this.tagNumber = ASN1UniversalType.objectIdentifier;
                 this.objectIdentifier = value;
             } else if (Array.isArray(value)) {
@@ -989,5 +982,3 @@ class CERElement extends X690Element {
         )
     }
 }
-
-stampBrand(CERElement.prototype, CER_ELEMENT_BRAND);

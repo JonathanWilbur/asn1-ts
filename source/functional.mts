@@ -16,6 +16,7 @@
  * @module
  */
 import {
+    ASN1Element,
     BERElement,
     CERElement,
     DERElement,
@@ -26,11 +27,9 @@ import {
     CharacterString,
     ObjectIdentifier,
 } from "./index.mjs";
-import type { ASN1Element } from "./index.mjs";
 import {
     hasSequenceElements,
     hasSetElements,
-    isASN1ElementLike,
 } from "./brands.mjs";
 import type {
     BIT_STRING,
@@ -2158,8 +2157,8 @@ export function _encode_choice<T extends object> (
     elGetter: ASN1Encoder<T>,
 ): ASN1Encoder<T> {
     return function (value: T): ASN1Element {
-        if (isASN1ElementLike(value)) {
-            return value as ASN1Element;
+        if (ASN1Element.isElement(value)) {
+            return value;
         }
         const key: keyof T | undefined = (Object.keys(value) as (keyof T | undefined)[])[0];
         if (!key) {
