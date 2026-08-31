@@ -213,9 +213,9 @@ describe("encodeExternal with a foreign element", () => {
         );
         const el = new asn1.DERElement();
         el.external = ext;
-        const hex = Buffer.from(el.toBytes()).toString("hex").toUpperCase();
-        assert.match(hex, /82/);
-        assert.doesNotMatch(hex, /A0/);
+        const decoded = el.external;
+        assert(decoded.encoding instanceof Uint8ClampedArray);
+        assert.deepEqual(Array.from(decoded.encoding), [ 1, 0, 1 ]);
     });
 });
 
