@@ -343,6 +343,10 @@ The vast majority of code in this package was written by a human, but AI re-wrot
 some functions to improve performance, and added unit tests and benchmarks. A
 small amount of Cursor's tab completion AI contributed to this codebase.
 
+The code that is written by AI is not blindly trusted. I review it with as much
+scrutiny as I would apply to a human's code. You can see for yourself in this
+repository's PR history.
+
 ## See Also
 
 - [Libraries that use `asn1-ts`](https://github.com/Wildboar-Software/asn1-typescript-libraries)
