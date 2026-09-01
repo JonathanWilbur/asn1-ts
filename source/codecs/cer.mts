@@ -73,6 +73,11 @@ import type {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
+import {
+    CER_ELEMENT_BRAND,
+    isCERElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 const CER_STRING_FRAGMENT_SIZE: number = 1000;
 
@@ -125,6 +130,40 @@ function concatenateBitStringFragments (fragments: Uint8Array[], el: ASN1Element
  */
 export default
 class CERElement extends X690Element {
+    /**
+     * @summary Determine whether a value is a `CERElement`
+     * @description
+     *
+     * Returns `true` if `value` is a `CERElement` from this copy or another
+     * copy of the package. BER, CER, and DER instances are not distinguishable
+     * by structure, so this check is brand-only. Older copies without a brand
+     * are not recognized here; use {@link X690Element.isElement} for that.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `CERElement`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static override isElement (value: unknown): value is CERElement {
+        return isCERElementLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link CERElement.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = CER_ELEMENT_BRAND;
+
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
     get value (): SingleThreadUint8Array {
@@ -982,3 +1021,5 @@ class CERElement extends X690Element {
         )
     }
 }
+
+stampBrand(CERElement.prototype, CER_ELEMENT_BRAND);

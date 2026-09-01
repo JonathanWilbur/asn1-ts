@@ -16,7 +16,17 @@
 - Functional `_decodeSequence` / `_decodeSet` (and the `*Of` variants) call
   `sequenceElements` / `setElements` when present instead of using
   `instanceof DERElement` (so zero-copy still works for a foreign element).
-- Export `ASN1_ELEMENT_BRAND` and `OBJECT_IDENTIFIER_BRAND`.
+- Export `X690Element`. Brand symbols stay `@internal` on each class as
+  `static brand` rather than as package-level exports.
+- Add `isElement()` on `X690Element`, `BERElement`, `CERElement`, and
+  `DERElement`. Codec-specific BER/CER/DER checks are brand-only (those
+  classes are not distinguishable by structure); `X690Element.isElement()`
+  still recognizes an unbranded BER/CER/DER via `sequenceElements`.
+- Add `isClassOf()` on `External`, `EmbeddedPDV`, `CharacterString`, and every
+  X.696 time encoding class in `source/types/time`.
+- `DURATION_EQUIVALENT.isClassOf()` and `DURATION_INTERVAL_ENCODING.isClassOf()`
+  are brand-only. Those types share the same fields, so `toISOString` is not
+  used to tell them apart.
 - Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
   bytes to two characters per octet. Hex conversion uses only the typed-array
   view so it does not dump the backing `ArrayBuffer`.

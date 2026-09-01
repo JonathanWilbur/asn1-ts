@@ -83,17 +83,41 @@ import {
 export default
 abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     /**
-     * `true` if `value` is an ASN.1 element from this copy or another copy of
-     * the package, or a structural stand-in that older copies can produce.
+     * @summary Determine whether a value is an ASN.1 element
+     * @description
+     *
+     * Returns `true` if `value` is an ASN.1 element from this copy or another
+     * copy of the package, or a structural stand-in that older copies can
+     * produce. Consults a `Symbol.for` brand and, for older copies without a
+     * brand, `tagClass`, `tagNumber`, `construction`, and `toBytes`.
      *
      * Use this instead of `instanceof ASN1Element` when the value may have
      * come from a duplicate install of this package.
      *
-     * @param value The value to test
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an ASN.1 element
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
      */
     static isElement (value: unknown): value is ASN1Element {
         return isASN1ElementLike(value);
     }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link ASN1Element.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = ASN1_ELEMENT_BRAND;
 
     /**
      * Used to track recursion depth for ASN.1 indefinite-length

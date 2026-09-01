@@ -5,6 +5,11 @@ import type {
 import * as errors from "../../errors.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import durationToISOString from "../../utils/durationToISOString.mjs";
+import {
+    DURATION_EQUIVALENT_BRAND,
+    isDURATION_EQUIVALENTLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Note that this is equivalent to `DURATION-INTERVAL-ENCODING` defined in
@@ -25,6 +30,40 @@ import durationToISOString from "../../utils/durationToISOString.mjs";
  */
 export default
 class DURATION_EQUIVALENT {
+    /**
+     * @summary Determine whether a value is a `DURATION-EQUIVALENT`
+     * @description
+     *
+     * Returns `true` if `value` is a `DURATION-EQUIVALENT` from this copy or
+     * another copy of the package. `DURATION-EQUIVALENT` and
+     * `DURATION-INTERVAL-ENCODING` share the same fields, so this check is
+     * brand-only. Older copies without a brand are not recognized.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `DURATION-EQUIVALENT`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static isClassOf (value: unknown): value is DURATION_EQUIVALENT {
+        return isDURATION_EQUIVALENTLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link DURATION_EQUIVALENT.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = DURATION_EQUIVALENT_BRAND;
+
     constructor (
         readonly years: OPTIONAL<INTEGER>,
         readonly months: OPTIONAL<INTEGER>,
@@ -121,3 +160,5 @@ class DURATION_EQUIVALENT {
         };
     }
 }
+
+stampBrand(DURATION_EQUIVALENT.prototype, DURATION_EQUIVALENT_BRAND);

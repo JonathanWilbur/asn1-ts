@@ -72,6 +72,11 @@ import type {
 import { isUniquelyTagged } from "../utils/index.mjs";
 import { Buffer } from "node:buffer";
 import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
+import {
+    DER_ELEMENT_BRAND,
+    isDERElementLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * @classdesc
@@ -82,6 +87,40 @@ import ObjectIdentifier from "../types/ObjectIdentifier.mjs";
  */
 export default
 class DERElement extends X690Element {
+    /**
+     * @summary Determine whether a value is a `DERElement`
+     * @description
+     *
+     * Returns `true` if `value` is a `DERElement` from this copy or another
+     * copy of the package. BER, CER, and DER instances are not distinguishable
+     * by structure, so this check is brand-only. Older copies without a brand
+     * are not recognized here; use {@link X690Element.isElement} for that.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `DERElement`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static override isElement (value: unknown): value is DERElement {
+        return isDERElementLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link DERElement.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = DER_ELEMENT_BRAND;
+
     private _value: SingleThreadUint8Array | ASN1Element[] = new Uint8Array(0);
     private _currentValueLength: number | undefined;
 
@@ -871,3 +910,5 @@ class DERElement extends X690Element {
         )
     }
 }
+
+stampBrand(DERElement.prototype, DER_ELEMENT_BRAND);

@@ -30,13 +30,10 @@
  */
 
 export { default as ASN1Element } from "./asn1.mjs";
+export { default as X690Element } from "./x690.mjs";
 export { default as BERElement } from "./codecs/ber.mjs";
 export { default as CERElement } from "./codecs/cer.mjs";
 export { default as DERElement } from "./codecs/der.mjs";
-export {
-    ASN1_ELEMENT_BRAND,
-    OBJECT_IDENTIFIER_BRAND,
-} from "./brands.mjs";
 export { default as sortCanonically } from "./utils/sortCanonically.mjs";
 export { default as compareSetOfElementsCanonically } from "./utils/compareSetOfElementsCanonically.mjs";
 export * from "./classes/index.mjs";

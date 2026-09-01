@@ -31,9 +31,48 @@ import type {
     OID_IRI,
     RELATIVE_OID_IRI,
 } from "./macros.mjs";
+import {
+    X690_ELEMENT_BRAND,
+    isX690ElementLike,
+    stampBrand,
+} from "./brands.mjs";
 
 export default
 abstract class X690Element extends ASN1Element {
+    /**
+     * @summary Determine whether a value is an X.690 element
+     * @description
+     *
+     * Returns `true` if `value` is an X.690 (BER / CER / DER) element from this
+     * copy or another copy of the package. Consults a `Symbol.for` brand and,
+     * for older copies without a brand, requires an ASN.1 element shape plus
+     * `sequenceElements`.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an X.690 element
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static override isElement (value: unknown): value is X690Element {
+        return isX690ElementLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link X690Element.isElement} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static override readonly brand: symbol = X690_ELEMENT_BRAND;
+
     /**
      * This only accepts integers between MIN_SINT_32 and MAX_SINT_32 because
      * JavaScript's bitshift operators treat all integers as though they were
@@ -132,3 +171,5 @@ abstract class X690Element extends ASN1Element {
         return decodeRelativeOIDIRI(this.value);
     }
 }
+
+stampBrand(X690Element.prototype, X690_ELEMENT_BRAND);
