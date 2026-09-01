@@ -2,6 +2,11 @@ import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import timeOfDayToISOString from "../../utils/timeOfDayToISOString.mjs";
 import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
+import {
+    TIME_OF_DAY_ENCODING_BRAND,
+    isTIME_OF_DAY_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -14,6 +19,39 @@ import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
  */
 export default
 class TIME_OF_DAY_ENCODING {
+    /**
+     * @summary Determine whether a value is a `TIME-OF-DAY-ENCODING`
+     * @description
+     *
+     * Returns `true` if `value` is a `TIME-OF-DAY-ENCODING` from this copy or
+     * another copy of the package. Consults a `Symbol.for` brand and, for
+     * older copies without a brand, a structural check of the encoding fields.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is a `TIME-OF-DAY-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static isClassOf (value: unknown): value is TIME_OF_DAY_ENCODING {
+        return isTIME_OF_DAY_ENCODINGLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link TIME_OF_DAY_ENCODING.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = TIME_OF_DAY_ENCODING_BRAND;
+
     constructor (
         readonly hours: INTEGER,
         readonly minutes: INTEGER,
@@ -76,3 +114,5 @@ class TIME_OF_DAY_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(TIME_OF_DAY_ENCODING.prototype, TIME_OF_DAY_ENCODING_BRAND);

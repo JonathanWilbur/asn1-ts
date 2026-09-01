@@ -9,6 +9,11 @@ import type ASN1Element from "../asn1.mjs";
 import packBits from "../utils/packBits.mjs";
 import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1ValueNotation.mjs";
+import {
+    EXTERNAL_BRAND,
+    isExternalLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * How `EXTERNAL` is to be encoded, per X.690:
@@ -26,6 +31,39 @@ import { formatBitStringValue, formatOctetStringValue } from "../utils/asn1Value
  */
 export default
 class External {
+    /**
+     * @summary Determine whether a value is an `EXTERNAL`
+     * @description
+     *
+     * Returns `true` if `value` is an `EXTERNAL` from this copy or another copy
+     * of the package, or a structural stand-in with `encoding` and
+     * `directReference`.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `EXTERNAL`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static isClassOf (value: unknown): value is External {
+        return isExternalLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link External.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = EXTERNAL_BRAND;
+
     constructor (
         readonly directReference: OBJECT_IDENTIFIER | undefined,
         readonly indirectReference: INTEGER | undefined,
@@ -97,3 +135,5 @@ class External {
         };
     }
 }
+
+stampBrand(External.prototype, EXTERNAL_BRAND);

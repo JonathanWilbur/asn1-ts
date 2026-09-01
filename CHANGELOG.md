@@ -2,13 +2,11 @@
 
 ## [11.3.0]
 
-TL;DR: This fixes invalid hex encoding of some types and introduces type
-guard functions that are better than `instanceof`.
-
-- Type guard functions, such as `ASN1Element.isElement()` and
-  `ObjectIdentifier.isOID()`. These are much better than using `instanceof`,
-  because they will work even if class objects from differing versions of
-  this package are commingled.
+- Add `ASN1Element.isElement()` and `ObjectIdentifier.isOID()` type guards so
+  values from a duplicate install of this package can be recognized without
+  changing `instanceof`. Guards consult a `Symbol.for` brand and, for older
+  copies with no brand, structure: elements via `tagClass` / `tagNumber` /
+  `construction` / `toBytes`, OIDs via `dotDelimitedNotation` and `toBytes`.
 - `encode()` and `_encode_choice` use these guards. The previous OID duck-type
   checked instance `fromParts`, which is static and never matched a real
   foreign OID.
@@ -18,6 +16,17 @@ guard functions that are better than `instanceof`.
 - Functional `_decodeSequence` / `_decodeSet` (and the `*Of` variants) call
   `sequenceElements` / `setElements` when present instead of using
   `instanceof DERElement` (so zero-copy still works for a foreign element).
+- Export `X690Element`. Brand symbols stay `@internal` on each class as
+  `static brand` rather than as package-level exports.
+- Add `isElement()` on `X690Element`, `BERElement`, `CERElement`, and
+  `DERElement`. Codec-specific BER/CER/DER checks are brand-only (those
+  classes are not distinguishable by structure); `X690Element.isElement()`
+  still recognizes an unbranded BER/CER/DER via `sequenceElements`.
+- Add `isClassOf()` on `External`, `EmbeddedPDV`, `CharacterString`, and every
+  X.696 time encoding class in `source/types/time`.
+- `DURATION_EQUIVALENT.isClassOf()` and `DURATION_INTERVAL_ENCODING.isClassOf()`
+  are brand-only. Those types share the same fields, so `toISOString` is not
+  used to tell them apart.
 - Pad hexadecimal `toJSON()` encodings of `OCTET STRING` and packed `BIT STRING`
   bytes to two characters per octet. Hex conversion uses only the typed-array
   view so it does not dump the backing `ArrayBuffer`.

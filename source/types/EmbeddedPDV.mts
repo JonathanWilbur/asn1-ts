@@ -1,6 +1,11 @@
 import type ASN1Element from "../asn1.mjs";
 import bytesToHex from "../utils/bytesToHex.mjs";
 import { formatOctetStringValue, identificationToJSON, stringifyIdentification } from "../utils/asn1ValueNotation.mjs";
+import {
+    EMBEDDED_PDV_BRAND,
+    isEmbeddedPDVLike,
+    stampBrand,
+} from "../brands.mjs";
 
 /**
  * An `EmbeddedPDV` is a constructed data type, defined in
@@ -92,6 +97,39 @@ import { formatOctetStringValue, identificationToJSON, stringifyIdentification }
 */
 export default
 class EmbeddedPDV {
+    /**
+     * @summary Determine whether a value is an `EMBEDDED PDV`
+     * @description
+     *
+     * Returns `true` if `value` is an `EMBEDDED PDV` from this copy or another
+     * copy of the package, or a structural stand-in with `identification` and
+     * `dataValue`.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `EMBEDDED PDV`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static isClassOf (value: unknown): value is EmbeddedPDV {
+        return isEmbeddedPDVLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link EmbeddedPDV.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = EMBEDDED_PDV_BRAND;
+
     constructor (
         readonly identification: ASN1Element,
         readonly dataValue: Uint8Array,
@@ -136,3 +174,5 @@ class EmbeddedPDV {
         };
     }
 }
+
+stampBrand(EmbeddedPDV.prototype, EMBEDDED_PDV_BRAND);

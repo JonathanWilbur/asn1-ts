@@ -2,6 +2,11 @@ import type { INTEGER } from "../../macros.mjs";
 import datetimeComponentValidator from "../../validators/datetimeComponentValidator.mjs";
 import hoursToISOString from "../../utils/hoursToISOString.mjs";
 import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
+import {
+    HOURS_ENCODING_BRAND,
+    isHOURS_ENCODINGLike,
+    stampBrand,
+} from "../../brands.mjs";
 
 /**
  * Defined in ITU Recommendation X.696:2015, Section 29:
@@ -12,6 +17,39 @@ import { matchISO, parseISOTwoDigit } from "../../utils/parseISOTime.mjs";
  */
 export default
 class HOURS_ENCODING {
+    /**
+     * @summary Determine whether a value is an `HOURS-ENCODING`
+     * @description
+     *
+     * Returns `true` if `value` is an `HOURS-ENCODING` from this copy or
+     * another copy of the package. Consults a `Symbol.for` brand and, for
+     * older copies without a brand, a structural check of the encoding fields.
+     *
+     * @param {unknown} value The value to test
+     * @return {boolean} `true` if `value` is an `HOURS-ENCODING`
+     * @static
+     * @function
+     * @author Cursor Grok 4.6
+     */
+    static isClassOf (value: unknown): value is HOURS_ENCODING {
+        return isHOURS_ENCODINGLike(value);
+    }
+
+    /**
+     * @summary `Symbol.for` brand for this class
+     * @description
+     *
+     * Interned in the realm-wide symbol registry so another copy of this
+     * package observes the same symbol. Prefer {@link HOURS_ENCODING.isClassOf} over
+     * using this directly.
+     *
+     * @return {symbol} The interned brand
+     * @static
+     * @internal
+     * @author Cursor Grok 4.6
+     */
+    static readonly brand: symbol = HOURS_ENCODING_BRAND;
+
     constructor (
         readonly hours: INTEGER,
     ) {
@@ -66,3 +104,5 @@ class HOURS_ENCODING {
         return this.toISOString();
     }
 }
+
+stampBrand(HOURS_ENCODING.prototype, HOURS_ENCODING_BRAND);
