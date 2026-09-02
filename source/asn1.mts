@@ -43,6 +43,9 @@ import type {
 } from "./macros.mjs";
 import packBits from "./utils/packBits.mjs";
 import bytesToHex from "./utils/bytesToHex.mjs";
+import compareContentOctets from "./utils/compareEncoded/compareContentOctets.mjs";
+import compareDirectoryStringChars from "./utils/compareEncoded/compareDirectoryStringChars.mjs";
+import compareNumericStringDigits from "./utils/compareEncoded/compareNumericStringDigits.mjs";
 import { Buffer } from "node:buffer";
 import {
     ASN1_ELEMENT_BRAND,
@@ -509,6 +512,64 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
     }
 
     abstract deconstruct (dataType: string, fragmentTagNumber?: number): Uint8Array;
+
+    /**
+     * @summary Test whether this element's content octets match another value.
+     * @description
+     * Content octets are compared byte-for-byte, even when BER/CER partitions
+     * them into different constructed substrings. Encoding boundaries are
+     * ignored; only the logical content-octet sequence matters. Returns
+     * `true` when {@link compareContentOctets} reports full equality (`-1`).
+     *
+     * @param {ASN1Element | Uint8Array} other - The value to compare against.
+     * @param {boolean} [asciiCaseFold=false] - When true, fold ASCII case before comparing.
+     * @returns {boolean} `true` if the content octets match.
+     * @author Cursor Composer
+     */
+    public octetMatches (
+        other: ASN1Element | Uint8Array,
+        asciiCaseFold: boolean = false,
+    ): boolean {
+        return compareContentOctets(this, other, { asciiCaseFold })[0] === -1;
+    }
+
+    /**
+     * @summary Test whether this element matches another under directory-string rules.
+     * @description
+     * Content octets are compared under X.520 directory-string rules even when
+     * BER/CER partitions them into different constructed substrings. Encoding
+     * boundaries are ignored; only the logical character sequence matters.
+     * Implements a zero-allocation subset of X.520 matching for single-byte
+     * strings such as `PrintableString` and `IA5String`. Returns `true` when
+     * {@link compareDirectoryStringChars} reports full equality (`-1`).
+     *
+     * @param {ASN1Element | Uint8Array} other - The value to compare against.
+     * @param {boolean} [asciiCaseFold=true] - When true, fold ASCII case before comparing.
+     * @returns {boolean} `true` if the directory strings match.
+     * @author Cursor Composer
+     */
+    public stringMatches (
+        other: ASN1Element | Uint8Array,
+        asciiCaseFold: boolean = true,
+    ): boolean {
+        return compareDirectoryStringChars(this, other, { asciiCaseFold })[0] === -1;
+    }
+
+    /**
+     * @summary Test whether this element matches another as a `NumericString`.
+     * @description
+     * Digits are compared even when BER/CER partitions the content octets into
+     * different constructed substrings. Encoding boundaries are ignored; SPACE
+     * bytes are skipped and only ASCII digits are compared. Returns `true` when
+     * {@link compareNumericStringDigits} reports full equality (`-1`).
+     *
+     * @param {ASN1Element | Uint8Array} other - The value to compare against.
+     * @returns {boolean} `true` if the numeric strings match.
+     * @author Cursor Composer
+     */
+    public numericStringMatches (other: ASN1Element | Uint8Array): boolean {
+        return compareNumericStringDigits(this, other)[0] === -1;
+    }
 
     /**
      * Validate the tag of this element against permitted classes, construction, and tag numbers.

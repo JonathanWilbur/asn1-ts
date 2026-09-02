@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.4.0]
+
+- Add zero-allocation utilities for comparing encoded string and OCTET STRING
+  content without `deconstruct()` / `Buffer.concat`: `ContentOctetChunkCursor`,
+  `ContentOctetByteCursor`, `compareContentOctets`, `compareDirectoryStringChars`,
+  `compareNumericStringDigits`, and `ASN1Element` methods `octetMatches`,
+  `stringMatches`, and `numericStringMatches`.
+- Constructed BER/CER fragment encodings are compared in place; primitive DER
+  operands use a direct fast path.
+- Comparison functions return a tuple `[index, ordering]` for prefix checks and
+  `Array.sort()` ordering. `Uint8Array` operands are supported for prefix
+  matching against flat reference bytes.
+
 ## [11.3.0]
 
 - Add `ASN1Element.isElement()` and `ObjectIdentifier.isOID()` type guards so
