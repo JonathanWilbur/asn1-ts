@@ -2,6 +2,13 @@ import type ASN1Element from "../../asn1.mjs";
 import ContentOctetByteCursor from "./ContentOctetByteCursor.mjs";
 import { orderingSign } from "./internal.mjs";
 import type { EncodedCompareResult } from "./types.mjs";
+import {
+    A_EQUALS_B,
+    A_GREATER_THAN_B,
+    A_INVALID,
+    A_LESS_THAN_B,
+    B_INVALID,
+} from "./types.mjs";
 
 const INVALID_DIGIT: unique symbol = Symbol("invalid digit");
 
@@ -39,17 +46,22 @@ function compareNumericStreams (
     while (true) {
         const aDigit: DigitPullResult = pullDigit(a);
         const bDigit: DigitPullResult = pullDigit(b);
-        if (aDigit === INVALID_DIGIT || bDigit === INVALID_DIGIT) {
-            return [ -2, 0 ];
+        if (aDigit === INVALID_DIGIT) {
+            // matched = digits read before the invalid byte on a.
+            return [ matched, A_INVALID ];
+        }
+        if (bDigit === INVALID_DIGIT) {
+            // matched = digits read before the invalid byte on b.
+            return [ matched, B_INVALID ];
         }
         if (aDigit === undefined && bDigit === undefined) {
-            return [ -1, 0 ];
+            return [ matched, A_EQUALS_B ];
         }
         if (aDigit === undefined) {
-            return [ matched, -1 ];
+            return [ matched, A_LESS_THAN_B ];
         }
         if (bDigit === undefined) {
-            return [ matched, 1 ];
+            return [ matched, A_GREATER_THAN_B ];
         }
         if (aDigit !== bDigit) {
             return [ matched, orderingSign(aDigit, bDigit) ];
@@ -61,15 +73,20 @@ function compareNumericStreams (
 /**
  * @summary Compare two ASN.1 elements as `NumericString` values.
  * @description
- * SPACE bytes (`0x20`) are ignored. Only ASCII digits are compared. Returns
- * `[-2, 0]` when either operand contains a byte that is not a digit or space.
+ * SPACE bytes (`0x20`) are ignored. Only ASCII digits are compared.
  *
- * The first tuple element counts matched digits (not raw byte indices), which
- * supports prefix matching on digit sequences.
+ * Returns `[matched, result]` where `matched` is the number of digits in common
+ * (not raw byte indices). `result` is {@link A_EQUALS_B} if equal,
+ * {@link A_LESS_THAN_B} / {@link A_GREATER_THAN_B} for `Array.prototype.sort`,
+ * {@link A_INVALID} if the first operand contains a byte that is not a digit
+ * or space, or {@link B_INVALID} if the second operand does. On
+ * {@link A_INVALID} / {@link B_INVALID}, `matched` is the number of digits read
+ * before the invalid byte. If both are invalid at the same step,
+ * {@link A_INVALID} is returned.
  *
  * @param {ASN1Element} a - The first operand.
  * @param {ASN1Element} b - The second operand.
- * @returns {EncodedCompareResult} Matched digit count and ordering sign.
+ * @returns {EncodedCompareResult} Matched digit count and result code.
  * @function
  * @author Cursor Composer
  */
@@ -90,7 +107,7 @@ export function compareNumericStringDigitsToElement (
  *
  * @param {ASN1Element} a - The ASN.1 operand.
  * @param {Uint8Array} bytes - The reference bytes.
- * @returns {EncodedCompareResult} Matched digit count and ordering sign.
+ * @returns {EncodedCompareResult} Matched digit count and result code.
  * @function
  * @author Cursor Composer
  */
@@ -108,10 +125,11 @@ export function compareNumericStringDigitsToBytes (
  * @summary Compare numeric-string content of an element to another element or bytes.
  * @description
  * Dispatches once on the type of `b` so the hot comparison loop is monomorphic.
+ * See {@link EncodedCompareResult} for `matched` / `result` semantics.
  *
  * @param {ASN1Element} a - The first operand.
  * @param {ASN1Element | Uint8Array} b - The second operand.
- * @returns {EncodedCompareResult} Matched digit count and ordering sign.
+ * @returns {EncodedCompareResult} Matched digit count and result code.
  * @function
  * @author Cursor Composer
  */

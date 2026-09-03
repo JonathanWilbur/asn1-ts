@@ -48,3 +48,14 @@ export * from "./types/index.mjs";
 export * from "./validators/index.mjs";
 export * from "./values.mjs";
 export * from "./utils/index.mjs";
+export {
+    A_EQUALS_B,
+    A_GREATER_THAN_B,
+    A_INVALID,
+    A_LESS_THAN_B,
+    B_INVALID,
+    type ContentOctetCompareOptions,
+    type DirectoryStringCompareOptions,
+    type EncodedCompareResult,
+    type EncodedCompareResultCode,
+} from "./utils/compareEncoded/index.mjs";

@@ -2,6 +2,11 @@ import type ASN1Element from "../../asn1.mjs";
 import * as errors from "../../errors.mjs";
 import { ASN1TagClass, ASN1UniversalType } from "../../values.mjs";
 import { hasSequenceElements } from "../../brands.mjs";
+import {
+    A_EQUALS_B,
+    A_GREATER_THAN_B,
+    A_LESS_THAN_B,
+} from "./types.mjs";
 
 /** Matches {@link ASN1Element.nestingRecursionLimit}. */
 export const NESTING_RECURSION_LIMIT: number = 5;
@@ -58,14 +63,14 @@ export function foldAsciiByte (byte: number): number {
  * @summary Compare two numbers for sort ordering.
  * @internal
  */
-export function orderingSign (a: number, b: number): -1 | 0 | 1 {
+export function orderingSign (a: number, b: number): typeof A_LESS_THAN_B | typeof A_EQUALS_B | typeof A_GREATER_THAN_B {
     if (a < b) {
-        return -1;
+        return A_LESS_THAN_B;
     }
     if (a > b) {
-        return 1;
+        return A_GREATER_THAN_B;
     }
-    return 0;
+    return A_EQUALS_B;
 }
 
 /**

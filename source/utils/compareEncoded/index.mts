@@ -9,6 +9,14 @@ export type {
     ContentOctetCompareOptions,
     DirectoryStringCompareOptions,
     EncodedCompareResult,
+    EncodedCompareResultCode,
+} from "./types.mjs";
+export {
+    A_EQUALS_B,
+    A_GREATER_THAN_B,
+    A_INVALID,
+    A_LESS_THAN_B,
+    B_INVALID,
 } from "./types.mjs";
 export { default as ContentOctetChunkCursor } from "./ContentOctetChunkCursor.mjs";
 export { default as ContentOctetByteCursor } from "./ContentOctetByteCursor.mjs";

@@ -6,6 +6,11 @@ import {
     orderingSign,
 } from "./internal.mjs";
 import type { DirectoryStringCompareOptions, EncodedCompareResult } from "./types.mjs";
+import {
+    A_EQUALS_B,
+    A_GREATER_THAN_B,
+    A_LESS_THAN_B,
+} from "./types.mjs";
 
 /**
  * Mutable pull-state for normalizing one side of a directory-string comparison.
@@ -101,13 +106,13 @@ function compareDirectoryStreams (
         const aChar: number | undefined = pullDirectoryChar(a, aState, asciiCaseFold);
         const bChar: number | undefined = pullDirectoryChar(b, bState, asciiCaseFold);
         if (aChar === undefined && bChar === undefined) {
-            return [ -1, 0 ];
+            return [ matched, A_EQUALS_B ];
         }
         if (aChar === undefined) {
-            return [ matched, -1 ];
+            return [ matched, A_LESS_THAN_B ];
         }
         if (bChar === undefined) {
-            return [ matched, 1 ];
+            return [ matched, A_GREATER_THAN_B ];
         }
         if (aChar !== bChar) {
             return [ matched, orderingSign(aChar, bChar) ];
@@ -126,10 +131,14 @@ function compareDirectoryStreams (
  * to a single SPACE. TAB, LF, VT, FF, and CR map to SPACE. Other control
  * characters are ignored. Multi-byte UTF-8 characters are not supported.
  *
+ * Returns `[matched, result]` where `matched` counts normalized logical
+ * characters (not raw bytes) and `result` is {@link A_EQUALS_B} if equal, or
+ * {@link A_LESS_THAN_B} / {@link A_GREATER_THAN_B} for `Array.prototype.sort`.
+ *
  * @param {ASN1Element} a - The first operand.
  * @param {ASN1Element} b - The second operand.
  * @param {DirectoryStringCompareOptions} [options] - Comparison options.
- * @returns {EncodedCompareResult} Matched logical character count and ordering sign.
+ * @returns {EncodedCompareResult} Matched logical character count and result code.
  * @function
  * @author Cursor Composer
  */
@@ -154,7 +163,7 @@ export function compareDirectoryStringCharsToElement (
  * @param {ASN1Element} a - The ASN.1 operand.
  * @param {Uint8Array} bytes - The reference bytes.
  * @param {DirectoryStringCompareOptions} [options] - Comparison options.
- * @returns {EncodedCompareResult} Matched logical character count and ordering sign.
+ * @returns {EncodedCompareResult} Matched logical character count and result code.
  * @function
  * @author Cursor Composer
  */
@@ -179,7 +188,7 @@ export function compareDirectoryStringCharsToBytes (
  * @param {ASN1Element} a - The first operand.
  * @param {ASN1Element | Uint8Array} b - The second operand.
  * @param {DirectoryStringCompareOptions} [options] - Comparison options.
- * @returns {EncodedCompareResult} Matched logical character count and ordering sign.
+ * @returns {EncodedCompareResult} Matched logical character count and result code.
  * @function
  * @author Cursor Composer
  */
