@@ -1,52 +1,8 @@
-import type ASN1Element from "../../asn1.mjs";
-import * as errors from "../../errors.mjs";
-import { ASN1TagClass, ASN1UniversalType } from "../../values.mjs";
-import { hasSequenceElements } from "../../brands.mjs";
 import {
     A_EQUALS_B,
     A_GREATER_THAN_B,
     A_LESS_THAN_B,
 } from "./types.mjs";
-
-/** Matches {@link ASN1Element.nestingRecursionLimit}. */
-export const NESTING_RECURSION_LIMIT: number = 5;
-
-/**
- * @summary Obtain constructed child elements without joining content octets.
- * @internal
- */
-export function getConstructedChildren (el: ASN1Element): readonly ASN1Element[] {
-    if (hasSequenceElements(el)) {
-        return el.sequenceElements(false) as readonly ASN1Element[];
-    }
-    return el.sequence;
-}
-
-/**
- * @summary Validate a constructed string or OCTET STRING fragment.
- * @internal
- */
-export function validateFragment (
-    fragment: ASN1Element,
-    fragmentTagNumber: number,
-    dataType: string,
-    context: ASN1Element,
-): void {
-    if (fragment.tagClass !== ASN1TagClass.universal) {
-        throw new errors.ASN1ConstructionError(
-            `Invalid tag class in constructed ${dataType}. Must be UNIVERSAL`,
-            context,
-        );
-    }
-    if (fragment.tagNumber !== fragmentTagNumber) {
-        throw new errors.ASN1ConstructionError(
-            fragmentTagNumber === ASN1UniversalType.bitString
-                ? `Invalid tag number in constructed ${dataType}. Must be 3 (BIT STRING).`
-                : `Invalid tag number in constructed ${dataType}. Must be 4 (OCTET STRING).`,
-            context,
-        );
-    }
-}
 
 /**
  * @summary Fold an ASCII uppercase letter to lowercase.
