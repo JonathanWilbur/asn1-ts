@@ -2,7 +2,6 @@ import type ASN1Element from "../../asn1.mjs";
 import ContentOctetByteCursor from "./ContentOctetByteCursor.mjs";
 import {
     foldAsciiByte,
-    mapDirectoryStringByte,
     orderingSign,
 } from "./internal.mjs";
 import type { DirectoryStringCompareOptions, EncodedCompareResult } from "./types.mjs";
@@ -11,6 +10,24 @@ import {
     A_GREATER_THAN_B,
     A_LESS_THAN_B,
 } from "./types.mjs";
+
+/**
+ * @summary Map a single-byte directory string code point per X.520 (ASCII subset).
+ * @description
+ * Returns `null` when the byte is ignored, `0x20` for whitespace, or the byte
+ * itself for other printable characters. Multi-byte UTF-8 is not supported.
+ * @internal
+ */
+function mapDirectoryStringByte (byte: number): number | null {
+    // CHARACTER TABULATION, LINE FEED, LINE TABULATION, FORM FEED, CARRIAGE RETURN
+    if (byte === 0x09 || byte === 0x0A || byte === 0x0B || byte === 0x0C || byte === 0x0D) {
+        return 0x20;
+    }
+    if (byte < 0x20 || byte === 0x7F) {
+        return null;
+    }
+    return byte;
+}
 
 /**
  * Mutable pull-state for normalizing one side of a directory-string comparison.
