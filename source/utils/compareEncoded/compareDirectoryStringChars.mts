@@ -1,8 +1,9 @@
 import type ASN1Element from "../../asn1.mjs";
-import ContentOctetByteCursor from "./ContentOctetByteCursor.mjs";
+import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
 import {
     foldAsciiByte,
     orderingSign,
+    takeNext,
 } from "./internal.mjs";
 import type { DirectoryStringCompareOptions, EncodedCompareResult } from "./types.mjs";
 import {
@@ -71,7 +72,7 @@ function createDirectoryPullState (): DirectoryPullState {
  * @internal
  */
 function pullDirectoryChar (
-    cursor: ContentOctetByteCursor,
+    bytes: Iterator<number>,
     state: DirectoryPullState,
     asciiCaseFold: boolean,
 ): number | undefined {
@@ -81,7 +82,7 @@ function pullDirectoryChar (
         return deferred;
     }
     while (true) {
-        const raw: number | undefined = cursor.nextByte();
+        const raw: number | undefined = takeNext(bytes);
         if (raw === undefined) {
             return undefined;
         }
@@ -108,12 +109,12 @@ function pullDirectoryChar (
 }
 
 /**
- * @summary Compare two directory-string byte cursors.
+ * @summary Compare two directory-string byte iterators.
  * @internal
  */
 function compareDirectoryStreams (
-    a: ContentOctetByteCursor,
-    b: ContentOctetByteCursor,
+    a: Iterator<number>,
+    b: Iterator<number>,
     asciiCaseFold: boolean,
 ): EncodedCompareResult {
     const aState: DirectoryPullState = createDirectoryPullState();
@@ -166,8 +167,8 @@ export function compareDirectoryStringCharsToElement (
 ): EncodedCompareResult {
     const asciiCaseFold: boolean = options.asciiCaseFold ?? true;
     return compareDirectoryStreams(
-        new ContentOctetByteCursor(a, undefined, "PrintableString"),
-        new ContentOctetByteCursor(b, undefined, "PrintableString"),
+        iterateContentOctetBytes(a, undefined, "PrintableString"),
+        iterateContentOctetBytes(b, undefined, "PrintableString"),
         asciiCaseFold,
     );
 }
@@ -191,8 +192,8 @@ export function compareDirectoryStringCharsToBytes (
 ): EncodedCompareResult {
     const asciiCaseFold: boolean = options.asciiCaseFold ?? true;
     return compareDirectoryStreams(
-        new ContentOctetByteCursor(a, undefined, "PrintableString"),
-        new ContentOctetByteCursor(bytes),
+        iterateContentOctetBytes(a, undefined, "PrintableString"),
+        iterateContentOctetBytes(bytes),
         asciiCaseFold,
     );
 }

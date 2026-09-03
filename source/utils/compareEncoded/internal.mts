@@ -16,6 +16,18 @@ export function foldAsciiByte (byte: number): number {
 }
 
 /**
+ * @summary Read the next iterator value, or `undefined` when exhausted.
+ * @internal
+ */
+export function takeNext<T> (iterator: Iterator<T>): T | undefined {
+    const step: IteratorResult<T> = iterator.next();
+    if (step.done) {
+        return undefined;
+    }
+    return step.value;
+}
+
+/**
  * @summary Compare two numbers for sort ordering.
  * @internal
  */

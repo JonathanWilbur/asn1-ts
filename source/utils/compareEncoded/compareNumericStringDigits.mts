@@ -1,6 +1,6 @@
 import type ASN1Element from "../../asn1.mjs";
-import ContentOctetByteCursor from "./ContentOctetByteCursor.mjs";
-import { orderingSign } from "./internal.mjs";
+import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
+import { orderingSign, takeNext } from "./internal.mjs";
 import type { EncodedCompareResult } from "./types.mjs";
 import {
     A_EQUALS_B,
@@ -18,9 +18,9 @@ type DigitPullResult = number | typeof INVALID_DIGIT | undefined;
  * @summary Pull the next ASCII digit, skipping spaces.
  * @internal
  */
-function pullDigit (cursor: ContentOctetByteCursor): DigitPullResult {
+function pullDigit (bytes: Iterator<number>): DigitPullResult {
     while (true) {
-        const byte: number | undefined = cursor.nextByte();
+        const byte: number | undefined = takeNext(bytes);
         if (byte === undefined) {
             return undefined;
         }
@@ -35,12 +35,12 @@ function pullDigit (cursor: ContentOctetByteCursor): DigitPullResult {
 }
 
 /**
- * @summary Compare two numeric-string byte cursors.
+ * @summary Compare two numeric-string byte iterators.
  * @internal
  */
 function compareNumericStreams (
-    a: ContentOctetByteCursor,
-    b: ContentOctetByteCursor,
+    a: Iterator<number>,
+    b: Iterator<number>,
 ): EncodedCompareResult {
     let matched: number = 0;
     while (true) {
@@ -95,8 +95,8 @@ export function compareNumericStringDigitsToElement (
     b: ASN1Element,
 ): EncodedCompareResult {
     return compareNumericStreams(
-        new ContentOctetByteCursor(a, undefined, "NumericString"),
-        new ContentOctetByteCursor(b, undefined, "NumericString"),
+        iterateContentOctetBytes(a, undefined, "NumericString"),
+        iterateContentOctetBytes(b, undefined, "NumericString"),
     );
 }
 
@@ -116,8 +116,8 @@ export function compareNumericStringDigitsToBytes (
     bytes: Uint8Array,
 ): EncodedCompareResult {
     return compareNumericStreams(
-        new ContentOctetByteCursor(a, undefined, "NumericString"),
-        new ContentOctetByteCursor(bytes),
+        iterateContentOctetBytes(a, undefined, "NumericString"),
+        iterateContentOctetBytes(bytes),
     );
 }
 

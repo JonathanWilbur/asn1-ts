@@ -1,9 +1,9 @@
 import type ASN1Element from "../../asn1.mjs";
 import { ASN1Construction } from "../../values.mjs";
 import { Buffer } from "node:buffer";
-import ContentOctetChunkCursor from "./ContentOctetChunkCursor.mjs";
-import ContentOctetByteCursor from "./ContentOctetByteCursor.mjs";
-import { foldAsciiByte, orderingSign } from "./internal.mjs";
+import iterateContentOctetChunks from "./ContentOctetChunkCursor.mjs";
+import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
+import { foldAsciiByte, orderingSign, takeNext } from "./internal.mjs";
 import type { ContentOctetCompareOptions, EncodedCompareResult } from "./types.mjs";
 import {
     A_EQUALS_B,
@@ -16,8 +16,8 @@ import {
  * @internal
  */
 function compareChunkStreams (
-    a: ContentOctetChunkCursor,
-    b: ContentOctetChunkCursor,
+    a: Iterator<Uint8Array>,
+    b: Iterator<Uint8Array>,
 ): EncodedCompareResult {
     let aChunk: Uint8Array | undefined;
     let bChunk: Uint8Array | undefined;
@@ -26,11 +26,11 @@ function compareChunkStreams (
     let matched: number = 0;
 
     const advanceA = (): void => {
-        aChunk = a.nextChunk();
+        aChunk = takeNext(a);
         aOff = 0;
     };
     const advanceB = (): void => {
-        bChunk = b.nextChunk();
+        bChunk = takeNext(b);
         bOff = 0;
     };
 
@@ -93,13 +93,13 @@ function compareChunkStreams (
  * @internal
  */
 function compareCaseFoldedOctetStreams (
-    a: ContentOctetByteCursor,
-    b: ContentOctetByteCursor,
+    a: Iterator<number>,
+    b: Iterator<number>,
 ): EncodedCompareResult {
     let matched: number = 0;
     while (true) {
-        const aByte: number | undefined = a.nextByte();
-        const bByte: number | undefined = b.nextByte();
+        const aByte: number | undefined = takeNext(a);
+        const bByte: number | undefined = takeNext(b);
         if (aByte === undefined && bByte === undefined) {
             return [ matched, A_EQUALS_B ];
         }
@@ -205,13 +205,13 @@ export function compareContentOctetsToElement (
     }
     if (asciiCaseFold) {
         return compareCaseFoldedOctetStreams(
-            new ContentOctetByteCursor(a),
-            new ContentOctetByteCursor(b),
+            iterateContentOctetBytes(a),
+            iterateContentOctetBytes(b),
         );
     }
     return compareChunkStreams(
-        new ContentOctetChunkCursor(a),
-        new ContentOctetChunkCursor(b),
+        iterateContentOctetChunks(a),
+        iterateContentOctetChunks(b),
     );
 }
 
@@ -239,13 +239,13 @@ export function compareContentOctetsToBytes (
     }
     if (asciiCaseFold) {
         return compareCaseFoldedOctetStreams(
-            new ContentOctetByteCursor(a),
-            new ContentOctetByteCursor(bytes),
+            iterateContentOctetBytes(a),
+            iterateContentOctetBytes(bytes),
         );
     }
     return compareChunkStreams(
-        new ContentOctetChunkCursor(a),
-        new ContentOctetChunkCursor(bytes),
+        iterateContentOctetChunks(a),
+        iterateContentOctetChunks(bytes),
     );
 }
 

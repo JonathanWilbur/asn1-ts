@@ -18,8 +18,8 @@ export {
     A_LESS_THAN_B,
     B_INVALID,
 } from "./types.mjs";
-export { default as ContentOctetChunkCursor } from "./ContentOctetChunkCursor.mjs";
-export { default as ContentOctetByteCursor } from "./ContentOctetByteCursor.mjs";
+export { default as iterateContentOctetChunks } from "./ContentOctetChunkCursor.mjs";
+export { default as iterateContentOctetBytes } from "./ContentOctetByteCursor.mjs";
 export {
     default as compareContentOctets,
     compareContentOctetsToElement,

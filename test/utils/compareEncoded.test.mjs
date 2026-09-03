@@ -1,7 +1,7 @@
 import * as asn1 from "../../dist/index.mjs";
 import {
-    ContentOctetChunkCursor,
-    ContentOctetByteCursor,
+    iterateContentOctetChunks,
+    iterateContentOctetBytes,
     compareContentOctets,
     compareContentOctetsToBytes,
     compareDirectoryStringChars,
@@ -36,15 +36,10 @@ function constructedFromBytes (tagNumber, tlvBytes) {
     return el;
 }
 
-describe("ContentOctetChunkCursor", () => {
+describe("iterateContentOctetChunks", () => {
     it("yields one chunk for a primitive element", () => {
         const el = primitiveOctetString(new Uint8Array([ 0x41, 0x42, 0x43 ]));
-        const cursor = new ContentOctetChunkCursor(el);
-        const chunks = [];
-        let chunk;
-        while ((chunk = cursor.nextChunk()) !== undefined) {
-            chunks.push(chunk);
-        }
+        const chunks = [ ...iterateContentOctetChunks(el) ];
         assert.equal(chunks.length, 1);
         assert.deepEqual(chunks[0], new Uint8Array([ 0x41, 0x42, 0x43 ]));
     });
@@ -56,12 +51,7 @@ describe("ContentOctetChunkCursor", () => {
             0x04, 0x02, 0x07, 0x08,
         ]);
         const el = constructedFromBytes(0x24, data);
-        const cursor = new ContentOctetChunkCursor(el);
-        const chunks = [];
-        let chunk;
-        while ((chunk = cursor.nextChunk()) !== undefined) {
-            chunks.push([ ...chunk ]);
-        }
+        const chunks = [ ...iterateContentOctetChunks(el) ].map((chunk) => [ ...chunk ]);
         assert.deepEqual(chunks, [
             [ 0x01, 0x02, 0x03, 0x04 ],
             [ 0x05, 0x06 ],
@@ -78,12 +68,7 @@ describe("ContentOctetChunkCursor", () => {
             0x04, 0x02, 0x08, 0x09,
         ]);
         const el = constructedFromBytes(0x24, data);
-        const bytes = [];
-        const cursor = new ContentOctetByteCursor(el);
-        let b;
-        while ((b = cursor.nextByte()) !== undefined) {
-            bytes.push(b);
-        }
+        const bytes = [ ...iterateContentOctetBytes(el) ];
         assert.deepEqual(bytes, [
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
         ]);
@@ -94,8 +79,7 @@ describe("ContentOctetChunkCursor", () => {
             0x02, 0x01, 0x2A,
         ]);
         const el = constructedFromBytes(0x24, data);
-        const cursor = new ContentOctetChunkCursor(el);
-        assert.throws(() => cursor.nextChunk(), asn1.ASN1ConstructionError);
+        assert.throws(() => iterateContentOctetChunks(el).next(), asn1.ASN1ConstructionError);
     });
 });
 
