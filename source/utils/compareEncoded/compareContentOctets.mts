@@ -3,13 +3,25 @@ import { ASN1Construction } from "../../values.mjs";
 import { Buffer } from "node:buffer";
 import iterateContentOctetChunks from "./ContentOctetChunkCursor.mjs";
 import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
-import { foldAsciiByte, orderingSign, takeNext } from "./internal.mjs";
+import { foldAsciiByte, orderingSign } from "./internal.mjs";
 import type { ContentOctetCompareOptions, EncodedCompareResult } from "./types.mjs";
 import {
     A_EQUALS_B,
     A_GREATER_THAN_B,
     A_LESS_THAN_B,
 } from "./types.mjs";
+
+/**
+ * @summary Read the next iterator value, or `undefined` when exhausted.
+ * @internal
+ */
+function takeNext<T> (iterator: Iterator<T>): T | undefined {
+    const step: IteratorResult<T> = iterator.next();
+    if (step.done) {
+        return undefined;
+    }
+    return step.value;
+}
 
 /**
  * @summary Compare two content-octet chunk streams without joining fragments.

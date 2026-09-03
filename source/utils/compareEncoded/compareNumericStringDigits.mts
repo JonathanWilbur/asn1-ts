@@ -1,6 +1,6 @@
 import type ASN1Element from "../../asn1.mjs";
 import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
-import { orderingSign, takeNext } from "./internal.mjs";
+import { orderingSign } from "./internal.mjs";
 import type { EncodedCompareResult } from "./types.mjs";
 import {
     A_EQUALS_B,
@@ -18,12 +18,8 @@ type DigitPullResult = number | typeof INVALID_DIGIT | undefined;
  * @summary Pull the next ASCII digit, skipping spaces.
  * @internal
  */
-function pullDigit (bytes: Iterator<number>): DigitPullResult {
-    while (true) {
-        const byte: number | undefined = takeNext(bytes);
-        if (byte === undefined) {
-            return undefined;
-        }
+function pullDigit (bytes: Iterable<number>): DigitPullResult {
+    for (const byte of bytes) {
         if (byte === 0x20) {
             continue;
         }
@@ -32,6 +28,7 @@ function pullDigit (bytes: Iterator<number>): DigitPullResult {
         }
         return INVALID_DIGIT;
     }
+    return undefined;
 }
 
 /**
@@ -39,8 +36,8 @@ function pullDigit (bytes: Iterator<number>): DigitPullResult {
  * @internal
  */
 function compareNumericStreams (
-    a: Iterator<number>,
-    b: Iterator<number>,
+    a: Iterable<number>,
+    b: Iterable<number>,
 ): EncodedCompareResult {
     let matched: number = 0;
     while (true) {

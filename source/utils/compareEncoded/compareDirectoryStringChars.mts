@@ -3,7 +3,6 @@ import iterateContentOctetBytes from "./ContentOctetByteCursor.mjs";
 import {
     foldAsciiByte,
     orderingSign,
-    takeNext,
 } from "./internal.mjs";
 import type { DirectoryStringCompareOptions, EncodedCompareResult } from "./types.mjs";
 import {
@@ -72,7 +71,7 @@ function createDirectoryPullState (): DirectoryPullState {
  * @internal
  */
 function pullDirectoryChar (
-    bytes: Iterator<number>,
+    bytes: Iterable<number>,
     state: DirectoryPullState,
     asciiCaseFold: boolean,
 ): number | undefined {
@@ -81,11 +80,7 @@ function pullDirectoryChar (
         state.deferred = undefined;
         return deferred;
     }
-    while (true) {
-        const raw: number | undefined = takeNext(bytes);
-        if (raw === undefined) {
-            return undefined;
-        }
+    for (const raw of bytes) {
         const mapped: number | null = mapDirectoryStringByte(raw);
         if (mapped === null) {
             continue;
@@ -106,6 +101,7 @@ function pullDirectoryChar (
         state.leading = false;
         return normalized;
     }
+    return undefined;
 }
 
 /**
@@ -113,8 +109,8 @@ function pullDirectoryChar (
  * @internal
  */
 function compareDirectoryStreams (
-    a: Iterator<number>,
-    b: Iterator<number>,
+    a: Iterable<number>,
+    b: Iterable<number>,
     asciiCaseFold: boolean,
 ): EncodedCompareResult {
     const aState: DirectoryPullState = createDirectoryPullState();
