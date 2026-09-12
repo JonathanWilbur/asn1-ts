@@ -42,9 +42,10 @@
     "scripts": {
         "benchmark": "node ./test/benchmark.mjs",
         "build": "npx tsc",
-        "buntest": "bun test",
+        "bun-test": "bun test",
         "clean": "rm -rf dist; mkdir -p dist",
-        "denocheck": "deno test ./denotest.mts",
+        "deno-test": "deno test ./denotest.mts",
+        "node-test": "node --test",
         "test": "node --test"
     },
     "types": "./dist/index.d.mts",

@@ -1,0 +1,43 @@
+name: Main Workflow
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x, 26.x]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install NPM Dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Run Tests
+        run: npm test
+        env:
+          CI: true
+      - name: Set up Deno
+        uses: denoland/setup-deno@ff4860f9d7236f320afa0f82b7e6457384805d05 # v2.0.4
+        with:
+          deno-version: latest
+      - name: Run Deno Tests
+        run: npm run deno-test
+        env:
+          CI: true
+      - name: JSR publish dry-run
+        if: matrix.node-version == '26.x'
+        run: npx --yes jsr@0.14.3 publish --dry-run --allow-dirty
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+      - name: Run Bun Tests
+        run: npm run bun-test
+        env:
+          CI: true
