@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 - Implement `compareBitStrings`
+- Make `&property` field of `ABSTRACT-SYNTAX` optional
 
 ## [11.3.0]
 

@@ -32,5 +32,5 @@ interface ABSTRACT_SYNTAX <
     }>;
     "&id": OBJECT_IDENTIFIER, /* UNIQUE */
     "&Type": Type,
-    "&property": BIT_STRING,
+    "&property"?: BIT_STRING,
 }
