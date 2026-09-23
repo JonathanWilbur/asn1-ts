@@ -26,3 +26,4 @@ export { default as trimLeadingPaddingBytes } from "./trimLeadingPaddingBytes.mj
 export { default as unpackBits } from "./unpackBits.mjs";
 export { default as canEncodeAsBMPString } from "./canEncodeAsBMPString.mjs";
 export { formatOctetStringValue } from "./asn1ValueNotation.mjs";
+export { default as compareBitStrings } from "./compareBitStrings.mjs";
