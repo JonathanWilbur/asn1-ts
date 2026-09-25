@@ -678,6 +678,29 @@ class ObjectIdentifier {
     public isEqualTo (other: ObjectIdentifier): boolean {
         return ObjectIdentifier.compare(this, other);
     }
+
+    /**
+     * @summary Determines if this object identifier is a prefix of another object identifier.
+     * @description
+     *
+     * This function determines whether the all of the arcs of this object
+     * identifier form a prefix of the arcs in the other object identifier.
+     *
+     * @param other The other object identifier
+     * @returns `true` if `this` is a prefix, `false` otherwise.
+     * @function
+     */
+    public isPrefixOf (other: ObjectIdentifier): boolean {
+        if (this.byteLength > other.byteLength) {
+            return false;
+        }
+        const thisBytes = this.encoding;
+        const otherBytes = other.encoding;
+        return !Buffer.compare(
+            thisBytes,
+            otherBytes.subarray(0, thisBytes.length),
+        );
+    }
 }
 
 stampBrand(ObjectIdentifier.prototype, OBJECT_IDENTIFIER_BRAND);
