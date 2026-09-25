@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Implement `compareBitStrings`
 - Make `&property` field of `ABSTRACT-SYNTAX` optional
 - Implement `ObjectIdentifier.isPrefixOf()`
+- Fix `ASN1Element.toString()` for `RELATIVE-OID` values
 
 ## [11.3.0]
 

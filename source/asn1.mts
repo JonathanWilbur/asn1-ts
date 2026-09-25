@@ -602,7 +602,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.embeddedPDV): return this.embeddedPDV.toStringEx(recursionTTL - 1);
             case (ASN1UniversalType.utf8String): return `"${this.utf8String}"`;
             case (ASN1UniversalType.relativeOID): return "{ " + this.relativeObjectIdentifier
-                .map((arc) => arc.toString()).join(".") + " }";
+                .map((arc) => arc.toString()).join(", ") + " }";
             case (ASN1UniversalType.time): return `"${this.time}"`;
             // We call sequenceOf() to mitigate any tagging ordering checks.
             case (ASN1UniversalType.sequence): return ("{ " + this.sequenceOf
