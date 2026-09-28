@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 - Implement `compareBitStrings`
+- Implement `binaryStringToBitString` and `bitStringToBinaryString`
 - Make `&property` field of `ABSTRACT-SYNTAX` optional
 - Implement `ObjectIdentifier.isPrefixOf()`
 - Fix `ASN1Element.toString()` for `RELATIVE-OID` values

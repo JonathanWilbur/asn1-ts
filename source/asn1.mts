@@ -43,6 +43,7 @@ import type {
 } from "./macros.mjs";
 import packBits from "./utils/packBits.mjs";
 import bytesToHex from "./utils/bytesToHex.mjs";
+import bitStringToBinaryString from "./utils/bitStringToBinaryString.mjs";
 import { Buffer } from "node:buffer";
 import {
     ASN1_ELEMENT_BRAND,
@@ -586,11 +587,7 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
             case (ASN1UniversalType.boolean): return (this.boolean ? "TRUE" : "FALSE");
             case (ASN1UniversalType.integer): return this.integer.toString();
             case (ASN1UniversalType.bitString):
-                return `'${Array
-                    .from(this.bitString)
-                    .map((num) => num.toString())
-                    .join("")
-                }'B`;
+                return `'${bitStringToBinaryString(this.bitString)}'B`;
             case (ASN1UniversalType.octetString):
                 return `'${bytesToHex(this.octetString)}'H`;
             case (ASN1UniversalType.nill): return "NULL";

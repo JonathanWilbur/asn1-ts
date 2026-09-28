@@ -1,6 +1,7 @@
 import type ASN1Element from "../asn1.mjs";
 import { ASN1Construction, ASN1TagClass } from "../values.mjs";
 import bytesToHex from "./bytesToHex.mjs";
+import bitStringToBinaryString from "./bitStringToBinaryString.mjs";
 
 /**
  * Format an OCTET STRING in ASN.1 value notation (`'…'H`).
@@ -23,11 +24,7 @@ export function formatOctetStringValue (bytes: Uint8Array): string {
  * @author Cursor Grok 4.6
  */
 export function formatBitStringValue (bits: Uint8ClampedArray): string {
-    let bin: string = "";
-    for (let i: number = 0; i < bits.length; i++) {
-        bin += bits[i] ? "1" : "0";
-    }
-    return `'${bin}'B`;
+    return `'${bitStringToBinaryString(bits)}'B`;
 }
 
 /**
