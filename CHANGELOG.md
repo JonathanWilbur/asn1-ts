@@ -8,6 +8,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Add branded `DotDelimitedOidString` string type, `isDotDelimitedOID()` type
+  guard, and compile-time `IsValidDOTDelimitedOID` check
+- Add branded `DotDelimitedRelativeOidString` string type,
+  `isDotDelimitedRelativeOID()` type guard, and compile-time
+  `IsValidDOTDelimitedRelativeOID` check
 - Implement `compareBitStrings`
 - Implement `binaryStringToBitString` and `bitStringToBinaryString`
 - Make `&property` field of `ABSTRACT-SYNTAX` optional

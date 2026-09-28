@@ -10,3 +10,13 @@ export { default as isPrintableString } from "./isPrintableString.mjs";
 export { default as isVisibleString } from "./isVisibleString.mjs";
 export { default as isTimeString } from "./isTimeString.mjs";
 export { default as isTimeCharacter } from "./isTimeCharacter.mjs";
+export { default as isDotDelimitedOID } from "./isDotDelimitedOID.mjs";
+export { default as isDotDelimitedRelativeOID } from "./isDotDelimitedRelativeOID.mjs";
+export type {
+    DotDelimitedOidString,
+    IsValidDOTDelimitedOID,
+} from "./isDotDelimitedOID.mjs";
+export type {
+    DotDelimitedRelativeOidString,
+    IsValidDOTDelimitedRelativeOID,
+} from "./isDotDelimitedRelativeOID.mjs";
