@@ -6,13 +6,21 @@ The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [11.4.0]
 
 - Add branded `DotDelimitedOidString` string type, `isDotDelimitedOID()` type
   guard, and compile-time `IsValidDOTDelimitedOID` check
 - Add branded `DotDelimitedRelativeOidString` string type,
   `isDotDelimitedRelativeOID()` type guard, and compile-time
   `IsValidDOTDelimitedRelativeOID` check
+- Add branded `ASN1BinaryString` (`'...'B`) and `ASN1HexString` (`'...'H`)
+  types with `isASN1BinaryString()` / `isASN1HexString()` type guards,
+  `toASN1BinaryString()` / `toASN1HexString()` validating constructors, and
+  compile-time `IsValidASN1BinaryString` / `IsValidASN1HexString` checks
+- Add branded `GuaranteedPrintableString`, `GuaranteedNumericString`,
+  `GuaranteedGraphicString`, and `GuaranteedTimeString` string types.
+  `isPrintableString()`, `isNumericString()`, `isGraphicString()`, and
+  `isTimeString()` are now type guards for these brands.
 - Implement `compareBitStrings`
 - Implement `binaryStringToBitString` and `bitStringToBinaryString`
 - Make `&property` field of `ABSTRACT-SYNTAX` optional

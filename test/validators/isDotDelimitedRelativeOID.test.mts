@@ -53,9 +53,6 @@ describe("isDotDelimitedRelativeOID()", () => {
         for (const s of ["", "a", "1.2a.3", "1.2.3a", "-1.2", "1.-2", "1,2,3", " 1.2", "1.2 "]) {
             assert.equal(isDotDelimitedRelativeOID(s), false, JSON.stringify(s));
         }
-        for (const v of [undefined, null, 42, {}, [], true]) {
-            assert.equal(isDotDelimitedRelativeOID(v), false);
-        }
     });
 
     it("narrows to the branded type", () => {

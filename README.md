@@ -326,6 +326,46 @@ These types are:
 - `TIME_OF_DAY_FRACTION_DIFF_ENCODING`
 - `TIME_OF_DAY_ENCODING`
 
+### Branded String Types
+
+Some functions only make sense for strings that are known to contain a
+restricted set of characters. This library provides branded string types that
+carry a _promise_ at the type level that the string has been validated:
+
+- `GuaranteedPrintableString`
+- `GuaranteedNumericString`
+- `GuaranteedGraphicString`
+- `GuaranteedTimeString`
+
+A plain `string` is not assignable to one of these types. The type guards
+`isPrintableString()`, `isNumericString()`, `isGraphicString()`, and
+`isTimeString()` narrow a `string` to the corresponding branded type. The brand
+exists only at compile time, so there is no runtime overhead beyond the check.
+
+```typescript
+import {
+    isPrintableString,
+    type GuaranteedPrintableString,
+} from "@wildboar/asn1";
+
+function setCommonName (cn: GuaranteedPrintableString): void {
+    // `cn` is guaranteed to contain only PrintableString characters.
+}
+
+const input: string = getUserInput();
+
+// setCommonName(input); // Compile error: `string` is not assignable.
+
+if (isPrintableString(input)) {
+    setCommonName(input); // OK: `input` is narrowed to GuaranteedPrintableString.
+} else {
+    console.error("Not a PrintableString.");
+}
+```
+
+Other branded types follow the same pattern: `DotDelimitedOidString`,
+`DotDelimitedRelativeOidString`, `ASN1BinaryString`, and `ASN1HexString`.
+
 ## Building
 
 You can build this library by running `npm run build`.

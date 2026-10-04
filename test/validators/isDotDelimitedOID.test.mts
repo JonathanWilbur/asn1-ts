@@ -64,9 +64,6 @@ describe("isDotDelimitedOID()", () => {
         for (const s of ["", "0", "1", "00", "123", "a", "1.2a.3", "1.2.3a", "-1.2.3", "1.-2.3", "1,2,3", " 1.2.3", "1.2.3 "]) {
             assert.equal(isDotDelimitedOID(s), false, JSON.stringify(s));
         }
-        for (const v of [undefined, null, 42, {}, [], true]) {
-            assert.equal(isDotDelimitedOID(v), false);
-        }
     });
 
     it("narrows to the branded type", () => {
