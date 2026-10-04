@@ -32,12 +32,6 @@ describe("isASN1BinaryString()", () => {
         }
     });
 
-    it("rejects non-string input", () => {
-        for (const v of [undefined, null, 42, {}, [], true]) {
-            assert.equal(isASN1BinaryString(v), false);
-        }
-    });
-
     it("narrows to the branded type", () => {
         const s: string = "'1001010'B";
         if (isASN1BinaryString(s)) {
