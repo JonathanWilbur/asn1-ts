@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   numeric form.
 - Add `MIN_DATE`, `MAX_DATE`, `MIN_DATE_TIME`, `MAX_DATE_TIME`.
 - Add `DURATION_EQUIVALENT.MIN` and `DURATION_EQUIVALENT.MAX`.
+- Print `TeletexString` and `VideotexString` better in `ASN1Element.toString()`.
 
 ## [11.4.0]
 

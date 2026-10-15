@@ -50,6 +50,7 @@ import {
     isASN1ElementLike,
     stampBrand,
 } from "./brands.mjs";
+import teletexToString from "./teletex.mjs";
 
 /**
  * @module asn1
@@ -615,8 +616,8 @@ abstract class ASN1Element implements Byteable, Elementable, Named, Long {
                 .join(" , ") + " }");
             case (ASN1UniversalType.numericString): return `"${this.numericString}"`;
             case (ASN1UniversalType.printableString): return `"${this.printableString}"`;
-            case (ASN1UniversalType.teletexString): return "TeletexString";
-            case (ASN1UniversalType.videotexString): return "VideotexString";
+            case (ASN1UniversalType.teletexString): return `"${teletexToString(this.teletexString)}"`;
+            case (ASN1UniversalType.videotexString): return "<Unable to display VideotexString>";
             case (ASN1UniversalType.ia5String): return `"${this.ia5String}"`;
             case (ASN1UniversalType.utcTime): return `"${this.utcTime.toISOString()}"`;
             case (ASN1UniversalType.generalizedTime): return `"${this.generalizedTime.toISOString()}"`;
