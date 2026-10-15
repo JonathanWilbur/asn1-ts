@@ -6,6 +6,12 @@ The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Make `ObjectIdentifier.toString()` return `DotDelimitedOidString`.
+  This is a branded type that indicates that the string is dot-delimited
+  numeric form.
+
 ## [11.4.0]
 
 - Add branded `DotDelimitedOidString` string type, `isDotDelimitedOID()` type

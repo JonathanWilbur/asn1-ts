@@ -11,6 +11,7 @@ import {
     isObjectIdentifierLike,
     stampBrand,
 } from "../brands.mjs";
+import type { DotDelimitedOidString } from "../index.mjs";
 
 const PERIOD = ".".charCodeAt(0);
 
@@ -413,7 +414,7 @@ class ObjectIdentifier {
         return nodes;
     }
 
-    private dotDelimitedNotationCached: string | null = null;
+    private dotDelimitedNotationCached: DotDelimitedOidString | null = null;
 
     /**
      * @summary Get the OID as a dot-delimited string.
@@ -430,11 +431,11 @@ class ObjectIdentifier {
      * @returns {string} The OID as a dot-delimited string
      * @function
      */
-    get dotDelimitedNotation (): string {
+    get dotDelimitedNotation (): DotDelimitedOidString {
         if (this.dotDelimitedNotationCached) {
             return this.dotDelimitedNotationCached;
         }
-        const ret = this.nodes.join(".");
+        const ret = this.nodes.join(".") as DotDelimitedOidString;
         this.dotDelimitedNotationCached = ret;
         return ret;
     }
@@ -467,7 +468,7 @@ class ObjectIdentifier {
      *
      * @returns {string} The OID as a dot-delimited string
      */
-    public toString (): string {
+    public toString (): DotDelimitedOidString {
         try {
             return this.dotDelimitedNotation;
         } catch (e) {
@@ -475,7 +476,7 @@ class ObjectIdentifier {
                 e instanceof errors.ASN1OverflowError
                 || (typeof e === "object" && e !== null && (e as Error).name === "ASN1OverflowError")
             ) {
-                const ret = this.nodesBigAndSmall.join(".");
+                const ret = this.nodesBigAndSmall.join(".") as DotDelimitedOidString;
                 this.dotDelimitedNotationCached = ret;
                 return ret;
             }
