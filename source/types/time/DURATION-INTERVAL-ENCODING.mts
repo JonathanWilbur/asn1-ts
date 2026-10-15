@@ -66,6 +66,37 @@ class DURATION_INTERVAL_ENCODING {
      */
     static readonly brand: symbol = DURATION_INTERVAL_ENCODING_BRAND;
 
+    /** Zero-length duration interval. Every component is absent. */
+    static readonly MIN: DURATION_INTERVAL_ENCODING = new DURATION_INTERVAL_ENCODING(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+    );
+
+    /**
+     * Largest duration interval whose components this class accepts.
+     * Weeks are omitted because they cannot be combined with the other
+     * components.
+     */
+    static readonly MAX: DURATION_INTERVAL_ENCODING = new DURATION_INTERVAL_ENCODING(
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        undefined,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        {
+            number_of_digits: Number.MAX_SAFE_INTEGER,
+            fractional_value: Number.MAX_SAFE_INTEGER,
+        },
+    );
+
     constructor (
         readonly years: OPTIONAL<INTEGER>,
         readonly months: OPTIONAL<INTEGER>,

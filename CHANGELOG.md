@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Make `ObjectIdentifier.toString()` return `DotDelimitedOidString`.
   This is a branded type that indicates that the string is dot-delimited
   numeric form.
+- Add `MIN_DATE`, `MAX_DATE`, `MIN_DATE_TIME`, `MAX_DATE_TIME`.
+- Add `DURATION_EQUIVALENT.MIN` and `DURATION_EQUIVALENT.MAX`.
 
 ## [11.4.0]
 

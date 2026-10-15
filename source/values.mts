@@ -24,6 +24,25 @@ export const MAX_SINT_32: number = 0x7FFFFFFF;
 export const MIN_SINT_32: number = -0x80000000;
 
 /**
+ * Earliest `DATE` (`1582-01-01`, local midnight).
+ * ITU-T X.680 restricts the year of `Date=YMD Year=Basic` to 1582..9999.
+ */
+export const MIN_DATE: Date = Object.freeze(new Date(1582, 0, 1));
+/**
+ * Latest `DATE` (`9999-12-31`, local midnight).
+ */
+export const MAX_DATE: Date = Object.freeze(new Date(9999, 11, 31));
+
+/**
+ * Earliest `DATE-TIME` (`1582-01-01T00:00:00`, local).
+ */
+export const MIN_DATE_TIME: Date = Object.freeze(new Date(1582, 0, 1, 0, 0, 0));
+/**
+ * Latest `DATE-TIME` (`9999-12-31T23:59:59`, local). Seconds are 0..59.
+ */
+export const MAX_DATE_TIME: Date = Object.freeze(new Date(9999, 11, 31, 23, 59, 59));
+
+/**
  * ASN.1 tag classes as defined by the standard.
  * @enum {number}
  */

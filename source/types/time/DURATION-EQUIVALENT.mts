@@ -64,6 +64,40 @@ class DURATION_EQUIVALENT {
      */
     static readonly brand: symbol = DURATION_EQUIVALENT_BRAND;
 
+    /**
+     * Zero-length duration. Every component is absent.
+     */
+    static readonly MIN: DURATION_EQUIVALENT = new DURATION_EQUIVALENT(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+    );
+
+    /**
+     * Largest duration whose components this class accepts.
+     * Each date-time component and the fractional part are
+     * `Number.MAX_SAFE_INTEGER`. Weeks are omitted because they cannot be
+     * combined with the other components.
+     */
+    static readonly MAX: DURATION_EQUIVALENT = new DURATION_EQUIVALENT(
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        undefined,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        Number.MAX_SAFE_INTEGER,
+        {
+            number_of_digits: Number.MAX_SAFE_INTEGER,
+            fractional_value: Number.MAX_SAFE_INTEGER,
+        },
+    );
+
     constructor (
         readonly years: OPTIONAL<INTEGER>,
         readonly months: OPTIONAL<INTEGER>,
