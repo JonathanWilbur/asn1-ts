@@ -9,7 +9,7 @@ function decodeInteger (value: Uint8Array): INTEGER {
         throw new errors.ASN1SizeError("INTEGER or ENUMERATED encoded on zero bytes");
     }
     if (
-        value.length > 2
+        value.length > 1
         && (
             (value[0] === 0xFF && value[1] >= 0b10000000)
             || (value[0] === 0x00 && value[1] < 0b10000000)

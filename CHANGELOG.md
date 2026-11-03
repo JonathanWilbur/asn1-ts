@@ -8,12 +8,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+
+## [11.5.0]
+
 - Make `ObjectIdentifier.toString()` return `DotDelimitedOidString`.
   This is a branded type that indicates that the string is dot-delimited
   numeric form.
 - Add `MIN_DATE`, `MAX_DATE`, `MIN_DATE_TIME`, `MAX_DATE_TIME`.
 - Add `DURATION_EQUIVALENT.MIN` and `DURATION_EQUIVALENT.MAX`.
 - Print `TeletexString` and `VideotexString` better in `ASN1Element.toString()`.
+- Reject two-byte integers with leading padding bytes, such as `0x00 0x05`
 
 ## [11.4.0]
 
